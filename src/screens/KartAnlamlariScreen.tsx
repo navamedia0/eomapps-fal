@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, ImageBackground, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import { KATINA_DECK } from '@/services/katina';
@@ -9,7 +9,9 @@ import { getTarotMeaning } from '@/services/tarotMeanings';
 import PlayingCardFace from '@/components/PlayingCardFace';
 import TarotCardFace from '@/components/tarot/TarotCardFace';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import { TEXT_CAPTION, PARCHMENT_BG, PARCHMENT_BORDER, PARCHMENT_TEXT, PARCHMENT_MUTED } from '@/theme/colors';
+import { TEXT_CAPTION, PARCHMENT_BORDER, PARCHMENT_TEXT, PARCHMENT_MUTED } from '@/theme/colors';
+
+const PARCHMENT_TEXTURE = require('../assets/textures/parchment_card.jpg');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'KartAnlamlari'>;
 
@@ -49,13 +51,18 @@ export default function KartAnlamlariScreen({ route }: Props) {
 
         <View style={styles.list}>
           {entries.map((entry) => (
-            <View key={entry.id} style={styles.row}>
+            <ImageBackground
+              key={entry.id}
+              source={PARCHMENT_TEXTURE}
+              style={styles.row}
+              imageStyle={styles.rowImage}
+            >
               <View style={styles.faceWrap}>{entry.face}</View>
               <View style={styles.textWrap}>
                 <Text style={styles.name}>{entry.name}</Text>
                 <Text style={styles.meaning}>{entry.meaning}</Text>
               </View>
-            </View>
+            </ImageBackground>
           ))}
         </View>
       </ScrollView>
@@ -83,17 +90,20 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     gap: 14,
-    backgroundColor: PARCHMENT_BG,
     borderRadius: 18,
     borderWidth: 1,
     borderColor: PARCHMENT_BORDER,
     padding: 14,
     alignItems: 'center',
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 4,
+  },
+  rowImage: {
+    borderRadius: 18,
   },
   faceWrap: {
     alignItems: 'center',
