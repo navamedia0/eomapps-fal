@@ -7,6 +7,8 @@ import { getTarotMeaning } from '@/services/tarotMeanings';
 import type { KatinaCard } from '@/services/katina';
 import { getKatinaMeaning } from '@/services/katinaMeanings';
 import { findDreamMatches } from '@/services/dreamMeanings';
+import { getCoffeeSymbolGlossary } from '@/services/coffeeSymbols';
+import { getPalmistryGlossary } from '@/services/palmistry';
 import { getProfileSummary } from '@/services/profile';
 import { turkishUpperCase } from '@/utils/turkishCase';
 
@@ -141,7 +143,9 @@ export async function interpretImages(
   images: Array<{ mimeType: string; data: string }>,
 ): Promise<string> {
   if (images.length === 0) throw new Error('En az bir görsel gerekli.');
-  return askGeminiVision(prompts[kind], images);
+  const glossary = kind === 'coffee' ? getCoffeeSymbolGlossary() : getPalmistryGlossary();
+  const prompt = kind === 'coffee' ? prompts.coffee(glossary) : prompts.palm(glossary);
+  return askGeminiVision(prompt, images);
 }
 
 export async function validateImage(kind: 'coffee' | 'palm', image: { mimeType: string; data: string }): Promise<boolean> {

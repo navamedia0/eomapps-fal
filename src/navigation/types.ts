@@ -36,6 +36,7 @@ export type RootStackParamList = {
   ZodiacTraits: undefined;
   Solitaire: undefined;
   SuFal: undefined;
+  RuyaKitapligi: undefined;
 };
 
 export type MainTabParamList = {

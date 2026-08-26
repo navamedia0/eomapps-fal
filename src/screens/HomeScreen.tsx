@@ -129,6 +129,12 @@ export default function HomeScreen({ navigation }: Props) {
           icon: <Ionicons name="moon" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('DreamChat'),
         },
+        {
+          key: 'dreamLibrary',
+          title: 'Rüya Kitaplığı',
+          icon: <Ionicons name="library-outline" size={24} color={GOLD} />,
+          onPress: () => navigation.navigate('RuyaKitapligi'),
+        },
       ],
     },
     {

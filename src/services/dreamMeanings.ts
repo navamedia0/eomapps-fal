@@ -1,11 +1,12 @@
 import dreamDictionary from '@/data/dream_dictionary.json';
+import modernDreamSymbols from '@/data/modern_dream_symbols.json';
 import freudSymbols from '@/data/freud_symbols.json';
 
 export type DreamEntry = { tr_keywords: string[]; meaning: string };
 export type DreamSource = 'folk' | 'psychoanalytic';
 export type DreamMatch = { word: string; meaning: string; source: DreamSource };
 
-const FOLK_ENTRIES: Record<string, DreamEntry | string> = dreamDictionary;
+const FOLK_ENTRIES: Record<string, DreamEntry | string> = { ...dreamDictionary, ...modernDreamSymbols };
 const FREUD_ENTRIES: Record<string, DreamEntry | string> = freudSymbols;
 
 const normalize = (value: string): string => value.toLocaleLowerCase('tr').replace(/[^a-zçğıöşü\s]/gi, ' ');

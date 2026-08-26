@@ -1,0 +1,42 @@
+{
+  "_source": "Özgün içerik — geleneksel palmistri (el falı) bilgisinden derlenmiştir, eğlence amaçlıdır.",
+  "ana_cizgiler": {
+    "yasam_cizgisi": "Baş parmağın altından bileğe doğru kavis çizen çizgi. Uzunluğu ömür süresiyle değil, yaşam enerjisi ve dayanıklılıkla ilişkilendirilir. Derin ve net bir yaşam çizgisi güçlü bir hayat enerjisini, ince ve kesik kesik bir çizgi ise iniş çıkışlı bir dönemi gösterir. Avuca yakın, dar bir kavis çekingen bir yapıyı; geniş bir kavis ise maceracı, enerjik bir kişiliği işaret eder.",
+    "akil_cizgisi": "Avuç içini yatay kesen orta çizgi. Düşünme biçimini, kararlılığı ve iletişim tarzını gösterir. Düz ve uzun bir akıl çizgisi pratik, mantıklı bir zihni; aşağı doğru kavis yapan bir çizgi ise yaratıcı, hayal gücü kuvvetli bir yapıyı gösterir. Çatallanan bir uç, hem mantığı hem sezgiyi dengede kullanabilme yeteneğine işaret eder.",
+    "kalp_cizgisi": "Avucun üst kısmında, parmakların hemen altında yatay uzanan çizgi. Duygusal dünyayı ve ilişki biçimini yansıtır. İşaret parmağının altına kadar uzanan bir kalp çizgisi doyumlu bir aşk hayatını, kısa bir çizgi ise duygularını göstermekte temkinli bir yapıyı işaret eder. Üzerinde küçük çizgiler (adalar) duygusal iniş çıkışları gösterebilir.",
+    "kader_cizgisi": "Bilekten orta parmağa doğru dikey uzanan çizgi (herkeste net görünmeyebilir). Kariyer, yaşam amacı ve dış dünyadaki yönelimi simgeler. Net ve kesintisiz bir kader çizgisi net bir hayat amacına işaret ederken, kesik kesik bir çizgi kariyerinde birden fazla yön değiştireceğine işaret eder.",
+    "gunes_cizgisi": "Yüzük parmağının altında, dikey uzanan kısa bir çizgi (Apollo çizgisi de denir). Varlığı yaratıcılık, tanınma ve başarıyla ilişkilendirilir; net bir güneş çizgisi sanatsal ya da toplumsal bir başarıya işaret eder.",
+    "evlilik_cizgisi": "Serçe parmağının altında, avucun yan tarafında yatay uzanan ince çizgi(ler). Önemli duygusal bağları simgeler; derin ve net bir çizgi güçlü, kalıcı bir bağı gösterir.",
+    "saglik_cizgisi": "Yaşam çizgisinden Merkür tepesine doğru uzanan çizgi (herkeste bulunmaz). Yokluğu genellikle güçlü bir bünyeye işaret eder; net bir sağlık çizgisi bedensel farkındalığın yüksek olduğunu gösterir."
+  },
+  "tepeler_mounts": {
+    "jupiter_tepesi": "İşaret parmağının dibinde yer alır. Belirgin olması liderlik, özgüven ve hırsı; düz olması alçakgönüllü bir yapıyı gösterir.",
+    "saturn_tepesi": "Orta parmağın dibinde yer alır. Sorumluluk, disiplin ve içe dönüklüğü simgeler; aşırı belirgin olması ağırbaşlı, ölçülü bir kişiliğe işaret eder.",
+    "apollo_gunes_tepesi": "Yüzük parmağının dibinde yer alır. Yaratıcılık, sanatsal yetenek ve karizmayı gösterir.",
+    "merkur_tepesi": "Serçe parmağının dibinde yer alır. İletişim becerisi, zeka ve ticari sezgiyi simgeler.",
+    "venus_tepesi": "Baş parmağın dibinde, yaşam çizgisinin çevrelediği geniş alan. Sevgi kapasitesini, tutkuyu ve yaşam enerjisini gösterir; dolgun olması sıcakkanlı, cömert bir yapıya işaret eder.",
+    "ay_tepesi": "Avucun alt, bilek tarafındaki dış kenarı. Hayal gücünü, sezgiyi ve iç dünyayı simgeler; belirgin olması güçlü bir hayal gücüne ve empatiye işaret eder.",
+    "mars_tepesi": "Avucun ortasına yakın iki bölgede (üst ve alt Mars) yer alır. Cesaret, direnç ve öz savunmayı gösterir."
+  },
+  "parmaklar": {
+    "bas_parmak": "İrade gücünü ve mantığı simgeler. Uzun ve esnek bir baş parmak diplomatik bir yapıyı, kısa ve sert bir baş parmak inatçı, kararlı bir karakteri gösterir.",
+    "isaret_parmagi": "Liderlik ve özgüveni simgeler. Orta parmaktan uzun olması baskın bir kişiliği, kısa olması alçakgönüllülüğü işaret eder.",
+    "orta_parmak": "Sorumluluk ve denge duygusunu simgeler; elin en uzun parmağı olması beklenir, bu dengeli bir yaşam yaklaşımına işaret eder.",
+    "yuzuk_parmagi": "Yaratıcılık ve duygusal ifadeyi simgeler; işaret parmağından uzun olması sanatsal, rekabetçi bir yapıya işaret edebilir.",
+    "serce_parmak": "İletişim ve ikna kabiliyetini simgeler. Uzun bir serçe parmağı güçlü bir sözel yeteneği, kısa olması çekingen bir iletişim tarzını gösterir."
+  },
+  "el_sekilleri": {
+    "toprak_eli": "Kare avuç, kısa parmaklar. Pratik, ayakları yere basan, güvenilir bir karakteri simgeler.",
+    "hava_eli": "Kare avuç, uzun parmaklar. Meraklı, iletişimci, fikir odaklı bir yapıyı gösterir.",
+    "ates_eli": "Dikdörtgen avuç, kısa parmaklar. Enerjik, tutkulu, girişimci bir karakteri simgeler.",
+    "su_eli": "Uzun, oval avuç, uzun parmaklar. Duygusal, sezgisel, yaratıcı bir yapıya işaret eder."
+  },
+  "ozel_isaretler": {
+    "yildiz_isareti": "Bir çizginin ya da tepenin üzerinde görülen yıldız şekli, ani ve güçlü bir olayı — genellikle olumlu bir dönüm noktasını — simgeler.",
+    "hac_isareti": "İki çizginin kesişmesiyle oluşan çarpı işareti; dikkat edilmesi gereken bir uyarı ya da önemli bir karar anını gösterir.",
+    "ada_isareti": "Bir çizginin üzerinde küçük bir halka; o dönemde yaşanan bir belirsizlik ya da zorluğu simgeler.",
+    "kirilma_isareti": "Bir çizginin aniden kesilmesi; hayatında ani bir değişim ya da yön değişikliğine işaret eder.",
+    "catal_isareti": "Bir çizginin ikiye ayrılması; genellikle çok yönlülüğü ya da bir konuda iki farklı seçeneğin belirmesini gösterir.",
+    "kare_isareti": "Bir çizginin üzerinde küçük bir kare; zorlu bir dönemde koruma altında olduğunu simgeler."
+  }
+}

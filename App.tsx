@@ -37,6 +37,7 @@ import CoinShopScreen from '@/screens/CoinShopScreen';
 import ZodiacTraitsScreen from '@/screens/ZodiacTraitsScreen';
 import SolitaireScreen from '@/screens/SolitaireScreen';
 import SuFalScreen from '@/screens/SuFalScreen';
+import RuyaKitapligiScreen from '@/screens/RuyaKitapligiScreen';
 import { GOLD, NIGHT_DEEP, NIGHT_MID, TEXT_PRIMARY } from '@/theme/colors';
 
 const MAX_APP_WIDTH = 480;
@@ -119,6 +120,7 @@ export default function App() {
             <Stack.Screen name="ZodiacTraits" component={ZodiacTraitsScreen} options={{ title: 'Burç Özellikleri' }} />
             <Stack.Screen name="Solitaire" component={SolitaireScreen} options={{ title: 'Solitaire Falı' }} />
             <Stack.Screen name="SuFal" component={SuFalScreen} options={{ title: 'Su Falı' }} />
+            <Stack.Screen name="RuyaKitapligi" component={RuyaKitapligiScreen} options={{ title: 'Rüya Kitaplığı' }} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>

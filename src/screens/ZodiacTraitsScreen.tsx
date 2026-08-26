@@ -4,8 +4,25 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { ZODIACS, type Zodiac } from '@/services/zodiac';
 import { ZODIAC_INFO } from '@/constants/zodiacInfo';
 import { ZODIAC_TRAITS } from '@/constants/zodiacTraits';
+import burcOzellikleri from '@/data/burc_ozellikleri.json';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+
+type ZodiacDetail = {
+  genel: string;
+  guclu_yonler: string[];
+  zayif_yonler: string[];
+  ask: string;
+  kariyer: string;
+  uyumlu_burclar: string[];
+  sembol_anlami: string;
+  sansli_renk: string;
+  sansli_tas: string;
+  sansli_gun: string;
+  vucut_bolgesi: string;
+};
+
+const BURC_DETAY: Record<Zodiac, ZodiacDetail> = burcOzellikleri as unknown as Record<Zodiac, ZodiacDetail>;
 
 export default function ZodiacTraitsScreen() {
   const [selected, setSelected] = useState<Zodiac | null>(null);
@@ -40,6 +57,7 @@ export default function ZodiacTraitsScreen() {
 
   const info = ZODIAC_INFO[selected];
   const traits = ZODIAC_TRAITS[selected];
+  const detail = BURC_DETAY[selected];
 
   return (
     <MysticTableBackground>
@@ -81,6 +99,77 @@ export default function ZodiacTraitsScreen() {
           <Text style={styles.polarityNote}>
             "Kutup" burcun geleneksel astrolojideki enerji polaritesidir (eril: dışa dönük, dişil: içe dönük) — kişinin cinsiyetiyle ilgisi yoktur.
           </Text>
+        </View>
+
+        <View style={styles.detailSection}>
+          <Text style={styles.sectionLabel}>Genel Özellikler</Text>
+          <Text style={styles.paragraph}>{detail.genel}</Text>
+        </View>
+
+        <View style={styles.detailSection}>
+          <Text style={styles.sectionLabel}>Güçlü Yönler</Text>
+          <View style={styles.chipRow}>
+            {detail.guclu_yonler.map((trait) => (
+              <View key={trait} style={[styles.chip, styles.chipPositive]}>
+                <Text style={styles.chipText}>{trait}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.detailSection}>
+          <Text style={styles.sectionLabel}>Zayıf Yönler</Text>
+          <View style={styles.chipRow}>
+            {detail.zayif_yonler.map((trait) => (
+              <View key={trait} style={[styles.chip, styles.chipNegative]}>
+                <Text style={styles.chipText}>{trait}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.detailSection}>
+          <Text style={styles.sectionLabel}>Aşk ve İlişkiler</Text>
+          <Text style={styles.paragraph}>{detail.ask}</Text>
+        </View>
+
+        <View style={styles.detailSection}>
+          <Text style={styles.sectionLabel}>Kariyer ve Para</Text>
+          <Text style={styles.paragraph}>{detail.kariyer}</Text>
+        </View>
+
+        <View style={styles.detailSection}>
+          <Text style={styles.sectionLabel}>En Uyumlu Burçlar</Text>
+          <View style={styles.chipRow}>
+            {detail.uyumlu_burclar.map((sign) => (
+              <View key={sign} style={styles.chip}>
+                <Text style={styles.chipText}>{sign}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.detailSection}>
+          <Text style={styles.sectionLabel}>Şans Unsurları</Text>
+          <View style={styles.luckyGrid}>
+            <View style={styles.luckyItem}>
+              <Text style={styles.traitLabel}>Renk</Text>
+              <Text style={styles.traitValue}>{detail.sansli_renk}</Text>
+            </View>
+            <View style={styles.luckyItem}>
+              <Text style={styles.traitLabel}>Taş</Text>
+              <Text style={styles.traitValue}>{detail.sansli_tas}</Text>
+            </View>
+            <View style={styles.luckyItem}>
+              <Text style={styles.traitLabel}>Gün</Text>
+              <Text style={styles.traitValue}>{detail.sansli_gun}</Text>
+            </View>
+            <View style={styles.luckyItem}>
+              <Text style={styles.traitLabel}>Vücut Bölgesi</Text>
+              <Text style={styles.traitValue}>{detail.vucut_bolgesi}</Text>
+            </View>
+          </View>
+          <Text style={styles.polarityNote}>{detail.sembol_anlami}</Text>
         </View>
 
         <Pressable onPress={() => setSelected(null)} style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}>
@@ -212,6 +301,61 @@ const styles = StyleSheet.create({
     color: TEXT_MUTED,
     lineHeight: 15,
     textAlign: 'center',
+  },
+  detailSection: {
+    marginBottom: 20,
+  },
+  sectionLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+  },
+  paragraph: {
+    fontSize: 13.5,
+    lineHeight: 21,
+    color: TEXT_PRIMARY,
+  },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chip: {
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    borderRadius: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: NIGHT_CARD,
+  },
+  chipPositive: {
+    borderColor: 'rgba(120, 200, 150, 0.4)',
+  },
+  chipNegative: {
+    borderColor: 'rgba(224, 138, 138, 0.4)',
+  },
+  chipText: {
+    fontSize: 12,
+    color: TEXT_PRIMARY,
+  },
+  luckyGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 14,
+    backgroundColor: NIGHT_CARD,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    padding: 14,
+    marginBottom: 10,
+  },
+  luckyItem: {
+    flexBasis: '45%',
+    alignItems: 'center',
+    gap: 2,
   },
   backButton: {
     flexDirection: 'row',
