@@ -9,6 +9,7 @@ import {
   type ReadingHistoryEntry,
   type ReadingHistoryType,
 } from '@/services/readingHistory';
+import ConfirmModal from '@/components/ConfirmModal';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
@@ -28,20 +29,30 @@ function formatDate(timestamp: number): string {
 export default function HistoryScreen() {
   const [activeTab, setActiveTab] = useState<ReadingHistoryType>('tarot');
   const [entries, setEntries] = useState<ReadingHistoryEntry[]>([]);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [confirmClearAll, setConfirmClearAll] = useState(false);
 
   const load = useCallback(() => {
     getReadingHistory(activeTab).then(setEntries);
+    setExpandedId(null);
   }, [activeTab]);
 
   useFocusEffect(load);
 
-  const handleDelete = async (id: string) => {
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
     setEntries((prev) => prev.filter((entry) => entry.id !== id));
+    if (expandedId === id) setExpandedId(null);
     await deleteReadingHistoryEntry(id);
   };
 
-  const handleClearTab = async () => {
+  const confirmClear = async () => {
+    setConfirmClearAll(false);
     setEntries([]);
+    setExpandedId(null);
     await clearReadingHistory(activeTab);
   };
 
@@ -69,30 +80,65 @@ export default function HistoryScreen() {
           </View>
         ) : (
           <>
-            <Pressable onPress={handleClearTab} style={styles.clearButton}>
+            <Pressable onPress={() => setConfirmClearAll(true)} style={styles.clearButton}>
               <Ionicons name="trash-outline" size={14} color={TEXT_MUTED} />
               <Text style={styles.clearButtonText}>Bu geçmişi temizle</Text>
             </Pressable>
 
             <View style={styles.list}>
-              {entries.map((entry) => (
-                <View key={entry.id} style={styles.card}>
-                  <View style={styles.cardHeader}>
-                    <View style={styles.cardHeaderTextWrap}>
-                      <Text style={styles.cardTitle}>{entry.title}</Text>
-                      <Text style={styles.cardDate}>{formatDate(entry.createdAt)}</Text>
-                    </View>
-                    <Pressable onPress={() => handleDelete(entry.id)} hitSlop={10} style={styles.deleteButton}>
-                      <Ionicons name="close-circle-outline" size={18} color={TEXT_MUTED} />
+              {entries.map((entry) => {
+                const expanded = expandedId === entry.id;
+                return (
+                  <View key={entry.id} style={styles.card}>
+                    <Pressable
+                      onPress={() => setExpandedId(expanded ? null : entry.id)}
+                      style={styles.row}
+                    >
+                      <View style={styles.rowIconWrap}>
+                        <Ionicons name="sparkles-outline" size={16} color={GOLD} />
+                      </View>
+                      <View style={styles.rowTextWrap}>
+                        <Text style={styles.rowTitle}>{entry.title}</Text>
+                        <Text style={styles.rowDate}>{formatDate(entry.createdAt)}</Text>
+                      </View>
+                      <Pressable onPress={() => setPendingDeleteId(entry.id)} hitSlop={10} style={styles.deleteButton}>
+                        <Ionicons name="close-circle-outline" size={18} color={TEXT_MUTED} />
+                      </Pressable>
+                      <Ionicons
+                        name={expanded ? 'chevron-up' : 'chevron-down'}
+                        size={16}
+                        color={GOLD}
+                        style={styles.chevron}
+                      />
                     </Pressable>
+                    {expanded && (
+                      <View style={styles.resultWrap}>
+                        <View style={styles.divider} />
+                        <Text style={styles.cardResult}>{entry.result}</Text>
+                      </View>
+                    )}
                   </View>
-                  <Text style={styles.cardResult}>{entry.result}</Text>
-                </View>
-              ))}
+                );
+              })}
             </View>
           </>
         )}
       </ScrollView>
+
+      <ConfirmModal
+        visible={pendingDeleteId !== null}
+        title="Bu falı silmek istediğine emin misin?"
+        message="Bu fal geçmişten kalıcı olarak silinecek."
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDeleteId(null)}
+      />
+      <ConfirmModal
+        visible={confirmClearAll}
+        title="Tüm geçmişi temizlemek istediğine emin misin?"
+        message={`${TABS.find((t) => t.key === activeTab)?.label} geçmişindeki tüm fallar kalıcı olarak silinecek.`}
+        onConfirm={confirmClear}
+        onCancel={() => setConfirmClearAll(false)}
+      />
     </MysticTableBackground>
   );
 }
@@ -156,35 +202,57 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   list: {
-    gap: 14,
+    gap: 12,
   },
   card: {
     backgroundColor: NIGHT_CARD,
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
-    padding: 16,
+    overflow: 'hidden',
   },
-  cardHeader: {
+  row: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 8,
+    alignItems: 'center',
+    gap: 12,
+    padding: 14,
   },
-  cardHeaderTextWrap: {
+  rowIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rowTextWrap: {
     flex: 1,
   },
-  cardTitle: {
-    fontSize: 14,
+  rowTitle: {
+    fontSize: 13.5,
     fontWeight: '700',
-    color: GOLD,
+    color: TEXT_PRIMARY,
     marginBottom: 2,
   },
-  cardDate: {
+  rowDate: {
     fontSize: 11,
     color: TEXT_MUTED,
   },
   deleteButton: {
     padding: 2,
+  },
+  chevron: {
+    marginLeft: 2,
+  },
+  resultWrap: {
+    paddingHorizontal: 14,
+    paddingBottom: 16,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: GOLD_SOFT,
+    opacity: 0.5,
+    marginBottom: 12,
   },
   cardResult: {
     fontSize: 12.5,

@@ -3,6 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { getFavorites, removeFavorite, type FavoriteEntry } from '@/services/favorites';
+import ConfirmModal from '@/components/ConfirmModal';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
@@ -16,6 +17,7 @@ const CATEGORY_LABEL: Record<string, string> = {
 export default function FavoritesScreen() {
   const [favorites, setFavorites] = useState<FavoriteEntry[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -26,7 +28,10 @@ export default function FavoritesScreen() {
     }, []),
   );
 
-  const handleRemove = async (id: string) => {
+  const confirmRemove = async () => {
+    if (!pendingRemoveId) return;
+    const id = pendingRemoveId;
+    setPendingRemoveId(null);
     setFavorites((prev) => prev.filter((entry) => entry.id !== id));
     await removeFavorite(id);
   };
@@ -61,7 +66,7 @@ export default function FavoritesScreen() {
                     <Text style={styles.cardCategory}>SÖZ</Text>
                   </>
                 )}
-                <Pressable onPress={() => handleRemove(entry.id)} hitSlop={10} style={styles.removeButton}>
+                <Pressable onPress={() => setPendingRemoveId(entry.id)} hitSlop={10} style={styles.removeButton}>
                   <Ionicons name="trash-outline" size={16} color={TEXT_MUTED} />
                 </Pressable>
               </View>
@@ -71,6 +76,14 @@ export default function FavoritesScreen() {
           ))}
         </View>
       </ScrollView>
+
+      <ConfirmModal
+        visible={pendingRemoveId !== null}
+        title="Favorilerden kaldırmak istediğine emin misin?"
+        message="Bu kayıt favorilerinden kalıcı olarak silinecek."
+        onConfirm={confirmRemove}
+        onCancel={() => setPendingRemoveId(null)}
+      />
     </MysticTableBackground>
   );
 }
