@@ -39,6 +39,9 @@ const BILGI_KOSESI_POOL_KEY = 'bilgi_kosesi_pool';
 const BILGI_KOSESI_DAILY_COUNT = 20;
 const BILGI_KOSESI_POOL_CAP = 600; // ~a month of stock at 20/day
 
+const POPULAR_FAVORITES_LIMIT = 10;
+const POPULAR_FAVORITES_TTL = 21 * 86400; // counters outlive the week they're read in, just in case
+
 function base64ToByteArray(base64) {
   const binary = atob(base64);
   const bytes = new Array(binary.length);
@@ -177,6 +180,71 @@ function dayIndex() {
   return Math.floor((Date.now() - start) / 86400000);
 }
 
+// ISO-ish week key (e.g. "2026-W35") — computed server-side so every client
+// agrees on the same week boundary regardless of local timezone.
+function isoWeekKey(date = new Date()) {
+  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+}
+
+// Cross-user popularity counter for favorited quotes/info cards — this is
+// the one thing that genuinely can't live on-device, since it has to
+// aggregate everyone's taps. Counting is add-only (no decrement on unfavorite)
+// to keep it simple; content metadata is upserted separately so the reader
+// doesn't need every client to keep resending full text.
+async function handleFavoriteCount(env, body) {
+  if (!env.RATE_LIMIT_KV) return jsonResponse({ ok: false });
+  const { id, kind, title, body: text, category } = body;
+  if (!id || !text) return jsonResponse({ error: 'id ve body alanları gerekli.' }, 400);
+
+  const weekKey = isoWeekKey();
+  const countKey = `fav_count:${weekKey}:${id}`;
+  const metaKey = `fav_meta:${id}`;
+
+  const raw = await env.RATE_LIMIT_KV.get(countKey);
+  const count = raw ? parseInt(raw, 10) : 0;
+  await env.RATE_LIMIT_KV.put(countKey, String(count + 1), { expirationTtl: POPULAR_FAVORITES_TTL });
+  await env.RATE_LIMIT_KV.put(
+    metaKey,
+    JSON.stringify({ id, kind, title, body: text, category }),
+    { expirationTtl: POPULAR_FAVORITES_TTL },
+  );
+
+  return jsonResponse({ ok: true });
+}
+
+async function handlePopularFavorites(env) {
+  if (!env.RATE_LIMIT_KV) return jsonResponse({ items: [] });
+
+  const weekKey = isoWeekKey();
+  const prefix = `fav_count:${weekKey}:`;
+  const list = await env.RATE_LIMIT_KV.list({ prefix });
+
+  const counted = await Promise.all(
+    list.keys.map(async (entry) => {
+      const id = entry.name.slice(prefix.length);
+      const raw = await env.RATE_LIMIT_KV.get(entry.name);
+      return { id, count: raw ? parseInt(raw, 10) : 0 };
+    }),
+  );
+  counted.sort((a, b) => b.count - a.count);
+  const top = counted.slice(0, POPULAR_FAVORITES_LIMIT);
+
+  const items = await Promise.all(
+    top.map(async ({ id, count }) => {
+      const rawMeta = await env.RATE_LIMIT_KV.get(`fav_meta:${id}`);
+      if (!rawMeta) return null;
+      return { ...JSON.parse(rawMeta), count };
+    }),
+  );
+
+  return jsonResponse({ items: items.filter(Boolean) });
+}
+
 async function handleGetBilgiKosesi(env) {
   if (!env.RATE_LIMIT_KV) {
     return jsonResponse({ cards: [] });
@@ -249,11 +317,11 @@ export default {
 
     const url = new URL(request.url);
 
-    if (request.method === 'GET' && url.pathname === '/bilgi-kosesi') {
+    if (request.method === 'GET' && (url.pathname === '/bilgi-kosesi' || url.pathname === '/popular-favorites')) {
       if (env.APP_SECRET && request.headers.get('X-App-Secret') !== env.APP_SECRET) {
         return jsonResponse({ error: 'Yetkisiz istek.' }, 401);
       }
-      return handleGetBilgiKosesi(env);
+      return url.pathname === '/bilgi-kosesi' ? handleGetBilgiKosesi(env) : handlePopularFavorites(env);
     }
 
     if (request.method !== 'POST') {
@@ -274,6 +342,10 @@ export default {
       body = await request.json();
     } catch {
       return jsonResponse({ error: 'Gecersiz istek govdesi.' }, 400);
+    }
+
+    if (url.pathname === '/favorite-count') {
+      return handleFavoriteCount(env, body);
     }
 
     const burstBlock = await enforceRateLimits(env, request, body.payload);

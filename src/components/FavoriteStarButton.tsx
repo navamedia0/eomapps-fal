@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet } from 'react-native';
 import { addFavorite, isFavorited, removeFavorite, type FavoriteKind } from '@/services/favorites';
+import { reportFavorite } from '@/services/popularFavorites';
 import { GOLD } from '@/theme/colors';
 
 type Props = {
@@ -28,6 +29,7 @@ export default function FavoriteStarButton({ id, kind, body, title, category, si
     setSaved(next);
     if (next) {
       await addFavorite({ id, kind, body, title, category });
+      reportFavorite({ id, kind, body, title, category });
     } else {
       await removeFavorite(id);
     }

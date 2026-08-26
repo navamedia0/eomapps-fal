@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import type { RootStackParamList, TabScreenProps } from '@/navigation/types';
@@ -10,6 +10,7 @@ import FavoriteStarButton from '@/components/FavoriteStarButton';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import quotes from '@/data/kesfet_sozleri.json';
 import { FEATURE_ICONS } from '@/assets/icons';
+import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = TabScreenProps;
@@ -101,6 +102,11 @@ function buildFeed(): FeedItem[] {
 export default function KesfetScreen({ navigation }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const feed = useMemo(buildFeed, [todayKey()]);
+  const [popular, setPopular] = useState<PopularFavorite[]>([]);
+
+  useEffect(() => {
+    getPopularFavorites().then(setPopular);
+  }, []);
 
   return (
     <MysticTableBackground>
@@ -110,6 +116,29 @@ export default function KesfetScreen({ navigation }: Props) {
           <Text style={styles.headerTitle}>Keşfet</Text>
         </View>
         <Text style={styles.refreshNote}>Her gün 00:00'da yenilenir</Text>
+
+        {popular.length > 0 && (
+          <View style={styles.popularSection}>
+            <View style={styles.popularHeader}>
+              <Ionicons name="flame-outline" size={16} color={GOLD} />
+              <Text style={styles.popularTitle}>Haftanın En Sevilenleri</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.popularRow}>
+              {popular.map((item) => (
+                <View key={item.id} style={styles.popularCard}>
+                  {item.title && <Text style={styles.popularCardTitle}>{item.title}</Text>}
+                  <Text style={styles.popularCardBody} numberOfLines={4}>
+                    {item.body}
+                  </Text>
+                  <View style={styles.popularCountRow}>
+                    <Ionicons name="star" size={11} color={GOLD} />
+                    <Text style={styles.popularCount}>{item.count}</Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
         <View style={styles.feed}>
           {feed.map((item, index) => {
@@ -172,6 +201,56 @@ const styles = StyleSheet.create({
     color: TEXT_MUTED,
     fontStyle: 'italic',
     marginBottom: 20,
+  },
+  popularSection: {
+    marginBottom: 22,
+  },
+  popularHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 10,
+  },
+  popularTitle: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  popularRow: {
+    gap: 12,
+  },
+  popularCard: {
+    width: 180,
+    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    padding: 14,
+  },
+  popularCardTitle: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+    marginBottom: 4,
+  },
+  popularCardBody: {
+    fontSize: 11.5,
+    lineHeight: 16,
+    color: TEXT_MUTED,
+    fontStyle: 'italic',
+  },
+  popularCountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 8,
+  },
+  popularCount: {
+    fontSize: 10.5,
+    fontWeight: '700',
+    color: GOLD,
   },
   feed: {
     gap: 14,
