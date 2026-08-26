@@ -3,6 +3,8 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import FeatureIcon from '@/components/FeatureIcon';
+import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Mindfulness'>;
@@ -11,6 +13,7 @@ export default function MindfulnessScreen({ navigation }: Props) {
   const items = [
     {
       key: 'affirmation',
+      iconKey: 'affirmation',
       title: 'Günlük Olumlama',
       subtitle: 'Bugüne iyi bir cümleyle başla',
       icon: <Ionicons name="sunny-outline" size={26} color={GOLD} />,
@@ -18,6 +21,7 @@ export default function MindfulnessScreen({ navigation }: Props) {
     },
     {
       key: 'breathing',
+      iconKey: 'breathing',
       title: 'Nefes Egzersizi',
       subtitle: 'Birkaç dakikada sakinleş',
       icon: <MaterialCommunityIcons name="meditation" size={26} color={GOLD} />,
@@ -25,6 +29,7 @@ export default function MindfulnessScreen({ navigation }: Props) {
     },
     {
       key: 'mood',
+      iconKey: 'moodJournal',
       title: 'Duygu Günlüğü',
       subtitle: 'Bugün nasıl hissettiğini kaydet',
       icon: <Ionicons name="book-outline" size={24} color={GOLD} />,
@@ -48,7 +53,7 @@ export default function MindfulnessScreen({ navigation }: Props) {
               onPress={item.onPress}
               style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
             >
-              <View style={styles.iconWrap}>{item.icon}</View>
+              <FeatureIcon source={FEATURE_ICONS[item.iconKey]} fallback={item.icon} />
               <View style={styles.cardTextWrap}>
                 <Text style={styles.cardTitle}>{item.title}</Text>
                 <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
@@ -99,14 +104,6 @@ const styles = StyleSheet.create({
   },
   cardPressed: {
     opacity: 0.85,
-  },
-  iconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(212, 175, 55, 0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   cardTextWrap: {
     flex: 1,

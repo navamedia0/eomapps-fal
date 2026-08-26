@@ -6,6 +6,8 @@ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import FeatureIcon from '@/components/FeatureIcon';
+import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = CompositeScreenProps<
@@ -36,9 +38,10 @@ export default function ProfilScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('ProfileChat')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <View style={styles.iconWrap}>
-              <Ionicons name="chatbubble-ellipses-outline" size={22} color={GOLD} />
-            </View>
+            <FeatureIcon
+              source={FEATURE_ICONS.profileChat}
+              fallback={<Ionicons name="chatbubble-ellipses-outline" size={22} color={GOLD} />}
+            />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Kendinden Bahset</Text>
               <Text style={styles.cardSubtitle}>Seni tanıyalım, daha kişisel yorumlar sunalım</Text>
@@ -50,9 +53,7 @@ export default function ProfilScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('Tasks')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <View style={styles.iconWrap}>
-              <Ionicons name="ribbon-outline" size={22} color={GOLD} />
-            </View>
+            <FeatureIcon source={FEATURE_ICONS.tasks} fallback={<Ionicons name="ribbon-outline" size={22} color={GOLD} />} />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Görevler</Text>
               <Text style={styles.cardSubtitle}>Video izleyerek bonus kredi kazan</Text>
@@ -64,9 +65,10 @@ export default function ProfilScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('NotificationSettings')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <View style={styles.iconWrap}>
-              <Ionicons name="notifications-outline" size={22} color={GOLD} />
-            </View>
+            <FeatureIcon
+              source={FEATURE_ICONS.notificationSettings}
+              fallback={<Ionicons name="notifications-outline" size={22} color={GOLD} />}
+            />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Bildirim Ayarları</Text>
               <Text style={styles.cardSubtitle}>Günlük hatırlatmaları yönet</Text>
@@ -133,14 +135,6 @@ const styles = StyleSheet.create({
   },
   cardPressed: {
     opacity: 0.85,
-  },
-  iconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(212, 175, 55, 0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   cardTextWrap: {
     flex: 1,

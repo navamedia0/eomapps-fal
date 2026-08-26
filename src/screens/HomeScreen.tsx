@@ -8,6 +8,8 @@ import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
 import { recordDailyOpen, type DailyOpenResult } from '@/services/streak';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CoinBadge from '@/components/CoinBadge';
+import FeatureIcon from '@/components/FeatureIcon';
+import { FEATURE_ICONS } from '@/assets/icons';
 import {
   GOLD,
   GOLD_SOFT,
@@ -41,7 +43,7 @@ function GridButton({ item }: { item: GridItem }) {
       onPress={item.onPress}
       style={({ pressed }) => [styles.gridButton, pressed && styles.gridButtonPressed]}
     >
-      <View style={styles.gridIconWrap}>{item.icon}</View>
+      <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={56} />
       <Text style={styles.gridTitle} numberOfLines={2}>
         {item.title}
       </Text>
@@ -431,14 +433,6 @@ const styles = StyleSheet.create({
   gridButtonPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.97 }],
-  },
-  gridIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(212, 175, 55, 0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   gridTitle: {
     fontSize: 11,

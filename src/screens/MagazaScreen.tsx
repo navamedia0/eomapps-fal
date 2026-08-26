@@ -9,6 +9,8 @@ import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
 import { getCoins } from '@/services/coins';
 import { isPremium } from '@/services/premium';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import FeatureIcon from '@/components/FeatureIcon';
+import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = CompositeScreenProps<
@@ -39,7 +41,7 @@ export default function MagazaScreen({ navigation }: Props) {
           onPress={() => navigation.navigate('Premium')}
           style={({ pressed }) => [styles.premiumCard, pressed && styles.cardPressed]}
         >
-          <Ionicons name="star" size={28} color={GOLD} />
+          <FeatureIcon source={FEATURE_ICONS.premium} fallback={<Ionicons name="star" size={28} color={GOLD} />} size={52} />
           <View style={styles.premiumTextWrap}>
             <Text style={styles.premiumTitle}>{premium ? 'Premium Aktif' : 'Mistik Rehber Premium'}</Text>
             <Text style={styles.premiumSubtitle}>
@@ -54,9 +56,7 @@ export default function MagazaScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('CoinShop')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <View style={styles.iconWrap}>
-              <Ionicons name="disc-outline" size={22} color={GOLD} />
-            </View>
+            <FeatureIcon source={FEATURE_ICONS.coinShop} fallback={<Ionicons name="disc-outline" size={22} color={GOLD} />} />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Coin Mağazası</Text>
               <Text style={styles.cardSubtitle}>Bakiyen: {coins} Coin</Text>
@@ -68,9 +68,10 @@ export default function MagazaScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('CardDesigns')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <View style={styles.iconWrap}>
-              <Ionicons name="color-palette-outline" size={22} color={GOLD} />
-            </View>
+            <FeatureIcon
+              source={FEATURE_ICONS.cardDesigns}
+              fallback={<Ionicons name="color-palette-outline" size={22} color={GOLD} />}
+            />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Kart Tasarımları</Text>
               <Text style={styles.cardSubtitle}>Tarot kartlarının arka yüzünü özelleştir</Text>
@@ -82,9 +83,10 @@ export default function MagazaScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('TarotSpread')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <View style={styles.iconWrap}>
-              <MaterialCommunityIcons name="cards-outline" size={22} color={GOLD} />
-            </View>
+            <FeatureIcon
+              source={FEATURE_ICONS.tarotSpread}
+              fallback={<MaterialCommunityIcons name="cards-outline" size={22} color={GOLD} />}
+            />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Detaylı Tarot Açılımları</Text>
               <Text style={styles.cardSubtitle}>5, 7 ve 10 kartlık açılımlar coin karşılığı</Text>
@@ -154,14 +156,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: GOLD_SOFT,
     padding: 16,
-  },
-  iconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(212, 175, 55, 0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   cardTextWrap: {
     flex: 1,

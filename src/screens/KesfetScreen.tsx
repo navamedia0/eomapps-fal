@@ -6,8 +6,10 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
 import ShareButton from '@/components/ShareButton';
 import ShareImageButton from '@/components/ShareImageButton';
+import FeatureIcon from '@/components/FeatureIcon';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import quotes from '@/data/kesfet_sozleri.json';
+import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = CompositeScreenProps<
@@ -17,39 +19,51 @@ type Props = CompositeScreenProps<
 
 const QUOTES: string[] = quotes;
 
-const FEATURES: Array<{ key: keyof RootStackParamList; title: string; subtitle: string; icon: React.ReactNode }> = [
+const FEATURES: Array<{
+  key: keyof RootStackParamList;
+  iconKey: string;
+  title: string;
+  subtitle: string;
+  icon: React.ReactNode;
+}> = [
   {
     key: 'Dice',
+    iconKey: 'dice',
     title: 'Zar Falı',
     subtitle: 'Zarları at, şansına bak',
     icon: <MaterialCommunityIcons name="dice-multiple-outline" size={24} color={GOLD} />,
   },
   {
     key: 'Daisy',
+    iconKey: 'daisy',
     title: 'Papatya Falı',
     subtitle: 'Seviyor mu, sevmiyor mu?',
     icon: <Ionicons name="flower-outline" size={22} color={GOLD} />,
   },
   {
     key: 'MagicBall',
+    iconKey: 'magicBall',
     title: 'Sihirli Küre',
     subtitle: 'Evet ya da hayır? Küreye sor',
     icon: <MaterialCommunityIcons name="crystal-ball" size={24} color={GOLD} />,
   },
   {
     key: 'SuFal',
+    iconKey: 'suFal',
     title: 'Su Falı',
     subtitle: 'Suya dokun, cevabını al',
     icon: <Ionicons name="water-outline" size={22} color={GOLD} />,
   },
   {
     key: 'AngelCard',
+    iconKey: 'angelCard',
     title: 'Günün İlham Kartı',
     subtitle: 'Bugüne küçük bir mesaj',
     icon: <Ionicons name="rose-outline" size={22} color={GOLD} />,
   },
   {
     key: 'MoonCalendar',
+    iconKey: 'moonCalendar',
     title: 'Ay Takvimi',
     subtitle: 'Bugün ayın hangi evresindeyiz?',
     icon: <MaterialCommunityIcons name="moon-waning-crescent" size={24} color={GOLD} />,
@@ -103,7 +117,7 @@ export default function KesfetScreen({ navigation }: Props) {
                 onPress={() => navigation.navigate(feature.key as any)}
                 style={({ pressed }) => [styles.featureCard, pressed && styles.featureCardPressed]}
               >
-                <View style={styles.featureIconWrap}>{feature.icon}</View>
+                <FeatureIcon source={FEATURE_ICONS[feature.iconKey]} fallback={feature.icon} size={44} />
                 <View style={styles.featureTextWrap}>
                   <Text style={styles.featureTitle}>{feature.title}</Text>
                   <Text style={styles.featureSubtitle}>{feature.subtitle}</Text>
@@ -175,14 +189,6 @@ const styles = StyleSheet.create({
   },
   featureCardPressed: {
     opacity: 0.85,
-  },
-  featureIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(212, 175, 55, 0.14)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   featureTextWrap: {
     flex: 1,

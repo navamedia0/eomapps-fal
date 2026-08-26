@@ -14,6 +14,7 @@ import TarotCardFace from '@/components/tarot/TarotCardFace';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CardStoryModal from '@/components/tarot/CardStoryModal';
 import ShareButton from '@/components/ShareButton';
+import CornerTicks from '@/components/CornerTicks';
 import type { TarotCardDef } from '@/services/tarot';
 import {
   GOLD,
@@ -143,6 +144,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
           <View style={styles.cardsList}>
             {cards.map((card, index) => (
               <View key={card.id} style={styles.cardBlock}>
+                <CornerTicks />
                 <View style={styles.cardBlockHeader}>
                   <TarotCardFace card={card} orientation={card.orientation} />
                   <View style={styles.cardBlockInfo}>
@@ -158,17 +160,22 @@ export default function TarotResultScreen({ route, navigation }: Props) {
                   </View>
                 </View>
                 {sections && (
-                  <Text style={styles.interpretationText}>{sections[index]}</Text>
+                  <>
+                    <View style={styles.divider} />
+                    <Text style={styles.interpretationText}>{sections[index]}</Text>
+                  </>
                 )}
               </View>
             ))}
 
             {!sections && result && (
               <View style={styles.cardBlock}>
+                <CornerTicks />
                 <View style={styles.resultHeader}>
                   <Ionicons name="moon" size={18} color={GOLD} />
                   <Text style={styles.resultHeaderText}>Fal Yorumu</Text>
                 </View>
+                <View style={styles.divider} />
                 <Text style={styles.interpretationText}>{result}</Text>
               </View>
             )}
@@ -263,16 +270,23 @@ const styles = StyleSheet.create({
     gap: 18,
   },
   cardBlock: {
+    position: 'relative',
     backgroundColor: NIGHT_CARD,
-    borderRadius: 18,
+    borderRadius: 26,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
-    padding: 16,
+    padding: 20,
     shadowColor: GOLD,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.2,
     shadowRadius: 14,
     elevation: 6,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: GOLD_SOFT,
+    opacity: 0.6,
+    marginVertical: 14,
   },
   cardBlockHeader: {
     flexDirection: 'row',
