@@ -163,7 +163,7 @@ export default function KesfetScreen({ navigation }: Props) {
                 onPress={() => navigation.navigate(feature.key as any)}
                 style={({ pressed }) => [styles.featureCard, pressed && styles.featureCardPressed]}
               >
-                <FeatureIcon source={FEATURE_ICONS[feature.iconKey]} fallback={feature.icon} size={44} />
+                <FeatureIcon source={FEATURE_ICONS[feature.iconKey]} fallback={feature.icon} size={64} />
                 <View style={styles.featureTextWrap}>
                   <Text style={styles.featureTitle}>{feature.title}</Text>
                   <Text style={styles.featureSubtitle}>{feature.subtitle}</Text>

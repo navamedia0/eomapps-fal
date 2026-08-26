@@ -5,6 +5,18 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#0B0A1F"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0B0A1F"
+      }
+    },
     "assetBundlePatterns": ["**/*"],
     "plugins": [
       [
@@ -23,7 +35,7 @@
       [
         "expo-notifications",
         {
-          "color": "#D4AF37"
+          "color": "#F2C879"
         }
       ]
     ]

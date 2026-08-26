@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Image, ImageBackground, ScrollView, StyleSheet } from 'react-native';
 import { COIN_PACKAGES } from '@/constants/coinPackages';
 import { getCoins, addCoins, subscribeCoins } from '@/services/coins';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+
+const COIN_PAKETI = require('@/assets/icons/coin_paketi.png');
+const COIN_IKONU = require('@/assets/icons/coin_ikonu.png');
 
 export default function CoinShopScreen() {
   const [coins, setCoins] = useState(0);
@@ -47,16 +50,18 @@ export default function CoinShopScreen() {
               onPress={() => buy(pack.id, pack.coins)}
               style={({ pressed }) => [styles.packCard, pressed && styles.packCardPressed]}
             >
-              {pack.badge && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{pack.badge}</Text>
+              <ImageBackground source={COIN_PAKETI} style={styles.packCardBg} imageStyle={styles.packCardBgImage} resizeMode="cover">
+                {pack.badge && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{pack.badge}</Text>
+                  </View>
+                )}
+                <Image source={COIN_IKONU} style={styles.packCoinIcon} resizeMode="contain" />
+                <Text style={styles.packCoins}>{pack.coins} Coin</Text>
+                <View style={styles.packButton}>
+                  <Text style={styles.packButtonText}>{pack.priceTL}</Text>
                 </View>
-              )}
-              <Ionicons name="disc" size={26} color={GOLD} />
-              <Text style={styles.packCoins}>{pack.coins} Coin</Text>
-              <View style={styles.packButton}>
-                <Text style={styles.packButtonText}>{pack.priceTL}</Text>
-              </View>
+              </ImageBackground>
             </Pressable>
           ))}
         </View>
@@ -101,17 +106,24 @@ const styles = StyleSheet.create({
   },
   packCard: {
     width: '47%',
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  packCardBg: {
     alignItems: 'center',
     gap: 8,
-    backgroundColor: NIGHT_CARD,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    paddingVertical: 20,
+    paddingVertical: 22,
     paddingHorizontal: 10,
+  },
+  packCardBgImage: {
+    borderRadius: 20,
   },
   packCardPressed: {
     opacity: 0.85,
+  },
+  packCoinIcon: {
+    width: 44,
+    height: 44,
   },
   badge: {
     position: 'absolute',
@@ -124,7 +136,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 9,
     fontWeight: '700',
-    color: NIGHT_CARD,
+    color: '#1E1140',
   },
   packCoins: {
     fontSize: 15,
@@ -142,6 +154,6 @@ const styles = StyleSheet.create({
   packButtonText: {
     fontSize: 12.5,
     fontWeight: '700',
-    color: NIGHT_CARD,
+    color: '#1E1140',
   },
 });

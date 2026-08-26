@@ -5,6 +5,8 @@ import type { TabScreenProps } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CornerTicks from '@/components/CornerTicks';
 import FavoriteStarButton from '@/components/FavoriteStarButton';
+import FeatureIcon from '@/components/FeatureIcon';
+import { FEATURE_ICONS } from '@/assets/icons';
 import { getDailyInfoCards, type InfoCard, type InfoCategory } from '@/services/bilgiKosesiFeed';
 import { GOLD, INFO_PURPLE, INFO_PURPLE_SOFT, INFO_CREAM, INFO_MUTED } from '@/theme/colors';
 
@@ -14,6 +16,7 @@ const ITEMS: Array<{
   key: string;
   title: string;
   subtitle: string;
+  iconKey?: string;
   icon: React.ReactNode;
   onPress: (navigation: Props['navigation']) => void;
 }> = [
@@ -21,6 +24,7 @@ const ITEMS: Array<{
     key: 'iskambil',
     title: 'İskambil Kartları ve Anlamları',
     subtitle: '52 kartın geleneksel fal anlamlarını keşfet',
+    iconKey: 'kartlarBadge',
     icon: <MaterialCommunityIcons name="cards-playing-outline" size={24} color={INFO_CREAM} />,
     onPress: (navigation) => navigation.navigate('KartAnlamlari', { deck: 'iskambil' }),
   },
@@ -49,6 +53,7 @@ const ITEMS: Array<{
     key: 'burc',
     title: 'Burçların Kökeni ve 4 Element',
     subtitle: 'Zodyağın Babil\'den günümüze yolculuğu',
+    iconKey: 'burclarBadge',
     icon: <MaterialCommunityIcons name="zodiac-leo" size={24} color={INFO_CREAM} />,
     onPress: (navigation) => navigation.navigate('BilgiMakale', { topic: 'burc_kokeni' }),
   },
@@ -115,7 +120,7 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
                   style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
                 >
                   <CornerTicks />
-                  <View style={styles.iconWrap}>{item.icon}</View>
+                  <FeatureIcon source={item.iconKey ? FEATURE_ICONS[item.iconKey] : undefined} fallback={item.icon} size={60} />
                   <View style={styles.cardTextWrap}>
                     <Text style={styles.cardTitle}>{item.title}</Text>
                     <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
@@ -194,14 +199,6 @@ const styles = StyleSheet.create({
   },
   cardPressed: {
     opacity: 0.85,
-  },
-  iconWrap: {
-    width: 46,
-    height: 46,
-    borderRadius: 14,
-    backgroundColor: 'rgba(240, 234, 214, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   cardTextWrap: {
     flex: 1,

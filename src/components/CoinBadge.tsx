@@ -23,9 +23,9 @@ export default function CoinBadge({ navigation }: { navigation: Navigation }) {
 
   return (
     <Pressable onPress={() => navigation.navigate('CoinShop')} style={styles.badge} hitSlop={8}>
-      <Ionicons name="disc-outline" size={13} color={GOLD} />
+      <Ionicons name="disc" size={20} color={GOLD} />
       <Text style={styles.text}>{coins}</Text>
-      <Ionicons name="add-circle" size={13} color={GOLD} />
+      <Ionicons name="add-circle" size={18} color={GOLD} />
     </Pressable>
   );
 }
@@ -34,17 +34,18 @@ const styles = StyleSheet.create({
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
+    backgroundColor: 'rgba(242, 200, 121, 0.16)',
     borderWidth: 1,
     borderColor: GOLD_SOFT,
-    borderRadius: 14,
-    paddingVertical: 4,
-    paddingHorizontal: 9,
+    borderRadius: 18,
+    paddingVertical: 7,
+    paddingHorizontal: 13,
     marginRight: 4,
   },
   text: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '800',
     color: GOLD,
   },
 });

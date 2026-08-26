@@ -37,7 +37,7 @@ export default function MagazaScreen({ navigation }: Props) {
           onPress={() => navigation.navigate('Premium')}
           style={({ pressed }) => [styles.premiumCard, pressed && styles.cardPressed]}
         >
-          <FeatureIcon source={FEATURE_ICONS.premium} fallback={<Ionicons name="star" size={28} color={GOLD} />} size={52} />
+          <FeatureIcon source={FEATURE_ICONS.premium} fallback={<Ionicons name="star" size={28} color={GOLD} />} size={68} />
           <View style={styles.premiumTextWrap}>
             <Text style={styles.premiumTitle}>{premium ? 'Premium Aktif' : 'Mistik Rehber Premium'}</Text>
             <Text style={styles.premiumSubtitle}>
@@ -52,7 +52,7 @@ export default function MagazaScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('CoinShop')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <FeatureIcon source={FEATURE_ICONS.coinShop} fallback={<Ionicons name="disc-outline" size={22} color={GOLD} />} />
+            <FeatureIcon source={FEATURE_ICONS.coinShop} fallback={<Ionicons name="disc-outline" size={22} color={GOLD} />} size={64} />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Coin Mağazası</Text>
               <Text style={styles.cardSubtitle}>Bakiyen: {coins} Coin</Text>
@@ -67,6 +67,7 @@ export default function MagazaScreen({ navigation }: Props) {
             <FeatureIcon
               source={FEATURE_ICONS.cardDesigns}
               fallback={<Ionicons name="color-palette-outline" size={22} color={GOLD} />}
+              size={64}
             />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Kart Tasarımları</Text>
@@ -82,6 +83,7 @@ export default function MagazaScreen({ navigation }: Props) {
             <FeatureIcon
               source={FEATURE_ICONS.tarotSpread}
               fallback={<MaterialCommunityIcons name="cards-outline" size={22} color={GOLD} />}
+              size={64}
             />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Detaylı Tarot Açılımları</Text>

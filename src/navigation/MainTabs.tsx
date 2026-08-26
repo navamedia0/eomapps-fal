@@ -64,7 +64,9 @@ export default function MainTabs({ navigation }: Props) {
             const icon = ICONS[route.key];
             return (
               <Pressable key={route.key} onPress={() => jumpTo(route.key)} style={styles.tabItem} hitSlop={4}>
-                <Ionicons name={focused ? icon.active : icon.inactive} size={22} color={focused ? GOLD : TEXT_MUTED} />
+                <View style={[styles.iconChip, focused && styles.iconChipActive]}>
+                  <Ionicons name={focused ? icon.active : icon.inactive} size={24} color={focused ? GOLD : TEXT_MUTED} />
+                </View>
                 <Text style={[styles.tabLabel, { color: focused ? GOLD : TEXT_MUTED }]} numberOfLines={1}>
                   {route.title}
                 </Text>
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
     backgroundColor: NIGHT_MID,
     borderTopWidth: 1,
     borderTopColor: GOLD_SOFT,
-    height: 66,
+    height: 76,
     paddingTop: 8,
     paddingBottom: 10,
   },
@@ -92,6 +94,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 3,
+  },
+  iconChip: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconChipActive: {
+    backgroundColor: 'rgba(242, 200, 121, 0.18)',
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
   },
   tabLabel: {
     fontSize: 10,

@@ -13,7 +13,7 @@ export const CARD_DESIGNS: CardDesign[] = [
   {
     id: 'default',
     name: 'Klasik Yıldız',
-    image: require('../assets/tarot-backs/default-back.jpg'),
+    image: require('../assets/icons/tarot_karti_sirti.png'),
     free: true,
     priceCoins: 0,
     priceTL: '',

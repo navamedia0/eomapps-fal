@@ -1,6 +1,5 @@
 import { Image, View, StyleSheet } from 'react-native';
 import type { ImageSourcePropType } from 'react-native';
-import { GOLD_SOFT } from '@/theme/colors';
 
 type Props = {
   source?: ImageSourcePropType;
@@ -8,9 +7,11 @@ type Props = {
   size?: number;
 };
 
-// Renders a custom gold/cosmic feature image when one is available for this
-// key, falling back to the existing Ionicons-in-circle look otherwise — so
-// features without custom art keep working unchanged.
+// Renders a custom Cosmic Indigo feature image when one is available for
+// this key, falling back to the existing Ionicons-in-circle look otherwise.
+// The custom art already bakes in its own rounded frame + glow border, so it
+// is rendered edge-to-edge with no extra chrome layered on top — doubling up
+// a border/background here would just shrink the visible artwork.
 export default function FeatureIcon({ source, fallback, size = 44 }: Props) {
   if (!source) {
     return (
@@ -19,7 +20,7 @@ export default function FeatureIcon({ source, fallback, size = 44 }: Props) {
   }
 
   return (
-    <View style={[styles.imageWrap, { width: size, height: size, borderRadius: size * 0.3 }]}>
+    <View style={[styles.imageWrap, { width: size, height: size, borderRadius: size * 0.22 }]}>
       <Image source={source} style={styles.image} resizeMode="cover" />
     </View>
   );
@@ -27,20 +28,12 @@ export default function FeatureIcon({ source, fallback, size = 44 }: Props) {
 
 const styles = StyleSheet.create({
   circleWrap: {
-    backgroundColor: 'rgba(212, 175, 55, 0.12)',
+    backgroundColor: 'rgba(242, 200, 121, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   imageWrap: {
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    backgroundColor: '#000',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 4,
   },
   image: {
     width: '100%',

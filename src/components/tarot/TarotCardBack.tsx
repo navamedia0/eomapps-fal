@@ -78,9 +78,13 @@ const styles = StyleSheet.create({
   },
   customImage: {
     ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
   },
   velvetTint: {
     ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
     backgroundColor: BORDO_DEEP,
     opacity: 0.45,
   },

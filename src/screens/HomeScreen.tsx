@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Animated, View, Text, Pressable, StyleSheet } from 'react-native';
+import { Animated, View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import type { TabScreenProps } from '@/navigation/types';
 import { recordDailyOpen, type DailyOpenResult } from '@/services/streak';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -10,11 +10,11 @@ import { FEATURE_ICONS } from '@/assets/icons';
 import {
   GOLD,
   GOLD_SOFT,
-  NIGHT_CARD,
   TEXT_PRIMARY,
-  TEXT_MUTED,
   TEXT_CAPTION,
 } from '@/theme/colors';
+
+const UST_BANNER = require('@/assets/icons/ust_banner.png');
 
 type Props = TabScreenProps;
 
@@ -37,7 +37,7 @@ function GridButton({ item }: { item: GridItem }) {
       onPress={item.onPress}
       style={({ pressed }) => [styles.gridButton, pressed && styles.gridButtonPressed]}
     >
-      <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={56} />
+      <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={80} />
       <Text style={styles.gridTitle} numberOfLines={2}>
         {item.title}
       </Text>
@@ -246,6 +246,8 @@ export default function HomeScreen({ navigation }: Props) {
           <CoinBadge navigation={navigation} />
         </View>
 
+        <Image source={UST_BANNER} style={styles.banner} resizeMode="cover" />
+
         <View style={styles.header}>
           <MaterialCommunityIcons name="star-crescent" size={20} color={GOLD} style={styles.sparkle} />
           <Text style={styles.headerTitle}>Mistik Rehber</Text>
@@ -260,11 +262,14 @@ export default function HomeScreen({ navigation }: Props) {
 
         <View style={styles.freeRow}>
           <Pressable onPress={goToTasks} style={({ pressed }) => [styles.freeButton, pressed && styles.pressedFade]}>
-            <Ionicons name="gift-outline" size={18} color={GOLD} />
+            <FeatureIcon source={FEATURE_ICONS.freeCoins} fallback={<Ionicons name="gift-outline" size={18} color={GOLD} />} size={30} />
             <Text style={styles.freeButtonText}>Ücretsiz Coin Kazan</Text>
           </Pressable>
-          <Pressable onPress={() => navigation.navigate('MiniGames')} style={({ pressed }) => [styles.freeButton, pressed && styles.pressedFade]}>
-            <Ionicons name="game-controller-outline" size={18} color={GOLD} />
+          <Pressable
+            onPress={() => navigation.navigate('MiniGames')}
+            style={({ pressed }) => [styles.freeButton, pressed && styles.pressedFade]}
+          >
+            <FeatureIcon source={FEATURE_ICONS.miniGames} fallback={<Ionicons name="game-controller-outline" size={18} color={GOLD} />} size={30} />
             <Text style={styles.freeButtonText}>Mini Oyunlar</Text>
           </Pressable>
         </View>
@@ -299,6 +304,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     width: '100%',
     marginBottom: 8,
+  },
+  banner: {
+    width: '100%',
+    height: 150,
+    borderRadius: 22,
+    marginBottom: 18,
   },
   header: {
     flexDirection: 'row',
@@ -353,11 +364,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+    backgroundColor: 'rgba(242, 200, 121, 0.16)',
     borderWidth: 1,
     borderColor: GOLD_SOFT,
-    borderRadius: 14,
-    paddingVertical: 13,
+    borderRadius: 16,
+    paddingVertical: 14,
   },
   freeButtonText: {
     fontSize: 12,
@@ -387,20 +398,10 @@ const styles = StyleSheet.create({
   },
   gridButton: {
     width: '31%',
-    aspectRatio: 1,
-    borderRadius: 18,
-    backgroundColor: NIGHT_CARD,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     gap: 8,
-    paddingHorizontal: 6,
-    shadowColor: GOLD,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    elevation: 5,
+    paddingHorizontal: 4,
   },
   gridButtonPressed: {
     opacity: 0.85,

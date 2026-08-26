@@ -6,17 +6,17 @@ import Starfield from '@/components/Starfield';
 import OrbGlow from '@/components/tarot/OrbGlow';
 import { GOLD, NIGHT_DEEP } from '@/theme/colors';
 
-const LIBRARY_BG = require('../../assets/backgrounds/library.jpg');
+const COSMIC_BG = require('../../assets/backgrounds/genelarkaplan.webp');
 
 const BACKGROUNDS = {
-  general: LIBRARY_BG,
-  tarot: LIBRARY_BG,
+  general: COSMIC_BG,
+  tarot: COSMIC_BG,
 };
 
 export type BackgroundVariant = keyof typeof BACKGROUNDS;
 
 type Decor = {
-  icon: 'candle' | 'moon-waning-crescent' | 'flower' | 'crystal-ball';
+  icon: 'star-crescent' | 'crystal-ball';
   size: number;
   opacity: number;
   top?: DimensionValue;
@@ -26,9 +26,9 @@ type Decor = {
 };
 
 const TABLE_DECOR: Decor[] = [
-  { icon: 'candle', size: 30, opacity: 0.55, bottom: '3%', left: '5%' },
-  { icon: 'candle', size: 22, opacity: 0.4, bottom: '4%', right: '7%' },
-  { icon: 'moon-waning-crescent', size: 22, opacity: 0.4, top: '4%', right: '8%' },
+  { icon: 'star-crescent', size: 22, opacity: 0.55, bottom: '3%', left: '5%' },
+  { icon: 'star-crescent', size: 16, opacity: 0.45, bottom: '4%', right: '7%' },
+  { icon: 'star-crescent', size: 22, opacity: 0.45, top: '4%', right: '8%' },
   { icon: 'crystal-ball', size: 20, opacity: 0.3, top: '5%', left: '7%' },
 ];
 
@@ -37,14 +37,14 @@ type Props = { children: ReactNode; variant?: BackgroundVariant; scrollY?: Anima
 export default function MysticTableBackground({ children, variant = 'general', scrollY }: Props) {
   return (
     <View style={styles.flex}>
-      <Image source={BACKGROUNDS[variant]} resizeMode="contain" style={styles.bgImage} />
+      <Image source={BACKGROUNDS[variant]} resizeMode="cover" style={styles.bgImage} />
       <LinearGradient
-        colors={['rgba(14, 10, 8, 0.55)', 'rgba(14, 10, 8, 0.8)', 'rgba(14, 10, 8, 0.94)']}
+        colors={['rgba(11, 10, 31, 0.45)', 'rgba(11, 10, 31, 0.75)', 'rgba(11, 10, 31, 0.94)']}
         style={StyleSheet.absoluteFillObject}
         pointerEvents="none"
       />
       <LinearGradient
-        colors={['rgba(212, 175, 55, 0.2)', 'rgba(212, 175, 55, 0)']}
+        colors={['rgba(139, 92, 246, 0.28)', 'rgba(139, 92, 246, 0)']}
         style={styles.candleGlow}
         pointerEvents="none"
       />

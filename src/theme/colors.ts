@@ -1,38 +1,37 @@
-// "Kitaplık Teması" — cozy witch-atelier redesign: warm walnut coffee tones,
-// deep burgundy velvet and parchment cream, replacing the old cold navy.
-export const GOLD = '#D4AF37';
-export const GOLD_SOFT = 'rgba(212, 175, 55, 0.35)';
+// "Cosmic Indigo" tema — koyu galaksi moru zemin, ametist ve lavanta vurgular,
+// altın CTA/aktif rengi. Eski sıcak ceviz/bordo "Kitaplık Teması"nın yerine geçti.
+export const GOLD = '#F2C879';
+export const GOLD_SOFT = 'rgba(242, 200, 121, 0.35)';
 export const GOLD_MUTED = '#C9A86A';
-export const GOLD_DEEP = '#8B6A2A';
-export const CANDLE_GLOW = '#FFE8C8';
+export const GOLD_DEEP = '#B8862E';
+export const CANDLE_GLOW = '#F2C879';
 
-export const NIGHT_DEEP = '#0E0A08';
-export const NIGHT_MID = '#1A140F';
-export const NIGHT_CARD = '#2B1E16';
-export const WALNUT = '#3B2A20';
+export const NIGHT_DEEP = '#0B0A1F';
+export const NIGHT_MID = '#150F30';
+export const NIGHT_CARD = '#1E1140';
+export const WALNUT = '#2A1B54';
 
-export const BORDO = '#4B1D2F';
-export const BORDO_DEEP = '#2E1220';
-export const VELVET_MID = '#6B2A3F';
+export const BORDO = '#5B3A9E';
+export const BORDO_DEEP = '#2A1B54';
+export const VELVET_MID = '#8B5CF6';
 
-export const CRYSTAL_BLUE = '#7EC8E3';
+export const CRYSTAL_BLUE = '#8B5CF6';
 export const RED_ACCENT = '#B4232A';
 
-export const TEXT_PRIMARY = '#F5E8D3';
-export const TEXT_MUTED = '#C9A86A';
-export const TEXT_CAPTION = '#9C8968';
+export const TEXT_PRIMARY = '#F5F0FF';
+export const TEXT_MUTED = '#C4A6FF';
+export const TEXT_CAPTION = '#A79BC4';
 
-// Bilgi Köşesi — kept as a distinct sub-theme (deep velvet burgundy instead
-// of the app's usual walnut card) so this section still reads as its own
-// reference/encyclopedia space, just re-toned to the library palette.
-export const INFO_PURPLE = '#2B1A22';
-export const INFO_PURPLE_SOFT = 'rgba(75, 29, 47, 0.35)';
-export const INFO_CREAM = '#F5E8D3';
-export const INFO_MUTED = '#C9A86A';
+// Bilgi Köşesi — kendi alt-teması olarak kalıyor (glassmorphism ametist tonu),
+// diğer ekranların indigo kart zemininden ayrışması için.
+export const INFO_PURPLE = '#2A1B54';
+export const INFO_PURPLE_SOFT = 'rgba(139, 92, 246, 0.35)';
+export const INFO_CREAM = '#F5F0FF';
+export const INFO_MUTED = '#A79BC4';
 
-// Card-meaning reference rows (İskambil/Tarot Kartları ve Anlamları) — soft
-// parchment tones, like old paper against the candle-lit library.
-export const PARCHMENT_BG = '#F5E8D3';
-export const PARCHMENT_BORDER = 'rgba(212, 175, 55, 0.35)';
-export const PARCHMENT_TEXT = '#3B2A20';
-export const PARCHMENT_MUTED = '#6B4A35';
+// Kart-anlamı referans satırları (İskambil/Tarot Kartları ve Anlamları) — açık
+// lavanta zemin üstünde koyu indigo metin, okunabilirlik için.
+export const PARCHMENT_BG = '#F5F0FF';
+export const PARCHMENT_BORDER = 'rgba(139, 92, 246, 0.35)';
+export const PARCHMENT_TEXT = '#1E1140';
+export const PARCHMENT_MUTED = '#5B3A9E';

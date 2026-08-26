@@ -91,8 +91,8 @@ const LAYOUT_OPTIONS: Array<{
   },
   {
     id: 'fan',
-    title: 'Yelpaze Dizilimi',
-    subtitle: 'Kartlar yarım hilal şeklinde açılır, yana kaydırılır',
+    title: 'Dalga Dizilimi',
+    subtitle: 'Kartlar dalgalı bir şerit halinde yan yana dizilir, kaydırarak gezilir',
     preview: <FanPreview />,
   },
   {
