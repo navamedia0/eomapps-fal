@@ -14,6 +14,8 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import PlayingCardFace from '@/components/PlayingCardFace';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
+import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
+import { useReadingCooldown } from '@/hooks/useReadingCooldown';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Katina'>;
@@ -33,12 +35,14 @@ function CardFace({ card }: { card: KatinaCard }) {
 export default function KatinaScreen({ navigation }: Props) {
   const cards = useMemo(() => pickRandomKatinaCards(3), []);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [blocked, setBlocked] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
+  const { remaining: cooldownRemaining, checked: cooldownChecked, notifyStarted } = useReadingCooldown('katina');
+  const hasStartedRef = useRef(false);
 
   const fetchReading = useCallback(async (payWithCoins = false) => {
     setLoading(true);
@@ -74,8 +78,11 @@ export default function KatinaScreen({ navigation }: Props) {
   }, []);
 
   useEffect(() => {
+    if (!cooldownChecked || cooldownRemaining > 0 || hasStartedRef.current) return;
+    hasStartedRef.current = true;
+    notifyStarted();
     fetchReading();
-  }, [fetchReading]);
+  }, [cooldownChecked, cooldownRemaining, fetchReading, notifyStarted]);
 
   useEffect(() => {
     if (!loading) return;
@@ -101,6 +108,14 @@ export default function KatinaScreen({ navigation }: Props) {
             <CardFace key={card.id} card={card} />
           ))}
         </View>
+
+        {cooldownChecked && cooldownRemaining > 0 && !loading && !result && (
+          <View style={styles.loadingWrap}>
+            <Ionicons name="hourglass-outline" size={28} color={GOLD} />
+            <Text style={styles.loadingText}>Falın sıraya alındı...</Text>
+            <ReadingCooldownNotice remaining={cooldownRemaining} />
+          </View>
+        )}
 
         {loading && (
           <View style={styles.loadingWrap}>

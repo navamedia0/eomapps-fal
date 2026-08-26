@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import type { RootStackParamList, TabScreenProps } from '@/navigation/types';
@@ -67,22 +68,39 @@ const FEATURES: Array<{
 
 type FeedItem = { type: 'quote'; text: string } | { type: 'feature'; feature: (typeof FEATURES)[number] };
 
+function todayKey(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// Day-of-year seeded rotation so the quote order (and which quotes lead)
+// changes daily instead of always starting from index 0 — the same 150-item
+// pool cycles through fully every ~150 days, and every user sees the same
+// "today's" set (no per-device randomness to reconcile).
+function dayIndex(): number {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  return Math.floor((now.getTime() - start.getTime()) / 86400000);
+}
+
 function buildFeed(): FeedItem[] {
+  const offset = dayIndex() % QUOTES.length;
+  const rotatedQuotes = [...QUOTES.slice(offset), ...QUOTES.slice(0, offset)];
   const feed: FeedItem[] = [];
   let featureCount = 0;
-  for (let i = 0; i < QUOTES.length; i += 1) {
-    feed.push({ type: 'quote', text: QUOTES[i] });
+  for (let i = 0; i < rotatedQuotes.length; i += 1) {
+    feed.push({ type: 'quote', text: rotatedQuotes[i] });
     if ((i + 1) % 3 === 0) {
-      feed.push({ type: 'feature', feature: FEATURES[featureCount % FEATURES.length] });
+      feed.push({ type: 'feature', feature: FEATURES[(featureCount + dayIndex()) % FEATURES.length] });
       featureCount += 1;
     }
   }
   return feed;
 }
 
-const FEED = buildFeed();
-
 export default function KesfetScreen({ navigation }: Props) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const feed = useMemo(buildFeed, [todayKey()]);
+
   return (
     <MysticTableBackground>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -92,7 +110,7 @@ export default function KesfetScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.feed}>
-          {FEED.map((item, index) => {
+          {feed.map((item, index) => {
             if (item.type === 'quote') {
               return (
                 <View key={index} style={styles.quoteCard}>

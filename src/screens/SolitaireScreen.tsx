@@ -12,6 +12,8 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import PlayingCardFace from '@/components/PlayingCardFace';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
+import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
+import { useReadingCooldown } from '@/hooks/useReadingCooldown';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Solitaire'>;
@@ -35,8 +37,10 @@ export default function SolitaireScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [fallbackCoins, setFallbackCoins] = useState(0);
   const pulse = useRef(new Animated.Value(0)).current;
+  const { remaining: cooldownRemaining, notifyStarted } = useReadingCooldown('solitaire');
 
   const reveal = useCallback(async (payWithCoins = false) => {
+    if (cooldownRemaining > 0) return;
     setPhase('loading');
     setError(null);
     try {
@@ -56,6 +60,7 @@ export default function SolitaireScreen({ navigation }: Props) {
         }
       }
       const drawn = pickRandomKatinaCards(CARD_COUNT);
+      notifyStarted();
       const interpretation = await interpretSolitaireSpread(drawn);
       if (!payWithCoins) await spendCredit();
       setCards(drawn);
@@ -65,7 +70,7 @@ export default function SolitaireScreen({ navigation }: Props) {
       setError(err instanceof Error ? err.message : 'Kartlar açılırken bir sorun oluştu.');
       setPhase('error');
     }
-  }, []);
+  }, [cooldownRemaining, notifyStarted]);
 
   const reset = useCallback(() => {
     setPhase('wish');
@@ -102,10 +107,18 @@ export default function SolitaireScreen({ navigation }: Props) {
               Gözlerini kapat, içinden geçen bir dileği ya da merak ettiğin bir konuyu net bir şekilde düşün.
               Hazır olduğunda kartları aç.
             </Text>
-            <Pressable onPress={() => reveal()} style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
+            <Pressable
+              onPress={() => reveal()}
+              disabled={cooldownRemaining > 0}
+              style={({ pressed }) => [
+                styles.actionButton,
+                (cooldownRemaining > 0 || pressed) && styles.actionButtonPressed,
+              ]}
+            >
               <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
               <Text style={styles.actionButtonText}>Dilek Tuttum, Kartları Aç</Text>
             </Pressable>
+            <ReadingCooldownNotice remaining={cooldownRemaining} />
           </View>
         )}
 

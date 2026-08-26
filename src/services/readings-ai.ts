@@ -2,6 +2,8 @@ import { prompts } from '@/prompts';
 import { askGemini, askGeminiChat, askGeminiVision, askGeminiAudio, type ChatTurn } from '@/services/gemini';
 import { askCerebras, askCerebrasChat } from '@/services/cerebras';
 import { withFallback } from '@/services/aiFallback';
+import { guardReadingCooldown } from '@/services/aiQueue';
+import { tarotReadingType } from '@/constants/aiQueue';
 import type { TarotCard } from '@/services/tarot';
 import { getTarotMeaning } from '@/services/tarotMeanings';
 import type { KatinaCard } from '@/services/katina';
@@ -36,8 +38,10 @@ export async function interpretTarotSpread(cards: TarotCard[], positions: string
   const formatInstruction = `Yanıtını ${positions.length + 1} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" satırını doğrudan kopyalama; onu yalnızca ilham kaynağı olarak kullanıp kendi akıcı ve edebi üslubunla yeniden anlat. Son bölüm olan "GENEL YORUM:", kartları tek tek tekrar etmeden hepsinin birlikte anlattığı hikayeyi, aralarındaki uyumu ya da çelişkiyi ve genel bir sonucu 3-4 cümlede özetlemeli — bu, ayrı kart yorumlarından bağımsız, açılımın bütününe dair kapanış niteliğinde olmalı.`;
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.tarotSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${profileBlock}`;
+  const readingType = tarotReadingType(cards.length);
+  await guardReadingCooldown(readingType);
   return withFallback(
-    () => askGemini(prompt),
+    () => askGemini(prompt, undefined, readingType),
     () => askCerebras(prompt),
   );
 }
@@ -51,8 +55,9 @@ export async function interpretSolitaireSpread(cards: KatinaCard[]): Promise<str
     .join(', ');
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.solitaireSpread(cards.map((card) => card.name))}\n\nAçılan kartlar ve klasik anlamları (esin için, birebir kopyalama):\n${cardText}${profileBlock}`;
+  await guardReadingCooldown('solitaire');
   return withFallback(
-    () => askGemini(prompt),
+    () => askGemini(prompt, undefined, 'solitaire'),
     () => askCerebras(prompt),
   );
 }
@@ -69,8 +74,9 @@ export async function interpretKatinaSpread(cards: KatinaCard[], positions: stri
   const formatInstruction = `Yanıtını ${positions.length} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" satırını doğrudan kopyalama; onu yalnızca ilham kaynağı olarak kullanıp kendi akıcı ve edebi üslubunla yeniden anlat.`;
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.katinaSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${profileBlock}`;
+  await guardReadingCooldown('katina');
   return withFallback(
-    () => askGemini(prompt),
+    () => askGemini(prompt, undefined, 'katina'),
     () => askCerebras(prompt),
   );
 }
@@ -135,7 +141,8 @@ export async function interpretNumerology(
 }
 
 export async function interpretVoiceReading(audioBase64: string, mimeType: string): Promise<string> {
-  return askGeminiAudio(prompts.voiceReading, audioBase64, mimeType);
+  await guardReadingCooldown('sesli');
+  return askGeminiAudio(prompts.voiceReading, audioBase64, mimeType, 'sesli');
 }
 
 export async function interpretImages(
@@ -145,7 +152,9 @@ export async function interpretImages(
   if (images.length === 0) throw new Error('En az bir görsel gerekli.');
   const glossary = kind === 'coffee' ? getCoffeeSymbolGlossary() : getPalmistryGlossary();
   const prompt = kind === 'coffee' ? prompts.coffee(glossary) : prompts.palm(glossary);
-  return askGeminiVision(prompt, images);
+  const readingType = kind === 'coffee' ? 'kahve' : 'el';
+  await guardReadingCooldown(readingType);
+  return askGeminiVision(prompt, images, readingType);
 }
 
 export async function validateImage(kind: 'coffee' | 'palm', image: { mimeType: string; data: string }): Promise<boolean> {

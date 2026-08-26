@@ -24,6 +24,9 @@ import { getSelectedDesignImage } from '@/services/cardDesigns';
 import TarotCardBack from '@/components/tarot/TarotCardBack';
 import TarotContextModal from '@/components/tarot/TarotContextModal';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
+import { useReadingCooldown } from '@/hooks/useReadingCooldown';
+import { tarotReadingType } from '@/constants/aiQueue';
 import {
   GOLD,
   GOLD_SOFT,
@@ -50,6 +53,7 @@ export default function TarotScreen({ navigation, route }: Props) {
   const [gridWidth, setGridWidth] = useState(0);
   const [customBack, setCustomBack] = useState<ImageSourcePropType | null>(null);
   const [contextModalVisible, setContextModalVisible] = useState(false);
+  const { remaining: cooldownRemaining } = useReadingCooldown(tarotReadingType(spread.id));
 
   useEffect(() => {
     getSelectedDesignImage().then(setCustomBack);
@@ -80,7 +84,7 @@ export default function TarotScreen({ navigation, route }: Props) {
   const clearSelection = () => setSelected([]);
 
   const handleReveal = () => {
-    if (selected.length !== spread.id) return;
+    if (selected.length !== spread.id || cooldownRemaining > 0) return;
     navigation.navigate('TarotResult', { spreadId: spread.id, picks: selected });
   };
 
@@ -117,11 +121,11 @@ export default function TarotScreen({ navigation, route }: Props) {
 
           <Pressable
             onPress={handleReveal}
-            disabled={selected.length !== spread.id}
+            disabled={selected.length !== spread.id || cooldownRemaining > 0}
             style={({ pressed }) => [
               styles.primaryButtonWrap,
-              selected.length !== spread.id && styles.primaryButtonDisabled,
-              pressed && selected.length === spread.id && styles.buttonPressed,
+              (selected.length !== spread.id || cooldownRemaining > 0) && styles.primaryButtonDisabled,
+              pressed && selected.length === spread.id && cooldownRemaining === 0 && styles.buttonPressed,
             ]}
           >
             <LinearGradient
@@ -135,6 +139,8 @@ export default function TarotScreen({ navigation, route }: Props) {
             </LinearGradient>
           </Pressable>
         </View>
+
+        <ReadingCooldownNotice remaining={cooldownRemaining} />
 
         <Pressable
           onPress={() => setContextModalVisible(true)}

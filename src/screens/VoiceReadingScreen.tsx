@@ -13,11 +13,18 @@ import { VOICE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
+import { useReadingCooldown } from '@/hooks/useReadingCooldown';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VoiceReading'>;
 
 const AUDIO_MIME_TYPE = Platform.OS === 'web' ? 'audio/webm' : 'audio/aac';
+// Gemini tokenizes raw audio at ~25-32 tokens/second, so 60s keeps a single
+// reading around ~1500-2000 audio tokens — enough for a full monologue
+// without ballooning per-request cost or upload/processing latency, and
+// comfortably inside the 3dk cooldown window this reading type gets queued
+// behind.
 const MAX_SECONDS = 60;
 
 export default function VoiceReadingScreen({ navigation }: Props) {
@@ -31,6 +38,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
   const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const [lastAudioUri, setLastAudioUri] = useState<string | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
+  const { remaining: cooldownRemaining, notifyStarted } = useReadingCooldown('sesli');
 
   useEffect(() => {
     if (!isRecording) return;
@@ -60,6 +68,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
   }, [isRecording, loading, pulse]);
 
   const startRecording = useCallback(async () => {
+    if (cooldownRemaining > 0) return;
     setPermissionError(null);
     setError(null);
     setResult(null);
@@ -78,7 +87,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
     } catch (err) {
       setPermissionError(err instanceof Error ? err.message : 'Kayıt başlatılamadı.');
     }
-  }, []);
+  }, [cooldownRemaining]);
 
   const stopRecording = useCallback(async () => {
     if (!recording) return;
@@ -115,6 +124,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
         }
       }
       const base64 = await readAudioAsBase64(uri);
+      notifyStarted();
       const interpretation = await interpretVoiceReading(base64, AUDIO_MIME_TYPE);
       if (!payWithCoins) await spendCredit();
       setResult(interpretation);
@@ -123,7 +133,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [notifyStarted]);
 
   const reset = useCallback(() => {
     setResult(null);
@@ -148,7 +158,12 @@ export default function VoiceReadingScreen({ navigation }: Props) {
 
             <Pressable
               onPress={isRecording ? stopRecording : startRecording}
-              style={({ pressed }) => [styles.micButton, isRecording && styles.micButtonActive, pressed && styles.micButtonPressed]}
+              disabled={!isRecording && cooldownRemaining > 0}
+              style={({ pressed }) => [
+                styles.micButton,
+                isRecording && styles.micButtonActive,
+                (pressed || (!isRecording && cooldownRemaining > 0)) && styles.micButtonPressed,
+              ]}
             >
               <Animated.View style={isRecording ? { opacity: pulseOpacity, transform: [{ scale: pulseScale }] } : undefined}>
                 <Ionicons name={isRecording ? 'stop' : 'mic'} size={36} color={isRecording ? '#E08A8A' : NIGHT_CARD} />
@@ -156,6 +171,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
             </Pressable>
 
             <Text style={styles.timerText}>{isRecording ? `${seconds}s / ${MAX_SECONDS}s` : 'Başlamak için dokun'}</Text>
+            <ReadingCooldownNotice remaining={cooldownRemaining} />
           </View>
         )}
 

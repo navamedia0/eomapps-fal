@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import type { TabScreenProps } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CornerTicks from '@/components/CornerTicks';
+import { getDailyInfoCards, type InfoCard, type InfoCategory } from '@/services/bilgiKosesiFeed';
 import { GOLD, INFO_PURPLE, INFO_PURPLE_SOFT, INFO_CREAM, INFO_MUTED } from '@/theme/colors';
 
 type Props = TabScreenProps;
@@ -51,7 +53,46 @@ const ITEMS: Array<{
   },
 ];
 
+const CATEGORY_ICON: Record<InfoCategory, keyof typeof MaterialCommunityIcons.glyphMap> = {
+  burc: 'zodiac-leo',
+  kart: 'cards-playing-outline',
+  astroloji: 'telescope',
+  tarot: 'cards-outline',
+};
+
+const CATEGORY_LABEL: Record<InfoCategory, string> = {
+  burc: 'BURÇLAR',
+  kart: 'KARTLAR',
+  astroloji: 'ASTROLOJİ',
+  tarot: 'TAROT',
+};
+
+type FeedItem = { type: 'topic'; item: (typeof ITEMS)[number] } | { type: 'fact'; card: InfoCard };
+
 export default function BilgiKosesiScreen({ navigation }: Props) {
+  const [facts, setFacts] = useState<InfoCard[]>([]);
+
+  useEffect(() => {
+    getDailyInfoCards().then(setFacts);
+  }, []);
+
+  // Interleave the 5 fixed topic links among the daily-rotating fact feed —
+  // same "keşfet mantığı" scroll pattern as KesfetScreen, but for every
+  // knowledge domain the app covers instead of just quotes.
+  const feed: FeedItem[] = [];
+  let topicCount = 0;
+  facts.forEach((card, index) => {
+    feed.push({ type: 'fact', card });
+    if ((index + 1) % 3 === 0 && topicCount < ITEMS.length) {
+      feed.push({ type: 'topic', item: ITEMS[topicCount] });
+      topicCount += 1;
+    }
+  });
+  while (topicCount < ITEMS.length) {
+    feed.push({ type: 'topic', item: ITEMS[topicCount] });
+    topicCount += 1;
+  }
+
   return (
     <MysticTableBackground>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -62,21 +103,38 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.list}>
-          {ITEMS.map((item) => (
-            <Pressable
-              key={item.key}
-              onPress={() => item.onPress(navigation)}
-              style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-            >
-              <CornerTicks />
-              <View style={styles.iconWrap}>{item.icon}</View>
-              <View style={styles.cardTextWrap}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
+          {feed.map((entry, index) => {
+            if (entry.type === 'topic') {
+              const item = entry.item;
+              return (
+                <Pressable
+                  key={`topic-${item.key}`}
+                  onPress={() => item.onPress(navigation)}
+                  style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+                >
+                  <CornerTicks />
+                  <View style={styles.iconWrap}>{item.icon}</View>
+                  <View style={styles.cardTextWrap}>
+                    <Text style={styles.cardTitle}>{item.title}</Text>
+                    <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color={INFO_CREAM} />
+                </Pressable>
+              );
+            }
+            const { card } = entry;
+            return (
+              <View key={`fact-${card.id}-${index}`} style={styles.factCard}>
+                <CornerTicks />
+                <View style={styles.factHeader}>
+                  <MaterialCommunityIcons name={CATEGORY_ICON[card.category]} size={16} color={GOLD} />
+                  <Text style={styles.factCategory}>{CATEGORY_LABEL[card.category]}</Text>
+                </View>
+                <Text style={styles.factTitle}>{card.title}</Text>
+                <Text style={styles.factBody}>{card.body}</Text>
               </View>
-              <Ionicons name="chevron-forward" size={20} color={INFO_CREAM} />
-            </Pressable>
-          ))}
+            );
+          })}
         </View>
       </ScrollView>
     </MysticTableBackground>
@@ -144,5 +202,36 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     color: INFO_MUTED,
     lineHeight: 16,
+  },
+  factCard: {
+    position: 'relative',
+    backgroundColor: 'rgba(240, 234, 214, 0.05)',
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: INFO_PURPLE_SOFT,
+    padding: 16,
+  },
+  factHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
+  },
+  factCategory: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 1,
+  },
+  factTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: INFO_CREAM,
+    marginBottom: 4,
+  },
+  factBody: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: INFO_MUTED,
   },
 });

@@ -1,6 +1,7 @@
 import { AI_MODELS } from '@/constants/ai';
 import { env } from '@/config/env';
 import { postJson } from '@/services/http';
+import type { ReadingType } from '@/constants/aiQueue';
 
 type GeminiResponse = { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
 type ImagePart = { mimeType: string; data: string };
@@ -11,19 +12,23 @@ const extractText = (result: GeminiResponse): string => {
   return text;
 };
 
-async function callProxy(model: string, payload: unknown): Promise<GeminiResponse> {
+async function callProxy(model: string, payload: unknown, readingType?: ReadingType): Promise<GeminiResponse> {
   const appSecret = env.appSecret();
   return postJson<GeminiResponse>(
     env.aiProxyUrl(),
-    { provider: 'gemini', model, payload },
+    { provider: 'gemini', model, payload, readingType },
     appSecret ? { 'X-App-Secret': appSecret } : {},
   );
 }
 
-export async function askGemini(prompt: string, model = AI_MODELS.geminiText): Promise<string> {
-  const result = await callProxy(model, {
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-  });
+export async function askGemini(prompt: string, model = AI_MODELS.geminiText, readingType?: ReadingType): Promise<string> {
+  const result = await callProxy(
+    model,
+    {
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    },
+    readingType,
+  );
   return extractText(result);
 }
 
@@ -43,21 +48,29 @@ export async function askGeminiChat(
   return extractText(result);
 }
 
-export async function askGeminiVision(prompt: string, images: ImagePart[]): Promise<string> {
-  const result = await callProxy(AI_MODELS.geminiVision, {
-    contents: [{ role: 'user', parts: [{ text: prompt }, ...images.map((image) => ({ inline_data: { mime_type: image.mimeType, data: image.data } }))] }],
-  });
+export async function askGeminiVision(prompt: string, images: ImagePart[], readingType?: ReadingType): Promise<string> {
+  const result = await callProxy(
+    AI_MODELS.geminiVision,
+    {
+      contents: [{ role: 'user', parts: [{ text: prompt }, ...images.map((image) => ({ inline_data: { mime_type: image.mimeType, data: image.data } }))] }],
+    },
+    readingType,
+  );
   return extractText(result);
 }
 
-export async function askGeminiAudio(prompt: string, audioBase64: string, mimeType: string): Promise<string> {
-  const result = await callProxy(AI_MODELS.geminiVision, {
-    contents: [
-      {
-        role: 'user',
-        parts: [{ text: prompt }, { inline_data: { mime_type: mimeType, data: audioBase64 } }],
-      },
-    ],
-  });
+export async function askGeminiAudio(prompt: string, audioBase64: string, mimeType: string, readingType?: ReadingType): Promise<string> {
+  const result = await callProxy(
+    AI_MODELS.geminiVision,
+    {
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text: prompt }, { inline_data: { mime_type: mimeType, data: audioBase64 } }],
+        },
+      ],
+    },
+    readingType,
+  );
   return extractText(result);
 }

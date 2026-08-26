@@ -11,6 +11,8 @@ import { READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
+import { useReadingCooldown } from '@/hooks/useReadingCooldown';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ImageReading'>;
@@ -51,6 +53,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
   const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const [permissionError, setPermissionError] = useState<string | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
+  const { remaining: cooldownRemaining, notifyStarted } = useReadingCooldown(kind === 'coffee' ? 'kahve' : 'el');
 
   const resetResult = useCallback(() => {
     setResult(null);
@@ -103,7 +106,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
   }, [resetResult]);
 
   const interpret = useCallback(async (payWithCoins = false) => {
-    if (images.length < MIN_IMAGES) return;
+    if (images.length < MIN_IMAGES || cooldownRemaining > 0) return;
     setError(null);
     setCoinFallback(null);
 
@@ -145,6 +148,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
           return;
         }
       }
+      notifyStarted();
       const interpretation = await interpretImages(kind, images.map((img) => ({ mimeType: img.mimeType, data: img.base64 })));
       if (!payWithCoins) await spendCredit();
       setResult(interpretation);
@@ -153,7 +157,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [images, kind, copy.invalidSubject]);
+  }, [images, kind, copy.invalidSubject, cooldownRemaining, notifyStarted]);
 
   const resetAll = useCallback(() => {
     setImages([]);
@@ -231,15 +235,17 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
 
             <Pressable
               onPress={() => interpret()}
-              disabled={images.length < MIN_IMAGES}
+              disabled={images.length < MIN_IMAGES || cooldownRemaining > 0}
               style={({ pressed }) => [
                 styles.actionButton,
-                (images.length < MIN_IMAGES || pressed) && styles.actionButtonDisabled,
+                (images.length < MIN_IMAGES || cooldownRemaining > 0 || pressed) && styles.actionButtonDisabled,
               ]}
             >
               <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
               <Text style={styles.actionButtonText}>Yorumla</Text>
             </Pressable>
+
+            <ReadingCooldownNotice remaining={cooldownRemaining} />
           </View>
         )}
 
