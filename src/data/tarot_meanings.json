@@ -1,0 +1,393 @@
+{
+  "_source": "A.E. Waite, The Pictorial Key to the Tarot (1910/1911) — kamu malı (public domain) kaynak metinden Türkçeye çevrilip uyarlanmıştır. sacred-texts.com/tarot/pkt/",
+  "deli": {
+    "upright": "Delilik, taşkınlık, sınırsızlık, sarhoşluk, çılgınlık, cezbe hali, pervasızlık.",
+    "reversed": "İhmalkârlık, yokluk, dağınıklık, kayıtsızlık, ilgisizlik, anlamsızlık, boş gurur.",
+    "story": "Genç bir yolcu, dünyanın en yüksek tepelerinde bir uçurumun kıyısında durur; elinde bir gül, omzunda işlemeli bir heybe taşır, ayak ucundaki köpek zıplamaya devam eder. Gözleri aşağıdaki uçuruma değil, önündeki mavi enginliğe bakar — çünkü o, deneyim arayan ruhtur, tehlikeyi görmeyen ama meleklerin gözettiği bir yolcudur."
+  },
+  "buyucu": {
+    "upright": "Beceri, diplomasi, ustalık, incelik; ama aynı zamanda hastalık, acı, kayıp, felaket, düşman tuzakları; özgüven ve irade.",
+    "reversed": "Hekim, büyücü-tabip, zihinsel çöküntü, rezalet, huzursuzluk.",
+    "story": "Genç bir büyücü, bir eliyle göğe uzanan asasını kaldırır, diğer eliyle yeryüzünü işaret eder — yukarıdan gelen lütfu aşağıya taşıyan bir kanal gibidir. Başının üzerinde sonsuzluk işareti, belinde kendi kuyruğunu yutan bir yılan asılıdır; önündeki masada dört takımın sembolleri, iradesiyle şekillendireceği ham maddeler gibi durur."
+  },
+  "bas-rahibe": {
+    "upright": "Sırlar, gizem, henüz açığa çıkmamış gelecek; sessizlik, sebat, bilgelik, ilim.",
+    "reversed": "Tutku, ahlaki ya da bedensel ateşlilik, kibir, yüzeysel bilgi.",
+    "story": "Beyaz ve siyah iki sütun arasında oturan rahibe, dizlerinde 'Tora' yazılı bir parşömen tutar, ayaklarının dibinde ayın hilali parlar. O, mabedin perdesinin ardındaki gizli kilise, ışığını başka bir kaynaktan ödünç alan ama yine de her ışığı içinde barındıran ay'dır."
+  },
+  "imparatorice": {
+    "upright": "Bereket, eylem, girişim, uzun ömür; bilinmeyen, gizli olan; ayrıca güçlük, şüphe, bilgisizlik.",
+    "reversed": "Işık, hakikat, dolaşık meselelerin çözülmesi, kamusal sevinç; bir diğer okumaya göre kararsızlık.",
+    "story": "On iki yıldızdan oluşan bir taçla oturan bu görkemli kadın, önünde olgunlaşan bir buğday tarlası ve arkasında akan bir şelaleyle, yeryüzünün cennet bahçesidir — insanoğlunun görünen evinin tüm sembolizmini taşıyan, evrensel bereketin ve Sözün dışa dönük anlamının ta kendisidir."
+  },
+  "imparator": {
+    "upright": "İstikrar, güç, koruma, gerçekleştirme; büyük bir kişilik; yardım, akıl, kanaat; ayrıca otorite ve irade.",
+    "reversed": "Şefkat, merhamet, itibar; ayrıca düşmanların şaşkınlığı, engelleme, olgunlaşmamışlık.",
+    "story": "Koç başlarıyla süslü bir tahtta oturan taçlı hükümdar, elinde yaşam haçı ve bir küre taşır — bu dünyanın icra gücü, İmparatoriçe'nin karşılığı olan eril kudrettir; onun tahtı duygudan çok düşüncenin, hayvani değil zihinsel bir krallığın tahtıdır."
+  },
+  "aziz": {
+    "upright": "Evlilik, ittifak, esaret, kulluk; bir başka okumaya göre merhamet ve iyilik; ilham; Danışanın sığındığı kişi.",
+    "reversed": "Toplumsallık, iyi anlayış, uyum, aşırı iyi niyet, zayıflık.",
+    "story": "Üçlü tacıyla iki sütun arasında oturan bu figür, sağ eliyle ezoterik işareti yapar, sol elinde üçlü haçlı asasını tutar; ayaklarının dibinde çapraz anahtarlar, önünde diz çökmüş iki rahip vardır. O, dışsal dinin yönetici gücüdür — görünen tarafta kutsal ve doğru olan her şeyin kanalıdır."
+  },
+  "asiklar": {
+    "upright": "Çekim, aşk, güzellik, aşılan sınavlar.",
+    "reversed": "Başarısızlık, ahmakça tasarılar; bir diğer okumaya göre bozulan evlilik ve her türden ters gidiş.",
+    "story": "Tepede güneş parlarken, kanatlı büyük bir melek kollarını açmış aşağıya bereket yağdırır; önünde çıplak bir erkek ve kadın, sanki cennet bahçesindeki ilk Adem ve Havva gibi birbirlerine bakar. Arkalarında Yaşam Ağacı ve İyilik-Kötülük Bilgisi Ağacı, ona sarılmış yılanla birlikte durur — bu, saf insan sevgisinin, henüz kaba maddi arzuyla kirlenmemiş gençliğin kartıdır."
+  },
+  "savas-arabasi": {
+    "upright": "Yardım, kader; ayrıca savaş, zafer, küstahlık, intikam, sıkıntı.",
+    "reversed": "İsyan, kavga, anlaşmazlık, dava, yenilgi.",
+    "story": "Dimdik, asil duruşlu bir savaşçı, çekilmiş kılıcıyla arabasında ilerler; onu iki sfenks çeker. O, zihnin her düzlemdeki fethidir — bilimde, ilerlemede, inisiyasyon sınavlarında kazanılmış bir zafer; sfenksin sorusuna cevap veren, ama bu zaferin dış dünyaya ait olduğunu, henüz kendi içinde tamamlanmadığını bilen bir fatih."
+  },
+  "guc": {
+    "upright": "Güç, enerji, eylem, cesaret, yücegönüllülük; ayrıca tam başarı ve onurlar.",
+    "reversed": "Zorbalık, gücün kötüye kullanımı, zayıflık, uyumsuzluk, bazen rezalet.",
+    "story": "Bir kadın, başının üzerinde sonsuzluk işareti parlarken, bir aslanın çenesini nazikçe kapatır — aslan, çiçeklerden bir zincirle yönlendirilmiştir. Bu, kaba kuvvetle değil sevecen bir kararlılıkla kazanılan zaferdir; tutkuların üzerinde yükselen, iç huzurunda gücünü bulan yüksek doğanın kartıdır."
+  },
+  "ermis": {
+    "upright": "Basiret, ihtiyat; ayrıca — ve özellikle — ihanet, gizleme, düzenbazlık, yozlaşma.",
+    "reversed": "Gizlenme, kılık değiştirme, temkinlilik, korku, temelsiz ihtiyat.",
+    "story": "Bir dağ zirvesinde, gri cüppesinin altında feneriyle yükseklerde duran yaşlı bilge, fenerindeki tek bir yıldızın ışığını yukarı kaldırır. O hakikat ya da adalet arayan bir bilge değil, ulaştığı yeri işaret eden bir işaret fenerdir: 'Benim durduğum yerde, sen de durabilirsin' der sessizce."
+  },
+  "kader-carki": {
+    "upright": "Kader, talih, başarı, yükseliş, şans, mutluluk.",
+    "reversed": "Artış, bolluk, fazlalık.",
+    "story": "Çarkın etrafında dört köşede Hezekiel'in dört yaratığı, üstünde bir sfenks, yanında bir yılan biçimindeki Tifon durur; çark, akışkan evrenin sonsuz devinimini, insan hayatının değişken akışını temsil eder. Sfenks, bu devinimin ortasındaki dengedir — rastlantının değil, gizli bir kader düzeninin işaretidir."
+  },
+  "adalet": {
+    "upright": "Adalet, doğruluk, dürüstlük, icraat; hukukta haklı tarafın zaferi.",
+    "reversed": "Hukukun tüm dalları, hukuki karmaşalar, bağnazlık, önyargı, aşırı sertlik.",
+    "story": "Baş Rahibe gibi iki sütun arasında oturan bu figür, bir elinde terazi, diğerinde kılıç tutar. O, her insana yaptığının karşılığını veren ahlaki ilkedir — yüksek şeylerle uyum içinde olsa da, seçilmişliğin gizemli takdiriyle karıştırılmaması gereken, açık ve kesin bir denge kartıdır."
+  },
+  "asilan-adam": {
+    "upright": "Bilgelik, basiret, kavrayış, sınavlar, fedakârlık, sezgi, kehanet, öngörü.",
+    "reversed": "Bencillik, kalabalık, toplumsal beden.",
+    "story": "Bir ayağından yaşayan, yapraklı bir ağaca asılı duran figürün başında bir hale parlar; yüzünde acı değil derin bir vecd ifadesi vardır. Bu, askıya alınmış bir yaşamı — ölümü değil, ilahi olanla evren arasındaki ilişkiyi bir yönüyle anlatan derin bir gizemi temsil eder: kutsal bir Ölüm gizeminin ardından şanlı bir Diriliş gizeminin geleceğini bilmek."
+  },
+  "olum": {
+    "upright": "Son, ölümlülük, yıkım, çürüme; bir erkek için bir velinimetin kaybı, bir kadın için pek çok ters gidiş, genç bir kız için evlilik planlarının bozulması.",
+    "reversed": "Durgunluk, uyku, uyuşukluk, taşlaşma, uyurgezerlik; yıkılmış umut.",
+    "story": "Gizemli bir süvari, üzerinde yaşamı simgeleyen Mistik Gül işlenmiş kara bir sancakla ağır ağır ilerler; ufukta iki sütun arasında ölümsüzlüğün güneşi parlar. Kral, çocuk ve genç kız önünde yere düşerken bir rahip elleri kavuşturmuş sonunu bekler — ama bu kart, alt bir varoluştan üst bir varoluşa geçişi, aşağıdan yukarıya doğru sürekli bir dönüşümü anlatır."
+  },
+  "denge": {
+    "upright": "Tutum, ölçülülük, tasarruf, idare, uyum sağlama.",
+    "reversed": "Kiliseler, dinler, tarikatlar, din adamlarıyla ilgili şeyler, bazen Danışanla evlenecek rahip; ayrıca ayrılık, talihsiz birleşmeler, çatışan çıkarlar.",
+    "story": "Kanatlı bir melek, bir ayağı karada bir ayağı suda, yaşamın özünü bir kadehten diğerine aktarır; ufukta bir ışık yükselir, içinde belli belirsiz bir taç görünür. Bu, insanın bu bedende ulaşabileceği Ebedi Yaşam Sırrının bir parçasıdır — ruhsal ve maddi doğaları uyumlu kılan, ölçülü bir dengedir."
+  },
+  "seytan": {
+    "upright": "Yıkım, şiddet, öfke, olağanüstü çabalar, güç, kader; kötü olmayan ama önceden belirlenmiş olan.",
+    "reversed": "Kötü kader, zayıflık, önemsizlik, körlük.",
+    "story": "Boynuzlu keçi, bir sunağın üzerinde yükselir; alnında ters bir pentagram, elinde alevli bir meşale taşır. Önünde zincire bağlı iki figür — Adem ve Havva'nın düşüşten sonraki hali gibi — dururlar; ama kuyrukları olsa da yüzlerinde insani bir zeka vardır, ve onları yöneten güç de aslında kendi kötülüğüyle kösteklenmiş, özgürlüğü göremeyen bir tutsaktır."
+  },
+  "kule": {
+    "upright": "Sefalet, ıstırap, yoksulluk, felaket, musibet, rezalet, aldanma, yıkım; özellikle beklenmedik felaket kartı.",
+    "reversed": "Bir okumaya göre aynısı daha hafif bir derecede; ayrıca baskı, hapis, zorbalık.",
+    "story": "Bir yıldırım kuleyi tepesinden vurur, taç alevler içinde havaya fırlar, iki figür kuleden aşağı düşer. Bu, 'Rab evi bina etmezse, yapıcılar boşuna emek verir' hakikatinin en çarpıcı anlatımıdır — sahte bir öğreti evinin, ya da onun yanlış yorumunun yıkılışıdır."
+  },
+  "yildiz": {
+    "upright": "Kayıp, hırsızlık, yoksunluk, terk edilme; bir başka okumaya göre umut ve parlak beklentiler.",
+    "reversed": "Kibir, gurur, güçsüzlük.",
+    "story": "Çıplak bir kadın, bir dizi karada bir ayağı suda, iki testiden Yaşam Suyunu denize ve toprağa boşaltır; üzerinde sekiz ışınlı büyük bir yıldız, çevresinde yedi küçük yıldız parlar. O, ölümsüz gençliğin ve güzelliğin, ruhun sularına sonsuz bolluğundan bir pay döken Büyük Ana'nın ta kendisidir."
+  },
+  "ay": {
+    "upright": "Gizli düşmanlar, tehlike, iftira, karanlık, dehşet, aldanma, gizli güçler, hata.",
+    "reversed": "İstikrarsızlık, kararsızlık, sessizlik, daha hafif derecede aldanma ve hata.",
+    "story": "İki kule arasındaki yol, bilinmeyene açılan bir çıkıştır; bir köpek ve bir kurt bu eşiğin önünde ulur, derinlerden bir yaratık sürünerek sudan karaya çıkmaya çalışır. Ay'ın yansıyan ışığı hayvani doğamızı aydınlatır ama ardındaki gizemi tam olarak gösteremez — yine de huzur, dinginlik fısıldar: 'Sakin ol.'"
+  },
+  "gunes": {
+    "upright": "Maddi mutluluk, talihli evlilik, memnuniyet.",
+    "reversed": "Aynısının daha hafif bir anlamı.",
+    "story": "Beyaz bir ata binmiş çıplak bir çocuk, kırmızı bir sancak taşıyarak güneşin altında ilerler; arkasında duvarlarla çevrili bahçeden çıkıp eve doğru yol alan sonsuz bir insanlık alayı vardır. Bu, dünyanın görünen ışığından gelecek dünyanın ışığına geçişi, bir çocuğun kalbiyle simgelenen özlemi anlatır."
+  },
+  "mahkeme": {
+    "upright": "Konum değişikliği, yenilenme, sonuç; bir başka okumaya göre dava yoluyla toptan kayıp.",
+    "reversed": "Zayıflık, ürkeklik, saflık; ayrıca müzakere, karar, hüküm.",
+    "story": "Bulutlar arasındaki büyük melek, sancaklı borazanını üfler; mezarlarından dirilen ölüler — bir kadın, bir erkek ve aralarında sırtı dönük bir çocuk — hayranlık ve vecd içinde yükselirler. Bu, içimizdeki bir borazanın çaldığı ve doğamızın en aşağı yanının bir anda, göz açıp kapayıncaya kadar buna karşılık verdiği büyük dönüşüm anını kaydeden karttır."
+  },
+  "dunya": {
+    "upright": "Kesin başarı, ödül, yolculuk, güzergah, göç, kaçış, yer değişikliği.",
+    "reversed": "Durgunluk, sabitlik, atalet, kalıcılık.",
+    "story": "Büyük Arkana'nın bu son mesajı, kozmosun mükemmelliğini ve sonunu, kendini Tanrı'da tanıdığında evrenin coşkusunu temsil eder. Sabah yıldızlarının birlikte şarkı söylediği, Tanrı'nın tüm oğullarının sevinçle haykırdığı o günün, her şeyin iyi ilan edildiği zamanın hikâyesidir — Mecusların Tacı olarak da anılmıştır."
+  },
+  "degnek-asi": {
+    "upright": "Yaratım, icat, girişim, bunları doğuran güçler; ilke, başlangıç, kaynak; doğum, aile, köken ve bunların ardındaki erillik; girişimlerin başlangıç noktası; bir başka okumaya göre para, servet, miras.",
+    "reversed": "Düşüş, çöküş, yıkım, mahvoluş, yok oluş; ayrıca gölgelenmiş bir sevinç.",
+    "story": "Bir bulutun içinden uzanan el, sağlam bir değnek ya da sopa kavrar — filizlenen yeni bir başlangıcın, ateşli bir yaratım gücünün doğduğu andır."
+  },
+  "degnek-ikilisi": {
+    "upright": "Zenginlik, servet, ihtişam; ya da bedensel acı, hastalık, keder, üzüntü, aşağılanma — iki okuma da mümkündür.",
+    "reversed": "Şaşkınlık, hayret, büyülenme, duygulanma, sıkıntı, korku.",
+    "story": "Surlu bir çatıdan denizi ve kıyıyı seyreden uzun boylu bir adam, bir elinde küre, diğer elinde surlara dayalı bir değnek tutar. Bu dünyanın zenginliği içinde bir hükümdarın, elindeki küreyi düşünceli düşünceli seyrederken hissettiği o tuhaf hüznü, İskender'in ihtişam ortasındaki melankolisini andırır."
+  },
+  "degnek-uclusu": {
+    "upright": "Kurulu güç, girişimcilik, çaba, ticaret, keşif — denizde yol alan gemiler, kendi mallarını taşıyan bir tüccar prensin sembolüdür; iş dünyasında yetenekli işbirliğini de temsil eder.",
+    "reversed": "Sıkıntıların sona ermesi, felaketin, emeğin ve hayal kırıklığının askıya alınması ya da bitmesi.",
+    "story": "Sırtı dönük, sakin ve vakur bir figür, bir kayalığın kenarından denizde geçen gemileri izler; üç değneğe hafifçe yaslanmıştır. O, kendi ticaretinin ve keşfinin efendisidir, başarılı bir tüccar prensin uzaktan sana yardım etmeye hazır bakışıdır."
+  },
+  "degnek-dortlusu": {
+    "upright": "Kırsal yaşam, sığınak limanı, evsel bir hasat bayramı, huzur, uyum, ahenk, refah, barış ve bunların olgunlaşmış hali.",
+    "reversed": "Anlam değişmez; yine refah, artış, mutluluk, güzellik, süsleme demektir.",
+    "story": "Dört büyük değnekten sarkan büyük bir çelenk altında, ellerinde çiçek demetleriyle iki kadın figür sevinçle yükselir; yanlarında eski bir konağa uzanan bir köprü vardır. Bu, ev sıcaklığının, huzurlu bir kutlamanın kartıdır."
+  },
+  "degnek-beslisi": {
+    "upright": "Taklit — sözgelimi göstermelik bir kavga; ama aynı zamanda servet ve talih arayışının yoğun rekabeti ve mücadelesi de bu anlama dahildir; bu yönüyle hayat mücadelesiyle bağlantılıdır.",
+    "reversed": "Dava, anlaşmazlık, hile, çelişki.",
+    "story": "Bir grup genç, değneklerini sallayarak sanki oyun ya da çekişme içindeymiş gibi bir araya gelir. Görünüşte bir taklit savaşıdır bu, ama altında gerçek bir rekabetin, servet ve başarı için verilen mücadelenin izleri vardır."
+  },
+  "degnek-altilisi": {
+    "upright": "Defne çelengiyle süslenmiş bir süvari, zaferle dönen biridir; ama aynı zamanda büyük haberler, kralın habercisiyle taşınacak türden müjdeler, umudun taçlandığı bir beklenti anlamına da gelir.",
+    "reversed": "Endişe, korku — mesela kapıdaki zafer kazanmış bir düşmandan korkmak gibi; ihanet, sadakatsizlik — kapıların düşmana açılması gibi; ayrıca belirsiz bir gecikme.",
+    "story": "Defne çelenkli bir değnek taşıyan süvari, yanında yürüyen askerlerle birlikte zaferle ilerler. Bu, umudun taçlandığı, beklenen haberin nihayet geldiği andır."
+  },
+  "degnek-yedilisi": {
+    "upright": "Cesaret kartı — görünüşte altısı bire karşı saldırır, ama avantajlı konumda olan tek kişidir o. Zihinsel düzlemde tartışma ve laf kalabalığını; iş dünyasında müzakereleri, ticaret savaşını, rekabeti simgeler. Ayrıca bir başarı kartıdır, çünkü savaşçı tepede durur ve düşmanları ona ulaşamaz.",
+    "reversed": "Şaşkınlık, sıkıntı, kaygı; aynı zamanda kararsızlığa karşı bir uyarıdır.",
+    "story": "Sarp bir tepede duran genç bir adam, değneğini sallayarak kendini savunur; aşağıdan altı değnek daha ona doğru kalkmıştır. Yükseklik ondadır — düşmanları ona asla ulaşamayabilir."
+  },
+  "degnek-sekizlisi": {
+    "upright": "Girişimlerde hareketlilik, bu hareketliliğin izlediği yol, hız — bir ekspres habercinin hızı gibi; büyük telaş, büyük umut, kesin bir mutluluğa doğru hızlanma; genel olarak hareket halinde olan her şey; ayrıca aşkın okları.",
+    "reversed": "Kıskançlığın okları, iç çekişme, vicdan azabı, kavgalar; evli kişiler için ev içi anlaşmazlıklar.",
+    "story": "Açık bir arazi üzerinde uçan bir değnek sürüsü, durağan olanın içinden geçen bir hareketi temsil eder; ama yolculuklarının sonuna yaklaşmaktadırlar — işaret ettikleri şey artık eşiktedir."
+  },
+  "degnek-dokuzlusu": {
+    "upright": "Karşı koymada güç kartı. Saldırıya uğrarsa kişi bunu cesurca karşılar; duruşu, onun korkulası bir hasım olabileceğini gösterir. Bu ana anlamla birlikte gecikme, askıya alma, erteleme gibi ek anlamlar da gelir.",
+    "reversed": "Engeller, felaket, musibet.",
+    "story": "Değneğine yaslanmış, bir düşman bekliyormuş gibi tetikte bekleyen bir figür; arkasında sekiz değnek daha, düzenli bir çit gibi dimdik durur. Bu, direniş içindeki gücün, tetikte beklemenin kartıdır."
+  },
+  "degnek-onlusu": {
+    "upright": "Pek çok anlamı olan, bazı okumaları birbiriyle bağdaşmayan bir kart. Onur ve iyi niyetle ilişkilendirilen okumayı bir kenara bırakıyorum. Temel anlamı basitçe baskı altında ezilmektir; ama aynı zamanda talih, kazanç, her türlü başarıdır — ve o zaman bu şeylerin getirdiği baskıdır söz konusu olan. Ayrıca sahtekârlık, gizlenme, hainlik kartıdır da.",
+    "reversed": "Çelişkiler, güçlükler, entrikalar ve bunlara benzer şeyler.",
+    "story": "Bir adam, taşıdığı on değneğin ağırlığı altında ezilir. Bu, kazanılan başarının bile bazen bir yük haline gelebileceğinin, taşınması gereken bir sorumluluğun kartıdır."
+  },
+  "degnek-prensi": {
+    "upright": "Esmer bir genç adam, sadık, bir sevgili, bir elçi, bir postacı. Biri hakkında konuşulduğunda, o kişi lehine olumlu tanıklık edecektir. Kupa Prensi'nin ardından gelirse tehlikeli bir rakip anlamına gelebilir. Kendi takımının başlıca niteliklerini taşır. Aile haberleri anlamına da gelebilir.",
+    "reversed": "Anekdotlar, duyurular, kötü haberler; ayrıca kararsızlık ve onu izleyen istikrarsızlık.",
+    "story": "Genç bir adam, bir ilan yapar gibi durur; kimliği bilinmez ama sadıktır, taşıdığı haberler tuhaftır."
+  },
+  "degnek-sovalyesi": {
+    "upright": "Ayrılış, yokluk, kaçış, göç. Esmer, dostane bir genç adam. İkametgah değişikliği.",
+    "reversed": "Kopuş, ayrılık, kesinti, anlaşmazlık.",
+    "story": "Kısa bir değnekle silahlanmış, sanki bir yolculuktaymış gibi görünen bu şövalye, savaşa gitmiyor gibidir; höyükler ya da piramitler arasından geçer. Atının hareketi, binicisinin aceleci mizacının bir anahtarıdır."
+  },
+  "degnek-kralicesi": {
+    "upright": "Esmer bir kadın, taşralı, dostane, iffetli, sevecen, onurlu. Yanındaki kart bir erkeği işaret ediyorsa, ona karşı iyi niyetlidir; bir kadını işaret ediyorsa, Danışan ile ilgilenmektedir. Ayrıca para sevgisi ya da işte belirli bir başarı.",
+    "reversed": "İyi, tutumlu, yardımsever, faydalı. Ama bazı konumlarda ve belirli kartların yakınında karşıtlık, kıskançlık, hatta aldatma ve sadakatsizlik de anlamına gelebilir.",
+    "story": "Değnekler bu takım boyunca hep yeşil yapraklıdır, çünkü bu bir yaşam ve canlılık takımıdır. Kraliçe'nin kişiliği, Kral'ınkine denk düşer ama daha manyetiktir."
+  },
+  "degnek-krali": {
+    "upright": "Esmer bir adam, dostane, taşralı, genellikle evli, dürüst ve vicdanlı. Bu kart her zaman dürüstlüğü işaret eder ve yakın zamanda beklenmedik bir miras haberi anlamına gelebilir.",
+    "reversed": "İyi, ama sert; çetin, ama hoşgörülü.",
+    "story": "Bu karta atfedilen fiziksel ve duygusal doğa karanlık, ateşli, çevik, canlı, tutkulu ve soyludur. Kral, çiçek açmış bir değneği yükseltir ve tahtının arkasında bir aslan simgesiyle bağlantılıdır."
+  },
+  "kupa-asi": {
+    "upright": "Gerçek kalbin evi; sevinç, memnuniyet, mesken, beslenme, bolluk, bereket; Kutsal Sofra ve onun mutluluğu.",
+    "reversed": "Sahte kalbin evi; değişkenlik, istikrarsızlık, kargaşa.",
+    "story": "Sular aşağıda, üzerinde nilüferler yüzer; bir bulut içinden uzanan el, dört akıntının fışkırdığı kadehi tutar. Gagasında haç işaretli bir kutsal ekmek taşıyan bir güvercin, kadehe konmak üzere iner — bu, Küçük Arkana'nın ardında yatan derin bir işarettir."
+  },
+  "kupa-ikilisi": {
+    "upright": "Aşk, tutku, dostluk, yakınlık, birlik, uyum, sempati, cinsiyetlerin karşılıklı ilişkisi; ve tüm falcılık işlevlerinin ötesinde bir öneri olarak — Doğa'da olmayan ama Doğa'yı kutsayan o arzu.",
+    "reversed": "Waite bu kart için ayrı bir ters anlam kaydetmemiştir; düz anlamın gölgelenmiş, dengesini yitirmiş bir yansıması olarak okunabilir.",
+    "story": "Genç bir erkek ve kadın, kadehlerini birbirine kaldırır; aralarında Hermes'in değneği yükselir, kanatları arasında bir aslan başı belirir. Bu, iki kalbin birbirine söz verdiği, sevginin en saf halidir."
+  },
+  "kupa-uclusu": {
+    "upright": "Herhangi bir meselenin bolluk, mükemmellik ve neşe içinde sonuçlanması; mutlu bir son, zafer, tamamlanma, teselli, şifa.",
+    "reversed": "Acele, gönderi, başarı, son. Ayrıca bedensel zevkte aşırılığı ve duyusal hazları da işaret eder.",
+    "story": "Bir bahçede, kadehlerini kaldırmış genç kızlar, sanki birbirlerine söz verirmişçesine kutlama yapar. Bu, paylaşılan sevincin ve tamamlanmışlığın kartıdır."
+  },
+  "kupa-dortlusu": {
+    "upright": "Bıkkınlık, tiksinti, isteksizlik, hayali sıkıntılar — sanki bu dünyanın şarabı yalnızca doygunluk getirmiş gibi; şimdi ona başka bir şarap, peri hediyesi gibi sunulur, ama o hiçbir teselli görmez. Aynı zamanda karışık bir zevkin kartıdır.",
+    "reversed": "Yenilik, işaret, yeni bir öğreti, yeni ilişkiler.",
+    "story": "Bir ağacın altında oturan genç bir adam, önündeki çimenlere konmuş üç kadehi düşünceli düşünceli seyreder; bir bulut içinden uzanan bir el ona dördüncü bir kadeh sunar. Yüzündeki ifade, çevresinden memnuniyetsizliğini gösterir."
+  },
+  "kupa-beslisi": {
+    "upright": "Kayıp kartıdır bu, ama geriye bir şeyler kalır: üçü alınmış, ikisi kalmıştır; miras, babadan kalan mülk, devir kartıdır — ama beklentilere uymayan bir devir. Bazı yorumculara göre evlilik kartıdır, ama acılık ya da hüsran içermeyen değil.",
+    "reversed": "Haberler, ittifaklar, akrabalık, soy bağı, dönüş, sahte tasarılar.",
+    "story": "Kara pelerinli bir figür, yere devrilmiş üç kadehe yan gözle bakar; arkasında iki kadeh dimdik durur. Uzakta bir köprü, küçük bir kaleye uzanır. Kayıp vardır ama her şey kaybedilmemiştir — geride hâlâ bir şeyler durur."
+  },
+  "kupa-altilisi": {
+    "upright": "Geçmişin ve anıların kartı — çocukluğa dönüp bakmak gibi; mutluluk, keyif, ama geçmişten gelen; artık kaybolmuş şeyler. Bir başka okuma bunu tersine çevirir: yeni ilişkiler, yeni bilgi, yeni bir çevre — çocuklar artık tanıdık olmayan bir bahçede oynamaktadır.",
+    "reversed": "Gelecek, yenilenme, yakında gerçekleşecek olan.",
+    "story": "Eski bir bahçede, kadehleri çiçeklerle dolu çocuklar oynaşır. Bu, masum bir geçmişin, çoktan solmuş ama hâlâ tatlı anıların kartıdır."
+  },
+  "kupa-yedilisi": {
+    "upright": "Peri lütufları, yansıma imgeleri, duygusallık, hayal gücü; tefekkür aynasında görülen şeyler; bu derecelerde bir tür ulaşma var ama kalıcı ya da somut hiçbir şey ima edilmiyor.",
+    "reversed": "Arzu, irade, kararlılık, tasarı.",
+    "story": "Bulutların içinde tuhaf görü kadehleri belirir; ama bunlar her şeyden önce fantastik ruhun imgeleridir — tutulması güç, uçucu hayallerdir."
+  },
+  "kupa-sekizlisi": {
+    "upright": "Kart kendini yüzeyde açıklar, ama diğer okumalar tamamen zıttır — sevinç, yumuşaklık, çekingenlik, onur, alçakgönüllülük verir. Pratikte genellikle bir meselenin gerilemesini, ya da önemli sanılan bir şeyin aslında iyi ya da kötü yönden pek de önemli olmadığını gösterir.",
+    "reversed": "Büyük sevinç, mutluluk, ziyafet.",
+    "story": "Hüzünlü görünüşlü bir adam, mutluluğunun, girişiminin ya da eski kaygısının kadehlerini geride bırakıp uzaklaşır. Bu, artık ait olmadığı bir şeyden vazgeçişin kartıdır."
+  },
+  "kupa-dokuzlusu": {
+    "upright": "Uyum, memnuniyet, bedensel iyi oluş hali; ayrıca zafer, başarı, avantaj; Danışan ya da kendisi için danışılan kişi için tatmin.",
+    "reversed": "Hakikat, sadakat, özgürlük; ama okumalar değişkendir ve hatalar, kusurlar gibi anlamları da içerir.",
+    "story": "Sırtındaki kemerli tezgahta bol şarapla dolu bir adam, gönlünce ziyafet çekmiştir; gelecek de güvence altında görünür. Bu, bedensel ve ruhsal doyumun, tatmin olmuş bir kalbin kartıdır."
+  },
+  "kupa-onlusu": {
+    "upright": "Kalbin tam huzuru, bu halin mükemmelliği; insan sevgisinin ve dostluğunun kemale ermesi; birkaç resimli kartla birlikteyse, Danışanın çıkarlarını gözeten biri; ayrıca Danışanın yaşadığı kasaba, köy ya da ülke.",
+    "reversed": "Sahte kalbin huzuru, öfke, şiddet.",
+    "story": "Gökkuşağında beliren kadehleri, bir karı koca hayranlık ve vecd içinde seyreder; yanlarında oynayan iki çocuk bu mucizeyi fark etmeden kendi mutlulukları içindedir. Arkada bir yuva sahnesi uzanır — bu, ailenin ve tam kalp huzurunun kartıdır."
+  },
+  "kupa-prensi": {
+    "upright": "Sevimli, hoş, biraz kadınsı bir genç, dikkatli ve derin düşünceli bir tavırla, kadehten yükselen bir balığı seyreder. Sadık, güzel bir genç adam; Danışanla bağlantılı, hizmete istekli biri; çalışkan bir genç; haber, mesaj; başvuru, düşünce, tefekkür — bunlar iş dünyasına da yönelebilir.",
+    "reversed": "Zevk, eğilim, bağlanma, baştan çıkarma, aldatma, hile.",
+    "story": "Kadehten yükselen bir balığa hayranlıkla bakan bu genç, zihnin şekil bulan imgelerini temsil eder."
+  },
+  "kupa-sovalyesi": {
+    "upright": "Varış, yaklaşma — bazen bir habercinin gelişi; ilerlemeler, teklif, tavır, davet, kışkırtma.",
+    "reversed": "Hile, düzenbazlık, incelik, dolandırıcılık, ikiyüzlülük, sahtekârlık.",
+    "story": "Zarif ama savaşçı olmayan bir şövalye, kanatlı bir miğfer takmış, sakin bir şekilde ilerler. O da bir hayalperesttir, ama duyusal imgeler onun görüsünü de rahatsız eder."
+  },
+  "kupa-kralicesi": {
+    "upright": "İyi, güzel bir kadın; dürüst, Danışana hizmet edecek sadık bir kadın; sevecen bir zeka, dolayısıyla görü yeteneği; başarı, mutluluk, keyif; ayrıca bilgelik, erdem; kusursuz bir eş ve iyi bir anne.",
+    "reversed": "Anlatımlar değişir: iyi kadın; ya da seçkin ama güvenilmez bir kadın; sapkın kadın; kötülük, şerefsizlik, ahlaksızlık.",
+    "story": "Güzel, hayalperest bir kraliçe, sanki bir kadehte görüler görüyormuş gibi durur. Ama bu onun yalnızca bir yönüdür — o hem görür hem de eyleme geçer, eylemi hayalini besler."
+  },
+  "kupa-krali": {
+    "upright": "Sarışın bir adam, iş insanı, hukukçu ya da din adamı; sorumlu, Danışana yardımcı olmaya meyilli; ayrıca adalet, sanat ve bilim — bunları icra edenler dahil; yaratıcı zeka.",
+    "reversed": "Dürüst olmayan, ikiyüzlü bir adam; hile, haraç, adaletsizlik, kötülük, skandal, yağma, büyük kayıp.",
+    "story": "Sol elinde kısa bir asa, sağ elinde büyük bir kadeh tutan bu kral, tahtı denizin üzerine kuruludur; bir yanında bir gemi, diğer yanında sıçrayan bir yunus vardır. Kupa işareti doğal olarak suyu çağrıştırır — tüm saray kartlarında görülen ortak izlek budur."
+  },
+  "kilic-asi": {
+    "upright": "Zafer, her şeyin aşırı derecesi, fetih, gücün zaferi. Hem sevgide hem nefrette büyük bir güç kartıdır. Taç, falcılığın sıradan alanının çok ötesinde daha yüksek bir anlam taşıyabilir.",
+    "reversed": "Aynısı, ama sonuçlar yıkıcıdır; bir başka okumaya göre — gebelik, doğum, çoğalma, çeşitlenme.",
+    "story": "Bir bulut içinden uzanan el, ucunda bir taç bulunan bir kılıcı sıkıca kavrar. Bu, keskin ve acımasız da olsa, tartışılmaz bir zaferin kartıdır."
+  },
+  "kilic-ikilisi": {
+    "upright": "Uyum ve bunun işaret ettiği denge, cesaret, dostluk, silahlı bir durumda uzlaşma; bir başka okuma şefkat, sevgi, yakınlık verir. Ama bu olumlu okumalar temkinli değerlendirilmelidir, çünkü Kılıçlar genel olarak insan işlerinde iyicil güçleri simgelemez.",
+    "reversed": "Sahtekârlık, yalan, ikiyüzlülük, sadakatsizlik.",
+    "story": "Gözleri bağlı bir kadın, omuzlarında iki kılıcı dengede tutar. Kırılgan bir denge, zorlukla korunan bir uzlaşmadır bu — güvenden çok temkinli bir ateşkes."
+  },
+  "kilic-uclusu": {
+    "upright": "Uzaklaşma, yokluk, gecikme, bölünme, kopuş, dağılma — tasarımın kendisinin de açıkça anlattığı, ayrıca belirtilmeye gerek duymayan şeyler.",
+    "reversed": "Zihinsel bunalım, hata, kayıp, dikkat dağınıklığı, düzensizlik, kargaşa.",
+    "story": "Üç kılıç bir kalbi delip geçer; arkasında bulutlar ve yağmur vardır. Bu, kederin en yalın, en dolaysız halidir — kalbin acısını gizlemeyen bir kart."
+  },
+  "kilic-dortlusu": {
+    "upright": "Tetiktelik, geri çekilme, yalnızlık, keşişin dinlenmesi, sürgün, mezar ve tabut — tasarımı esinleyen de zaten bu son ikisidir.",
+    "reversed": "Akıllıca yönetim, ihtiyat, tutum, cimrilik, tedbir, vasiyet.",
+    "story": "Bir şövalyenin heykeli, mezarının üzerinde dua eder gibi uzanmış yatar. Bu, savaşın ardından gelen dinlenmeyi, geçici bir geri çekilmeyi temsil eder — ölüm değil, bir mola."
+  },
+  "kilic-beslisi": {
+    "upright": "Alçalma, yıkım, iptal, rezalet, şerefsizlik, kayıp — ve bunların türevleri, benzerleri.",
+    "reversed": "Aynısı; defin ve cenaze törenleri.",
+    "story": "Küçümseyici bir adam, geri çekilen iki hüzünlü figürün ardından bakar; onların kılıçları yerde durur. O, sol omzunda iki kılıç daha taşır, sağ elindeki üçüncü kılıcın ucu toprağa döner. Alanın efendisi odur — ama bu bir zafer değil, acı bir üstünlüktür."
+  },
+  "kilic-altilisi": {
+    "upright": "Su yoluyla yolculuk, güzergah, yol, elçi, komisyoncu, çare.",
+    "reversed": "İtiraf, açıklama, kamuya duyuru; bir okumaya göre bir aşk teklifi.",
+    "story": "Bir kayıkçı, yolcularını sakin sularda karşı kıyıya taşır. Yük hafiftir, yolculuk güçlükle değil huzurla geçer — bu bir kaçış değil, sakin bir geçiştir."
+  },
+  "kilic-yedilisi": {
+    "upright": "Tasarı, girişim, dilek, umut, güven; ayrıca kavga, başarısız olabilecek bir plan, can sıkıntısı. Anlamları birbiriyle çok çelişir, bu yüzden yorumu belirsizdir.",
+    "reversed": "İyi öğüt, danışma, öğreti; iftira, dedikodu.",
+    "story": "Bir adam, beş kılıcı hızla taşırken kaçmaktadır; geride kalan iki kılıç toprağa saplı kalır. Yakında bir kamp vardır — bu, riskli ama kararlı bir girişimin kartıdır."
+  },
+  "kilic-sekizlisi": {
+    "upright": "Kötü haber, şiddetli öfke, kriz, kınama, kısıtlanmış güç, çatışma, iftira; ayrıca hastalık.",
+    "reversed": "Huzursuzluk, güçlük, karşıtlık, kaza, ihanet; öngörülemeyen şey; kader.",
+    "story": "Bağlı ve gözleri kapalı bir kadın, etrafındaki kılıçlarla kuşatılmıştır. Ama bu, çözümsüz bir tutsaklıktan çok geçici bir sıkışmışlık halidir."
+  },
+  "kilic-dokuzlusu": {
+    "upright": "Ölüm, başarısızlık, düşük yapma, gecikme, aldanma, hayal kırıklığı, umutsuzluk.",
+    "reversed": "Hapis, şüphe, kuşku, haklı korku, utanç.",
+    "story": "Bir kadın, yatağında feryat ederek oturur; üzerinde asılı kılıçlar durur. Hiçbir kederin kendisininkine benzemediğini düşünen biridir o — bu, tam bir yıkımın kartıdır."
+  },
+  "kilic-onlusu": {
+    "upright": "Tasarımın işaret ettiği her şey; ayrıca acı, ıstırap, gözyaşı, keder, viranelik. Özellikle şiddetli bir ölüm kartı değildir.",
+    "reversed": "Avantaj, kazanç, başarı, iyilik — ama hiçbiri kalıcı değildir; ayrıca güç ve otorite.",
+    "story": "Yere serilmiş bir figür, kartın tüm kılıçlarıyla delinmiştir. Bu, dibe vurmanın kartıdır — ama tam da bu yüzden, artık daha kötüsünün gelemeyeceği bir eşiktir."
+  },
+  "kilic-prensi": {
+    "upright": "Otorite, gözetleme, gizli servis, tetiktelik, casusluk, inceleme ve bunlara ait nitelikler.",
+    "reversed": "Bu niteliklerin daha kötücül yanı; öngörülemeyen şey, hazırlıksızlık; hastalık da işaret edilir.",
+    "story": "Çevik bir figür, iki eliyle bir kılıcı dik tutarak hızlı adımlarla yürür; etrafında bulutlar vahşice toplanır. Tetikte ve uyanıktır — sanki her an beklenmedik bir düşman belirebilir."
+  },
+  "kilic-sovalyesi": {
+    "upright": "Beceri, cesaret, kapasite, savunma, ustalık, düşmanlık, öfke, savaş, yıkım, karşıtlık, direniş, mahvoluş. Bu nedenle bir anlamda ölümü de işaret eder, ama bu anlamı yalnızca diğer kader kartlarına yakınlığında taşır.",
+    "reversed": "Tedbirsizlik, yetersizlik, savurganlık.",
+    "story": "Tam hızla ilerleyen bu şövalye, sanki düşmanlarını dağıtıyormuş gibi at sürer. Neredeyse romantik şövalyeliğin ilk örneği gibidir — kılıcı hızlı ve keskindir, çünkü kalbi temizdir."
+  },
+  "kilic-kralicesi": {
+    "upright": "Dulluk, kadınsı hüzün ve sıkıntı, yokluk, kısırlık, yas, yoksunluk, ayrılık.",
+    "reversed": "Kötü niyet, bağnazlık, hile, sahte erdem gösterisi, felaket, aldatma.",
+    "story": "Sağ eliyle silahını dikey kaldırır, sol kolu uzanmış; yüzü sert ama olgunlaşmıştır — kederle tanışıklığı olan bir yüzdür. Merhameti temsil etmez; kılıcına rağmen bir güç sembolü de sayılmaz."
+  },
+  "kilic-krali": {
+    "upright": "Yargı fikrinden doğan her şey ve onun tüm bağlantıları — güç, komuta, otorite, savaşçı zeka, hukuk, tacın makamları vb.",
+    "reversed": "Zalimlik, sapkınlık, barbarlık, hainlik, kötü niyet.",
+    "story": "Kınından çıkarılmış kılıcını tutarak yargı makamında oturur. Büyük Arkana'daki geleneksel Adalet simgesini hatırlatır, ama o daha çok, makamı gereği yaşam ve ölüm üzerindeki gücü temsil eder."
+  },
+  "tilsim-asi": {
+    "upright": "Tam memnuniyet, mutluluk, vecd; ayrıca çabuk kavrayış; altın.",
+    "reversed": "Servetin kötü yüzü, kötü haber; ayrıca büyük zenginlik. Her durumda gösterdiği şey refah, rahat maddi koşullardır — ama bunların sahibine yararlı olup olmadığı, kartın düz mü ters mi geldiğine bağlıdır.",
+    "story": "Her zamanki gibi bir bulut içinden uzanan el, bir tılsımı yukarı kaldırır. Bu, maddi dünyanın kapısının aralandığı, bereketin somutlaştığı andır."
+  },
+  "tilsim-ikilisi": {
+    "upright": "Bir yandan neşe, eğlence ve bunların ilişkileri anlamına gelir — tasarımın konusu da budur; ama aynı zamanda yazılı haberler ve mesajlar, engeller, kargaşa, sıkıntı, karışıklık olarak da okunur.",
+    "reversed": "Zorla yaratılan neşe, taklit edilmiş keyif; harfi anlamda el yazısı, kompozisyon, poliçeler.",
+    "story": "Dans eder gibi duran genç bir adam, her iki elinde birer tılsım tutar; ikisi de tersine çevrilmiş sekiz rakamı gibi sonsuz bir iple birbirine bağlanmıştır. Bu, sürekli değişen dengenin, hareket halindeki hayatın kartıdır."
+  },
+  "tilsim-uclusu": {
+    "upright": "Zanaat, meslek, usta işçilik; ama genellikle soyluluk, aristokrasi, şöhret, ihtişam kartı olarak da görülür.",
+    "reversed": "Vasatlık — hem işte hem başka alanlarda —, çocukluk, önemsizlik, zayıflık.",
+    "story": "Bir manastırda çalışan bir heykeltıraş, elindeki işini sürdürür. Çıraklık dönemi geride kalmış, artık ödülünü almış ve şimdi ciddiyetle işine devam eden biridir o."
+  },
+  "tilsim-dortlusu": {
+    "upright": "Mülkiyetin güvencesi, sahip olduğuna sımsıkı sarılmak, hediye, miras, veraset.",
+    "reversed": "Askıya alınmışlık, gecikme, karşıtlık.",
+    "story": "Taçlı bir figür, başının üzerinde bir tılsımla, elleriyle bir başkasını daha sıkıca tutar; ayaklarının altında iki tılsım daha vardır. O, elindekine sımsıkı tutunan biridir."
+  },
+  "tilsim-beslisi": {
+    "upright": "Kart her şeyden önce maddi sıkıntıyı haber verir — ya tasvir edilen biçimiyle, yani yoksunluk olarak, ya da başka bir şekilde. Bazı falcılara göre ise aşk ve sevgililer kartıdır — eş, koca, dost, sevgili; ayrıca uyum, yakınlık. Bu iki okuma birbiriyle bağdaştırılamaz.",
+    "reversed": "Düzensizlik, kaos, yıkım, uyumsuzluk, sefahat.",
+    "story": "Bir kar fırtınasında iki dilenci, aydınlık bir pencerenin önünden geçer. İçerideki sıcaklığa erişemeyen, dışarıda kalmış bir yoksunluğun kartıdır bu."
+  },
+  "tilsim-altilisi": {
+    "upright": "Hediyeler, bağışlar, tatmin; bir başka okumaya göre dikkat, tetiktelik; 'şimdi kabul edilmiş zamandır'; mevcut refah vb.",
+    "reversed": "Arzu, açgözlülük, haset, kıskançlık, yanılsama.",
+    "story": "Bir tüccar kılığındaki kişi, terazide para tartar ve muhtaç olanlara dağıtır. Bu, hem kendi başarısına hem de yüreğinin iyiliğine bir tanıklıktır."
+  },
+  "tilsim-yedilisi": {
+    "upright": "Bunlar son derece çelişkilidir; esasen para, iş, alışveriş kartıdır; ama bir okuma çekişme ve kavga, başka bir okuma ise masumiyet, yaratıcılık, arınma verir.",
+    "reversed": "Ödünç verilmesi düşünülen para konusunda endişe nedeni.",
+    "story": "Değneğine yaslanmış genç bir adam, sağındaki bir çalılığa asılı yedi tılsıma dikkatle bakar; sanki bunlar onun hazineleriymiş ve kalbi oradaymış gibi."
+  },
+  "tilsim-sekizlisi": {
+    "upright": "İş, istihdam, sipariş, ustalık, zanaatte ve işte beceri — belki de henüz hazırlık aşamasında.",
+    "reversed": "Boşa çıkmış hırs, kibir, açgözlülük, haraç, tefecilik; ayrıca kurnazlığa ve entrikaya yönelmiş zeki bir aklın becerisi anlamına da gelebilir.",
+    "story": "Taştan eserler yontan bir sanatçı, işini bir yarışma sahnesi gibi sergiler. Bu, sabırla ustalaşan bir zanaatkarın kartıdır."
+  },
+  "tilsim-dokuzlusu": {
+    "upright": "Basiret, güvenlik, başarı, tamamlanma, kesinlik, kavrayış.",
+    "reversed": "Düzenbazlık, aldatma, boşa çıkmış tasarı, kötü niyet.",
+    "story": "Bilek üzerinde bir kuşla duran bir kadın, bir konağın bahçesindeki bol üzüm asmaları arasında durur. Geniş bir mülktür bu — bolluğu, belki de kendi mal varlığını ve maddi refahını işaret eder."
+  },
+  "tilsim-onlusu": {
+    "upright": "Kazanç, zenginlik; aile meseleleri, arşivler, soy, bir ailenin meskeni.",
+    "reversed": "Şans, kader, kayıp, soygun, kumar oyunları; bazen hediye, çeyiz, emekli maaşı.",
+    "story": "Bir ev ve mülke açılan kemerli bir kapının altında bir kadın ve erkek durur; yanlarındaki çocuk, önde oturan yaşlı bir figüre yaklaşan iki köpeği meraklı gözlerle izler. Bu, kuşaktan kuşağa aktarılan zenginliğin, ailenin köküne bağlı bir bolluğun kartıdır."
+  },
+  "tilsim-prensi": {
+    "upright": "Uygulama, çalışma, bilgelik, tefekkür; bir başka okumaya göre haberler, mesajlar ve bunları getiren kişi; ayrıca yönetim, idare.",
+    "reversed": "Savurganlık, sefahat, cömertlik, lüks; olumsuz haberler.",
+    "story": "Genç bir figür, kaldırdığı ellerinin üzerinde asılı duran tılsıma dikkatle bakar; ağır ağır ilerler, çevresindekilerin farkında bile değildir — tamamen kendi tefekkürüne dalmıştır."
+  },
+  "tilsim-sovalyesi": {
+    "upright": "Faydalılık, hizmet etme yeteneği, ilgi, sorumluluk, doğruluk — hepsi sıradan ve dışsal bir düzlemde.",
+    "reversed": "Atalet, tembellik, bu türden bir dinginlik, durgunluk; ayrıca sükunet, cesaretsizlik, kayıtsızlık.",
+    "story": "Yavaş ama dayanıklı, ağır bir ata binen bu şövalye, kendi görünüşüyle atının haline denk düşer. Simgesini taşır, ama ona bakmaz bile — sabırla yoluna devam eder."
+  },
+  "tilsim-kralicesi": {
+    "upright": "Cömertlik, ihtişam, güvenlik, özgürlük — büyük bir ruhun zenginliği.",
+    "reversed": "Kötülük, şüphe, endişe, korku, güvensizlik.",
+    "story": "Esmer bir kadının yüzü, ruh büyüklüğü fikrinde özetlenebilecek niteliklere sahiptir; ciddi bir zeka ifadesi taşır — simgesini derin düşünceyle seyreder, belki de içinde koca dünyalar görür."
+  },
+  "tilsim-krali": {
+    "upright": "Cesaret, gerçekleştirici zeka, iş ve normal zihinsel yetenek, bazen matematiksel yetenekler ve bu türden başarılar; bu yollarda başarı.",
+    "reversed": "Kötülük, zayıflık, çirkinlik, sapkınlık, yozlaşma, tehlike.",
+    "story": "Yüzü esmer, cesareti çağrıştıran ama biraz durgun bir mizaç taşıyan bu figür, tahtında bir boğa başı simgesiyle oturur. Bu takımın işareti, dört unsurun insan doğasındaki karşılığını ve onların nasıl yönetilebileceğini simgeleyen bir pentagramla süslenmiştir."
+  }
+}

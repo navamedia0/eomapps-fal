@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "Mistik Rehber",
+    "slug": "mistik-rehber",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": ["**/*"],
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Fal yorumu için fotoğraflarına erişim izni gerekiyor.",
+          "cameraPermission": "Fal yorumu için fotoğraf çekmek üzere kameraya erişim izni gerekiyor."
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Sesli fal için mikrofonuna erişim izni gerekiyor."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#D4AF37"
+        }
+      ]
+    ]
+  }
+}
