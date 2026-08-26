@@ -136,9 +136,15 @@ export default function TarotScreen({ navigation, route }: Props) {
           </Pressable>
         </View>
 
-        <Pressable onPress={() => setContextModalVisible(true)} style={styles.contextButton}>
-          <Ionicons name="chatbubble-ellipses-outline" size={13} color={GOLD} />
-          <Text style={styles.contextButtonText}>Kendinden bahsetmek ister misin?</Text>
+        <Pressable
+          onPress={() => setContextModalVisible(true)}
+          style={({ pressed }) => [styles.contextButton, pressed && styles.buttonPressed]}
+        >
+          <Ionicons name="chatbubble-ellipses-outline" size={16} color={GOLD} />
+          <View style={styles.contextButtonTextWrap}>
+            <Text style={styles.contextButtonText}>Kendinden bahsetmek ister misin?</Text>
+            <Text style={styles.contextButtonCaption}>Daha iyi sonuç alabilmek için</Text>
+          </View>
         </Pressable>
 
         {selected.length > 0 && (
@@ -280,13 +286,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 8,
     marginTop: 12,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    borderRadius: 14,
+    paddingVertical: 12,
+  },
+  contextButtonTextWrap: {
+    alignItems: 'center',
   },
   contextButtonText: {
-    fontSize: 11.5,
+    fontSize: 13.5,
     color: GOLD,
-    fontWeight: '600',
+    fontWeight: '700',
+  },
+  contextButtonCaption: {
+    fontSize: 10.5,
+    color: TEXT_MUTED,
+    marginTop: 2,
   },
   clearButton: {
     alignSelf: 'center',

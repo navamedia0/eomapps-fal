@@ -8,6 +8,9 @@ const QUESTIONS = [
   'Bugün nasıl hissediyorsun?',
   'Hayatında yolunda gitmeyen bir şey var mı?',
   'Olmasını çok istediğin bir şey var mı?',
+  'Şu anda en çok neyi merak ediyorsun?',
+  'Kalbinde taşıdığın, içine atamadığın bir duygu var mı?',
+  'Hayatında değişmesini istediğin bir şey var mı?',
 ];
 
 type Props = {
@@ -20,7 +23,8 @@ type Props = {
 // reading's buildProfileBlock() picks them up automatically — the AI is told
 // to weave them in without ever naming this as its source.
 export default function TarotContextModal({ visible, onClose }: Props) {
-  const [answers, setAnswers] = useState<string[]>(['', '', '']);
+  const [freeform, setFreeform] = useState('');
+  const [answers, setAnswers] = useState<string[]>(QUESTIONS.map(() => ''));
   const [saving, setSaving] = useState(false);
 
   const setAnswer = (index: number, value: string) => {
@@ -30,13 +34,16 @@ export default function TarotContextModal({ visible, onClose }: Props) {
   const save = async () => {
     setSaving(true);
     try {
+      const trimmedFreeform = freeform.trim();
+      if (trimmedFreeform) await addProfileEntry(trimmedFreeform);
       for (let i = 0; i < QUESTIONS.length; i += 1) {
         const trimmed = answers[i].trim();
         if (trimmed) await addProfileEntry(`${QUESTIONS[i]} — ${trimmed}`);
       }
     } finally {
       setSaving(false);
-      setAnswers(['', '', '']);
+      setFreeform('');
+      setAnswers(QUESTIONS.map(() => ''));
       onClose();
     }
   };
@@ -59,6 +66,20 @@ export default function TarotContextModal({ visible, onClose }: Props) {
           </Text>
 
           <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
+            <View style={styles.freeformBlock}>
+              <Text style={styles.freeformLabel}>Aklından geçeni özgürce yaz</Text>
+              <TextInput
+                value={freeform}
+                onChangeText={setFreeform}
+                placeholder="Ne hissediyorsun, ne düşünüyorsun... istediğin gibi yaz"
+                placeholderTextColor={TEXT_MUTED}
+                style={[styles.input, styles.freeformInput]}
+                multiline
+              />
+            </View>
+
+            <Text style={styles.sectionDivider}>İstersen aşağıdaki sorulara da cevap verebilirsin</Text>
+
             {QUESTIONS.map((question, index) => (
               <View key={question} style={styles.questionBlock}>
                 <Text style={styles.question}>{question}</Text>
@@ -135,6 +156,24 @@ const styles = StyleSheet.create({
   },
   body: {
     maxHeight: 340,
+  },
+  freeformBlock: {
+    marginBottom: 16,
+  },
+  freeformLabel: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+    marginBottom: 6,
+  },
+  freeformInput: {
+    minHeight: 74,
+  },
+  sectionDivider: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+    marginBottom: 12,
+    fontStyle: 'italic',
   },
   questionBlock: {
     marginBottom: 14,
