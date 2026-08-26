@@ -9,6 +9,7 @@ import { interpretTarotSpread } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
+import { saveReadingHistory } from '@/services/readingHistory';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { parseSpreadReading } from '@/utils/parseSpreadReading';
 import { turkishUpperCase } from '@/utils/turkishCase';
@@ -60,6 +61,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
         const interpretation = await interpretTarotSpread(cards, spread.positions);
         await spendCoins(spread.priceCoins);
         setResult(interpretation);
+        await saveReadingHistory({ type: 'tarot', title: `${spread.id} Kart Açılımı`, result: interpretation });
         return;
       }
 
@@ -71,6 +73,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
         }
         const interpretation = await interpretTarotSpread(cards, spread.positions);
         setResult(interpretation);
+        await saveReadingHistory({ type: 'tarot', title: `${spread.id} Kart Açılımı`, result: interpretation });
         return;
       }
 
@@ -82,6 +85,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
       const interpretation = await interpretTarotSpread(cards, spread.positions);
       await spendCredit();
       setResult(interpretation);
+      await saveReadingHistory({ type: 'tarot', title: `${spread.id} Kart Açılımı`, result: interpretation });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Kartlar okunurken bir sorun oluştu.');
     } finally {

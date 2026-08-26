@@ -7,6 +7,7 @@ import type { RootStackParamList } from '@/navigation/types';
 import CoinBadge from '@/components/CoinBadge';
 import MainTabs from '@/navigation/MainTabs';
 import TarotSpreadScreen from '@/screens/TarotSpreadScreen';
+import TarotLayoutScreen from '@/screens/TarotLayoutScreen';
 import TarotScreen from '@/screens/TarotScreen';
 import TarotResultScreen from '@/screens/TarotResultScreen';
 import DreamChatScreen from '@/screens/DreamChatScreen';
@@ -22,6 +23,9 @@ import BirthChartScreen from '@/screens/BirthChartScreen';
 import BiorhythmScreen from '@/screens/BiorhythmScreen';
 import MoonCalendarScreen from '@/screens/MoonCalendarScreen';
 import TasksScreen from '@/screens/TasksScreen';
+import MiniGamesScreen from '@/screens/MiniGamesScreen';
+import FavoritesScreen from '@/screens/FavoritesScreen';
+import HistoryScreen from '@/screens/HistoryScreen';
 import KatinaScreen from '@/screens/KatinaScreen';
 import MoodJournalScreen from '@/screens/MoodJournalScreen';
 import BreathingExerciseScreen from '@/screens/BreathingExerciseScreen';
@@ -88,6 +92,7 @@ export default function App() {
           >
             <Stack.Screen name="Home" component={MainTabs} options={{ headerShown: false }} />
             <Stack.Screen name="TarotSpread" component={TarotSpreadScreen} options={{ title: 'Tarot Falı' }} />
+            <Stack.Screen name="TarotLayout" component={TarotLayoutScreen} options={{ title: 'Tarot Falı' }} />
             <Stack.Screen name="Tarot" component={TarotScreen} options={{ title: 'Tarot Falı' }} />
             <Stack.Screen name="TarotResult" component={TarotResultScreen} options={{ title: 'Fal Yorumu' }} />
             <Stack.Screen name="DreamChat" component={DreamChatScreen} options={{ title: 'Rüya Yorumlama' }} />
@@ -107,6 +112,9 @@ export default function App() {
             <Stack.Screen name="Biorhythm" component={BiorhythmScreen} options={{ title: 'Biyoritim' }} />
             <Stack.Screen name="MoonCalendar" component={MoonCalendarScreen} options={{ title: 'Ay Takvimi' }} />
             <Stack.Screen name="Tasks" component={TasksScreen} options={{ title: 'Ücretsiz Coin Kazan' }} />
+            <Stack.Screen name="MiniGames" component={MiniGamesScreen} options={{ title: 'Mini Oyunlar' }} />
+            <Stack.Screen name="Favorites" component={FavoritesScreen} options={{ title: 'Favorilerim' }} />
+            <Stack.Screen name="History" component={HistoryScreen} options={{ title: 'Geçmiş' }} />
             <Stack.Screen name="Katina" component={KatinaScreen} options={{ title: 'Katina Falı' }} />
             <Stack.Screen name="MoodJournal" component={MoodJournalScreen} options={{ title: 'Duygu Günlüğü' }} />
             <Stack.Screen name="BreathingExercise" component={BreathingExerciseScreen} options={{ title: 'Nefes Egzersizi' }} />

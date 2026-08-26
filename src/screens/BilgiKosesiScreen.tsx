@@ -4,6 +4,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import type { TabScreenProps } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CornerTicks from '@/components/CornerTicks';
+import FavoriteStarButton from '@/components/FavoriteStarButton';
 import { getDailyInfoCards, type InfoCard, type InfoCategory } from '@/services/bilgiKosesiFeed';
 import { GOLD, INFO_PURPLE, INFO_PURPLE_SOFT, INFO_CREAM, INFO_MUTED } from '@/theme/colors';
 
@@ -126,6 +127,13 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
             return (
               <View key={`fact-${card.id}-${index}`} style={styles.factCard}>
                 <CornerTicks />
+                <FavoriteStarButton
+                  id={`info:${card.id}`}
+                  kind="info"
+                  title={card.title}
+                  body={card.body}
+                  category={card.category}
+                />
                 <View style={styles.factHeader}>
                   <MaterialCommunityIcons name={CATEGORY_ICON[card.category]} size={16} color={GOLD} />
                   <Text style={styles.factCategory}>{CATEGORY_LABEL[card.category]}</Text>

@@ -8,6 +8,7 @@ import { interpretImages, validateImage } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
+import { saveReadingHistory } from '@/services/readingHistory';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
@@ -152,6 +153,11 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
       const interpretation = await interpretImages(kind, images.map((img) => ({ mimeType: img.mimeType, data: img.base64 })));
       if (!payWithCoins) await spendCredit();
       setResult(interpretation);
+      await saveReadingHistory({
+        type: kind === 'coffee' ? 'kahve' : 'el',
+        title: copy.shareTitle,
+        result: interpretation,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fal yorumlanırken bir sorun oluştu.');
     } finally {

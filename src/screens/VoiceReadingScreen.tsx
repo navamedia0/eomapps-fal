@@ -10,6 +10,7 @@ import { interpretVoiceReading } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
 import { VOICE_READING_COIN_COST } from '@/constants/economy';
+import { saveReadingHistory } from '@/services/readingHistory';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
@@ -128,6 +129,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
       const interpretation = await interpretVoiceReading(base64, AUDIO_MIME_TYPE);
       if (!payWithCoins) await spendCredit();
       setResult(interpretation);
+      await saveReadingHistory({ type: 'sesli', title: 'Sesli Fal', result: interpretation });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sesin yorumlanırken bir sorun oluştu.');
     } finally {

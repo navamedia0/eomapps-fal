@@ -8,6 +8,7 @@ import { interpretSolitaireSpread } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
+import { saveReadingHistory } from '@/services/readingHistory';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import PlayingCardFace from '@/components/PlayingCardFace';
@@ -66,6 +67,7 @@ export default function SolitaireScreen({ navigation }: Props) {
       setCards(drawn);
       setResult(interpretation);
       setPhase('result');
+      await saveReadingHistory({ type: 'solitaire', title: 'Solitaire Falı', result: interpretation });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Kartlar açılırken bir sorun oluştu.');
       setPhase('error');

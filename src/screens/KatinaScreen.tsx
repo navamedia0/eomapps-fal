@@ -8,6 +8,7 @@ import { interpretKatinaSpread } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
+import { saveReadingHistory } from '@/services/readingHistory';
 import { parseSpreadReading } from '@/utils/parseSpreadReading';
 import { turkishUpperCase } from '@/utils/turkishCase';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -58,6 +59,7 @@ export default function KatinaScreen({ navigation }: Props) {
         }
         const interpretation = await interpretKatinaSpread(cards, POSITIONS);
         setResult(interpretation);
+        await saveReadingHistory({ type: 'katina', title: 'Katina Falı', result: interpretation });
         return;
       }
 
@@ -69,6 +71,7 @@ export default function KatinaScreen({ navigation }: Props) {
       const interpretation = await interpretKatinaSpread(cards, POSITIONS);
       await spendCredit();
       setResult(interpretation);
+      await saveReadingHistory({ type: 'katina', title: 'Katina Falı', result: interpretation });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Kartlar okunurken bir sorun oluştu.');
     } finally {

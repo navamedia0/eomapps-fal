@@ -56,6 +56,34 @@ export default function ProfilScreen({ navigation }: Props) {
           </Pressable>
 
           <Pressable
+            onPress={() => navigation.navigate('Favorites')}
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+          >
+            <View style={styles.iconCircle}>
+              <Ionicons name="star-outline" size={22} color={GOLD} />
+            </View>
+            <View style={styles.cardTextWrap}>
+              <Text style={styles.cardTitle}>Favorilerim</Text>
+              <Text style={styles.cardSubtitle}>Kaydettiğin sözler ve bilgi kartları</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+          </Pressable>
+
+          <Pressable
+            onPress={() => navigation.navigate('History')}
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+          >
+            <View style={styles.iconCircle}>
+              <Ionicons name="time-outline" size={22} color={GOLD} />
+            </View>
+            <View style={styles.cardTextWrap}>
+              <Text style={styles.cardTitle}>Geçmiş</Text>
+              <Text style={styles.cardSubtitle}>Baktırdığın falların geçmişi (cihazında saklanır)</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+          </Pressable>
+
+          <Pressable
             onPress={() => navigation.navigate('NotificationSettings')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
@@ -129,6 +157,14 @@ const styles = StyleSheet.create({
   },
   cardPressed: {
     opacity: 0.85,
+  },
+  iconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(212, 175, 55, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cardTextWrap: {
     flex: 1,

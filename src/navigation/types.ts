@@ -3,11 +3,13 @@ import type { TarotOrientation } from '@/services/tarot';
 import type { SpreadId } from '@/services/tarotSpreads';
 
 export type TarotPick = { id: string; orientation: TarotOrientation };
+export type TarotLayoutId = 'grid' | 'fan' | 'radial';
 
 export type RootStackParamList = {
   Home: undefined;
   TarotSpread: undefined;
-  Tarot: { spreadId: SpreadId };
+  TarotLayout: { spreadId: SpreadId };
+  Tarot: { spreadId: SpreadId; layout: TarotLayoutId };
   TarotResult: { spreadId: SpreadId; picks: TarotPick[] };
   DreamChat: undefined;
   ProfileChat: undefined;
@@ -22,6 +24,9 @@ export type RootStackParamList = {
   Biorhythm: undefined;
   MoonCalendar: undefined;
   Tasks: undefined;
+  MiniGames: undefined;
+  Favorites: undefined;
+  History: undefined;
   Katina: undefined;
   MoodJournal: undefined;
   BreathingExercise: undefined;

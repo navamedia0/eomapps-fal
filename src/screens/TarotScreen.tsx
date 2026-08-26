@@ -23,6 +23,8 @@ import { findSpread } from '@/services/tarotSpreads';
 import { getSelectedDesignImage } from '@/services/cardDesigns';
 import TarotCardBack from '@/components/tarot/TarotCardBack';
 import TarotContextModal from '@/components/tarot/TarotContextModal';
+import TarotFanLayout from '@/components/tarot/TarotFanLayout';
+import TarotRadialLayout from '@/components/tarot/TarotRadialLayout';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
 import { useReadingCooldown } from '@/hooks/useReadingCooldown';
@@ -162,31 +164,41 @@ export default function TarotScreen({ navigation, route }: Props) {
 
       <TarotContextModal visible={contextModalVisible} onClose={() => setContextModalVisible(false)} />
 
-      <FlatList
-        style={styles.flex}
-        onLayout={handleGridLayout}
-        data={gridWidth ? deck : []}
-        keyExtractor={(card) => card.id}
-        numColumns={COLUMNS}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.gridContent, { paddingHorizontal: GRID_PADDING, gap: GRID_GAP }]}
-        columnWrapperStyle={{ gap: GRID_GAP }}
-        renderItem={({ item }) => {
-          const selection = selected.find((entry) => entry.id === item.id);
-          const positionLabel = selection ? selected.indexOf(selection) + 1 : undefined;
-          return (
-            <View style={{ width: cardWidth }}>
-              <TarotCardBack
-                selected={!!selection}
-                positionLabel={positionLabel}
-                disabled={isFull && !selection}
-                onPress={() => toggleCard(item)}
-                customImage={customBack}
-              />
-            </View>
-          );
-        }}
-      />
+      {route.params.layout === 'fan' && (
+        <TarotFanLayout deck={deck} selected={selected} isFull={isFull} customBack={customBack} onToggle={toggleCard} />
+      )}
+
+      {route.params.layout === 'radial' && (
+        <TarotRadialLayout deck={deck} selected={selected} isFull={isFull} customBack={customBack} onToggle={toggleCard} />
+      )}
+
+      {(!route.params.layout || route.params.layout === 'grid') && (
+        <FlatList
+          style={styles.flex}
+          onLayout={handleGridLayout}
+          data={gridWidth ? deck : []}
+          keyExtractor={(card) => card.id}
+          numColumns={COLUMNS}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[styles.gridContent, { paddingHorizontal: GRID_PADDING, gap: GRID_GAP }]}
+          columnWrapperStyle={{ gap: GRID_GAP }}
+          renderItem={({ item }) => {
+            const selection = selected.find((entry) => entry.id === item.id);
+            const positionLabel = selection ? selected.indexOf(selection) + 1 : undefined;
+            return (
+              <View style={{ width: cardWidth }}>
+                <TarotCardBack
+                  selected={!!selection}
+                  positionLabel={positionLabel}
+                  disabled={isFull && !selection}
+                  onPress={() => toggleCard(item)}
+                  customImage={customBack}
+                />
+              </View>
+            );
+          }}
+        />
+      )}
     </MysticTableBackground>
   );
 }

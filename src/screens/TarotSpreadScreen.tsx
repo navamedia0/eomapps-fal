@@ -35,7 +35,7 @@ export default function TarotSpreadScreen({ navigation }: Props) {
           {TAROT_SPREADS.map((spread) => (
             <Pressable
               key={spread.id}
-              onPress={() => navigation.navigate('Tarot', { spreadId: spread.id })}
+              onPress={() => navigation.navigate('TarotLayout', { spreadId: spread.id })}
               style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
             >
               <LinearGradient

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '@/constants/storage';
-import { isPremium } from '@/services/premium';
+import { getPaidDailyQuota } from '@/services/premium';
 
 const DAILY_FREE_CREDITS = 3;
 
@@ -17,17 +17,28 @@ async function writeState(state: CreditState): Promise<void> {
   await AsyncStorage.setItem(STORAGE_KEYS.credits, JSON.stringify(state));
 }
 
+// Resolves today's free-reading quota: an active paid plan's own daily quota
+// (or unlimited) takes over from the baseline free-tier allowance entirely —
+// it does not stack on top of it.
+async function resolveDailyQuota(): Promise<number | null> {
+  const paidQuota = await getPaidDailyQuota();
+  if (paidQuota === undefined) return DAILY_FREE_CREDITS;
+  return paidQuota;
+}
+
 export async function getCredits(): Promise<number> {
-  if (await isPremium()) return Infinity;
+  const quota = await resolveDailyQuota();
+  if (quota === null) return Infinity;
   const state = await readState();
-  const freeRemaining = Math.max(0, DAILY_FREE_CREDITS - state.freeUsedCount);
+  const freeRemaining = Math.max(0, quota - state.freeUsedCount);
   return state.balance + freeRemaining;
 }
 
 export async function spendCredit(): Promise<boolean> {
-  if (await isPremium()) return true;
+  const quota = await resolveDailyQuota();
+  if (quota === null) return true;
   const state = await readState();
-  if (state.freeUsedCount < DAILY_FREE_CREDITS) {
+  if (state.freeUsedCount < quota) {
     await writeState({ ...state, freeUsedDate: today(), freeUsedCount: state.freeUsedCount + 1 });
     return true;
   }

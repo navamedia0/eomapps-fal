@@ -263,7 +263,7 @@ export default function HomeScreen({ navigation }: Props) {
             <Ionicons name="gift-outline" size={18} color={GOLD} />
             <Text style={styles.freeButtonText}>Ücretsiz Coin Kazan</Text>
           </Pressable>
-          <Pressable onPress={goToTasks} style={({ pressed }) => [styles.freeButton, pressed && styles.pressedFade]}>
+          <Pressable onPress={() => navigation.navigate('MiniGames')} style={({ pressed }) => [styles.freeButton, pressed && styles.pressedFade]}>
             <Ionicons name="game-controller-outline" size={18} color={GOLD} />
             <Text style={styles.freeButtonText}>Mini Oyunlar</Text>
           </Pressable>

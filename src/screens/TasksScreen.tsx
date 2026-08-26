@@ -133,12 +133,6 @@ export default function TasksScreen() {
             </Pressable>
           )}
         </View>
-
-        <View style={styles.comingSoonCard}>
-          <Ionicons name="game-controller-outline" size={22} color={TEXT_MUTED} />
-          <Text style={styles.comingSoonTitle}>Mini Oyunlar</Text>
-          <Text style={styles.comingSoonBadge}>Yakında</Text>
-        </View>
       </ScrollView>
 
       <AdWatchModal visible={watching} onComplete={finishWatch} />
@@ -266,26 +260,5 @@ const styles = StyleSheet.create({
     fontSize: 13.5,
     fontWeight: '700',
     color: NIGHT_CARD,
-  },
-  comingSoonCard: {
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(255,255,255,0.02)',
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    borderStyle: 'dashed',
-    padding: 20,
-    opacity: 0.6,
-  },
-  comingSoonTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
-    marginTop: 4,
-  },
-  comingSoonBadge: {
-    fontSize: 11,
-    color: TEXT_MUTED,
   },
 });
