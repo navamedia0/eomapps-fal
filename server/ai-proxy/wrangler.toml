@@ -11,3 +11,9 @@ id = "REPLACE_WITH_KV_NAMESPACE_ID"
 # Refreshes the Bilgi Köşesi content pool weekly (Monday 03:00 UTC).
 [triggers]
 crons = ["0 3 * * 1"]
+
+# Workers AI fallback (llama-3.2-11b-vision-instruct) — used when Gemini is
+# unavailable or its daily quota is exhausted. No account id/token needed at
+# runtime once bound; Cloudflare authenticates the binding automatically.
+[ai]
+binding = "AI"

@@ -2,6 +2,7 @@ const GEMINI_URL = (model) => `https://generativelanguage.googleapis.com/v1beta/
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const CEREBRAS_URL = 'https://api.cerebras.ai/v1/chat/completions';
 const GEMINI_TEXT_MODEL = 'gemini-3.1-flash-lite';
+const CLOUDFLARE_MODEL = '@cf/meta/llama-3.2-11b-vision-instruct';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -39,6 +40,13 @@ const BURST_LIMITS = {
 const BILGI_KOSESI_POOL_KEY = 'bilgi_kosesi_pool';
 const BILGI_KOSESI_DAILY_COUNT = 20;
 const BILGI_KOSESI_POOL_CAP = 600; // ~a month of stock at 20/day
+
+function base64ToByteArray(base64) {
+  const binary = atob(base64);
+  const bytes = new Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
 
 function jsonResponse(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
@@ -170,7 +178,25 @@ async function relayProvider(env, body) {
     });
   }
 
-  return jsonResponse({ error: 'Bilinmeyen provider. "gemini", "groq" veya "cerebras" kullanin.' }, 400);
+  if (provider === 'cloudflare') {
+    if (!env.AI) {
+      return jsonResponse({ error: 'Workers AI binding tanımlı değil.' }, 500);
+    }
+    // Two shapes, matching the model's actual accepted inputs (verified
+    // directly against the API): { prompt, imageBase64 } for vision,
+    // { messages } for plain text/chat.
+    const input = payload.imageBase64
+      ? { prompt: payload.prompt, image: base64ToByteArray(payload.imageBase64) }
+      : { messages: payload.messages };
+    try {
+      const result = await env.AI.run(CLOUDFLARE_MODEL, input);
+      return jsonResponse(result);
+    } catch (err) {
+      return jsonResponse({ error: `Cloudflare AI hatası: ${err && err.message}` }, 502);
+    }
+  }
+
+  return jsonResponse({ error: 'Bilinmeyen provider. "gemini", "groq", "cerebras" veya "cloudflare" kullanin.' }, 400);
 }
 
 function dayIndex() {
