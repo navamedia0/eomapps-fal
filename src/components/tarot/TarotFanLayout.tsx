@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Animated, Dimensions, StyleSheet, View, type ImageSourcePropType } from 'react-native';
+import { Animated, StyleSheet, useWindowDimensions, type ImageSourcePropType } from 'react-native';
 import TarotCardBack from '@/components/tarot/TarotCardBack';
 import type { TarotCardDef, TarotOrientation } from '@/services/tarot';
 
@@ -20,19 +20,19 @@ const FALLOFF = STRIDE * 3.5;
 const MAX_ANGLE = 32;
 const MAX_RISE = 26;
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-
 // A scrollable "hand of cards" — whichever cards sit near the horizontal
 // center of the viewport curve upward into a half-moon fan (coverflow-style,
 // driven by scroll position), while cards further out rotate away and drop
 // down. Selected cards additionally lift and glow regardless of position.
 export default function TarotFanLayout({ deck, selected, isFull, customBack, onToggle }: Props) {
   const scrollX = useRef(new Animated.Value(0)).current;
-  const sidePadding = SCREEN_WIDTH / 2 - CARD_WIDTH / 2;
+  const { width: screenWidth } = useWindowDimensions();
+  const sidePadding = screenWidth / 2 - CARD_WIDTH / 2;
 
   return (
     <Animated.ScrollView
       horizontal
+      style={styles.flex}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={[styles.content, { paddingHorizontal: sidePadding }]}
       onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true })}
@@ -78,6 +78,9 @@ export default function TarotFanLayout({ deck, selected, isFull, customBack, onT
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   content: {
     alignItems: 'flex-end',
     paddingTop: 40,

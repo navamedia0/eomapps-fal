@@ -101,6 +101,7 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
           <MaterialCommunityIcons name="star-crescent" size={26} color={GOLD} />
           <Text style={styles.headerTitle}>Bilgi Köşesi</Text>
           <Text style={styles.headerSubtitle}>Bunları biliyor muydunuz?</Text>
+          <Text style={styles.refreshNote}>Her gün 00:00'da yenilenir</Text>
         </View>
 
         <View style={styles.list}>
@@ -171,6 +172,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: INFO_MUTED,
     fontStyle: 'italic',
+  },
+  refreshNote: {
+    fontSize: 11,
+    color: INFO_MUTED,
+    marginTop: 4,
   },
   list: {
     gap: 14,

@@ -129,7 +129,7 @@ export default function PremiumScreen({ navigation }: Props) {
           ))}
         </View>
 
-        <Text style={styles.sectionLabel}>Coin Satışları</Text>
+        <Text style={styles.sectionLabel}>Coin Mağazası</Text>
         <View style={styles.coinPreviewRow}>
           {COIN_PACKAGES.slice(0, 2).map((pack) => (
             <View key={pack.id} style={styles.coinPreviewCard}>

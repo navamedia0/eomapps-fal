@@ -109,6 +109,7 @@ export default function KesfetScreen({ navigation }: Props) {
           <Ionicons name="compass-outline" size={26} color={GOLD} />
           <Text style={styles.headerTitle}>Keşfet</Text>
         </View>
+        <Text style={styles.refreshNote}>Her gün 00:00'da yenilenir</Text>
 
         <View style={styles.feed}>
           {feed.map((item, index) => {
@@ -159,12 +160,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: 20,
+    marginBottom: 6,
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: '700',
     color: GOLD,
+  },
+  refreshNote: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+    fontStyle: 'italic',
+    marginBottom: 20,
   },
   feed: {
     gap: 14,
