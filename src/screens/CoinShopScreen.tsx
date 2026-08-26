@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { COIN_PACKAGES } from '@/constants/coinPackages';
-import { getCoins, addCoins } from '@/services/coins';
+import { getCoins, addCoins, subscribeCoins } from '@/services/coins';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
@@ -16,6 +16,7 @@ export default function CoinShopScreen() {
 
   useEffect(() => {
     refresh();
+    return subscribeCoins(setCoins);
   }, [refresh]);
 
   const buy = useCallback(

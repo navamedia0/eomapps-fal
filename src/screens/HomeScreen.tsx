@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
-import type { CompositeScreenProps } from '@react-navigation/native';
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
+import type { TabScreenProps } from '@/navigation/types';
 import { recordDailyOpen, type DailyOpenResult } from '@/services/streak';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CoinBadge from '@/components/CoinBadge';
@@ -19,10 +16,7 @@ import {
   TEXT_CAPTION,
 } from '@/theme/colors';
 
-type Props = CompositeScreenProps<
-  BottomTabScreenProps<MainTabParamList, 'AnaSayfa'>,
-  NativeStackScreenProps<RootStackParamList>
->;
+type Props = TabScreenProps;
 
 type GridItem = {
   key: string;
@@ -52,12 +46,10 @@ function GridButton({ item }: { item: GridItem }) {
 }
 
 export default function HomeScreen({ navigation }: Props) {
-  const [streak, setStreak] = useState(0);
   const [rewardBanner, setRewardBanner] = useState<DailyOpenResult | null>(null);
 
   useEffect(() => {
     recordDailyOpen().then((info) => {
-      setStreak(info.streak);
       if (info.isNewDay) setRewardBanner(info);
     });
   }, []);
@@ -214,16 +206,28 @@ export default function HomeScreen({ navigation }: Props) {
       title: 'İç Huzur',
       items: [
         {
-          key: 'mindfulness',
-          title: 'Farkındalık',
-          icon: <MaterialCommunityIcons name="leaf" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('Mindfulness'),
-        },
-        {
           key: 'angelCard',
           title: 'Günün İlham Kartı',
           icon: <Ionicons name="rose-outline" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('AngelCard'),
+        },
+        {
+          key: 'affirmation',
+          title: 'Günlük Olumlama',
+          icon: <Ionicons name="sunny-outline" size={24} color={GOLD} />,
+          onPress: () => navigation.navigate('Affirmation'),
+        },
+        {
+          key: 'breathing',
+          title: 'Nefes Egzersizi',
+          icon: <MaterialCommunityIcons name="meditation" size={26} color={GOLD} />,
+          onPress: () => navigation.navigate('BreathingExercise'),
+        },
+        {
+          key: 'moodJournal',
+          title: 'Duygu Günlüğü',
+          icon: <Ionicons name="book-outline" size={24} color={GOLD} />,
+          onPress: () => navigation.navigate('MoodJournal'),
         },
       ],
     },
@@ -244,39 +248,20 @@ export default function HomeScreen({ navigation }: Props) {
         <View style={styles.headerDivider} />
         <Text style={styles.headerCaption}>Kaderin kapılarını aralayın</Text>
 
-        {streak > 1 && (
-          <Pressable onPress={goToTasks} style={({ pressed }) => [styles.streakBadge, pressed && styles.pressedFade]}>
-            <Ionicons name="flame" size={14} color={GOLD} />
-            <Text style={styles.streakBadgeText}>{streak} günlük seri</Text>
-          </Pressable>
+        {rewardBanner?.isNewDay && rewardBanner.rewardCoins > 0 && (
+          <Text style={styles.rewardToast}>+{rewardBanner.rewardCoins} coin kazandın! ({rewardBanner.dayInWeek}. gün) ✨</Text>
         )}
 
-        {rewardBanner && (
-          <Pressable onPress={goToTasks} style={({ pressed }) => [styles.rewardBanner, pressed && styles.pressedFade]}>
-            <Pressable
-              onPress={(e) => {
-                e.stopPropagation();
-                setRewardBanner(null);
-              }}
-              style={styles.rewardCloseButton}
-              hitSlop={8}
-            >
-              <Ionicons name="close" size={16} color={TEXT_MUTED} />
-            </Pressable>
-            <Ionicons name="flame" size={22} color={GOLD} />
-            <Text style={styles.rewardTitle}>{rewardBanner.streak} Günlük Seri!</Text>
-            <Text style={styles.rewardText}>
-              {rewardBanner.rewardCredits > 0
-                ? `Sadakatin için +${rewardBanner.rewardCredits} bonus kredi kazandın ✨`
-                : 'Her gün gel, seriler büyüdükçe bonus kredi kazanırsın.'}
-            </Text>
-            <View style={styles.rewardCta}>
-              <Ionicons name="videocam-outline" size={13} color={GOLD} />
-              <Text style={styles.rewardCtaText}>Görevlere göz at</Text>
-              <Ionicons name="chevron-forward" size={13} color={GOLD} />
-            </View>
+        <View style={styles.freeRow}>
+          <Pressable onPress={goToTasks} style={({ pressed }) => [styles.freeButton, pressed && styles.pressedFade]}>
+            <Ionicons name="gift-outline" size={18} color={GOLD} />
+            <Text style={styles.freeButtonText}>Ücretsiz Coin Kazan</Text>
           </Pressable>
-        )}
+          <Pressable onPress={goToTasks} style={({ pressed }) => [styles.freeButton, pressed && styles.pressedFade]}>
+            <Ionicons name="game-controller-outline" size={18} color={GOLD} />
+            <Text style={styles.freeButtonText}>Mini Oyunlar</Text>
+          </Pressable>
+        </View>
 
         <View style={styles.categoryList}>
           {categories.map((category) => (
@@ -343,61 +328,36 @@ const styles = StyleSheet.create({
   pressedFade: {
     opacity: 0.85,
   },
-  streakBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 20,
-    backgroundColor: 'rgba(212, 175, 55, 0.1)',
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    borderRadius: 20,
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-  },
-  streakBadgeText: {
+  rewardToast: {
     fontSize: 12,
     color: GOLD,
     fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 10,
   },
-  rewardBanner: {
+  freeRow: {
+    flexDirection: 'row',
+    gap: 10,
     width: '100%',
+    marginBottom: 26,
+  },
+  freeButton: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginBottom: 24,
+    justifyContent: 'center',
+    gap: 8,
     backgroundColor: 'rgba(212, 175, 55, 0.1)',
     borderWidth: 1,
     borderColor: GOLD_SOFT,
-    borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    borderRadius: 14,
+    paddingVertical: 13,
   },
-  rewardCloseButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
-  },
-  rewardTitle: {
-    fontSize: 14,
+  freeButtonText: {
+    fontSize: 12,
     fontWeight: '700',
     color: GOLD,
-  },
-  rewardText: {
-    fontSize: 12.5,
-    color: TEXT_PRIMARY,
     textAlign: 'center',
-  },
-  rewardCta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginTop: 6,
-  },
-  rewardCtaText: {
-    fontSize: 11.5,
-    color: GOLD,
-    fontWeight: '700',
   },
   categoryList: {
     width: '100%',

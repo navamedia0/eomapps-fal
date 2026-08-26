@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, StyleSheet } from 'react-native';
-import { getCoins } from '@/services/coins';
+import { getCoins, subscribeCoins } from '@/services/coins';
 import { GOLD, GOLD_SOFT } from '@/theme/colors';
 
 type Navigation = { navigate: (screen: 'CoinShop') => void };
@@ -18,6 +18,7 @@ export default function CoinBadge({ navigation }: { navigation: Navigation }) {
 
   useEffect(() => {
     getCoins().then(setCoins);
+    return subscribeCoins(setCoins);
   }, []);
 
   return (

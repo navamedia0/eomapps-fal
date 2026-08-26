@@ -11,6 +11,7 @@ import { getCoins, spendCoins } from '@/services/coins';
 import { parseSpreadReading } from '@/utils/parseSpreadReading';
 import { turkishUpperCase } from '@/utils/turkishCase';
 import TarotCardFace from '@/components/tarot/TarotCardFace';
+import TarotSpreadLayout from '@/components/tarot/TarotSpreadLayout';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CardStoryModal from '@/components/tarot/CardStoryModal';
 import ShareButton from '@/components/ShareButton';
@@ -90,10 +91,12 @@ export default function TarotResultScreen({ route, navigation }: Props) {
     return () => loop.stop();
   }, [loading, pulse]);
 
-  const sections = useMemo(
-    () => (result ? parseSpreadReading(result, spread.positions) : null),
+  const sectionsWithSummary = useMemo(
+    () => (result ? parseSpreadReading(result, [...spread.positions, 'Genel Yorum']) : null),
     [result, spread.positions],
   );
+  const sections = sectionsWithSummary ? sectionsWithSummary.slice(0, spread.positions.length) : null;
+  const generalSummary = sectionsWithSummary ? sectionsWithSummary[sectionsWithSummary.length - 1] : null;
   const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] });
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.15] });
 
@@ -142,6 +145,8 @@ export default function TarotResultScreen({ route, navigation }: Props) {
 
         {!loading && !error && !blocked && (
           <View style={styles.cardsList}>
+            {result && <TarotSpreadLayout cards={cards} positions={spread.positions} spreadId={spread.id} />}
+
             {cards.map((card, index) => (
               <View key={card.id} style={styles.cardBlock}>
                 <CornerTicks />
@@ -177,6 +182,18 @@ export default function TarotResultScreen({ route, navigation }: Props) {
                 </View>
                 <View style={styles.divider} />
                 <Text style={styles.interpretationText}>{result}</Text>
+              </View>
+            )}
+
+            {generalSummary && (
+              <View style={styles.summaryBlock}>
+                <CornerTicks />
+                <View style={styles.resultHeader}>
+                  <MaterialCommunityIcons name="star-crescent" size={18} color={GOLD} />
+                  <Text style={styles.resultHeaderText}>Genel Uyum ve Yorum</Text>
+                </View>
+                <View style={styles.divider} />
+                <Text style={styles.interpretationText}>{generalSummary}</Text>
               </View>
             )}
 
@@ -287,6 +304,19 @@ const styles = StyleSheet.create({
     backgroundColor: GOLD_SOFT,
     opacity: 0.6,
     marginVertical: 14,
+  },
+  summaryBlock: {
+    position: 'relative',
+    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    borderRadius: 26,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    padding: 20,
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 6,
   },
   cardBlockHeader: {
     flexDirection: 'row',

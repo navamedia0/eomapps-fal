@@ -1,9 +1,6 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
-import type { CompositeScreenProps } from '@react-navigation/native';
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
+import type { RootStackParamList, TabScreenProps } from '@/navigation/types';
 import ShareButton from '@/components/ShareButton';
 import ShareImageButton from '@/components/ShareImageButton';
 import FeatureIcon from '@/components/FeatureIcon';
@@ -13,10 +10,7 @@ import quotes from '@/data/kesfet_sozleri.json';
 import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
-type Props = CompositeScreenProps<
-  BottomTabScreenProps<MainTabParamList, 'Kesfet'>,
-  NativeStackScreenProps<RootStackParamList>
->;
+type Props = TabScreenProps;
 
 const QUOTES: string[] = quotes;
 

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { getVideoRewardState, claimNextVideoReward, VIDEO_REWARD_SCHEDULE } from '@/services/videoRewards';
+import { getCurrentDayInWeek, WEEKLY_LOGIN_SCHEDULE } from '@/services/streak';
 import AdWatchModal from '@/components/AdWatchModal';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -11,6 +12,7 @@ export default function TasksScreen() {
   const [loaded, setLoaded] = useState(false);
   const [watching, setWatching] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [dayInWeek, setDayInWeek] = useState(1);
   const feedbackTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -18,6 +20,7 @@ export default function TasksScreen() {
       setClaimed(state.claimed);
       setLoaded(true);
     });
+    getCurrentDayInWeek().then(setDayInWeek);
   }, []);
 
   const startWatch = useCallback(() => {
@@ -31,7 +34,7 @@ export default function TasksScreen() {
     if (result) {
       setClaimed(result.claimed);
       if (feedbackTimeout.current) clearTimeout(feedbackTimeout.current);
-      setFeedback(`+${result.credit} kredi kazandın! ✨`);
+      setFeedback(`+${result.coins} coin kazandın! ✨`);
       feedbackTimeout.current = setTimeout(() => setFeedback(null), 2500);
     }
   }, []);
@@ -44,23 +47,55 @@ export default function TasksScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Ionicons name="ribbon-outline" size={30} color={GOLD} />
-          <Text style={styles.headerTitle}>Görevler</Text>
-          <Text style={styles.headerSubtitle}>Küçük görevlerle bonus kredi kazan</Text>
+          <Text style={styles.headerTitle}>Ücretsiz Coin Kazan</Text>
+          <Text style={styles.headerSubtitle}>Her gün giriş yap, video izle, coin biriktir</Text>
+        </View>
+
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="calendar-outline" size={22} color={GOLD} />
+            <Text style={styles.cardTitle}>Haftalık Giriş Ödülleri</Text>
+          </View>
+          <Text style={styles.cardSubtitle}>Her gün uygulamayı aç, ödülünü topla. 7. gün büyük ödül!</Text>
+
+          <View style={styles.slotGrid}>
+            {WEEKLY_LOGIN_SCHEDULE.map((coins, index) => {
+              const dayNumber = index + 1;
+              const isPast = dayNumber < dayInWeek;
+              const isToday = dayNumber === dayInWeek;
+              return (
+                <View
+                  key={index}
+                  style={[styles.slot, isPast && styles.slotClaimed, isToday && styles.slotNext, !isPast && !isToday && styles.slotLocked]}
+                >
+                  {isPast ? (
+                    <Ionicons name="checkmark-circle" size={16} color={GOLD} />
+                  ) : (
+                    <Text style={[styles.slotDay, isToday && styles.slotCreditNext]}>{dayNumber}. gün</Text>
+                  )}
+                  <Text style={[styles.slotCredit, isToday && styles.slotCreditNext, !isPast && !isToday && styles.slotCreditLocked]}>
+                    +{coins}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+          <Text style={styles.weeklyHint}>Bugün {dayInWeek}. gündesin — açılışta otomatik kazandın.</Text>
         </View>
 
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Ionicons name="play-circle-outline" size={22} color={GOLD} />
-            <Text style={styles.cardTitle}>Video İzleyerek Kredi Kazan</Text>
+            <Text style={styles.cardTitle}>Video İzleyerek Coin Kazan</Text>
           </View>
           <Text style={styles.cardSubtitle}>
             {allClaimed
               ? 'Bugünkü tüm videoları izledin, yarın tekrar gel! 🎉'
-              : `${claimed}/${total} video izlendi. Her video biraz daha fazla kredi getiriyor.`}
+              : `${claimed}/${total} video izlendi. Her video biraz daha fazla coin getiriyor.`}
           </Text>
 
           <View style={styles.slotGrid}>
-            {VIDEO_REWARD_SCHEDULE.map((credit, index) => {
+            {VIDEO_REWARD_SCHEDULE.map((coins, index) => {
               const isClaimed = index < claimed;
               const isNext = index === claimed;
               const isLocked = index > claimed;
@@ -82,7 +117,7 @@ export default function TasksScreen() {
                     <Ionicons name="play" size={16} color={isNext ? NIGHT_CARD : TEXT_MUTED} />
                   )}
                   <Text style={[styles.slotCredit, isNext && styles.slotCreditNext, isLocked && styles.slotCreditLocked]}>
-                    +{credit}
+                    +{coins}
                   </Text>
                 </Pressable>
               );
@@ -94,7 +129,7 @@ export default function TasksScreen() {
           {!allClaimed && (
             <Pressable onPress={startWatch} style={({ pressed }) => [styles.watchButton, pressed && styles.watchButtonPressed]}>
               <Ionicons name="videocam-outline" size={18} color={NIGHT_CARD} />
-              <Text style={styles.watchButtonText}>Video İzle, +{VIDEO_REWARD_SCHEDULE[claimed]} Kredi Kazan</Text>
+              <Text style={styles.watchButtonText}>Video İzle, +{VIDEO_REWARD_SCHEDULE[claimed]} Coin Kazan</Text>
             </Pressable>
           )}
         </View>
@@ -128,10 +163,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: GOLD,
     marginTop: 6,
+    textAlign: 'center',
   },
   headerSubtitle: {
     fontSize: 12.5,
     color: TEXT_MUTED,
+    textAlign: 'center',
   },
   card: {
     backgroundColor: NIGHT_CARD,
@@ -184,6 +221,11 @@ const styles = StyleSheet.create({
   slotLocked: {
     opacity: 0.4,
   },
+  slotDay: {
+    fontSize: 8.5,
+    color: TEXT_MUTED,
+    fontWeight: '600',
+  },
   slotCredit: {
     fontSize: 10,
     color: TEXT_MUTED,
@@ -194,6 +236,11 @@ const styles = StyleSheet.create({
   },
   slotCreditLocked: {
     color: TEXT_MUTED,
+  },
+  weeklyHint: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+    fontStyle: 'italic',
   },
   feedbackText: {
     fontSize: 13,

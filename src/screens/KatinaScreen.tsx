@@ -8,9 +8,9 @@ import { interpretKatinaSpread } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
 import { parseSpreadReading } from '@/utils/parseSpreadReading';
 import { turkishUpperCase } from '@/utils/turkishCase';
-import { KATINA_SUIT_INFO } from '@/constants/katinaInfo';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import PlayingCardFace from '@/components/PlayingCardFace';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Katina'>;
@@ -18,10 +18,10 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Katina'>;
 const POSITIONS = ['Geçmiş', 'Şimdi', 'Gelecek'];
 
 function CardFace({ card }: { card: KatinaCard }) {
-  const info = KATINA_SUIT_INFO[card.suit];
+  const rankSlug = card.id.slice(card.suit.length + 1);
   return (
     <View style={styles.cardFace}>
-      <MaterialCommunityIcons name={info.icon as any} size={26} color={info.color} />
+      <PlayingCardFace suit={card.suit} rankSlug={rankSlug} size={104} />
       <Text style={styles.cardFaceName}>{card.name}</Text>
     </View>
   );
@@ -157,16 +157,9 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   cardFace: {
-    width: 88,
-    height: 120,
-    borderRadius: 14,
-    backgroundColor: NIGHT_CARD,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
     alignItems: 'center',
-    justifyContent: 'center',
     gap: 8,
-    paddingHorizontal: 6,
+    width: 104,
   },
   cardFaceName: {
     fontSize: 11,

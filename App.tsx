@@ -23,7 +23,6 @@ import BiorhythmScreen from '@/screens/BiorhythmScreen';
 import MoonCalendarScreen from '@/screens/MoonCalendarScreen';
 import TasksScreen from '@/screens/TasksScreen';
 import KatinaScreen from '@/screens/KatinaScreen';
-import MindfulnessScreen from '@/screens/MindfulnessScreen';
 import MoodJournalScreen from '@/screens/MoodJournalScreen';
 import BreathingExerciseScreen from '@/screens/BreathingExerciseScreen';
 import AffirmationScreen from '@/screens/AffirmationScreen';
@@ -38,6 +37,9 @@ import ZodiacTraitsScreen from '@/screens/ZodiacTraitsScreen';
 import SolitaireScreen from '@/screens/SolitaireScreen';
 import SuFalScreen from '@/screens/SuFalScreen';
 import RuyaKitapligiScreen from '@/screens/RuyaKitapligiScreen';
+import KartAnlamlariScreen from '@/screens/KartAnlamlariScreen';
+import BilgiMakaleScreen from '@/screens/BilgiMakaleScreen';
+import bilgiMakaleleri from '@/data/bilgi_makaleleri.json';
 import { GOLD, NIGHT_DEEP, NIGHT_MID, TEXT_PRIMARY } from '@/theme/colors';
 
 const MAX_APP_WIDTH = 480;
@@ -104,9 +106,8 @@ export default function App() {
             <Stack.Screen name="BirthChart" component={BirthChartScreen} options={{ title: 'Doğum Haritası' }} />
             <Stack.Screen name="Biorhythm" component={BiorhythmScreen} options={{ title: 'Biyoritim' }} />
             <Stack.Screen name="MoonCalendar" component={MoonCalendarScreen} options={{ title: 'Ay Takvimi' }} />
-            <Stack.Screen name="Tasks" component={TasksScreen} options={{ title: 'Görevler' }} />
+            <Stack.Screen name="Tasks" component={TasksScreen} options={{ title: 'Ücretsiz Coin Kazan' }} />
             <Stack.Screen name="Katina" component={KatinaScreen} options={{ title: 'Katina Falı' }} />
-            <Stack.Screen name="Mindfulness" component={MindfulnessScreen} options={{ title: 'Farkındalık' }} />
             <Stack.Screen name="MoodJournal" component={MoodJournalScreen} options={{ title: 'Duygu Günlüğü' }} />
             <Stack.Screen name="BreathingExercise" component={BreathingExerciseScreen} options={{ title: 'Nefes Egzersizi' }} />
             <Stack.Screen name="Affirmation" component={AffirmationScreen} options={{ title: 'Günlük Olumlama' }} />
@@ -121,6 +122,16 @@ export default function App() {
             <Stack.Screen name="Solitaire" component={SolitaireScreen} options={{ title: 'Solitaire Falı' }} />
             <Stack.Screen name="SuFal" component={SuFalScreen} options={{ title: 'Su Falı' }} />
             <Stack.Screen name="RuyaKitapligi" component={RuyaKitapligiScreen} options={{ title: 'Rüya Kitaplığı' }} />
+            <Stack.Screen
+              name="KartAnlamlari"
+              component={KartAnlamlariScreen}
+              options={({ route }) => ({ title: route.params.deck === 'iskambil' ? 'İskambil Kartları' : 'Tarot Kartları' })}
+            />
+            <Stack.Screen
+              name="BilgiMakale"
+              component={BilgiMakaleScreen}
+              options={({ route }) => ({ title: bilgiMakaleleri[route.params.topic].title })}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </View>

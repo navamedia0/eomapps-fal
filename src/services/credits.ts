@@ -35,11 +35,3 @@ export async function spendCredit(): Promise<boolean> {
   await writeState({ ...state, balance: state.balance - 1 });
   return true;
 }
-
-export async function addCredits(amount: number): Promise<number> {
-  if (!Number.isInteger(amount) || amount < 1) throw new Error('Kredi miktari pozitif bir tam sayi olmali.');
-  const state = await readState();
-  const next = state.balance + amount;
-  await writeState({ ...state, balance: next });
-  return next;
-}

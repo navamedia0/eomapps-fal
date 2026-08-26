@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addCredits } from '@/services/credits';
+import { addCoins } from '@/services/coins';
 
 const STORAGE_KEY = '@mistik-rehber/video-rewards';
 
-export const VIDEO_REWARD_SCHEDULE: number[] = [1, 1, 1, 1, 1, 2, 2, 2, 2, 3];
+export const VIDEO_REWARD_SCHEDULE: number[] = [5, 5, 5, 5, 5, 10, 10, 10, 10, 15];
 
 type VideoRewardState = { date: string; claimed: number };
 
@@ -20,13 +20,13 @@ export async function getVideoRewardState(): Promise<{ claimed: number; total: n
   return { claimed: state.claimed, total: VIDEO_REWARD_SCHEDULE.length };
 }
 
-export async function claimNextVideoReward(): Promise<{ credit: number; claimed: number } | null> {
+export async function claimNextVideoReward(): Promise<{ coins: number; claimed: number } | null> {
   const state = await readState();
   if (state.claimed >= VIDEO_REWARD_SCHEDULE.length) return null;
 
-  const credit = VIDEO_REWARD_SCHEDULE[state.claimed];
+  const coins = VIDEO_REWARD_SCHEDULE[state.claimed];
   const nextClaimed = state.claimed + 1;
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ date: today(), claimed: nextClaimed }));
-  await addCredits(credit);
-  return { credit, claimed: nextClaimed };
+  await addCoins(coins);
+  return { coins, claimed: nextClaimed };
 }

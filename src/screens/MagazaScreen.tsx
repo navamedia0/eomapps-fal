@@ -1,22 +1,16 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
-import type { CompositeScreenProps } from '@react-navigation/native';
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
-import { getCoins } from '@/services/coins';
+import type { TabScreenProps } from '@/navigation/types';
+import { getCoins, subscribeCoins } from '@/services/coins';
 import { isPremium } from '@/services/premium';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import FeatureIcon from '@/components/FeatureIcon';
 import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
-type Props = CompositeScreenProps<
-  BottomTabScreenProps<MainTabParamList, 'Magaza'>,
-  NativeStackScreenProps<RootStackParamList>
->;
+type Props = TabScreenProps;
 
 export default function MagazaScreen({ navigation }: Props) {
   const [coins, setCoins] = useState(0);
@@ -28,6 +22,8 @@ export default function MagazaScreen({ navigation }: Props) {
       isPremium().then(setPremium);
     }, []),
   );
+
+  useEffect(() => subscribeCoins(setCoins), []);
 
   return (
     <MysticTableBackground>

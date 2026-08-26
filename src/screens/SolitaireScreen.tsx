@@ -6,9 +6,9 @@ import type { RootStackParamList } from '@/navigation/types';
 import { pickRandomKatinaCards, type KatinaCard } from '@/services/katina';
 import { interpretSolitaireSpread } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
-import { KATINA_SUIT_INFO } from '@/constants/katinaInfo';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import PlayingCardFace from '@/components/PlayingCardFace';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Solitaire'>;
@@ -16,10 +16,10 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Solitaire'>;
 const CARD_COUNT = 7;
 
 function CardFace({ card }: { card: KatinaCard }) {
-  const info = KATINA_SUIT_INFO[card.suit];
+  const rankSlug = card.id.slice(card.suit.length + 1);
   return (
     <View style={styles.cardFace}>
-      <MaterialCommunityIcons name={info.icon as any} size={20} color={info.color} />
+      <PlayingCardFace suit={card.suit} rankSlug={rankSlug} size={92} />
       <Text style={styles.cardFaceName}>{card.name}</Text>
     </View>
   );
@@ -269,16 +269,9 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   cardFace: {
-    width: 76,
-    height: 104,
-    borderRadius: 12,
-    backgroundColor: NIGHT_CARD,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
     alignItems: 'center',
-    justifyContent: 'center',
     gap: 6,
-    paddingHorizontal: 4,
+    width: 92,
   },
   cardFaceName: {
     fontSize: 9.5,
