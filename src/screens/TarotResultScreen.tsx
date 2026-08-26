@@ -8,6 +8,8 @@ import { findSpread } from '@/services/tarotSpreads';
 import { interpretTarotSpread } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
+import { READING_COIN_COST } from '@/constants/economy';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { parseSpreadReading } from '@/utils/parseSpreadReading';
 import { turkishUpperCase } from '@/utils/turkishCase';
 import TarotCardFace from '@/components/tarot/TarotCardFace';
@@ -39,13 +41,15 @@ export default function TarotResultScreen({ route, navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [blocked, setBlocked] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const [storyCard, setStoryCard] = useState<TarotCardDef | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
 
-  const fetchReading = useCallback(async () => {
+  const fetchReading = useCallback(async (payWithCoins = false) => {
     setLoading(true);
     setError(null);
     setBlocked(null);
+    setCoinFallback(null);
     try {
       if (spread.priceCoins > 0) {
         const coins = await getCoins();
@@ -59,9 +63,20 @@ export default function TarotResultScreen({ route, navigation }: Props) {
         return;
       }
 
+      if (payWithCoins) {
+        const spent = await spendCoins(READING_COIN_COST);
+        if (!spent) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
+        const interpretation = await interpretTarotSpread(cards, spread.positions);
+        setResult(interpretation);
+        return;
+      }
+
       const remaining = await getCredits();
       if (remaining < 1) {
-        setBlocked('Bugünkü ücretsiz fal hakkın doldu. Yarın tekrar buradayız ✨');
+        setCoinFallback({ coins: await getCoins() });
         return;
       }
       const interpretation = await interpretTarotSpread(cards, spread.positions);
@@ -118,7 +133,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
           <View style={styles.errorBox}>
             <Ionicons name="alert-circle-outline" size={20} color="#E08A8A" />
             <Text style={styles.errorText}>{error}</Text>
-            <Pressable onPress={fetchReading} style={styles.retryButton}>
+            <Pressable onPress={() => fetchReading()} style={styles.retryButton}>
               <MaterialCommunityIcons name="refresh" size={16} color={GOLD} />
               <Text style={styles.retryButtonText}>Tekrar Dene</Text>
             </Pressable>
@@ -129,21 +144,24 @@ export default function TarotResultScreen({ route, navigation }: Props) {
           <View style={styles.blockedBox}>
             <Ionicons name="moon" size={22} color={GOLD} />
             <Text style={styles.blockedText}>{blocked}</Text>
-            {spread.priceCoins > 0 ? (
-              <Pressable onPress={() => navigation.navigate('CoinShop')} style={styles.retryButton}>
-                <Ionicons name="disc-outline" size={16} color={GOLD} />
-                <Text style={styles.retryButtonText}>Coin Yükle</Text>
-              </Pressable>
-            ) : (
-              <Pressable onPress={() => navigation.navigate('Home')} style={styles.retryButton}>
-                <Ionicons name="home-outline" size={16} color={GOLD} />
-                <Text style={styles.retryButtonText}>Ana Sayfaya Dön</Text>
-              </Pressable>
-            )}
+            <Pressable onPress={() => navigation.navigate('CoinShop')} style={styles.retryButton}>
+              <Ionicons name="disc-outline" size={16} color={GOLD} />
+              <Text style={styles.retryButtonText}>Coin Yükle</Text>
+            </Pressable>
           </View>
         )}
 
-        {!loading && !error && !blocked && (
+        {coinFallback && (
+          <CoinFallbackBox
+            cost={READING_COIN_COST}
+            coins={coinFallback.coins}
+            onContinue={() => fetchReading(true)}
+            onBuyCoins={() => navigation.navigate('CoinShop')}
+            onDismiss={() => navigation.navigate('Home')}
+          />
+        )}
+
+        {!loading && !error && !blocked && !coinFallback && (
           <View style={styles.cardsList}>
             {result && <TarotSpreadLayout cards={cards} positions={spread.positions} spreadId={spread.id} />}
 

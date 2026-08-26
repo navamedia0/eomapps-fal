@@ -7,8 +7,11 @@ import { ZODIACS, type Zodiac } from '@/services/zodiac';
 import { ZODIAC_INFO } from '@/constants/zodiacInfo';
 import { interpretZodiacCompatibility } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
+import { getCoins, spendCoins } from '@/services/coins';
+import { READING_COIN_COST } from '@/constants/economy';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Compatibility'>;
@@ -44,7 +47,7 @@ export default function CompatibilityScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [blocked, setBlocked] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
 
   const reset = useCallback(() => {
@@ -52,22 +55,30 @@ export default function CompatibilityScreen({ navigation }: Props) {
     setSignB(null);
     setResult(null);
     setError(null);
-    setBlocked(null);
+    setCoinFallback(null);
   }, []);
 
-  const check = useCallback(async (a: Zodiac, b: Zodiac) => {
+  const check = useCallback(async (a: Zodiac, b: Zodiac, payWithCoins = false) => {
     setLoading(true);
     setError(null);
-    setBlocked(null);
+    setCoinFallback(null);
     setResult(null);
     try {
-      const remaining = await getCredits();
-      if (remaining < 1) {
-        setBlocked('Bugünkü ücretsiz fal hakkın doldu. Yarın tekrar buradayız ✨');
-        return;
+      if (payWithCoins) {
+        const spent = await spendCoins(READING_COIN_COST);
+        if (!spent) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
+      } else {
+        const remaining = await getCredits();
+        if (remaining < 1) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
       }
       const reading = await interpretZodiacCompatibility(ZODIAC_INFO[a].name, ZODIAC_INFO[b].name);
-      await spendCredit();
+      if (!payWithCoins) await spendCredit();
       setResult(reading);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Uyum yorumu alınırken bir sorun oluştu.');
@@ -102,7 +113,7 @@ export default function CompatibilityScreen({ navigation }: Props) {
   const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] });
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.15] });
 
-  if (result || loading || blocked || error) {
+  if (result || loading || coinFallback || error) {
     return (
       <MysticTableBackground>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -139,15 +150,14 @@ export default function CompatibilityScreen({ navigation }: Props) {
             </View>
           )}
 
-          {blocked && (
-            <View style={styles.blockedBox}>
-              <Ionicons name="moon" size={22} color={GOLD} />
-              <Text style={styles.blockedText}>{blocked}</Text>
-              <Pressable onPress={() => navigation.navigate('Home')} style={styles.retryButton}>
-                <Ionicons name="home-outline" size={16} color={GOLD} />
-                <Text style={styles.retryButtonText}>Ana Sayfaya Dön</Text>
-              </Pressable>
-            </View>
+          {coinFallback && (
+            <CoinFallbackBox
+              cost={READING_COIN_COST}
+              coins={coinFallback.coins}
+              onContinue={() => signA && signB && check(signA, signB, true)}
+              onBuyCoins={() => navigation.navigate('CoinShop')}
+              onDismiss={() => navigation.navigate('Home')}
+            />
           )}
 
           {result && (
@@ -301,22 +311,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#E08A8A',
     fontSize: 13,
-    textAlign: 'center',
-  },
-  blockedBox: {
-    alignItems: 'center',
-    gap: 10,
-    width: '100%',
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
-    borderColor: GOLD_SOFT,
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 18,
-    marginBottom: 20,
-  },
-  blockedText: {
-    color: TEXT_PRIMARY,
-    fontSize: 13.5,
     textAlign: 'center',
   },
   retryButton: {

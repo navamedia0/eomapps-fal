@@ -17,6 +17,9 @@ import type { RootStackParamList } from '@/navigation/types';
 import { calculateLifePath, calculateNameNumber } from '@/services/numerology';
 import { interpretNumerology } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
+import { getCoins, spendCoins } from '@/services/coins';
+import { READING_COIN_COST } from '@/constants/economy';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import DateFields from '@/components/DateFields';
@@ -32,14 +35,14 @@ export default function NumerologyScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ lifePath: number; nameNumber: number; text: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [blocked, setBlocked] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
 
   const reset = useCallback(() => {
     setResult(null);
     setError(null);
-    setBlocked(null);
+    setCoinFallback(null);
     setFormError(null);
   }, []);
 
@@ -63,24 +66,32 @@ export default function NumerologyScreen({ navigation }: Props) {
     return date;
   }, [name, day, month, year]);
 
-  const calculate = useCallback(async () => {
+  const calculate = useCallback(async (payWithCoins = false) => {
     setFormError(null);
     setError(null);
-    setBlocked(null);
+    setCoinFallback(null);
     const date = validate();
     if (!date) return;
 
     setLoading(true);
     try {
-      const remaining = await getCredits();
-      if (remaining < 1) {
-        setBlocked('Bugünkü ücretsiz fal hakkın doldu. Yarın tekrar buradayız ✨');
-        return;
+      if (payWithCoins) {
+        const spent = await spendCoins(READING_COIN_COST);
+        if (!spent) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
+      } else {
+        const remaining = await getCredits();
+        if (remaining < 1) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
       }
       const lifePath = calculateLifePath(date);
       const nameNumber = calculateNameNumber(name.trim());
       const text = await interpretNumerology(name.trim(), lifePath, nameNumber);
-      await spendCredit();
+      if (!payWithCoins) await spendCredit();
       setResult({ lifePath, nameNumber, text });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Numeroloji yorumu alınırken bir sorun oluştu.');
@@ -108,7 +119,7 @@ export default function NumerologyScreen({ navigation }: Props) {
     <MysticTableBackground>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          {!result && !loading && !blocked && (
+          {!result && !loading && !coinFallback && (
             <View style={styles.formWrap}>
               <View style={styles.iconCircle}>
                 <Ionicons name="calculator-outline" size={36} color={GOLD} />
@@ -131,7 +142,7 @@ export default function NumerologyScreen({ navigation }: Props) {
 
               {formError && <Text style={styles.formErrorText}>{formError}</Text>}
 
-              <Pressable onPress={calculate} style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
+              <Pressable onPress={() => calculate()} style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
                 <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
                 <Text style={styles.actionButtonText}>Sayılarımı Göster</Text>
               </Pressable>
@@ -151,22 +162,21 @@ export default function NumerologyScreen({ navigation }: Props) {
             <View style={styles.errorBox}>
               <Ionicons name="alert-circle-outline" size={20} color="#E08A8A" />
               <Text style={styles.errorText}>{error}</Text>
-              <Pressable onPress={calculate} style={styles.retryButton}>
+              <Pressable onPress={() => calculate()} style={styles.retryButton}>
                 <Ionicons name="refresh" size={16} color={GOLD} />
                 <Text style={styles.retryButtonText}>Tekrar Dene</Text>
               </Pressable>
             </View>
           )}
 
-          {blocked && (
-            <View style={styles.blockedBox}>
-              <Ionicons name="moon" size={22} color={GOLD} />
-              <Text style={styles.blockedText}>{blocked}</Text>
-              <Pressable onPress={() => navigation.navigate('Home')} style={styles.retryButton}>
-                <Ionicons name="home-outline" size={16} color={GOLD} />
-                <Text style={styles.retryButtonText}>Ana Sayfaya Dön</Text>
-              </Pressable>
-            </View>
+          {coinFallback && (
+            <CoinFallbackBox
+              cost={READING_COIN_COST}
+              coins={coinFallback.coins}
+              onContinue={() => calculate(true)}
+              onBuyCoins={() => navigation.navigate('CoinShop')}
+              onDismiss={() => navigation.navigate('Home')}
+            />
           )}
 
           {result && (
@@ -299,21 +309,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#E08A8A',
     fontSize: 13,
-    textAlign: 'center',
-  },
-  blockedBox: {
-    alignItems: 'center',
-    gap: 10,
-    width: '100%',
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
-    borderColor: GOLD_SOFT,
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 18,
-  },
-  blockedText: {
-    color: TEXT_PRIMARY,
-    fontSize: 13.5,
     textAlign: 'center',
   },
   retryButton: {

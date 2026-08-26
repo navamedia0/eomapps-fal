@@ -8,6 +8,9 @@ import type { RootStackParamList } from '@/navigation/types';
 import { readAudioAsBase64 } from '@/utils/audioBase64';
 import { interpretVoiceReading } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
+import { getCoins, spendCoins } from '@/services/coins';
+import { VOICE_READING_COIN_COST } from '@/constants/economy';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -25,7 +28,8 @@ export default function VoiceReadingScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [blocked, setBlocked] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
+  const [lastAudioUri, setLastAudioUri] = useState<string | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -59,7 +63,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
     setPermissionError(null);
     setError(null);
     setResult(null);
-    setBlocked(null);
+    setCoinFallback(null);
     try {
       const permission = await Audio.requestPermissionsAsync();
       if (!permission.granted) {
@@ -91,19 +95,28 @@ export default function VoiceReadingScreen({ navigation }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recording]);
 
-  const interpret = useCallback(async (uri: string) => {
+  const interpret = useCallback(async (uri: string, payWithCoins = false) => {
     setLoading(true);
     setError(null);
-    setBlocked(null);
+    setCoinFallback(null);
+    setLastAudioUri(uri);
     try {
-      const remaining = await getCredits();
-      if (remaining < 1) {
-        setBlocked('Bugünkü ücretsiz fal hakkın doldu. Yarın tekrar buradayız ✨');
-        return;
+      if (payWithCoins) {
+        const spent = await spendCoins(VOICE_READING_COIN_COST);
+        if (!spent) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
+      } else {
+        const remaining = await getCredits();
+        if (remaining < 1) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
       }
       const base64 = await readAudioAsBase64(uri);
       const interpretation = await interpretVoiceReading(base64, AUDIO_MIME_TYPE);
-      await spendCredit();
+      if (!payWithCoins) await spendCredit();
       setResult(interpretation);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sesin yorumlanırken bir sorun oluştu.');
@@ -115,7 +128,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
   const reset = useCallback(() => {
     setResult(null);
     setError(null);
-    setBlocked(null);
+    setCoinFallback(null);
     setSeconds(0);
   }, []);
 
@@ -125,7 +138,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
   return (
     <MysticTableBackground>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {!result && !loading && !blocked && !error && (
+        {!result && !loading && !coinFallback && !error && (
           <View style={styles.recordWrap}>
             <Text style={styles.instruction}>
               Aklından geçeni, bir soruyu ya da bir rüyayı sesli anlat; hem söylediklerini hem tonunu birlikte yorumlayayım.
@@ -166,15 +179,14 @@ export default function VoiceReadingScreen({ navigation }: Props) {
           </View>
         )}
 
-        {blocked && (
-          <View style={styles.blockedBox}>
-            <Ionicons name="moon" size={22} color={GOLD} />
-            <Text style={styles.blockedText}>{blocked}</Text>
-            <Pressable onPress={() => navigation.navigate('Home')} style={styles.retryButton}>
-              <Ionicons name="home-outline" size={16} color={GOLD} />
-              <Text style={styles.retryButtonText}>Ana Sayfaya Dön</Text>
-            </Pressable>
-          </View>
+        {coinFallback && (
+          <CoinFallbackBox
+            cost={VOICE_READING_COIN_COST}
+            coins={coinFallback.coins}
+            onContinue={() => lastAudioUri && interpret(lastAudioUri, true)}
+            onBuyCoins={() => navigation.navigate('CoinShop')}
+            onDismiss={() => navigation.navigate('Home')}
+          />
         )}
 
         {result && (
@@ -268,21 +280,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#E08A8A',
     fontSize: 13,
-    textAlign: 'center',
-  },
-  blockedBox: {
-    alignItems: 'center',
-    gap: 10,
-    width: '100%',
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
-    borderColor: GOLD_SOFT,
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 18,
-  },
-  blockedText: {
-    color: TEXT_PRIMARY,
-    fontSize: 13.5,
     textAlign: 'center',
   },
   retryButton: {

@@ -9,7 +9,7 @@ import { getTarotMeaning } from '@/services/tarotMeanings';
 import PlayingCardFace from '@/components/PlayingCardFace';
 import TarotCardFace from '@/components/tarot/TarotCardFace';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import { INFO_PURPLE, INFO_PURPLE_SOFT, INFO_CREAM, INFO_MUTED } from '@/theme/colors';
+import { TEXT_CAPTION, PARCHMENT_BG, PARCHMENT_BORDER, PARCHMENT_TEXT, PARCHMENT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'KartAnlamlari'>;
 
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   intro: {
     fontSize: 12.5,
-    color: INFO_MUTED,
+    color: TEXT_CAPTION,
     fontStyle: 'italic',
     textAlign: 'center',
     marginBottom: 20,
@@ -83,12 +83,17 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     gap: 14,
-    backgroundColor: INFO_PURPLE,
+    backgroundColor: PARCHMENT_BG,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: INFO_PURPLE_SOFT,
+    borderColor: PARCHMENT_BORDER,
     padding: 14,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
   },
   faceWrap: {
     alignItems: 'center',
@@ -99,12 +104,12 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 14,
     fontWeight: '700',
-    color: INFO_CREAM,
+    color: PARCHMENT_TEXT,
     marginBottom: 4,
   },
   meaning: {
     fontSize: 12,
     lineHeight: 18,
-    color: INFO_MUTED,
+    color: PARCHMENT_MUTED,
   },
 });

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import {
 import { findSpread } from '@/services/tarotSpreads';
 import { getSelectedDesignImage } from '@/services/cardDesigns';
 import TarotCardBack from '@/components/tarot/TarotCardBack';
+import TarotContextModal from '@/components/tarot/TarotContextModal';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import {
   GOLD,
@@ -48,6 +49,7 @@ export default function TarotScreen({ navigation, route }: Props) {
   const [selected, setSelected] = useState<Selection[]>([]);
   const [gridWidth, setGridWidth] = useState(0);
   const [customBack, setCustomBack] = useState<ImageSourcePropType | null>(null);
+  const [contextModalVisible, setContextModalVisible] = useState(false);
 
   useEffect(() => {
     getSelectedDesignImage().then(setCustomBack);
@@ -134,12 +136,19 @@ export default function TarotScreen({ navigation, route }: Props) {
           </Pressable>
         </View>
 
+        <Pressable onPress={() => setContextModalVisible(true)} style={styles.contextButton}>
+          <Ionicons name="chatbubble-ellipses-outline" size={13} color={GOLD} />
+          <Text style={styles.contextButtonText}>Kendinden bahsetmek ister misin?</Text>
+        </Pressable>
+
         {selected.length > 0 && (
           <Pressable onPress={clearSelection} style={styles.clearButton}>
             <Text style={styles.clearButtonText}>Seçimi temizle</Text>
           </Pressable>
         )}
       </View>
+
+      <TarotContextModal visible={contextModalVisible} onClose={() => setContextModalVisible(false)} />
 
       <FlatList
         style={styles.flex}
@@ -266,6 +275,18 @@ const styles = StyleSheet.create({
   buttonPressed: {
     opacity: 0.8,
     transform: [{ scale: 0.98 }],
+  },
+  contextButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 12,
+  },
+  contextButtonText: {
+    fontSize: 11.5,
+    color: GOLD,
+    fontWeight: '600',
   },
   clearButton: {
     alignSelf: 'center',

@@ -6,11 +6,14 @@ import type { RootStackParamList } from '@/navigation/types';
 import { pickRandomKatinaCards, type KatinaCard } from '@/services/katina';
 import { interpretKatinaSpread } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
+import { getCoins, spendCoins } from '@/services/coins';
+import { READING_COIN_COST } from '@/constants/economy';
 import { parseSpreadReading } from '@/utils/parseSpreadReading';
 import { turkishUpperCase } from '@/utils/turkishCase';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import PlayingCardFace from '@/components/PlayingCardFace';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Katina'>;
@@ -34,16 +37,29 @@ export default function KatinaScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [blocked, setBlocked] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
 
-  const fetchReading = useCallback(async () => {
+  const fetchReading = useCallback(async (payWithCoins = false) => {
     setLoading(true);
     setError(null);
     setBlocked(null);
+    setCoinFallback(null);
     try {
+      if (payWithCoins) {
+        const spent = await spendCoins(READING_COIN_COST);
+        if (!spent) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
+        const interpretation = await interpretKatinaSpread(cards, POSITIONS);
+        setResult(interpretation);
+        return;
+      }
+
       const remaining = await getCredits();
       if (remaining < 1) {
-        setBlocked('Bugünkü ücretsiz fal hakkın doldu. Yarın tekrar buradayız ✨');
+        setCoinFallback({ coins: await getCoins() });
         return;
       }
       const interpretation = await interpretKatinaSpread(cards, POSITIONS);
@@ -99,7 +115,7 @@ export default function KatinaScreen({ navigation }: Props) {
           <View style={styles.errorBox}>
             <Ionicons name="alert-circle-outline" size={20} color="#E08A8A" />
             <Text style={styles.errorText}>{error}</Text>
-            <Pressable onPress={fetchReading} style={styles.retryButton}>
+            <Pressable onPress={() => fetchReading()} style={styles.retryButton}>
               <MaterialCommunityIcons name="refresh" size={16} color={GOLD} />
               <Text style={styles.retryButtonText}>Tekrar Dene</Text>
             </Pressable>
@@ -117,7 +133,17 @@ export default function KatinaScreen({ navigation }: Props) {
           </View>
         )}
 
-        {!loading && !error && !blocked && result && (
+        {coinFallback && (
+          <CoinFallbackBox
+            cost={READING_COIN_COST}
+            coins={coinFallback.coins}
+            onContinue={() => fetchReading(true)}
+            onBuyCoins={() => navigation.navigate('CoinShop')}
+            onDismiss={() => navigation.navigate('Home')}
+          />
+        )}
+
+        {!loading && !error && !blocked && !coinFallback && result && (
           <View style={styles.resultList}>
             {POSITIONS.map((position, index) => (
               <View key={position} style={styles.resultBlock}>

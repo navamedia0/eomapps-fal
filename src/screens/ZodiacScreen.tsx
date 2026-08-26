@@ -9,8 +9,11 @@ import { ZODIAC_TRAITS } from '@/constants/zodiacTraits';
 import { interpretDailyZodiac } from '@/services/readings-ai';
 import { getCachedZodiacReading, setCachedZodiacReading } from '@/services/dailyZodiacCache';
 import { getCredits, spendCredit } from '@/services/credits';
+import { getCoins, spendCoins } from '@/services/coins';
+import { READING_COIN_COST } from '@/constants/economy';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Zodiac'>;
@@ -22,27 +25,37 @@ export default function ZodiacScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [blocked, setBlocked] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
 
-  const load = useCallback(async (sign: Zodiac) => {
+  const load = useCallback(async (sign: Zodiac, payWithCoins = false) => {
     setLoading(true);
     setError(null);
-    setBlocked(null);
+    setCoinFallback(null);
     setResult(null);
     try {
-      const cached = await getCachedZodiacReading(sign);
-      if (cached) {
-        setResult(cached);
-        return;
+      if (!payWithCoins) {
+        const cached = await getCachedZodiacReading(sign);
+        if (cached) {
+          setResult(cached);
+          return;
+        }
       }
-      const remaining = await getCredits();
-      if (remaining < 1) {
-        setBlocked('Bugünkü ücretsiz fal hakkın doldu. Yarın tekrar buradayız ✨');
-        return;
+      if (payWithCoins) {
+        const spent = await spendCoins(READING_COIN_COST);
+        if (!spent) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
+      } else {
+        const remaining = await getCredits();
+        if (remaining < 1) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
       }
       const reading = await interpretDailyZodiac(ZODIAC_INFO[sign].name);
-      await spendCredit();
+      if (!payWithCoins) await spendCredit();
       await setCachedZodiacReading(sign, reading);
       setResult(reading);
     } catch (err) {
@@ -64,7 +77,7 @@ export default function ZodiacScreen({ navigation }: Props) {
     setSelected(null);
     setResult(null);
     setError(null);
-    setBlocked(null);
+    setCoinFallback(null);
   }, []);
 
   useEffect(() => {
@@ -176,15 +189,14 @@ export default function ZodiacScreen({ navigation }: Props) {
           </View>
         )}
 
-        {blocked && (
-          <View style={styles.blockedBox}>
-            <Ionicons name="moon" size={22} color={GOLD} />
-            <Text style={styles.blockedText}>{blocked}</Text>
-            <Pressable onPress={() => navigation.navigate('Home')} style={styles.retryButton}>
-              <Ionicons name="home-outline" size={16} color={GOLD} />
-              <Text style={styles.retryButtonText}>Ana Sayfaya Dön</Text>
-            </Pressable>
-          </View>
+        {coinFallback && (
+          <CoinFallbackBox
+            cost={READING_COIN_COST}
+            coins={coinFallback.coins}
+            onContinue={() => selected && load(selected, true)}
+            onBuyCoins={() => navigation.navigate('CoinShop')}
+            onDismiss={() => navigation.navigate('Home')}
+          />
         )}
 
         {result && (
@@ -366,22 +378,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#E08A8A',
     fontSize: 13,
-    textAlign: 'center',
-  },
-  blockedBox: {
-    alignItems: 'center',
-    gap: 10,
-    width: '100%',
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
-    borderColor: GOLD_SOFT,
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 18,
-    marginBottom: 20,
-  },
-  blockedText: {
-    color: TEXT_PRIMARY,
-    fontSize: 13.5,
     textAlign: 'center',
   },
   retryButton: {

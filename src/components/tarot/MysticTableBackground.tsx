@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
-import { Image, StyleSheet, View, type DimensionValue } from 'react-native';
+import { Animated, Image, StyleSheet, View, type DimensionValue } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Starfield from '@/components/Starfield';
+import OrbGlow from '@/components/tarot/OrbGlow';
 import { GOLD } from '@/theme/colors';
 
 const BACKGROUNDS = {
@@ -29,9 +30,9 @@ const TABLE_DECOR: Decor[] = [
   { icon: 'crystal-ball', size: 20, opacity: 0.3, top: '5%', left: '7%' },
 ];
 
-type Props = { children: ReactNode; variant?: BackgroundVariant };
+type Props = { children: ReactNode; variant?: BackgroundVariant; scrollY?: Animated.Value };
 
-export default function MysticTableBackground({ children, variant = 'general' }: Props) {
+export default function MysticTableBackground({ children, variant = 'general', scrollY }: Props) {
   return (
     <View style={styles.flex}>
       <Image source={BACKGROUNDS[variant]} resizeMode="cover" style={styles.bgImage} />
@@ -45,6 +46,7 @@ export default function MysticTableBackground({ children, variant = 'general' }:
         style={styles.candleGlow}
         pointerEvents="none"
       />
+      {variant === 'general' && scrollY && <OrbGlow scrollY={scrollY} />}
       <Starfield count={14} />
       <View pointerEvents="none" style={StyleSheet.absoluteFillObject}>
         {TABLE_DECOR.map((item, index) => (

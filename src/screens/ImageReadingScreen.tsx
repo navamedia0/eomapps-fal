@@ -6,6 +6,9 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import { interpretImages, validateImage } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
+import { getCoins, spendCoins } from '@/services/coins';
+import { READING_COIN_COST } from '@/constants/economy';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -45,14 +48,14 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [blocked, setBlocked] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const [permissionError, setPermissionError] = useState<string | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
 
   const resetResult = useCallback(() => {
     setResult(null);
     setError(null);
-    setBlocked(null);
+    setCoinFallback(null);
   }, []);
 
   const addAssets = useCallback((assets: ImagePicker.ImagePickerAsset[]) => {
@@ -99,40 +102,51 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
     setImages((prev) => prev.filter((_, i) => i !== index));
   }, [resetResult]);
 
-  const interpret = useCallback(async () => {
+  const interpret = useCallback(async (payWithCoins = false) => {
     if (images.length < MIN_IMAGES) return;
     setError(null);
-    setBlocked(null);
-    setValidating(true);
-    try {
-      const validations = await Promise.all(
-        images.map((img) => validateImage(kind, { mimeType: img.mimeType, data: img.base64 })),
-      );
-      const invalidCount = validations.filter((valid) => !valid).length;
-      if (invalidCount > 0) {
-        setError(
-          invalidCount === images.length
-            ? `Yüklediğin fotoğraflar ${copy.invalidSubject} benzemiyor. Lütfen sadece uygun fotoğraflar yükle.`
-            : `${invalidCount} fotoğraf ${copy.invalidSubject} benzemiyor gibi görünüyor. Lütfen sadece uygun fotoğraflar yükle.`,
+    setCoinFallback(null);
+
+    if (!payWithCoins) {
+      setValidating(true);
+      try {
+        const validations = await Promise.all(
+          images.map((img) => validateImage(kind, { mimeType: img.mimeType, data: img.base64 })),
         );
+        const invalidCount = validations.filter((valid) => !valid).length;
+        if (invalidCount > 0) {
+          setError(
+            invalidCount === images.length
+              ? `Yüklediğin fotoğraflar ${copy.invalidSubject} benzemiyor. Lütfen sadece uygun fotoğraflar yükle.`
+              : `${invalidCount} fotoğraf ${copy.invalidSubject} benzemiyor gibi görünüyor. Lütfen sadece uygun fotoğraflar yükle.`,
+          );
+          return;
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Fotoğraflar doğrulanırken bir sorun oluştu.');
         return;
+      } finally {
+        setValidating(false);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Fotoğraflar doğrulanırken bir sorun oluştu.');
-      return;
-    } finally {
-      setValidating(false);
     }
 
     setLoading(true);
     try {
-      const remaining = await getCredits();
-      if (remaining < 1) {
-        setBlocked('Bugünkü ücretsiz fal hakkın doldu. Yarın tekrar buradayız ✨');
-        return;
+      if (payWithCoins) {
+        const spent = await spendCoins(READING_COIN_COST);
+        if (!spent) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
+      } else {
+        const remaining = await getCredits();
+        if (remaining < 1) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
       }
       const interpretation = await interpretImages(kind, images.map((img) => ({ mimeType: img.mimeType, data: img.base64 })));
-      await spendCredit();
+      if (!payWithCoins) await spendCredit();
       setResult(interpretation);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fal yorumlanırken bir sorun oluştu.');
@@ -163,7 +177,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
   const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] });
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.15] });
 
-  const showPicker = !result && !loading && !validating && !blocked;
+  const showPicker = !result && !loading && !validating && !coinFallback;
 
   return (
     <MysticTableBackground>
@@ -216,7 +230,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
             </Pressable>
 
             <Pressable
-              onPress={interpret}
+              onPress={() => interpret()}
               disabled={images.length < MIN_IMAGES}
               style={({ pressed }) => [
                 styles.actionButton,
@@ -247,15 +261,14 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
           </View>
         )}
 
-        {blocked && (
-          <View style={styles.blockedBox}>
-            <Ionicons name="moon" size={22} color={GOLD} />
-            <Text style={styles.blockedText}>{blocked}</Text>
-            <Pressable onPress={() => navigation.navigate('Home')} style={styles.retryButton}>
-              <Ionicons name="home-outline" size={16} color={GOLD} />
-              <Text style={styles.retryButtonText}>Ana Sayfaya Dön</Text>
-            </Pressable>
-          </View>
+        {coinFallback && (
+          <CoinFallbackBox
+            cost={READING_COIN_COST}
+            coins={coinFallback.coins}
+            onContinue={() => interpret(true)}
+            onBuyCoins={() => navigation.navigate('CoinShop')}
+            onDismiss={() => navigation.navigate('Home')}
+          />
         )}
 
         {result && (
@@ -403,21 +416,6 @@ const styles = StyleSheet.create({
     color: GOLD,
     letterSpacing: 0.8,
     fontStyle: 'italic',
-  },
-  blockedBox: {
-    alignItems: 'center',
-    gap: 10,
-    width: '100%',
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
-    borderColor: GOLD_SOFT,
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 18,
-  },
-  blockedText: {
-    color: TEXT_PRIMARY,
-    fontSize: 13.5,
-    textAlign: 'center',
   },
   retryButton: {
     flexDirection: 'row',

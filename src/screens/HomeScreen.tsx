@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Animated, View, Text, Pressable, StyleSheet } from 'react-native';
 import type { TabScreenProps } from '@/navigation/types';
 import { recordDailyOpen, type DailyOpenResult } from '@/services/streak';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -47,6 +47,7 @@ function GridButton({ item }: { item: GridItem }) {
 
 export default function HomeScreen({ navigation }: Props) {
   const [rewardBanner, setRewardBanner] = useState<DailyOpenResult | null>(null);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     recordDailyOpen().then((info) => {
@@ -234,8 +235,13 @@ export default function HomeScreen({ navigation }: Props) {
   ];
 
   return (
-    <MysticTableBackground>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+    <MysticTableBackground scrollY={scrollY}>
+      <Animated.ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+        scrollEventThrottle={16}
+      >
         <View style={styles.topRow}>
           <CoinBadge navigation={navigation} />
         </View>
@@ -275,7 +281,7 @@ export default function HomeScreen({ navigation }: Props) {
             </View>
           ))}
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
     </MysticTableBackground>
   );
 }

@@ -6,6 +6,9 @@ import type { RootStackParamList } from '@/navigation/types';
 import { calculateBirthChart, type BirthChart } from '@/services/astrology';
 import { interpretBirthChart } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
+import { getCoins, spendCoins } from '@/services/coins';
+import { READING_COIN_COST } from '@/constants/economy';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { resolveBirthDate } from '@/utils/resolveBirthDate';
 import { ZODIAC_INFO } from '@/constants/zodiacInfo';
 import { TURKISH_CITIES } from '@/constants/turkishCities';
@@ -25,13 +28,13 @@ export default function BirthChartScreen({ navigation }: Props) {
   const [chart, setChart] = useState<BirthChart | null>(null);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [blocked, setBlocked] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
 
-  const calculate = useCallback(async () => {
+  const calculate = useCallback(async (payWithCoins = false) => {
     setFormError(null);
     setError(null);
-    setBlocked(null);
+    setCoinFallback(null);
 
     const resolved = resolveBirthDate(form);
     if (!resolved.date) {
@@ -44,10 +47,18 @@ export default function BirthChartScreen({ navigation }: Props) {
     setChart(null);
     setResult(null);
     try {
-      const remaining = await getCredits();
-      if (remaining < 1) {
-        setBlocked('Bugünkü ücretsiz fal hakkın doldu. Yarın tekrar buradayız ✨');
-        return;
+      if (payWithCoins) {
+        const spent = await spendCoins(READING_COIN_COST);
+        if (!spent) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
+      } else {
+        const remaining = await getCredits();
+        if (remaining < 1) {
+          setCoinFallback({ coins: await getCoins() });
+          return;
+        }
       }
       const birthChart = calculateBirthChart({ date: resolved.date, latitude: city.latitude, longitude: city.longitude });
       const text = await interpretBirthChart(
@@ -55,7 +66,7 @@ export default function BirthChartScreen({ navigation }: Props) {
         ZODIAC_INFO[birthChart.moonSign].name,
         ZODIAC_INFO[birthChart.risingSign].name,
       );
-      await spendCredit();
+      if (!payWithCoins) await spendCredit();
       setChart(birthChart);
       setResult(text);
     } catch (err) {
@@ -69,7 +80,7 @@ export default function BirthChartScreen({ navigation }: Props) {
     setChart(null);
     setResult(null);
     setError(null);
-    setBlocked(null);
+    setCoinFallback(null);
   }, []);
 
   useEffect(() => {
@@ -87,7 +98,7 @@ export default function BirthChartScreen({ navigation }: Props) {
   const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] });
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.15] });
 
-  const showForm = !chart && !loading && !blocked && !error;
+  const showForm = !chart && !loading && !coinFallback && !error;
 
   return (
     <MysticTableBackground>
@@ -106,7 +117,7 @@ export default function BirthChartScreen({ navigation }: Props) {
 
               {formError && <Text style={styles.formErrorText}>{formError}</Text>}
 
-              <Pressable onPress={calculate} style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
+              <Pressable onPress={() => calculate()} style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
                 <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
                 <Text style={styles.actionButtonText}>Haritamı Çıkar</Text>
               </Pressable>
@@ -126,22 +137,21 @@ export default function BirthChartScreen({ navigation }: Props) {
             <View style={styles.errorBox}>
               <Ionicons name="alert-circle-outline" size={20} color="#E08A8A" />
               <Text style={styles.errorText}>{error}</Text>
-              <Pressable onPress={calculate} style={styles.retryButton}>
+              <Pressable onPress={() => calculate()} style={styles.retryButton}>
                 <Ionicons name="refresh" size={16} color={GOLD} />
                 <Text style={styles.retryButtonText}>Tekrar Dene</Text>
               </Pressable>
             </View>
           )}
 
-          {blocked && (
-            <View style={styles.blockedBox}>
-              <Ionicons name="moon" size={22} color={GOLD} />
-              <Text style={styles.blockedText}>{blocked}</Text>
-              <Pressable onPress={() => navigation.navigate('Home')} style={styles.retryButton}>
-                <Ionicons name="home-outline" size={16} color={GOLD} />
-                <Text style={styles.retryButtonText}>Ana Sayfaya Dön</Text>
-              </Pressable>
-            </View>
+          {coinFallback && (
+            <CoinFallbackBox
+              cost={READING_COIN_COST}
+              coins={coinFallback.coins}
+              onContinue={() => calculate(true)}
+              onBuyCoins={() => navigation.navigate('CoinShop')}
+              onDismiss={() => navigation.navigate('Home')}
+            />
           )}
 
           {chart && result && (
@@ -270,21 +280,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#E08A8A',
     fontSize: 13,
-    textAlign: 'center',
-  },
-  blockedBox: {
-    alignItems: 'center',
-    gap: 10,
-    width: '100%',
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
-    borderColor: GOLD_SOFT,
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 18,
-  },
-  blockedText: {
-    color: TEXT_PRIMARY,
-    fontSize: 13.5,
     textAlign: 'center',
   },
   retryButton: {

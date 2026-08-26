@@ -6,9 +6,12 @@ import type { RootStackParamList } from '@/navigation/types';
 import { pickRandomKatinaCards, type KatinaCard } from '@/services/katina';
 import { interpretSolitaireSpread } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
+import { getCoins, spendCoins } from '@/services/coins';
+import { READING_COIN_COST } from '@/constants/economy';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import PlayingCardFace from '@/components/PlayingCardFace';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Solitaire'>;
@@ -30,20 +33,31 @@ export default function SolitaireScreen({ navigation }: Props) {
   const [cards, setCards] = useState<KatinaCard[]>([]);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [fallbackCoins, setFallbackCoins] = useState(0);
   const pulse = useRef(new Animated.Value(0)).current;
 
-  const reveal = useCallback(async () => {
+  const reveal = useCallback(async (payWithCoins = false) => {
     setPhase('loading');
     setError(null);
     try {
-      const remaining = await getCredits();
-      if (remaining < 1) {
-        setPhase('blocked');
-        return;
+      if (payWithCoins) {
+        const spent = await spendCoins(READING_COIN_COST);
+        if (!spent) {
+          setFallbackCoins(await getCoins());
+          setPhase('blocked');
+          return;
+        }
+      } else {
+        const remaining = await getCredits();
+        if (remaining < 1) {
+          setFallbackCoins(await getCoins());
+          setPhase('blocked');
+          return;
+        }
       }
       const drawn = pickRandomKatinaCards(CARD_COUNT);
       const interpretation = await interpretSolitaireSpread(drawn);
-      await spendCredit();
+      if (!payWithCoins) await spendCredit();
       setCards(drawn);
       setResult(interpretation);
       setPhase('result');
@@ -88,7 +102,7 @@ export default function SolitaireScreen({ navigation }: Props) {
               Gözlerini kapat, içinden geçen bir dileği ya da merak ettiğin bir konuyu net bir şekilde düşün.
               Hazır olduğunda kartları aç.
             </Text>
-            <Pressable onPress={reveal} style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
+            <Pressable onPress={() => reveal()} style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
               <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
               <Text style={styles.actionButtonText}>Dilek Tuttum, Kartları Aç</Text>
             </Pressable>
@@ -108,7 +122,7 @@ export default function SolitaireScreen({ navigation }: Props) {
           <View style={styles.errorBox}>
             <Ionicons name="alert-circle-outline" size={20} color="#E08A8A" />
             <Text style={styles.errorText}>{error}</Text>
-            <Pressable onPress={reveal} style={styles.retryButton}>
+            <Pressable onPress={() => reveal()} style={styles.retryButton}>
               <Ionicons name="refresh" size={16} color={GOLD} />
               <Text style={styles.retryButtonText}>Tekrar Dene</Text>
             </Pressable>
@@ -116,14 +130,13 @@ export default function SolitaireScreen({ navigation }: Props) {
         )}
 
         {phase === 'blocked' && (
-          <View style={styles.blockedBox}>
-            <Ionicons name="moon" size={22} color={GOLD} />
-            <Text style={styles.blockedText}>Bugünkü ücretsiz fal hakkın doldu. Yarın tekrar buradayız ✨</Text>
-            <Pressable onPress={() => navigation.navigate('Home')} style={styles.retryButton}>
-              <Ionicons name="home-outline" size={16} color={GOLD} />
-              <Text style={styles.retryButtonText}>Ana Sayfaya Dön</Text>
-            </Pressable>
-          </View>
+          <CoinFallbackBox
+            cost={READING_COIN_COST}
+            coins={fallbackCoins}
+            onContinue={() => reveal(true)}
+            onBuyCoins={() => navigation.navigate('CoinShop')}
+            onDismiss={() => navigation.navigate('Home')}
+          />
         )}
 
         {phase === 'result' && result && (
@@ -226,21 +239,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#E08A8A',
     fontSize: 13,
-    textAlign: 'center',
-  },
-  blockedBox: {
-    alignItems: 'center',
-    gap: 10,
-    width: '100%',
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
-    borderColor: GOLD_SOFT,
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 18,
-  },
-  blockedText: {
-    color: TEXT_PRIMARY,
-    fontSize: 13.5,
     textAlign: 'center',
   },
   retryButton: {

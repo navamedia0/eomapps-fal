@@ -16,7 +16,10 @@ import type { RootStackParamList } from '@/navigation/types';
 import type { ChatTurn } from '@/services/gemini';
 import { interpretDreamChat } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
+import { getCoins, spendCoins } from '@/services/coins';
+import { READING_COIN_COST } from '@/constants/economy';
 import CosmicChatBackground from '@/components/CosmicChatBackground';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DreamChat'>;
@@ -28,11 +31,12 @@ export default function DreamChatScreen({ navigation }: Props) {
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [blocked, setBlocked] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
+  const [pendingHistory, setPendingHistory] = useState<ChatTurn[] | null>(null);
   const scrollRef = useRef<ScrollView>(null);
 
   const send = useCallback(
-    async (overrideHistory?: ChatTurn[]) => {
+    async (overrideHistory?: ChatTurn[], payWithCoins = false) => {
       const trimmed = input.trim();
       const history = overrideHistory ?? [...messages, { role: 'user', text: trimmed } as ChatTurn];
       if (!overrideHistory) {
@@ -41,17 +45,28 @@ export default function DreamChatScreen({ navigation }: Props) {
         setInput('');
       }
       setError(null);
+      setCoinFallback(null);
       setSending(true);
       try {
-        const remaining = await getCredits();
-        if (remaining < 1) {
-          setBlocked('Bugünkü ücretsiz fal hakkın doldu. Yarın tekrar buradayız ✨');
-          return;
+        if (payWithCoins) {
+          const spent = await spendCoins(READING_COIN_COST);
+          if (!spent) {
+            setPendingHistory(history);
+            setCoinFallback({ coins: await getCoins() });
+            return;
+          }
+        } else {
+          const remaining = await getCredits();
+          if (remaining < 1) {
+            setPendingHistory(history);
+            setCoinFallback({ coins: await getCoins() });
+            return;
+          }
         }
         const firstUserIndex = history.findIndex((turn) => turn.role === 'user');
         const apiHistory = firstUserIndex >= 0 ? history.slice(firstUserIndex) : history;
         const reply = await interpretDreamChat(apiHistory);
-        await spendCredit();
+        if (!payWithCoins) await spendCredit();
         setMessages([...history, { role: 'model', text: reply }]);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Rüya yorumlanırken bir sorun oluştu.');
@@ -110,19 +125,18 @@ export default function DreamChatScreen({ navigation }: Props) {
             </View>
           )}
 
-          {blocked && (
-            <View style={styles.blockedBox}>
-              <Ionicons name="moon" size={20} color={GOLD} />
-              <Text style={styles.blockedText}>{blocked}</Text>
-              <Pressable onPress={() => navigation.navigate('Home')} style={styles.retryButton}>
-                <Ionicons name="home-outline" size={16} color={GOLD} />
-                <Text style={styles.retryButtonText}>Ana Sayfaya Dön</Text>
-              </Pressable>
-            </View>
+          {coinFallback && (
+            <CoinFallbackBox
+              cost={READING_COIN_COST}
+              coins={coinFallback.coins}
+              onContinue={() => pendingHistory && send(pendingHistory, true)}
+              onBuyCoins={() => navigation.navigate('CoinShop')}
+              onDismiss={() => navigation.navigate('Home')}
+            />
           )}
         </ScrollView>
 
-        {!blocked && (
+        {!coinFallback && (
           <View style={styles.inputBar}>
             <TextInput
               value={input}
@@ -212,21 +226,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#E08A8A',
     fontSize: 13,
-    textAlign: 'center',
-  },
-  blockedBox: {
-    alignItems: 'center',
-    gap: 10,
-    marginTop: 8,
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
-    borderColor: GOLD_SOFT,
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 16,
-  },
-  blockedText: {
-    color: TEXT_PRIMARY,
-    fontSize: 13.5,
     textAlign: 'center',
   },
   retryButton: {
