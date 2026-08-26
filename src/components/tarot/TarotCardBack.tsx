@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_MID } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_MID, BORDO_DEEP } from '@/theme/colors';
+
+const VELVET_TEXTURE = require('../../assets/textures/velvet.jpg');
 
 type Props = {
   selected: boolean;
@@ -41,18 +42,15 @@ export default function TarotCardBack({ selected, positionLabel, disabled, onPre
               <Image source={customImage} style={styles.customImage} resizeMode="cover" />
             </View>
           ) : (
-            <LinearGradient
-              colors={[NIGHT_CARD, NIGHT_MID]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.card}
-            >
+            <View style={[styles.card, styles.customCard]}>
+              <Image source={VELVET_TEXTURE} style={styles.customImage} resizeMode="cover" />
+              <View style={styles.velvetTint} />
               <MaterialCommunityIcons
                 name="star-four-points-outline"
                 size={20}
                 color={selected ? GOLD : GOLD_SOFT}
               />
-            </LinearGradient>
+            </View>
           )}
           {selected && positionLabel && (
             <View style={styles.badge}>
@@ -79,8 +77,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   customImage: {
-    width: '100%',
-    height: '100%',
+    ...StyleSheet.absoluteFillObject,
+  },
+  velvetTint: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: BORDO_DEEP,
+    opacity: 0.45,
   },
   glow: {
     position: 'absolute',

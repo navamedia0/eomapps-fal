@@ -4,11 +4,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Starfield from '@/components/Starfield';
 import OrbGlow from '@/components/tarot/OrbGlow';
-import { GOLD } from '@/theme/colors';
+import { GOLD, NIGHT_DEEP } from '@/theme/colors';
+
+const LIBRARY_BG = require('../../assets/backgrounds/library.jpg');
 
 const BACKGROUNDS = {
-  general: require('../../assets/backgrounds/general.jpg'),
-  tarot: require('../../assets/backgrounds/tarot.jpg'),
+  general: LIBRARY_BG,
+  tarot: LIBRARY_BG,
 };
 
 export type BackgroundVariant = keyof typeof BACKGROUNDS;
@@ -35,9 +37,9 @@ type Props = { children: ReactNode; variant?: BackgroundVariant; scrollY?: Anima
 export default function MysticTableBackground({ children, variant = 'general', scrollY }: Props) {
   return (
     <View style={styles.flex}>
-      <Image source={BACKGROUNDS[variant]} resizeMode="cover" style={styles.bgImage} />
+      <Image source={BACKGROUNDS[variant]} resizeMode="contain" style={styles.bgImage} />
       <LinearGradient
-        colors={['rgba(5, 6, 26, 0.55)', 'rgba(5, 6, 26, 0.8)', 'rgba(5, 6, 26, 0.94)']}
+        colors={['rgba(14, 10, 8, 0.55)', 'rgba(14, 10, 8, 0.8)', 'rgba(14, 10, 8, 0.94)']}
         style={StyleSheet.absoluteFillObject}
         pointerEvents="none"
       />
@@ -72,7 +74,7 @@ export default function MysticTableBackground({ children, variant = 'general', s
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
+  flex: { flex: 1, backgroundColor: NIGHT_DEEP },
   bgImage: {
     position: 'absolute',
     top: 0,

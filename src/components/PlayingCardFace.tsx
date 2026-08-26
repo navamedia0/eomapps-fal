@@ -1,8 +1,14 @@
 import { View, Text, StyleSheet } from 'react-native';
 import type { KatinaSuit } from '@/services/katina';
+import { PARCHMENT_BG, PARCHMENT_TEXT, RED_ACCENT } from '@/theme/colors';
 
 const SUIT_SYMBOL: Record<KatinaSuit, string> = { kupa: '♥', karo: '♦', sinek: '♣', maca: '♠' };
-const SUIT_COLOR: Record<KatinaSuit, string> = { kupa: '#B33A3A', karo: '#B33A3A', sinek: '#1C1C24', maca: '#1C1C24' };
+const SUIT_COLOR: Record<KatinaSuit, string> = {
+  kupa: RED_ACCENT,
+  karo: RED_ACCENT,
+  sinek: PARCHMENT_TEXT,
+  maca: PARCHMENT_TEXT,
+};
 export const RANK_DISPLAY: Record<string, string> = {
   asi: 'A',
   ikilisi: '2',
@@ -47,9 +53,9 @@ export default function PlayingCardFace({ suit, rankSlug, size = 100 }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FBF7EC',
+    backgroundColor: PARCHMENT_BG,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.15)',
+    borderColor: 'rgba(59, 42, 32, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',

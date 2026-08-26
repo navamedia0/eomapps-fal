@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: GRID_PADDING,
     paddingTop: 16,
     paddingBottom: 14,
-    backgroundColor: 'rgba(11, 15, 46, 0.55)',
+    backgroundColor: 'rgba(26, 20, 15, 0.55)',
     borderBottomWidth: 1,
     borderBottomColor: GOLD_SOFT,
   },

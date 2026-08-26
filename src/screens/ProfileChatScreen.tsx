@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   },
   bubbleModel: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(18, 22, 59, 0.92)',
+    backgroundColor: 'rgba(43, 30, 22, 0.92)',
     borderColor: GOLD_SOFT,
     borderBottomLeftRadius: 6,
   },

@@ -1,5 +1,5 @@
 import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
-import { GOLD, GOLD_SOFT, NIGHT_CARD } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_MID } from '@/theme/colors';
 
 const SIZE = 260;
 const CENTER = SIZE / 2;
@@ -52,19 +52,19 @@ export default function NatalChartWheel({ sunLongitude, moonLongitude, risingLon
       })}
 
       <Line x1={CENTER} y1={CENTER} x2={sun.x} y2={sun.y} stroke={SUN_COLOR} strokeWidth={1.5} />
-      <Circle cx={sun.x} cy={sun.y} r={11} fill="#0B0F2E" stroke={SUN_COLOR} strokeWidth={1.5} />
+      <Circle cx={sun.x} cy={sun.y} r={11} fill={NIGHT_MID} stroke={SUN_COLOR} strokeWidth={1.5} />
       <SvgText x={sun.x} y={sun.y} fontSize={12} fill={SUN_COLOR} textAnchor="middle" alignmentBaseline="middle">
         ☉
       </SvgText>
 
       <Line x1={CENTER} y1={CENTER} x2={moon.x} y2={moon.y} stroke={MOON_COLOR} strokeWidth={1.5} />
-      <Circle cx={moon.x} cy={moon.y} r={11} fill="#0B0F2E" stroke={MOON_COLOR} strokeWidth={1.5} />
+      <Circle cx={moon.x} cy={moon.y} r={11} fill={NIGHT_MID} stroke={MOON_COLOR} strokeWidth={1.5} />
       <SvgText x={moon.x} y={moon.y} fontSize={12} fill={MOON_COLOR} textAnchor="middle" alignmentBaseline="middle">
         ☽
       </SvgText>
 
       <Line x1={CENTER} y1={CENTER} x2={rising.x} y2={rising.y} stroke={GOLD} strokeWidth={1.5} />
-      <Circle cx={rising.x} cy={rising.y} r={13} fill="#0B0F2E" stroke={GOLD} strokeWidth={1.5} />
+      <Circle cx={rising.x} cy={rising.y} r={13} fill={NIGHT_MID} stroke={GOLD} strokeWidth={1.5} />
       <SvgText x={rising.x} y={rising.y} fontSize={9} fill={GOLD} textAnchor="middle" alignmentBaseline="middle">
         ASC
       </SvgText>
