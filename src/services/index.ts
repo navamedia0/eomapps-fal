@@ -1,7 +1,6 @@
 export * from '@/services/astrology';
 export * from '@/services/credits';
 export * from '@/services/gemini';
-export * from '@/services/groq';
 export * from '@/services/numerology';
 export * from '@/services/readings';
 export * from '@/services/readings-ai';
