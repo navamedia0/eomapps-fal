@@ -1,6 +1,5 @@
 import { prompts } from '@/prompts';
 import { askGemini, askGeminiChat, askGeminiVision, askGeminiAudio, type ChatTurn } from '@/services/gemini';
-import { askCerebras, askCerebrasChat } from '@/services/cerebras';
 import { askCloudflare, askCloudflareChat, askCloudflareVision } from '@/services/cloudflare';
 import { withFallbackChain } from '@/services/aiFallback';
 import { guardReadingCooldown } from '@/services/aiQueue';
@@ -41,11 +40,7 @@ export async function interpretTarotSpread(cards: TarotCard[], positions: string
   const prompt = `${prompts.tarotSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${profileBlock}`;
   const readingType = tarotReadingType(cards.length);
   await guardReadingCooldown(readingType);
-  return withFallbackChain([
-    () => askGemini(prompt, undefined, readingType),
-    () => askCerebras(prompt),
-    () => askCloudflare(prompt),
-  ]);
+  return withFallbackChain([() => askGemini(prompt, undefined, readingType), () => askCloudflare(prompt)]);
 }
 
 export async function interpretSolitaireSpread(cards: KatinaCard[]): Promise<string> {
@@ -58,11 +53,7 @@ export async function interpretSolitaireSpread(cards: KatinaCard[]): Promise<str
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.solitaireSpread(cards.map((card) => card.name))}\n\nAçılan kartlar ve klasik anlamları (esin için, birebir kopyalama):\n${cardText}${profileBlock}`;
   await guardReadingCooldown('solitaire');
-  return withFallbackChain([
-    () => askGemini(prompt, undefined, 'solitaire'),
-    () => askCerebras(prompt),
-    () => askCloudflare(prompt),
-  ]);
+  return withFallbackChain([() => askGemini(prompt, undefined, 'solitaire'), () => askCloudflare(prompt)]);
 }
 
 export async function interpretKatinaSpread(cards: KatinaCard[], positions: string[]): Promise<string> {
@@ -78,11 +69,7 @@ export async function interpretKatinaSpread(cards: KatinaCard[], positions: stri
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.katinaSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${profileBlock}`;
   await guardReadingCooldown('katina');
-  return withFallbackChain([
-    () => askGemini(prompt, undefined, 'katina'),
-    () => askCerebras(prompt),
-    () => askCloudflare(prompt),
-  ]);
+  return withFallbackChain([() => askGemini(prompt, undefined, 'katina'), () => askCloudflare(prompt)]);
 }
 
 export async function interpretDreamChat(history: ChatTurn[]): Promise<string> {
@@ -97,30 +84,26 @@ export async function interpretDreamChat(history: ChatTurn[]): Promise<string> {
 
   const profileBlock = await buildProfileBlock();
   const systemPrompt = `${prompts.dreamChat}${referenceBlock}${profileBlock}`;
-  return withFallbackChain([
-    () => askGeminiChat(systemPrompt, history),
-    () => askCerebrasChat(systemPrompt, history),
-    () => askCloudflareChat(systemPrompt, history),
-  ]);
+  return withFallbackChain([() => askGeminiChat(systemPrompt, history), () => askCloudflareChat(systemPrompt, history)]);
 }
 
 export async function interpretDailyZodiac(signName: string): Promise<string> {
   const dateLabel = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.dailyZodiac(signName, dateLabel)}${profileBlock}`;
-  return withFallbackChain([() => askGemini(prompt), () => askCerebras(prompt), () => askCloudflare(prompt)]);
+  return withFallbackChain([() => askGemini(prompt), () => askCloudflare(prompt)]);
 }
 
 export async function interpretBirthChart(sunSign: string, moonSign: string, risingSign: string): Promise<string> {
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.birthChart(sunSign, moonSign, risingSign)}${profileBlock}`;
-  return withFallbackChain([() => askGemini(prompt), () => askCerebras(prompt), () => askCloudflare(prompt)]);
+  return withFallbackChain([() => askGemini(prompt), () => askCloudflare(prompt)]);
 }
 
 export async function interpretZodiacCompatibility(signAName: string, signBName: string): Promise<string> {
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.zodiacCompatibility(signAName, signBName)}${profileBlock}`;
-  return withFallbackChain([() => askGemini(prompt), () => askCerebras(prompt), () => askCloudflare(prompt)]);
+  return withFallbackChain([() => askGemini(prompt), () => askCloudflare(prompt)]);
 }
 
 export async function interpretNumerology(
@@ -130,7 +113,7 @@ export async function interpretNumerology(
 ): Promise<string> {
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.numerology(name, lifePathNumber, nameNumber)}${profileBlock}`;
-  return withFallbackChain([() => askGemini(prompt), () => askCerebras(prompt), () => askCloudflare(prompt)]);
+  return withFallbackChain([() => askGemini(prompt), () => askCloudflare(prompt)]);
 }
 
 export async function interpretVoiceReading(audioBase64: string, mimeType: string): Promise<string> {

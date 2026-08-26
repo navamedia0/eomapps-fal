@@ -1,5 +1,4 @@
 const GEMINI_URL = (model) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-const CEREBRAS_URL = 'https://api.cerebras.ai/v1/chat/completions';
 const GEMINI_TEXT_MODEL = 'gemini-3.1-flash-lite';
 const CLOUDFLARE_MODEL = '@cf/meta/llama-3.2-11b-vision-instruct';
 
@@ -151,19 +150,6 @@ async function relayProvider(env, body) {
     });
   }
 
-  if (provider === 'cerebras') {
-    const upstream = await fetch(CEREBRAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.CEREBRAS_API_KEY}` },
-      body: JSON.stringify(payload),
-    });
-    const text = await upstream.text();
-    return new Response(text, {
-      status: upstream.status,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
-    });
-  }
-
   if (provider === 'cloudflare') {
     if (!env.AI) {
       return jsonResponse({ error: 'Workers AI binding tanımlı değil.' }, 500);
@@ -182,7 +168,7 @@ async function relayProvider(env, body) {
     }
   }
 
-  return jsonResponse({ error: 'Bilinmeyen provider. "gemini", "cerebras" veya "cloudflare" kullanin.' }, 400);
+  return jsonResponse({ error: 'Bilinmeyen provider. "gemini" veya "cloudflare" kullanin.' }, 400);
 }
 
 function dayIndex() {

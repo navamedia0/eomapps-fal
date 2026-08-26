@@ -3,5 +3,4 @@ export const AI_MODELS = {
   // (gemini-3.6-flash: günde sadece 20 istek; flash-lite: çok daha yüksek).
   geminiText: 'gemini-3.1-flash-lite',
   geminiVision: 'gemini-3.1-flash-lite',
-  cerebras: 'gpt-oss-120b',
 } as const;
