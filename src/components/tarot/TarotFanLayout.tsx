@@ -1,5 +1,4 @@
-import { useRef } from 'react';
-import { Animated, StyleSheet, useWindowDimensions, type ImageSourcePropType } from 'react-native';
+import { ScrollView, StyleSheet, View, type ImageSourcePropType } from 'react-native';
 import TarotCardBack from '@/components/tarot/TarotCardBack';
 import type { TarotCardDef, TarotOrientation } from '@/services/tarot';
 
@@ -15,52 +14,43 @@ type Props = {
 
 const CARD_WIDTH = 64;
 const OVERLAP = 34;
-const STRIDE = CARD_WIDTH - OVERLAP;
-const FALLOFF = STRIDE * 3.5;
-const MAX_ANGLE = 32;
-const MAX_RISE = 26;
+const WAVE_PERIOD_CARDS = 12; // cards per full up-down cycle of the ribbon
+const FREQUENCY = (2 * Math.PI) / WAVE_PERIOD_CARDS;
+const MAX_ANGLE = 26; // degrees
+const MAX_RISE = 20; // px
 
-// A scrollable "hand of cards" — whichever cards sit near the horizontal
-// center of the viewport curve upward into a half-moon fan (coverflow-style,
-// driven by scroll position), while cards further out rotate away and drop
-// down. Selected cards additionally lift and glow regardless of position.
+// A scrollable "hand of cards" laid out as a continuous wavy ribbon (a
+// half-moon fan repeated smoothly down the whole scrollable strip) — every
+// card's tilt/lift is a fixed function of its own index (a sine wave), not
+// of live scroll position, so there's no native-driver scroll-interpolation
+// involved. Selected cards pop via TarotCardBack's own built-in glow/scale,
+// same as the grid and radial layouts.
 export default function TarotFanLayout({ deck, selected, isFull, customBack, onToggle }: Props) {
-  const scrollX = useRef(new Animated.Value(0)).current;
-  const { width: screenWidth } = useWindowDimensions();
-  const sidePadding = screenWidth / 2 - CARD_WIDTH / 2;
-
   return (
-    <Animated.ScrollView
+    <ScrollView
       horizontal
       style={styles.flex}
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={[styles.content, { paddingHorizontal: sidePadding }]}
-      onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true })}
-      scrollEventThrottle={16}
+      contentContainerStyle={styles.content}
     >
       {deck.map((card, index) => {
-        const itemCenter = index * STRIDE;
-        const rotate = scrollX.interpolate({
-          inputRange: [itemCenter - FALLOFF, itemCenter, itemCenter + FALLOFF],
-          outputRange: [`${MAX_ANGLE}deg`, '0deg', `-${MAX_ANGLE}deg`],
-          extrapolate: 'clamp',
-        });
-        const translateY = scrollX.interpolate({
-          inputRange: [itemCenter - FALLOFF, itemCenter, itemCenter + FALLOFF],
-          outputRange: [MAX_RISE, -MAX_RISE * 0.6, MAX_RISE],
-          extrapolate: 'clamp',
-        });
+        const phase = index * FREQUENCY;
+        const angle = Math.sin(phase) * MAX_ANGLE;
+        const rise = -Math.cos(phase) * MAX_RISE;
 
         const selection = selected.find((entry) => entry.id === card.id);
         const positionLabel = selection ? selected.indexOf(selection) + 1 : undefined;
 
         return (
-          <Animated.View
+          <View
             key={card.id}
             style={[
               styles.item,
-              { marginLeft: index === 0 ? 0 : -OVERLAP, zIndex: selection ? 1000 : index },
-              { transform: [{ translateY }, { rotate }] },
+              {
+                marginLeft: index === 0 ? 0 : -OVERLAP,
+                zIndex: selection ? 1000 : index,
+                transform: [{ translateY: rise }, { rotate: `${angle}deg` }],
+              },
             ]}
           >
             <TarotCardBack
@@ -70,10 +60,10 @@ export default function TarotFanLayout({ deck, selected, isFull, customBack, onT
               onPress={() => onToggle(card)}
               customImage={customBack}
             />
-          </Animated.View>
+          </View>
         );
       })}
-    </Animated.ScrollView>
+    </ScrollView>
   );
 }
 
@@ -82,7 +72,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    alignItems: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 20,
     paddingTop: 40,
     paddingBottom: 20,
   },
