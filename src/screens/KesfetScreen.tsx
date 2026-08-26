@@ -7,6 +7,7 @@ import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
 import ShareButton from '@/components/ShareButton';
 import ShareImageButton from '@/components/ShareImageButton';
 import FeatureIcon from '@/components/FeatureIcon';
+import CornerTicks from '@/components/CornerTicks';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import quotes from '@/data/kesfet_sozleri.json';
 import { FEATURE_ICONS } from '@/assets/icons';
@@ -101,7 +102,8 @@ export default function KesfetScreen({ navigation }: Props) {
             if (item.type === 'quote') {
               return (
                 <View key={index} style={styles.quoteCard}>
-                  <Ionicons name="sparkles" size={16} color={GOLD} style={styles.quoteIcon} />
+                  <CornerTicks />
+                  <MaterialCommunityIcons name="star-crescent" size={16} color={GOLD} style={styles.quoteIcon} />
                   <Text style={styles.quoteText}>{item.text}</Text>
                   <View style={styles.quoteShareRow}>
                     <ShareButton text={`Mistik Rehber\n\n"${item.text}"`} label="Paylaş" />
@@ -154,11 +156,12 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   quoteCard: {
+    position: 'relative',
     backgroundColor: NIGHT_CARD,
-    borderRadius: 16,
+    borderRadius: 24,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
-    padding: 18,
+    padding: 20,
     alignItems: 'center',
   },
   quoteIcon: {

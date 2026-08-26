@@ -91,7 +91,7 @@ export default function RisingSignScreen({ navigation }: Props) {
                 onPress={() => navigation.navigate('BirthChart')}
                 style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}
               >
-                <Ionicons name="sparkles" size={18} color={NIGHT_CARD} />
+                <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
                 <Text style={styles.actionButtonText}>Detaylı Yorum Al</Text>
               </Pressable>
 

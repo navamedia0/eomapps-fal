@@ -6,7 +6,10 @@ import { ZODIAC_INFO } from '@/constants/zodiacInfo';
 import { ZODIAC_TRAITS } from '@/constants/zodiacTraits';
 import burcOzellikleri from '@/data/burc_ozellikleri.json';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import CornerTicks from '@/components/CornerTicks';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+
+type GenderDetail = { genel: string; ask: string; kariyer: string };
 
 type ZodiacDetail = {
   genel: string;
@@ -20,12 +23,14 @@ type ZodiacDetail = {
   sansli_tas: string;
   sansli_gun: string;
   vucut_bolgesi: string;
+  cinsiyet: { erkek: GenderDetail; kadin: GenderDetail };
 };
 
 const BURC_DETAY: Record<Zodiac, ZodiacDetail> = burcOzellikleri as unknown as Record<Zodiac, ZodiacDetail>;
 
 export default function ZodiacTraitsScreen() {
   const [selected, setSelected] = useState<Zodiac | null>(null);
+  const [gender, setGender] = useState<'erkek' | 'kadin'>('erkek');
 
   if (!selected) {
     return (
@@ -40,7 +45,10 @@ export default function ZodiacTraitsScreen() {
               return (
                 <Pressable
                   key={sign}
-                  onPress={() => setSelected(sign)}
+                  onPress={() => {
+                    setSelected(sign);
+                    setGender('erkek');
+                  }}
                   style={({ pressed }) => [styles.signCard, pressed && styles.signCardPressed]}
                 >
                   <MaterialCommunityIcons name={info.icon as any} size={30} color={GOLD} />
@@ -58,6 +66,7 @@ export default function ZodiacTraitsScreen() {
   const info = ZODIAC_INFO[selected];
   const traits = ZODIAC_TRAITS[selected];
   const detail = BURC_DETAY[selected];
+  const genderDetail = detail.cinsiyet[gender];
 
   return (
     <MysticTableBackground>
@@ -71,6 +80,7 @@ export default function ZodiacTraitsScreen() {
         </View>
 
         <View style={styles.traitsCard}>
+          <CornerTicks />
           <View style={styles.traitsRow}>
             <View style={styles.traitItem}>
               <Text style={styles.traitLabel}>Element</Text>
@@ -101,9 +111,29 @@ export default function ZodiacTraitsScreen() {
           </Text>
         </View>
 
+        <Text style={styles.instruction}>Yorumlar cinsiyete göre farklılık gösterebilir; ilgini çeken bölümü seç.</Text>
+        <View style={styles.genderToggleRow}>
+          <Pressable
+            onPress={() => setGender('erkek')}
+            style={[styles.genderButton, gender === 'erkek' && styles.genderButtonActive]}
+          >
+            <Text style={[styles.genderButtonText, gender === 'erkek' && styles.genderButtonTextActive]}>
+              {info.name} Erkeği
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setGender('kadin')}
+            style={[styles.genderButton, gender === 'kadin' && styles.genderButtonActive]}
+          >
+            <Text style={[styles.genderButtonText, gender === 'kadin' && styles.genderButtonTextActive]}>
+              {info.name} Kadını
+            </Text>
+          </Pressable>
+        </View>
+
         <View style={styles.detailSection}>
           <Text style={styles.sectionLabel}>Genel Özellikler</Text>
-          <Text style={styles.paragraph}>{detail.genel}</Text>
+          <Text style={styles.paragraph}>{genderDetail.genel}</Text>
         </View>
 
         <View style={styles.detailSection}>
@@ -130,12 +160,12 @@ export default function ZodiacTraitsScreen() {
 
         <View style={styles.detailSection}>
           <Text style={styles.sectionLabel}>Aşk ve İlişkiler</Text>
-          <Text style={styles.paragraph}>{detail.ask}</Text>
+          <Text style={styles.paragraph}>{genderDetail.ask}</Text>
         </View>
 
         <View style={styles.detailSection}>
           <Text style={styles.sectionLabel}>Kariyer ve Para</Text>
-          <Text style={styles.paragraph}>{detail.kariyer}</Text>
+          <Text style={styles.paragraph}>{genderDetail.kariyer}</Text>
         </View>
 
         <View style={styles.detailSection}>
@@ -251,11 +281,12 @@ const styles = StyleSheet.create({
     color: TEXT_MUTED,
   },
   traitsCard: {
+    position: 'relative',
     backgroundColor: NIGHT_CARD,
-    borderRadius: 16,
+    borderRadius: 22,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
-    padding: 16,
+    padding: 18,
     marginBottom: 24,
     gap: 14,
   },
@@ -301,6 +332,31 @@ const styles = StyleSheet.create({
     color: TEXT_MUTED,
     lineHeight: 15,
     textAlign: 'center',
+  },
+  genderToggleRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 20,
+  },
+  genderButton: {
+    flex: 1,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    borderRadius: 10,
+    paddingVertical: 8,
+  },
+  genderButtonActive: {
+    backgroundColor: 'rgba(212, 175, 55, 0.16)',
+    borderColor: GOLD,
+  },
+  genderButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: TEXT_MUTED,
+  },
+  genderButtonTextActive: {
+    color: GOLD,
   },
   detailSection: {
     marginBottom: 20,

@@ -237,9 +237,9 @@ export default function HomeScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.header}>
-          <Ionicons name="sparkles" size={20} color={GOLD} style={styles.sparkle} />
+          <MaterialCommunityIcons name="star-crescent" size={20} color={GOLD} style={styles.sparkle} />
           <Text style={styles.headerTitle}>Mistik Rehber</Text>
-          <Ionicons name="sparkles" size={20} color={GOLD} style={styles.sparkle} />
+          <MaterialCommunityIcons name="star-crescent" size={20} color={GOLD} style={styles.sparkle} />
         </View>
         <View style={styles.headerDivider} />
         <Text style={styles.headerCaption}>Kaderin kapılarını aralayın</Text>

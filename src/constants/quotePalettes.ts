@@ -25,5 +25,5 @@ export const QUOTE_PALETTES: QuotePalette[] = [
   { id: 'kar-zirve', colors: ['#0e1a2e', '#3a5a7c', '#c8dce8'], icon: 'snow-outline' },
   { id: 'galaksi', colors: ['#0a0522', '#3a1a6b', '#a83ab4'], icon: 'planet-outline' },
   { id: 'gun-dogumu', colors: ['#1a1040', '#a8446b', '#f2c14e'], icon: 'partly-sunny' },
-  { id: 'yildizli-gece', colors: ['#050818', '#141b4a', '#2e2f7c'], icon: 'sparkles-outline' },
+  { id: 'yildizli-gece', colors: ['#050818', '#141b4a', '#2e2f7c'], icon: 'star-outline' },
 ];

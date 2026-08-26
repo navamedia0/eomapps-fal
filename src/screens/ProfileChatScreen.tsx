@@ -20,7 +20,7 @@ import {
   clearProfile,
   type ProfileEntry,
 } from '@/services/profile';
-import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import CosmicChatBackground from '@/components/CosmicChatBackground';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProfileChat'>;
@@ -102,7 +102,7 @@ export default function ProfileChatScreen({ navigation }: Props) {
   }, []);
 
   return (
-    <MysticTableBackground>
+    <CosmicChatBackground>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -187,7 +187,7 @@ export default function ProfileChatScreen({ navigation }: Props) {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
-    </MysticTableBackground>
+    </CosmicChatBackground>
   );
 }
 

@@ -34,4 +34,6 @@ export const FEATURE_ICONS: Partial<Record<string, ImageSourcePropType>> = {
   tarot: require('./tarot.png'),
   risingSign: require('./risingSign.png'),
   dice: require('./dice.png'),
+  dreamLibrary: require('./dreamLibrary.png'),
+  suFal: require('./suFal.png'),
 };

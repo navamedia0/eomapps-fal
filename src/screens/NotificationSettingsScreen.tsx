@@ -50,7 +50,7 @@ export default function NotificationSettingsScreen() {
     },
     {
       key: 'dailyMotivation' as const,
-      icon: 'sparkles-outline' as const,
+      icon: 'flash-outline' as const,
       title: 'Bugün Senin İçin',
       subtitle: 'Her akşam 19:00\'da kişisel bir motivasyon mesajı gönder',
       setter: setDailyMotivationReminder,

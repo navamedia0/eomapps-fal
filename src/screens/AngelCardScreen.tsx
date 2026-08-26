@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, StyleSheet, Animated, Easing } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
@@ -112,7 +112,7 @@ export default function AngelCardScreen({ navigation }: Props) {
         <Pressable onPress={reveal} disabled={revealed} style={styles.cardWrap}>
           <Animated.View style={[styles.card, styles.cardBack, { opacity: backOpacity, transform: [{ scale: cardScale }] }]}>
             <Animated.View style={{ opacity: revealed ? 1 : glowOpacity }}>
-              <Ionicons name="sparkles" size={44} color={GOLD} />
+              <MaterialCommunityIcons name="star-crescent" size={44} color={GOLD} />
             </Animated.View>
             <Text style={styles.backHint}>Dokunmak için hazır ol</Text>
           </Animated.View>

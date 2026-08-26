@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { Audio } from 'expo-av';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet, Animated, Easing } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
@@ -149,7 +149,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
         {loading && (
           <View style={styles.loadingWrap}>
             <Animated.View style={{ opacity: pulseOpacity, transform: [{ scale: pulseScale }] }}>
-              <Ionicons name="sparkles" size={32} color={GOLD} />
+              <MaterialCommunityIcons name="star-crescent" size={32} color={GOLD} />
             </Animated.View>
             <Animated.Text style={[styles.loadingText, { opacity: pulseOpacity }]}>Sesin dinleniyor...</Animated.Text>
           </View>

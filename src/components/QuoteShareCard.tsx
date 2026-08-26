@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { QUOTE_PALETTES } from '@/constants/quotePalettes';
 
 type Props = { text: string; paletteIndex: number };
@@ -22,7 +22,7 @@ const QuoteShareCard = forwardRef<View, Props>(({ text, paletteIndex }, ref) => 
       <View style={styles.dim} />
       <Ionicons name={palette.icon} size={200} color="rgba(255,255,255,0.12)" style={styles.watermarkIcon} />
       <View style={styles.textWrap}>
-        <Ionicons name="sparkles" size={20} color="rgba(255,255,255,0.85)" style={styles.sparkle} />
+        <MaterialCommunityIcons name="star-crescent" size={20} color="rgba(255,255,255,0.85)" style={styles.sparkle} />
         <Text style={styles.quoteText}>{text}</Text>
       </View>
       <Text style={styles.brand}>✦ Mistik Rehber ✦</Text>

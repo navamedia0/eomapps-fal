@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, TextInput, Pressable, StyleSheet, Animated, Easing, KeyboardAvoidingView, Platform } from 'react-native';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import magicBallAnswers from '@/data/magic_ball_answers.json';
@@ -59,7 +59,7 @@ export default function MagicBallScreen() {
                   {answer ? (
                     <Text style={styles.orbAnswerText}>{answer}</Text>
                   ) : (
-                    <Ionicons name="sparkles" size={30} color={GOLD} />
+                    <MaterialCommunityIcons name="star-crescent" size={30} color={GOLD} />
                   )}
                 </View>
               </LinearGradient>

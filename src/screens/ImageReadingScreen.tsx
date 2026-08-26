@@ -223,7 +223,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
                 (images.length < MIN_IMAGES || pressed) && styles.actionButtonDisabled,
               ]}
             >
-              <Ionicons name="sparkles" size={18} color={NIGHT_CARD} />
+              <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
               <Text style={styles.actionButtonText}>Yorumla</Text>
             </Pressable>
           </View>
@@ -241,7 +241,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
         {loading && (
           <View style={styles.loadingWrap}>
             <Animated.View style={{ opacity: pulseOpacity, transform: [{ scale: pulseScale }] }}>
-              <Ionicons name="sparkles" size={32} color={GOLD} />
+              <MaterialCommunityIcons name="star-crescent" size={32} color={GOLD} />
             </Animated.View>
             <Animated.Text style={[styles.loadingText, { opacity: pulseOpacity }]}>{copy.loading}</Animated.Text>
           </View>

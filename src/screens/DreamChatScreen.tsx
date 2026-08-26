@@ -16,7 +16,7 @@ import type { RootStackParamList } from '@/navigation/types';
 import type { ChatTurn } from '@/services/gemini';
 import { interpretDreamChat } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
-import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import CosmicChatBackground from '@/components/CosmicChatBackground';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DreamChat'>;
@@ -69,7 +69,7 @@ export default function DreamChatScreen({ navigation }: Props) {
   }, [messages, send]);
 
   return (
-    <MysticTableBackground>
+    <CosmicChatBackground>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -146,7 +146,7 @@ export default function DreamChatScreen({ navigation }: Props) {
           </View>
         )}
       </KeyboardAvoidingView>
-    </MysticTableBackground>
+    </CosmicChatBackground>
   );
 }
 

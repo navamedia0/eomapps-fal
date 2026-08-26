@@ -69,7 +69,7 @@ export default function BiorhythmScreen() {
               {formError && <Text style={styles.formErrorText}>{formError}</Text>}
 
               <Pressable onPress={calculate} style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
-                <Ionicons name="sparkles" size={18} color={NIGHT_CARD} />
+                <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
                 <Text style={styles.actionButtonText}>Döngülerimi Göster</Text>
               </Pressable>
             </View>

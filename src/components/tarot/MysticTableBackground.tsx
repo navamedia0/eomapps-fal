@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Image, StyleSheet, View, type DimensionValue } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Starfield from '@/components/Starfield';
 import { GOLD } from '@/theme/colors';
 
 const BACKGROUNDS = {
@@ -44,6 +45,7 @@ export default function MysticTableBackground({ children, variant = 'general' }:
         style={styles.candleGlow}
         pointerEvents="none"
       />
+      <Starfield count={14} />
       <View pointerEvents="none" style={StyleSheet.absoluteFillObject}>
         {TABLE_DECOR.map((item, index) => (
           <MaterialCommunityIcons

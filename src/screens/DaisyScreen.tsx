@@ -4,11 +4,37 @@ import { View, Text, TextInput, Pressable, StyleSheet, Animated, Easing, Keyboar
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
-const MIN_PETALS = 9;
-const MAX_PETALS = 17;
+const MIN_PETALS = 13;
+const MAX_PETALS = 20;
+const FLOWER_SIZE = 240;
+const PETAL_WIDTH = 15;
+const PETAL_HEIGHT = 52;
+const PETAL_TOP_OFFSET = FLOWER_SIZE / 2 - PETAL_HEIGHT - 26;
 
 function randomPetalCount(): number {
   return MIN_PETALS + Math.floor(Math.random() * (MAX_PETALS - MIN_PETALS + 1));
+}
+
+type PetalProps = { angle: number; anim: Animated.Value };
+
+function Petal({ angle, anim }: PetalProps) {
+  const translateY = anim.interpolate({ inputRange: [0, 1], outputRange: [-55, 0] });
+  const scale = anim.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] });
+
+  return (
+    <View style={[styles.petalPivot, { transform: [{ rotate: `${angle}deg` }] }]} pointerEvents="none">
+      <Animated.View
+        style={[
+          styles.petal,
+          {
+            top: PETAL_TOP_OFFSET,
+            opacity: anim,
+            transform: [{ translateY }, { scale }],
+          },
+        ]}
+      />
+    </View>
+  );
 }
 
 export default function DaisyScreen() {
@@ -17,23 +43,30 @@ export default function DaisyScreen() {
   const [totalPetals, setTotalPetals] = useState(randomPetalCount());
   const [plucked, setPlucked] = useState(0);
   const pop = useRef(new Animated.Value(1)).current;
+  const petalAnimsRef = useRef<Animated.Value[]>([]);
 
   const remaining = totalPetals - plucked;
   const finished = started && remaining === 0;
   const currentLabel = plucked % 2 === 0 ? 'Seviyor' : 'Sevmiyor';
 
   const begin = useCallback(() => {
-    setTotalPetals(randomPetalCount());
+    const count = randomPetalCount();
+    petalAnimsRef.current = Array.from({ length: count }, () => new Animated.Value(1));
+    setTotalPetals(count);
     setPlucked(0);
     setStarted(true);
   }, []);
 
   const pluck = useCallback(() => {
     if (!started || remaining === 0) return;
-    setPlucked((prev) => prev + 1);
-    pop.setValue(1.15);
+    const anim = petalAnimsRef.current[plucked];
+    if (anim) {
+      Animated.timing(anim, { toValue: 0, duration: 450, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+    }
+    pop.setValue(1.1);
     Animated.timing(pop, { toValue: 1, duration: 220, easing: Easing.out(Easing.ease), useNativeDriver: true }).start();
-  }, [started, remaining, pop]);
+    setPlucked((prev) => prev + 1);
+  }, [started, remaining, plucked, pop]);
 
   const reset = useCallback(() => {
     setStarted(false);
@@ -73,8 +106,11 @@ export default function DaisyScreen() {
               <Text style={styles.questionLine}>{questionLine}</Text>
 
               <Pressable onPress={pluck} disabled={finished} style={styles.flowerWrap}>
-                <Animated.View style={{ transform: [{ scale: pop }] }}>
-                  <Ionicons name="flower" size={110} color={GOLD} />
+                {Array.from({ length: totalPetals }, (_, index) => (
+                  <Petal key={index} angle={(360 / totalPetals) * index} anim={petalAnimsRef.current[index]} />
+                ))}
+                <Animated.View style={[styles.flowerCenter, { transform: [{ scale: pop }] }]}>
+                  <View style={styles.flowerCenterInner} />
                 </Animated.View>
               </Pressable>
 
@@ -165,11 +201,53 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: TEXT_PRIMARY,
     textAlign: 'center',
-    marginBottom: 28,
+    marginBottom: 24,
     fontStyle: 'italic',
   },
   flowerWrap: {
+    width: FLOWER_SIZE,
+    height: FLOWER_SIZE,
     marginBottom: 20,
+  },
+  petalPivot: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: FLOWER_SIZE,
+    height: FLOWER_SIZE,
+  },
+  petal: {
+    position: 'absolute',
+    left: FLOWER_SIZE / 2 - PETAL_WIDTH / 2,
+    width: PETAL_WIDTH,
+    height: PETAL_HEIGHT,
+    borderRadius: PETAL_WIDTH,
+    backgroundColor: '#F5EED8',
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+  },
+  flowerCenter: {
+    position: 'absolute',
+    top: FLOWER_SIZE / 2 - 28,
+    left: FLOWER_SIZE / 2 - 28,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: GOLD,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  flowerCenterInner: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#8A6A1A',
+    opacity: 0.4,
   },
   label: {
     fontSize: 22,

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   View,
   Text,
@@ -132,7 +132,7 @@ export default function NumerologyScreen({ navigation }: Props) {
               {formError && <Text style={styles.formErrorText}>{formError}</Text>}
 
               <Pressable onPress={calculate} style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
-                <Ionicons name="sparkles" size={18} color={NIGHT_CARD} />
+                <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
                 <Text style={styles.actionButtonText}>Sayılarımı Göster</Text>
               </Pressable>
             </View>
@@ -141,7 +141,7 @@ export default function NumerologyScreen({ navigation }: Props) {
           {loading && (
             <View style={styles.loadingWrap}>
               <Animated.View style={{ opacity: pulseOpacity, transform: [{ scale: pulseScale }] }}>
-                <Ionicons name="sparkles" size={32} color={GOLD} />
+                <MaterialCommunityIcons name="star-crescent" size={32} color={GOLD} />
               </Animated.View>
               <Animated.Text style={[styles.loadingText, { opacity: pulseOpacity }]}>Sayılar okunuyor...</Animated.Text>
             </View>

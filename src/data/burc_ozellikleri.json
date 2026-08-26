@@ -11,7 +11,19 @@
     "sansli_renk": "Kırmızı",
     "sansli_tas": "Elmas",
     "sansli_gun": "Salı",
-    "vucut_bolgesi": "Baş ve yüz"
+    "vucut_bolgesi": "Baş ve yüz",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "Koç erkeği, karşısına çıkan her mücadeleyi bir meydan okuma olarak görür. Doğrudan, atılgan ve rekabetçi bir tavırla hayata yaklaşır; liderliği doğal bir hak gibi üstlenir. Duygularını uzun uzun konuşmaktansa eylemle gösterir — bir sorunu çözerek ya da harekete geçerek sevgisini kanıtlar.",
+        "ask": "İlişkide avcı rolünü sever, kur yapmayı ve fetih hissini önemser. Bağlandığında koruyucu ve cömerttir ama özgürlük alanına dokunulmasından hoşlanmaz.",
+        "kariyer": "Rekabetin olduğu, hızlı karar alabileceği ortamlarda parlar; ekip liderliği ya da kendi işini kurmak ona doğal gelir."
+      },
+      "kadin": {
+        "genel": "Koç kadını, bağımsız, kendinden emin ve korkusuz bir duruşa sahiptir. Başkalarının onayını beklemeden kendi yolunu çizer, ne istediğini net biçimde ifade eder. Enerjisi bulaşıcıdır; çevresindeki insanları da harekete geçirir.",
+        "ask": "İlişkide pasif bir rol asla oynamaz — istediğini açıkça belli eder, oyun oynamaktan hoşlanmaz. Kendisi kadar güçlü ve kendinden emin bir partner arar.",
+        "kariyer": "Liderlik pozisyonlarında, girişimcilikte ya da bağımsız çalışabileceği alanlarda kendini gösterir; sınırlayan hiyerarşilerden sıkılır."
+      }
+    }
   },
   "Boga": {
     "genel": "Boğa, Venüs'ün yönettiği bir toprak burcu olarak güvenliği, konforu ve kalıcılığı önemser. Aceleye getirilmeyi sevmez; her adımını sağlam bir zemine basarak atar. Duyusal zevklere düşkündür — güzel yemekler, rahat bir yuva, dokunsal güzellikler onun için sıradan lükslerden çok, ruhunu besleyen şeylerdir. Bir kez karar verdiğinde o kararın arkasında sarsılmaz bir kararlılıkla durur.",
@@ -24,7 +36,19 @@
     "sansli_renk": "Yeşil",
     "sansli_tas": "Zümrüt",
     "sansli_gun": "Cuma",
-    "vucut_bolgesi": "Boyun ve gırtlak"
+    "vucut_bolgesi": "Boyun ve gırtlak",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "Boğa erkeği, sağlam duruşu ve sakin gücüyle tanınır. Aceleye getirilmekten hoşlanmaz, kararlarını yavaş ama emin adımlarla alır. Sözünün eri olmak onun için karakterinin özüdür; verdiği sözü ne olursa olsun tutar.",
+        "ask": "Sadakati sarsılmazdır; bir kez bağlandığında partnerine karşı son derece koruyucu ve cömert davranır. Fiziksel yakınlık ve konfor onun sevgi dilinin merkezindedir.",
+        "kariyer": "İstikrarlı, somut sonuçlar üretebileceği alanlarda güven verir; finans, inşaat ya da el emeği gerektiren işlerde başarılıdır."
+      },
+      "kadin": {
+        "genel": "Boğa kadını, zarafeti ve dayanıklılığı bir arada taşır. Güzelliğe, konfora ve kaliteye değer verir ama bunun ardında sarsılmaz bir irade gizlidir. Yavaş kızar ama bir kez kararını verdiğinde geri adım atmaz.",
+        "ask": "Duygusal güvenliği her şeyin önünde tutar; güven inşa etmeden kalbini açmaz. Sadık ve besleyici bir partnerdir, karşılığında da aynı istikrarı bekler.",
+        "kariyer": "Estetik anlayışı yüksek, uzun soluklu projelerde başarılıdır; sanat, gastronomi ya da finans gibi somut değer üreten alanlarda ilerler."
+      }
+    }
   },
   "Ikizler": {
     "genel": "İkizler, Merkür'ün yönettiği değişken bir hava burcu olarak meraklı, hızlı düşünen ve iletişim odaklı bir zihne sahiptir. Tek bir konuya uzun süre bağlı kalmaktansa, çok yönlü ilgi alanlarıyla hayatı keşfetmeyi sever. Sohbetin ustasıdır; fikirleri hızla toplar, harmanlar ve etrafındakilere aktarır. Bu zihinsel çeviklik bazen kararsızlığa dönüşse de, İkizler'in dünyaya kattığı tazelik yadsınamaz.",
@@ -37,7 +61,19 @@
     "sansli_renk": "Sarı",
     "sansli_tas": "Akik",
     "sansli_gun": "Çarşamba",
-    "vucut_bolgesi": "Kollar ve akciğerler"
+    "vucut_bolgesi": "Kollar ve akciğerler",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "İkizler erkeği, zekası ve sohbet becerisiyle her ortamda dikkat çeker. Meraklı zihni onu sürekli yeni konulara, yeni insanlara yönlendirir. Rutinden ve tek düzelikten kaçar, esprili ve hafif bir üslupla en ciddi konuları bile yumuşatabilir.",
+        "ask": "İlişkide zihinsel uyarılma arar; kendisiyle fikir alışverişi yapabilecek, onu sıkmayan bir partnere ihtiyaç duyar. Bağlılığı sözle değil, sürekli iletişimle gösterir.",
+        "kariyer": "İletişim, medya ve satış gibi çok yönlülük gerektiren alanlarda parlar; aynı anda birden fazla projeyi yönetmekten keyif alır."
+      },
+      "kadin": {
+        "genel": "İkizler kadını, hem sosyal hem bağımsız bir enerji taşır. Merakı sınır tanımaz, hayatı sürekli öğrenerek ve keşfederek yaşar. Esnekliği ve uyum yeteneği, değişen koşullara hızla ayak uydurmasını sağlar.",
+        "ask": "Partnerinde önce bir arkadaş, sonra bir sevgili arar — zihinsel bağlantı olmadan romantizm onun için eksik kalır. Değişkenliği ilişkisine de tazelik katar.",
+        "kariyer": "Yazarlık, pazarlama, eğitim gibi ifade gücünü kullanabileceği alanlarda başarılıdır; monotonluktan uzak, dinamik ortamları tercih eder."
+      }
+    }
   },
   "Yengec": {
     "genel": "Yengeç, Ay'ın yönettiği öncü bir su burcu olarak derin bir duygusal dünyaya ve güçlü bir sezgiye sahiptir. Sert bir dış kabuğun altında son derece hassas bir kalp taşır; güvendiği insanlara karşı sınırsız bir şefkat gösterirken, tanımadığı ortamlarda temkinli davranır. Aile ve yuva onun için kutsaldır; sevdiklerini korumak, beslemek ve bir arada tutmak Yengeç'in en temel içgüdüsüdür.",
@@ -50,7 +86,19 @@
     "sansli_renk": "Gümüş / Beyaz",
     "sansli_tas": "Ay Taşı",
     "sansli_gun": "Pazartesi",
-    "vucut_bolgesi": "Göğüs ve mide"
+    "vucut_bolgesi": "Göğüs ve mide",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "Yengeç erkeği, sert bir görüntünün ardında derin bir duygusallık taşır. Ailesine ve yakın çevresine karşı son derece korumacıdır; sevdiklerinin güvenliği onun için her şeyin önünde gelir. Duygularını göstermekte başta çekingen olsa da, güvendiğinde tüm şefkatini açar.",
+        "ask": "Bağlılığı derin ve kalıcıdır; partnerine karşı besleyici, koruyucu bir tavır sergiler. Duygusal güven onun için vazgeçilmezdir, kırıldığında geri çekilir.",
+        "kariyer": "Aile işletmeleri, bakım hizmetleri ya da emlak gibi güven ve süreklilik gerektiren alanlarda başarılıdır."
+      },
+      "kadin": {
+        "genel": "Yengeç kadını, güçlü bir sezgiye ve derin bir şefkate sahiptir. Evi ve yakın çevresi onun için bir sığınaktır; sevdiklerini beslemek, korumak ve bir arada tutmak ona doğal gelir. Duygusal hafızası güçlüdür, yaşadıklarını uzun süre taşır.",
+        "ask": "Güvenli ve istikrarlı bir bağ arar; yüzeysel ilişkilerden çabuk uzaklaşır. Sevdiği kişiye karşı sınırsız bir bağlılık ve şefkat gösterir.",
+        "kariyer": "Psikoloji, gastronomi, çocuk gelişimi gibi besleyici ve şefkat gerektiren alanlarda en verimli halini bulur."
+      }
+    }
   },
   "Aslan": {
     "genel": "Aslan, Güneş'in yönettiği sabit bir ateş burcu olarak sahne ışığında parlamak için doğmuştur. Kendine güveni, cömertliği ve doğal karizmasıyla girdiği her ortamda fark edilir. Aslan'ın kalbinde büyük bir sıcaklık ve sevdiklerine karşı sınırsız bir cömertlik vardır; takdir edildiğinde en parlak halini gösterir, görmezden gelindiğinde ise için için kırılır.",
@@ -63,7 +111,19 @@
     "sansli_renk": "Altın / Turuncu",
     "sansli_tas": "Yakut",
     "sansli_gun": "Pazar",
-    "vucut_bolgesi": "Kalp ve sırt"
+    "vucut_bolgesi": "Kalp ve sırt",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "Aslan erkeği, doğal bir karizma ve liderlik havası taşır. Girdiği ortamda fark edilmek onun için bir ihtiyaçtan çok, doğasının bir parçasıdır. Cömert ve sıcakkanlıdır, sevdiklerini korumaktan ve onlara gösterişli jestlerle değer vermekten keyif alır.",
+        "ask": "Partnerine karşı hem koruyucu hem de tutkulu bir tavır sergiler; ilişkisinde gurur duyacağı, yanında övünebileceği bir birliktelik ister. Takdir edilmeye ihtiyaç duyar.",
+        "kariyer": "Liderlik pozisyonları, sahne sanatları ve girişimcilik ona doğal gelir; öne çıkabildiği ortamlarda en parlak halini gösterir."
+      },
+      "kadin": {
+        "genel": "Aslan kadını, kendine güveni ve zarafetiyle girdiği her ortamı aydınlatır. Cömert, sıcak ve koruyucudur; sevdiklerine karşı sınırsız bir bağlılık gösterir. Kendi değerinin farkındadır ve bunu gizlemez.",
+        "ask": "İlişkisinde hem hayranlık görmek hem de partnerine hayranlık duymak ister; büyük jestlerden, romantik gösterişten hoşlanır. Sadık ama görmezden gelinmeye tahammülü yoktur.",
+        "kariyer": "Yaratıcı endüstriler, liderlik rolleri ve sahne önünde olduğu işlerde başarılıdır; takdir gördüğü ortamlarda üretkenliği artar."
+      }
+    }
   },
   "Basak": {
     "genel": "Başak, Merkür'ün yönettiği değişken bir toprak burcu olarak titizliği, analitik zekayı ve hizmet etme arzusunu bir arada taşır. Detaylara olan keskin dikkati, onu kusursuzluğa yaklaştırmaya çalışan sessiz bir mükemmeliyetçi yapar. Başak, gösterişli sözlerden çok somut yardımla sevgisini gösterir — bir sorunu pratik olarak çözmek, onun için en anlamlı sevgi dilidir.",
@@ -76,7 +136,19 @@
     "sansli_renk": "Lacivert / Kahverengi",
     "sansli_tas": "Safir",
     "sansli_gun": "Çarşamba",
-    "vucut_bolgesi": "Karın ve sindirim sistemi"
+    "vucut_bolgesi": "Karın ve sindirim sistemi",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "Başak erkeği, titiz ve güvenilir bir karaktere sahiptir. Ayrıntılara gösterdiği dikkat, işini ve çevresini kusursuzlaştırma çabasından gelir. Sessiz sedasız, gösterişe girmeden sorumluluklarını yerine getirir.",
+        "ask": "Sevgisini sözlerle değil, pratik yardımlarla gösterir — partnerinin hayatını kolaylaştırmak onun aşk beyanıdır. Eleştirel tavrını yumuşattığında ilişkileri çok daha huzurlu ilerler.",
+        "kariyer": "Analiz, mühendislik ve sağlık gibi hassasiyet gerektiren alanlarda güven verir; sistemli, düzenli çalışma ortamlarını tercih eder."
+      },
+      "kadin": {
+        "genel": "Başak kadını, zekası ve pratik yaklaşımıyla öne çıkar. Kusursuzluk arayışı bazen kendine karşı sert olmasına yol açsa da, çevresindekilere karşı son derece yardımseverdir. Düzeni ve planlamayı sever.",
+        "ask": "Güven inşa etmeden kalbini açmaz; partnerinin ihtiyaçlarını fark edip sessizce karşılamayı sever. Eleştirel dilini yumuşak bir üsluba çevirdiğinde bağı derinleşir.",
+        "kariyer": "Organizasyon, editörlük ve sağlık hizmetleri gibi titizlik gerektiren alanlarda başarılıdır; detaylara hakimiyeti onu vazgeçilmez kılar."
+      }
+    }
   },
   "Terazi": {
     "genel": "Terazi, Venüs'ün yönettiği öncü bir hava burcu olarak denge, uyum ve estetiği her şeyin üzerinde tutar. Doğal bir diplomat olan Terazi, çatışmadan kaçınır, her bakış açısını anlamaya çalışır ve çevresine adil davranmaya özen gösterir. Güzellik onun için sadece görsel değil, ilişkilerde ve yaşam biçiminde de aradığı bir dengedir.",
@@ -89,7 +161,19 @@
     "sansli_renk": "Pastel tonlar / Pembe",
     "sansli_tas": "Opal",
     "sansli_gun": "Cuma",
-    "vucut_bolgesi": "Böbrekler ve bel"
+    "vucut_bolgesi": "Böbrekler ve bel",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "Terazi erkeği, zarif ve diplomatik bir tavırla çevresinde uyum yaratır. Çatışmadan kaçınır, her tartışmada adil bir denge kurmaya çalışır. Estetik anlayışı gelişmiştir, çevresini ve kendisini güzellikle sarmayı sever.",
+        "ask": "Ortaklık kurmak onun doğasında vardır; yalnız kalmaktansa birlikte olmayı tercih eder. Partnerine karşı kibar, romantik ve uzlaşmacı bir tavır sergiler.",
+        "kariyer": "Hukuk, tasarım ve diplomasi gibi denge ve estetik gerektiren alanlarda başarılıdır; işbirlikçi ortamlarda parlar."
+      },
+      "kadin": {
+        "genel": "Terazi kadını, zarafeti ve sosyal zekasıyla dikkat çeker. Adalet duygusu güçlüdür, her bakış açısını anlamaya çalışır. Güzellik ve uyum arayışı hem dış görünümüne hem ilişkilerine yansır.",
+        "ask": "Birliktelik kurmayı, paylaşmayı sever; çatışmadan kaçınmak için bazen kendi ihtiyaçlarını geri plana atabilir. Romantik jestlerden ve estetik detaylardan hoşlanır.",
+        "kariyer": "Moda, sanat ve arabuluculuk gibi estetik ve diplomasi gerektiren alanlarda kendini gösterir."
+      }
+    }
   },
   "Akrep": {
     "genel": "Akrep, Plüton'un (geleneksel olarak Mars'ın) yönettiği sabit bir su burcu olarak yoğun, derin ve dönüştürücü bir enerji taşır. Yüzeysellikten hoşlanmaz; ilişkilerinde, işinde ve tutkularında en derin katmanlara inmek ister. Gizemli duruşunun ardında güçlü bir irade ve sarsılmaz bir sadakat saklıdır — güvenini kazanmak zor ama bir kez kazanıldığında ömür boyu sürer.",
@@ -102,7 +186,19 @@
     "sansli_renk": "Bordo / Siyah",
     "sansli_tas": "Topaz",
     "sansli_gun": "Salı",
-    "vucut_bolgesi": "Üreme organları"
+    "vucut_bolgesi": "Üreme organları",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "Akrep erkeği, gizemli ve yoğun bir enerjiyle çevresini etkiler. Yüzeysellikten hoşlanmaz, her konuda en derin katmana inmek ister. İradesi güçlüdür, bir hedefe kilitlendiğinde onu vazgeçirmek zordur.",
+        "ask": "Tüm benliğiyle bağlanır, yarım gönülle sevmez. Güven onun için her şeydir; partnerinden de aynı derinliği ve sadakati bekler.",
+        "kariyer": "Araştırma, strateji ve kriz yönetimi gerektiren alanlarda başarılıdır; derinlemesine inceleme yapabileceği işlerde parlar."
+      },
+      "kadin": {
+        "genel": "Akrep kadını, güçlü sezgisi ve etkileyici duruşuyla dikkat çeker. Duygularını kolay göstermez ama hissettiği her şeyi yoğun yaşar. Bağımsızdır, kendi gücünün farkındadır.",
+        "ask": "Derin, tutkulu ve dönüştürücü bir bağ arar; yüzeysel ilişkilerden uzak durur. Güvenini kazanmak zordur ama bir kez verildiğinde sarsılmaz.",
+        "kariyer": "Psikoloji, araştırma ve dedektiflik gibi derinlik gerektiren alanlarda kendini gösterir; stratejik zekasıyla öne çıkar."
+      }
+    }
   },
   "Yay": {
     "genel": "Yay, Jüpiter'in yönettiği değişken bir ateş burcu olarak sınır tanımayan bir özgürlük ve keşif tutkusu taşır. Hayatı büyük bir macera olarak görür; yeni kültürler, felsefeler ve ufuklar onu heyecanlandırır. İyimserliği bulaşıcıdır, dürüstlüğü zaman zaman fazla doğrudan olsa da, Yay her zaman gerçeği söylemeyi tercih eder.",
@@ -115,7 +211,19 @@
     "sansli_renk": "Mor",
     "sansli_tas": "Turkuaz",
     "sansli_gun": "Perşembe",
-    "vucut_bolgesi": "Kalçalar ve uyluk"
+    "vucut_bolgesi": "Kalçalar ve uyluk",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "Yay erkeği, özgür ruhlu ve maceracı bir karaktere sahiptir. Sınırlardan hoşlanmaz, hayatı geniş bir ufuk olarak görür. Dürüstlüğü bazen fazla doğrudan olsa da, her zaman gerçeği söylemeyi tercih eder.",
+        "ask": "Bağımsızlığına düşkündür; kendini kısıtlanmış hissettiği bir ilişkide mutlu olamaz. Doğru partner onun maceracı ruhuna eşlik ettiğinde son derece eğlenceli bir birliktelik kurar.",
+        "kariyer": "Seyahat, eğitim ve uluslararası ilişkiler gibi geniş ufuklu alanlarda başarılıdır; keşif fırsatı sunan işlerde mutlu olur."
+      },
+      "kadin": {
+        "genel": "Yay kadını, iyimserliği ve bağımsız ruhuyla çevresine ilham verir. Yeni deneyimlere açıktır, hayatı bir öğrenme yolculuğu olarak görür. Felsefi bir bakış açısıyla olaylara geniş perspektiften yaklaşır.",
+        "ask": "Özgürlüğüne saygı duyan, kendisiyle birlikte keşfe çıkabilecek bir partner arar. Dürüstlüğü ilişkisinde de öne çıkar, oyunlardan hoşlanmaz.",
+        "kariyer": "Yayıncılık, eğitim ve seyahat sektörü gibi alanlarda kendini gösterir; sınırların geniş olduğu ortamlarda parlar."
+      }
+    }
   },
   "Oglak": {
     "genel": "Oğlak, Satürn'ün yönettiği öncü bir toprak burcu olarak disiplini, sorumluluğu ve uzun vadeli hedefleri her şeyin önünde tutar. Genç yaşta olgun görünen, adım adım tırmanan ve asla pes etmeyen bir karaktere sahiptir. Başarı Oğlak için şans işi değil, sabırlı ve istikrarlı emeğin doğal sonucudur.",
@@ -128,7 +236,19 @@
     "sansli_renk": "Kahverengi / Koyu Yeşil",
     "sansli_tas": "Oniks",
     "sansli_gun": "Cumartesi",
-    "vucut_bolgesi": "Dizler ve iskelet sistemi"
+    "vucut_bolgesi": "Dizler ve iskelet sistemi",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "Oğlak erkeği, disiplinli ve hırslı bir karaktere sahiptir. Genç yaşta olgun görünür, hedeflerine adım adım, sabırla ilerler. Sorumluluk onun için bir yük değil, doğal bir duruştur.",
+        "ask": "Duygularını açıkça göstermekte zorlansa da, sözlerden çok eylemleriyle bağlılığını kanıtlar. İstikrarlı, güvenilir bir partner arar ve bir kez bağlandığında sadıktır.",
+        "kariyer": "Yönetim, finans ve mühendislik gibi yapılandırılmış alanlarda başarılıdır; uzun vadeli hedefler için sabırla çalışır."
+      },
+      "kadin": {
+        "genel": "Oğlak kadını, güçlü iradesi ve pratik zekasıyla öne çıkar. Hedeflerine sessizce, adım adım ilerler; gösterişten çok somut başarıyı önemser. Sorumluluk üstlenmekten çekinmez.",
+        "ask": "Güven inşa etmesi zaman alır ama bir kez bağlandığında son derece sadık ve destekleyicidir. İstikrarlı, hedefleri olan bir partner arar.",
+        "kariyer": "Yönetim, hukuk ve girişimcilik gibi disiplin ve sorumluluk gerektiren alanlarda başarıya ulaşır."
+      }
+    }
   },
   "Kova": {
     "genel": "Kova, Uranüs'ün (geleneksel olarak Satürn'ün) yönettiği sabit bir hava burcu olarak bağımsızlığı, özgünlüğü ve insancıl idealleri her şeyin önünde tutar. Kalıpların dışında düşünür, geleceği bugünden hayal eder ve toplumsal fayda için çalışmaktan güç alır. Kova'nın arkadaşlığı derin ama duygusal mesafesi de bir o kadar belirgin olabilir.",
@@ -141,7 +261,19 @@
     "sansli_renk": "Elektrik Mavisi",
     "sansli_tas": "Ametist",
     "sansli_gun": "Cumartesi",
-    "vucut_bolgesi": "Baldırlar ve dolaşım sistemi"
+    "vucut_bolgesi": "Baldırlar ve dolaşım sistemi",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "Kova erkeği, özgün fikirleri ve bağımsız duruşuyla kalabalıktan sıyrılır. Kalıpların dışında düşünür, geleceği bugünden hayal eder. Toplumsal meselelere karşı duyarlıdır ama duygusal olarak mesafeli görünebilir.",
+        "ask": "Önce arkadaşlık kurmayı tercih eder; fikirlerini paylaşabileceği, bağımsızlığına saygı duyan bir partner arar. Yakınlığı yavaş yavaş inşa eder.",
+        "kariyer": "Teknoloji, bilim ve sosyal girişimcilik gibi yenilikçi alanlarda başarılıdır; hiyerarşinin katı olmadığı ortamlarda parlar."
+      },
+      "kadin": {
+        "genel": "Kova kadını, bağımsızlığı ve özgün bakış açısıyla tanınır. Kalabalığın fikrine uymaktansa kendi yolunu çizer. İnsancıl idealleri güçlüdür, toplumsal fayda için çalışmaktan güç alır.",
+        "ask": "Zihinsel bağlantıya, ortak ideallere değer verir; geleneksel romantizmden çok gerçek bir dostluk arar. Bağımsızlığından taviz vermez.",
+        "kariyer": "Bilim, teknoloji ve insan hakları gibi vizyoner alanlarda kendini gösterir; yenilikçi fikirlerini özgürce ifade edebileceği ortamları arar."
+      }
+    }
   },
   "Balik": {
     "genel": "Balık, Neptün'ün (geleneksel olarak Jüpiter'in) yönettiği değişken bir su burcu olarak zodyağın en sezgisel ve şefkatli enerjisini taşır. Hayal gücü, empatisi ve ruhsal derinliği ile başkalarının duygularını kendi duygularıymış gibi hisseder. Gerçeklikle hayal arasındaki sınırı bazen bulanıklaştırsa da, Balık'ın sanatsal ve şefkatli doğası çevresine derin bir teselli sunar.",
@@ -154,6 +286,18 @@
     "sansli_renk": "Deniz Yeşili / Lavanta",
     "sansli_tas": "Akuamarin",
     "sansli_gun": "Perşembe",
-    "vucut_bolgesi": "Ayaklar"
+    "vucut_bolgesi": "Ayaklar",
+    "cinsiyet": {
+      "erkek": {
+        "genel": "Balık erkeği, hassas ve hayalperest bir ruh taşır. Sanatsal ve sezgisel yönü güçlüdür, çevresindekilerin duygularını derinden hisseder. Gerçeklikle hayal arasındaki çizgiyi bazen bulanıklaştırır ama bu onun yaratıcılığının kaynağıdır.",
+        "ask": "Kendini tamamen ilişkisine adar, fedakâr ve romantik bir sevgilidir. Partnerinin duygularını kendi duygularıymış gibi hisseder; sınır koymayı öğrenmesi önemlidir.",
+        "kariyer": "Sanat, müzik ve terapi gibi yaratıcılık ve empati gerektiren alanlarda en verimli halini bulur."
+      },
+      "kadin": {
+        "genel": "Balık kadını, derin bir empati ve güçlü bir sezgiyle çevresini etkiler. Şefkati sınırsızdır, sevdiklerine koşulsuz destek sunar. Hayal gücü zengindir, sanatsal ifadeye doğal bir yatkınlığı vardır.",
+        "ask": "Aşkta kendini kaptırır, partnerine derin bir bağlılık gösterir. Duygusal sınırlarını korumayı öğrendiğinde ilişkilerinde daha dengeli bir yer bulur.",
+        "kariyer": "Ruhsal danışmanlık, sanat ve sağlık hizmetleri gibi şefkat gerektiren alanlarda kendini gösterir."
+      }
+    }
   }
 }
