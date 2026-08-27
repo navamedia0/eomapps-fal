@@ -1,17 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet, Image, Animated, Easing } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, Image, Animated } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import { interpretImages, validateImage } from '@/services/readings-ai';
-import { getCredits } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
-import { READING_COIN_COST } from '@/constants/economy';
+import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import { saveReadingHistory } from '@/services/readingHistory';
 import {
   getCategoryStatus,
-  recordVideoWatched,
   recordCategoryReadingComplete,
   type ReadingCategory,
 } from '@/services/readingDailyLimits';
@@ -39,8 +37,10 @@ const COPY = {
   coffee: {
     iconKey: 'coffee',
     icon: 'coffee' as const,
+    title: 'Kahve Falı',
     instruction: `Fincanının telve kalıntılarını net gösteren ${MIN_IMAGES}-${MAX_IMAGES} arası fotoğraf ekle. Sadece kahve fincanı görüntüleri kabul edilir.`,
     loading: 'Fincandaki şekiller okunuyor...',
+    loadingDeep: 'Fincan topografyası ve 4 boyutlu sembol haritası inceleniyor...',
     validating: 'Fotoğraflar doğrulanıyor...',
     shareTitle: 'Kahve Falım',
     invalidSubject: 'kahve fincanına',
@@ -48,26 +48,52 @@ const COPY = {
   palm: {
     iconKey: 'palm',
     icon: 'hand-back-right-outline' as const,
+    title: 'El Falı',
     instruction: `Avuç içini iyi ışıkta gösteren ${MIN_IMAGES}-${MAX_IMAGES} arası fotoğraf ekle. Sadece avuç içi görüntüleri kabul edilir.`,
     loading: 'Avuç çizgilerin okunuyor...',
+    loadingDeep: 'Palmistri çizgileri, tepeler ve mikro kıvrımlar analiz ediliyor...',
     validating: 'Fotoğraflar doğrulanıyor...',
     shareTitle: 'El Falım',
     invalidSubject: 'avuç içine',
+  },
+  face: {
+    iconKey: 'face',
+    icon: 'face-man-profile' as const,
+    title: 'Yüz Falı (İlmi Sima)',
+    instruction: `Yüzünü önden, iyi ışıkta ve net gösteren ${MIN_IMAGES}-${MAX_IMAGES} arası fotoğraf ekle. Sadece net insan yüzü görüntüleri kabul edilir.`,
+    loading: 'Yüz hatların ve sima enerjin okunuyor...',
+    loadingDeep: 'İlmi Sima, Mian Xiang 12 kader sarayı ve hatlar analiz ediliyor...',
+    validating: 'Fotoğraflar doğrulanıyor...',
+    shareTitle: 'Yüz Falım (İlmi Sima)',
+    invalidSubject: 'insan yüzüne',
+  },
+  tea: {
+    iconKey: 'tea',
+    icon: 'leaf' as const,
+    title: 'Çay Yaprağı Falı (Tasseografi)',
+    instruction: `Fincan dibindeki çay yapraklarını ve tortusunu net gösteren ${MIN_IMAGES}-${MAX_IMAGES} arası fotoğraf ekle.`,
+    loading: 'Çay yapraklarındaki semboller okunuyor...',
+    loadingDeep: 'Tasseografi desenleri ve kulp topografyası inceleniyor...',
+    validating: 'Fotoğraflar doğrulanıyor...',
+    shareTitle: 'Çay Yaprağı Falım',
+    invalidSubject: 'çay fincanına',
   },
 };
 
 export default function ImageReadingScreen({ route, navigation }: Props) {
   const { kind } = route.params;
   const copy = COPY[kind];
-  const categoryKey: ReadingCategory = kind === 'coffee' ? 'kahve' : 'el';
+  const categoryKey: ReadingCategory = kind === 'coffee' ? 'kahve' : kind === 'palm' ? 'el' : kind === 'face' ? 'yuz' : 'kahve';
 
   const [images, setImages] = useState<PickedImage[]>([]);
+  const [selectedMode, setSelectedMode] = useState<'standard' | 'deep'>('standard');
+  const [activeReadingMode, setActiveReadingMode] = useState<'standard' | 'deep'>('standard');
   const [loading, setLoading] = useState(false);
   const [validating, setValidating] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [permissionError, setPermissionError] = useState<string | null>(null);
-  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [isPersonModalVisible, setIsPersonModalVisible] = useState(false);
   const [personInfo, setPersonInfo] = useState<PersonInfo | null>(null);
   const [skipPersonInfo, setSkipPersonInfo] = useState(false);
@@ -79,7 +105,9 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
   const [adTotalNeeded, setAdTotalNeeded] = useState(1);
 
   const pulse = useRef(new Animated.Value(0)).current;
-  const { remaining: cooldownRemaining, notifyStarted } = useReadingCooldown(kind === 'coffee' ? 'kahve' : 'el');
+  const { remaining: cooldownRemaining, notifyStarted } = useReadingCooldown(
+    kind === 'coffee' ? 'kahve' : kind === 'palm' ? 'el' : 'yuz',
+  );
 
   useEffect(() => {
     getSavedPersonInfo().then((saved) => {
@@ -140,14 +168,14 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
       setPermissionError('Galeriye erişim izni verilmedi.');
       return;
     }
-    const result = await ImagePicker.launchImageLibraryAsync({
+    const res = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       quality: 0.7,
       base64: true,
       allowsMultipleSelection: true,
       selectionLimit: MAX_IMAGES - images.length,
     });
-    if (!result.canceled) addAssets(result.assets);
+    if (!res.canceled) addAssets(res.assets);
   }, [images.length, addAssets]);
 
   const takePhoto = useCallback(async () => {
@@ -158,8 +186,8 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
       setPermissionError('Kameraya erişim izni verilmedi.');
       return;
     }
-    const result = await ImagePicker.launchCameraAsync({ quality: 0.7, base64: true });
-    if (!result.canceled) addAssets(result.assets);
+    const res = await ImagePicker.launchCameraAsync({ quality: 0.7, base64: true });
+    if (!res.canceled) addAssets(res.assets);
   }, [images.length, addAssets]);
 
   const removeImage = useCallback((index: number) => {
@@ -167,122 +195,129 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
     setImages((prev) => prev.filter((_, i) => i !== index));
   }, [resetResult]);
 
-  const interpret = useCallback(async (payWithCoins = false, forceUnlocked = false) => {
-    if (images.length < MIN_IMAGES || cooldownRemaining > 0 || !hasPersonChoice) return;
-    setError(null);
-    setCoinFallback(null);
-    setQueueNotice(null);
-
-    // Kategori bazlı kota ve video kontrolü
-    if (!payWithCoins && !forceUnlocked) {
-      const catStatus = await getCategoryStatus(categoryKey);
-      if (catStatus.status === 'need_1_video') {
-        setAdVideoIndex(1);
-        setAdTotalNeeded(1);
-        setAdModalVisible(true);
-        return;
-      }
-      if (catStatus.status === 'need_3_videos') {
-        setAdVideoIndex(catStatus.videosWatched + 1);
-        setAdTotalNeeded(3);
-        setAdModalVisible(true);
-        return;
-      }
-      if (catStatus.status === 'coin_only') {
-        setCoinFallback({ coins: await getCoins() });
-        return;
-      }
-    }
-
-    if (payWithCoins) {
-      const spent = await spendCoins(READING_COIN_COST);
-      if (!spent) {
-        setCoinFallback({ coins: await getCoins() });
-        return;
-      }
-    }
-
-    // Doğrulama: Çoklu görsel gönderildiğinde paralel kontrol
-    setValidating(true);
-    try {
-      const checkImages = images.slice(0, 2); // İlk 2 görsel yeterli
-      const validations = await Promise.all(
-        checkImages.map((img) => validateImage(kind, { mimeType: img.mimeType, data: img.base64 })),
-      );
-      const invalidCount = validations.filter((valid) => !valid).length;
-      if (invalidCount === checkImages.length) {
-        setError(`Yüklediğin fotoğraflar ${copy.invalidSubject} benzemiyor. Lütfen sadece uygun fotoğraflar yükle.`);
-        setValidating(false);
-        return;
-      }
-    } catch {
-      // Hata durumunda doğrulamayı es geç, doğrudan yoruma ilerle
-    } finally {
-      setValidating(false);
-    }
-
-    setLoading(true);
-    notifyStarted();
-
-    // Akıllı Kuyruk Bilgilendirmesi: Yoğunluk anında nazik geri bildirim
-    const queueTimer = setTimeout(() => {
-      setQueueNotice('Sistemdeki yoğunluk nedeniyle falınız inceleniyor; hazır olduğunda sonuç burada ve Geçmiş bölümünde görünecektir...');
-    }, 12000);
-
-    try {
-      // 1 ila 5 fotoğraf tek bir payload paketinde yapay zekaya gönderilir
-      const interpretation = await interpretImages(
-        kind,
-        images.map((img) => ({ mimeType: img.mimeType, data: img.base64 })),
-        skipPersonInfo ? null : personInfo,
-      );
-      clearTimeout(queueTimer);
+  const interpret = useCallback(
+    async (payWithCoins = false, forceUnlocked = false, forcedMode?: 'standard' | 'deep') => {
+      const modeToRun = forcedMode || selectedMode;
+      if (images.length < MIN_IMAGES || cooldownRemaining > 0 || !hasPersonChoice) return;
+      setError(null);
+      setCoinFallback(null);
       setQueueNotice(null);
+      setActiveReadingMode(modeToRun);
 
-      // Kategori kullanımını kaydet
-      await recordCategoryReadingComplete(categoryKey, payWithCoins);
+      // DERİN MOD: Coin harcaması gerektirir (20 Coin)
+      if (modeToRun === 'deep') {
+        const spent = await spendCoins(DEEP_IMAGE_READING_COIN_COST);
+        if (!spent) {
+          setCoinFallback({ coins: await getCoins(), cost: DEEP_IMAGE_READING_COIN_COST });
+          return;
+        }
+      } else {
+        // STANDART MOD: Kategori bazlı kota ve video kontrolü
+        if (!payWithCoins && !forceUnlocked) {
+          const catStatus = await getCategoryStatus(categoryKey);
+          if (catStatus.status === 'need_1_video') {
+            setAdVideoIndex(1);
+            setAdTotalNeeded(1);
+            setAdModalVisible(true);
+            return;
+          }
+          if (catStatus.status === 'need_3_videos') {
+            setAdVideoIndex(catStatus.videosWatched + 1);
+            setAdTotalNeeded(3);
+            setAdModalVisible(true);
+            return;
+          }
+          if (catStatus.status === 'coin_only') {
+            setCoinFallback({ coins: await getCoins(), cost: READING_COIN_COST });
+            return;
+          }
+        }
 
-      setResult(interpretation);
-      await saveReadingHistory({
-        type: kind === 'coffee' ? 'kahve' : 'el',
-        title: !skipPersonInfo && personInfo?.name?.trim() ? `${copy.shareTitle} (${personInfo.name.trim()})` : copy.shareTitle,
-        result: interpretation,
-      });
-    } catch (err) {
-      clearTimeout(queueTimer);
-      setError(err instanceof Error ? err.message : 'Sistem yoğunluğu nedeniyle biraz zaman alabilir, lütfen birazdan tekrar deneyin.');
-    } finally {
-      setLoading(false);
-    }
-  }, [images, kind, categoryKey, copy.invalidSubject, copy.shareTitle, cooldownRemaining, notifyStarted, hasPersonChoice, skipPersonInfo, personInfo]);
+        if (payWithCoins) {
+          const spent = await spendCoins(READING_COIN_COST);
+          if (!spent) {
+            setCoinFallback({ coins: await getCoins(), cost: READING_COIN_COST });
+            return;
+          }
+        }
+      }
+
+      // Doğrulama: İlk 2 görseli kontrol et
+      setValidating(true);
+      try {
+        const checkImages = images.slice(0, 2);
+        const validations = await Promise.all(
+          checkImages.map((img) => validateImage(kind, { mimeType: img.mimeType, data: img.base64 })),
+        );
+        const invalidCount = validations.filter((valid) => !valid).length;
+        if (invalidCount === checkImages.length) {
+          setError(`Yüklediğin fotoğraflar ${copy.invalidSubject} benzemiyor. Lütfen sadece uygun fotoğraflar yükle.`);
+          setValidating(false);
+          return;
+        }
+      } catch {
+        // Doğrulama hatasında akışı kesme
+      } finally {
+        setValidating(false);
+      }
+
+      setLoading(true);
+      notifyStarted();
+
+      const queueTimer = setTimeout(() => {
+        setQueueNotice('Sistemdeki yoğunluk nedeniyle falınız inceleniyor; hazır olduğunda sonuç burada ve Geçmiş bölümünde görünecektir...');
+      }, 12000);
+
+      try {
+        const interpretation = await interpretImages(
+          kind,
+          images.map((img) => ({ mimeType: img.mimeType, data: img.base64 })),
+          skipPersonInfo ? null : personInfo,
+          modeToRun,
+        );
+        clearTimeout(queueTimer);
+        setQueueNotice(null);
+
+        if (modeToRun === 'standard') {
+          await recordCategoryReadingComplete(categoryKey, payWithCoins);
+        }
+
+        setResult(interpretation);
+        await saveReadingHistory({
+          type: kind === 'coffee' ? 'kahve' : kind === 'palm' ? 'el' : 'yuz',
+          title: !skipPersonInfo && personInfo?.name?.trim()
+            ? `${copy.shareTitle} [${modeToRun === 'deep' ? 'Detaylı' : 'Standart'}] (${personInfo.name.trim()})`
+            : `${copy.shareTitle} [${modeToRun === 'deep' ? 'Detaylı' : 'Standart'}]`,
+          result: interpretation,
+        });
+      } catch (err) {
+        clearTimeout(queueTimer);
+        setError(err instanceof Error ? err.message : 'Sistem yoğunluğu nedeniyle biraz zaman alabilir, lütfen birazdan tekrar deneyin.');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [images, kind, categoryKey, selectedMode, copy.invalidSubject, copy.shareTitle, cooldownRemaining, notifyStarted, hasPersonChoice, skipPersonInfo, personInfo],
+  );
 
   const handleAdComplete = useCallback(async () => {
     setAdModalVisible(false);
-    const res = await recordVideoWatched(categoryKey);
-    if (res.unlocked) {
-      // Hak açıldı, doğrudan falı başlat
-      interpret(false, true);
-    } else {
-      // Sıradaki video gerekiyorsa modalı sıradaki adımla tekrar aç
-      setAdVideoIndex(res.watched + 1);
-      setAdTotalNeeded(res.required);
-      setAdModalVisible(true);
-    }
-  }, [categoryKey, interpret]);
+    await interpret(false, true, 'standard');
+  }, [interpret]);
 
   const resetAll = useCallback(() => {
     setImages([]);
     resetResult();
   }, [resetResult]);
 
-  const busy = validating || loading;
+  const busy = loading || validating;
 
   useEffect(() => {
     if (!busy) return;
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulse, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
-        Animated.timing(pulse, { toValue: 0, duration: 900, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 1, duration: 900, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 0, duration: 900, useNativeDriver: true }),
       ]),
     );
     loop.start();
@@ -403,25 +438,71 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
                   Kişisel bilgi girmek istemiyorum (Anonim Fal)
                 </Text>
               </Pressable>
+            </View>
 
-              <View style={styles.infoHintRow}>
-                <MaterialCommunityIcons name="information-outline" size={13} color={GOLD_SOFT} />
-                <Text style={styles.infoHintText}>
-                  Daha isabetli ve sana özel bir fal analizi için kişi bilgilerini girebilirsin.
-                </Text>
+            {/* Analiz Modu Seçimi: Standart vs Derinlemesine Detaylı */}
+            <View style={styles.modeSection}>
+              <Text style={styles.modeSectionTitle}>Analiz Seviyesini Seç:</Text>
+              <View style={styles.modeCardsRow}>
+                <Pressable
+                  onPress={() => setSelectedMode('standard')}
+                  style={[
+                    styles.modeCard,
+                    selectedMode === 'standard' && styles.modeCardActive,
+                  ]}
+                >
+                  <View style={styles.modeCardHeader}>
+                    <MaterialCommunityIcons name="star-crescent" size={16} color={selectedMode === 'standard' ? GOLD : TEXT_MUTED} />
+                    <Text style={[styles.modeCardTitle, selectedMode === 'standard' && styles.modeCardTitleActive]}>
+                      Standart Yorum
+                    </Text>
+                  </View>
+                  <Text style={styles.modeCardDesc}>Günlük ücretsiz hakkın veya video ile hızlı ve duru fal yorumu.</Text>
+                  <View style={styles.modeBadgeFree}>
+                    <Text style={styles.modeBadgeFreeText}>Ücretsiz / Video</Text>
+                  </View>
+                </Pressable>
+
+                <Pressable
+                  onPress={() => setSelectedMode('deep')}
+                  style={[
+                    styles.modeCard,
+                    styles.modeCardDeep,
+                    selectedMode === 'deep' && styles.modeCardDeepActive,
+                  ]}
+                >
+                  <View style={styles.modeCardHeader}>
+                    <MaterialCommunityIcons name="crown" size={18} color={GOLD} />
+                    <Text style={[styles.modeCardTitle, styles.modeCardDeepTitle]}>
+                      Kapsamlı Derin
+                    </Text>
+                  </View>
+                  <Text style={styles.modeCardDesc}>4 Boyutlu detaylı rapor, vadeler, kombinasyonlar & derin külliyat.</Text>
+                  <View style={styles.modeBadgeCoin}>
+                    <Text style={styles.modeBadgeCoinText}>20 Coin</Text>
+                  </View>
+                </Pressable>
               </View>
             </View>
 
+            {/* Yorumlama Butonu */}
             <Pressable
-              onPress={() => interpret()}
+              onPress={() => interpret(selectedMode === 'deep', false, selectedMode)}
               disabled={!canInterpret}
               style={({ pressed }) => [
                 styles.actionButton,
+                selectedMode === 'deep' && styles.actionButtonDeep,
                 (!canInterpret || pressed) && styles.actionButtonDisabled,
               ]}
             >
-              <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
-              <Text style={styles.actionButtonText}>Yorumla</Text>
+              <MaterialCommunityIcons
+                name={selectedMode === 'deep' ? 'crown' : 'star-crescent'}
+                size={18}
+                color={NIGHT_CARD}
+              />
+              <Text style={styles.actionButtonText}>
+                {selectedMode === 'deep' ? 'Kapsamlı Derin Analiz Yap (20 Coin)' : 'Falı Yorumla (Standart)'}
+              </Text>
             </Pressable>
 
             {!hasPersonChoice && images.length >= MIN_IMAGES && (
@@ -446,9 +527,15 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
         {loading && (
           <View style={styles.loadingWrap}>
             <Animated.View style={{ opacity: pulseOpacity, transform: [{ scale: pulseScale }] }}>
-              <MaterialCommunityIcons name="star-crescent" size={32} color={GOLD} />
+              <MaterialCommunityIcons
+                name={activeReadingMode === 'deep' ? 'crown' : 'star-crescent'}
+                size={36}
+                color={GOLD}
+              />
             </Animated.View>
-            <Animated.Text style={[styles.loadingText, { opacity: pulseOpacity }]}>{copy.loading}</Animated.Text>
+            <Animated.Text style={[styles.loadingText, { opacity: pulseOpacity }]}>
+              {activeReadingMode === 'deep' ? copy.loadingDeep : copy.loading}
+            </Animated.Text>
             {queueNotice && (
               <View style={styles.queueNoticeCard}>
                 <Ionicons name="hourglass-outline" size={16} color={GOLD} />
@@ -460,9 +547,9 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
 
         {coinFallback && (
           <CoinFallbackBox
-            cost={READING_COIN_COST}
+            cost={coinFallback.cost}
             coins={coinFallback.coins}
-            onContinue={() => interpret(true)}
+            onContinue={() => interpret(true, false, selectedMode)}
             onBuyCoins={() => navigation.navigate('CoinShop')}
             onDismiss={() => navigation.navigate('Home')}
           />
@@ -470,7 +557,41 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
 
         {result && (
           <View style={styles.resultBox}>
+            <View style={styles.resultHeaderBadge}>
+              <MaterialCommunityIcons
+                name={activeReadingMode === 'deep' ? 'crown' : 'star-crescent'}
+                size={16}
+                color={GOLD}
+              />
+              <Text style={styles.resultHeaderBadgeText}>
+                {activeReadingMode === 'deep' ? 'Kapsamlı Derin Mistik Analiz Raporu' : 'Standart Fal Yorumu'}
+              </Text>
+            </View>
+
             <Text style={styles.resultText}>{result}</Text>
+
+            {/* Standart modda yapıldıysa Derin Analize Yükseltme Kartı */}
+            {activeReadingMode === 'standard' && (
+              <View style={styles.deepUpgradeCard}>
+                <View style={styles.deepUpgradeTop}>
+                  <MaterialCommunityIcons name="crown" size={22} color={GOLD} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.deepUpgradeTitle}>Daha Derin ve Kapsamlı Analiz İster misin?</Text>
+                    <Text style={styles.deepUpgradeSubtitle}>
+                      Fotoğraflarını tekrar yüklemeden 4 boyutlu aşk düğümleri, kariyer bereket kapıları ve kilit vadeleri hemen çöz.
+                    </Text>
+                  </View>
+                </View>
+                <Pressable
+                  onPress={() => interpret(true, false, 'deep')}
+                  style={({ pressed }) => [styles.deepUpgradeButton, pressed && styles.actionButtonPressed]}
+                >
+                  <MaterialCommunityIcons name="crown" size={16} color={NIGHT_CARD} />
+                  <Text style={styles.deepUpgradeButtonText}>Kapsamlı Derin Analize Yükselt (20 Coin)</Text>
+                </Pressable>
+              </View>
+            )}
+
             <View style={styles.resultActionsRow}>
               <ShareButton text={`Mistik Rehber - ${copy.shareTitle}\n\n${result}`} />
               <Pressable
@@ -581,6 +702,14 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     marginTop: 6,
   },
+  actionButtonDeep: {
+    backgroundColor: '#F5C862',
+    shadowColor: '#F5C862',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
   actionButtonDisabled: {
     opacity: 0.4,
   },
@@ -608,6 +737,89 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: GOLD,
   },
+  modeSection: {
+    width: '100%',
+    marginVertical: 6,
+    gap: 8,
+  },
+  modeSectionTitle: {
+    fontSize: 12.5,
+    fontWeight: '600',
+    color: GOLD_SOFT,
+    marginLeft: 2,
+  },
+  modeCardsRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  modeCard: {
+    flex: 1,
+    backgroundColor: 'rgba(26, 16, 52, 0.75)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderRadius: 14,
+    padding: 12,
+    gap: 6,
+  },
+  modeCardActive: {
+    borderColor: GOLD,
+    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+  },
+  modeCardDeep: {
+    backgroundColor: 'rgba(35, 20, 70, 0.85)',
+  },
+  modeCardDeepActive: {
+    borderColor: '#F5C862',
+    backgroundColor: 'rgba(245, 200, 98, 0.16)',
+  },
+  modeCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  modeCardTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+  },
+  modeCardTitleActive: {
+    color: GOLD,
+  },
+  modeCardDeepTitle: {
+    color: '#F5C862',
+  },
+  modeCardDesc: {
+    fontSize: 10.5,
+    color: TEXT_MUTED,
+    lineHeight: 14,
+    flex: 1,
+  },
+  modeBadgeFree: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+    marginTop: 4,
+  },
+  modeBadgeFreeText: {
+    fontSize: 10,
+    color: TEXT_MUTED,
+    fontWeight: '600',
+  },
+  modeBadgeCoin: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(242, 200, 121, 0.22)',
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+    marginTop: 4,
+  },
+  modeBadgeCoinText: {
+    fontSize: 10,
+    color: GOLD,
+    fontWeight: '700',
+  },
   loadingWrap: {
     alignItems: 'center',
     marginTop: 40,
@@ -618,23 +830,9 @@ const styles = StyleSheet.create({
     color: GOLD,
     letterSpacing: 0.8,
     fontStyle: 'italic',
-  },
-  retryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    flex: 1,
-  },
-  retryButtonText: {
-    fontSize: 12.5,
-    color: GOLD,
-    fontWeight: '600',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    lineHeight: 22,
   },
   resultBox: {
     backgroundColor: NIGHT_CARD,
@@ -644,10 +842,67 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 16,
   },
+  resultHeaderBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderRadius: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    alignSelf: 'flex-start',
+  },
+  resultHeaderBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: GOLD,
+  },
   resultText: {
     fontSize: 14,
     lineHeight: 23,
     color: TEXT_PRIMARY,
+  },
+  deepUpgradeCard: {
+    backgroundColor: 'rgba(38, 22, 75, 0.85)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(245, 200, 98, 0.5)',
+    borderRadius: 14,
+    padding: 14,
+    gap: 12,
+    marginTop: 6,
+  },
+  deepUpgradeTop: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  deepUpgradeTitle: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#F5C862',
+    marginBottom: 3,
+  },
+  deepUpgradeSubtitle: {
+    fontSize: 11.5,
+    color: TEXT_MUTED,
+    lineHeight: 16,
+  },
+  deepUpgradeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: '#F5C862',
+    borderRadius: 12,
+    paddingVertical: 11,
+    paddingHorizontal: 14,
+  },
+  deepUpgradeButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: NIGHT_CARD,
   },
   resultActionsRow: {
     flexDirection: 'row',
@@ -751,19 +1006,5 @@ const styles = StyleSheet.create({
     color: GOLD_SOFT,
     flex: 1,
     lineHeight: 16,
-  },
-  infoHintRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 5,
-    marginTop: 6,
-    paddingHorizontal: 8,
-  },
-  infoHintText: {
-    fontSize: 11,
-    color: GOLD_SOFT,
-    textAlign: 'center',
-    lineHeight: 15,
   },
 });

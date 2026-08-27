@@ -1,0 +1,81 @@
+{
+  "chakras": [
+    {
+      "id": "root",
+      "name": "Kök Çakra (Muladhara)",
+      "color": "Kırmızı",
+      "colorHex": "#E53935",
+      "location": "Omurga tabanı",
+      "keywords": "Güvenlik, Yaşam Gücü, Maddi İstikrar, Aidiyet",
+      "balanced": "Dünyaya güven duyma, maddi konularda ayakları yere basma, bedensel canlılık.",
+      "blocked": "Gelecek kaygısı, güvensizlik hissi, köksüzlük ve aşırı maddi korkular.",
+      "crystal": "Kırmızı Akik, Lal Taşı, Obsidyen"
+    },
+    {
+      "id": "sacral",
+      "name": "Sakral Çakra (Svadhisthana)",
+      "color": "Turuncu",
+      "colorHex": "#FB8C00",
+      "location": "Göbek deliğinin altı",
+      "keywords": "Yaratıcılık, Tutku, Cinsellik, Yaşamdan Zevk Alma",
+      "balanced": "Yaratıcı ilham, duygusal akışkanlık, sağlıklı ilişkiler ve neşe.",
+      "blocked": "Duygusal donukluk, suçluluk duygusu, haz alamama veya aşırı bağımlılık.",
+      "crystal": "Sitrin, Karneol, Ay Taşı"
+    },
+    {
+      "id": "solar",
+      "name": "Solar Pleksus (Manipura)",
+      "color": "Altın Sarısı",
+      "colorHex": "#FDD835",
+      "location": "Mide bölgesi",
+      "keywords": "Özgüven, İrade, Kişisel Güç, Kararlılık",
+      "balanced": "Yüksek özdeğer, hedeflere korkusuzca yürüme, güçlü sindirim ve irade.",
+      "blocked": "Öfke patlamaları, kontrolcülük veya tam tersi değersizlik ve çekingenlik.",
+      "crystal": "Pirit, Kaplan Gözü, Sarı Safir"
+    },
+    {
+      "id": "heart",
+      "name": "Kalp Çakrası (Anahata)",
+      "color": "Zümrüt Yeşili / Pembe",
+      "colorHex": "#43A047",
+      "location": "Göğüs merkezi",
+      "keywords": "Koşulsuz Sevgi, Şefkat, Affedicilik, Barış",
+      "balanced": "Derin empati, kalbini sevgiye açabilme, affetme ve iç huzur.",
+      "blocked": "Kırgınlıkları bırakamama, kıskançlık, sevilmeye layık hissetmeme, kapalılık.",
+      "crystal": "Pembe Kuvars, Zümrüt, Yeşim Taşı"
+    },
+    {
+      "id": "throat",
+      "name": "Boğaz Çakrası (Vishuddha)",
+      "color": "Gök Mavisi",
+      "colorHex": "#00ACC1",
+      "location": "Boğaz çukuru",
+      "keywords": "Doğru İfade, İletişim, Hakikati Söyleme, Sanat",
+      "balanced": "Duygularını dürüstçe ve cesurca ifade etme, iyi bir dinleyici olma, sanat.",
+      "blocked": "İçine atma, yalan söyleme veya dedikodu, boğazda düğümlenme hissi.",
+      "crystal": "Akuamarin, Lapis Lazuli, Turkuaz"
+    },
+    {
+      "id": "third_eye",
+      "name": "Üçüncü Göz (Ajna)",
+      "color": "Çivit Mavisi (İndigo)",
+      "colorHex": "#3949AB",
+      "location": "İki kaşın ortası",
+      "keywords": "Sezgi, Durugörü, Vizyon, Bilgelik",
+      "balanced": "Güçlü önseziler, rüyaların rehberliği, olayların arkasındaki hakikati görme.",
+      "blocked": "Aşırı mantıkçılık, sezgileri inkar etme, baş ağrıları, odaklanma güçlüğü.",
+      "crystal": "Ametist, Sodalit, Florit"
+    },
+    {
+      "id": "crown",
+      "name": "Taç Çakra (Sahasrara)",
+      "color": "Menekşe Moru / Saf Beyaz",
+      "colorHex": "#8E24AA",
+      "location": "Başın tepe noktası",
+      "keywords": "Evrensel Bilinç, Manevi Bütünlük, Aydınlanma",
+      "balanced": "İlahi akışa güven, yaşamın bir parçası olduğunu hissetme, derin manevi doyum.",
+      "blocked": "Yalnızlık hissi, maneviyattan kopuş, yaşam amacını kaybetme hissi.",
+      "crystal": "Dağ Kristali, Selenit, Ametist"
+    }
+  ]
+}

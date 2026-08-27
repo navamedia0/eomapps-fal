@@ -43,6 +43,15 @@ import SuFalScreen from '@/screens/SuFalScreen';
 import RuyaKitapligiScreen from '@/screens/RuyaKitapligiScreen';
 import KartAnlamlariScreen from '@/screens/KartAnlamlariScreen';
 import BilgiMakaleScreen from '@/screens/BilgiMakaleScreen';
+import MatrixOfDestinyScreen from '@/screens/MatrixOfDestinyScreen';
+import KursunDokmeScreen from '@/screens/KursunDokmeScreen';
+import RuneScreen from '@/screens/RuneScreen';
+import IChingScreen from '@/screens/IChingScreen';
+import BaklaScreen from '@/screens/BaklaScreen';
+import WaxReadingScreen from '@/screens/WaxReadingScreen';
+import CelticTreeScreen from '@/screens/CelticTreeScreen';
+import AuraEnergyScreen from '@/screens/AuraEnergyScreen';
+import ScryingScreen from '@/screens/ScryingScreen';
 import bilgiMakaleleri from '@/data/bilgi_makaleleri.json';
 import { GOLD, NIGHT_DEEP, NIGHT_MID, TEXT_PRIMARY } from '@/theme/colors';
 
@@ -100,8 +109,26 @@ export default function App() {
             <Stack.Screen
               name="ImageReading"
               component={ImageReadingScreen}
-              options={({ route }) => ({ title: route.params.kind === 'coffee' ? 'Kahve Falı' : 'El Falı' })}
+              options={({ route }) => ({
+                title:
+                  route.params.kind === 'coffee'
+                    ? 'Kahve Falı'
+                    : route.params.kind === 'palm'
+                    ? 'El Falı'
+                    : route.params.kind === 'face'
+                    ? 'Yüz Falı'
+                    : 'Çay Yaprağı Falı',
+              })}
             />
+            <Stack.Screen name="MatrixOfDestiny" component={MatrixOfDestinyScreen} options={{ title: 'Kader Matrisi' }} />
+            <Stack.Screen name="KursunDokme" component={KursunDokmeScreen} options={{ title: 'Kurşun Dökme Falı' }} />
+            <Stack.Screen name="RuneReading" component={RuneScreen} options={{ title: 'Nordik Rün Falı' }} />
+            <Stack.Screen name="IChingReading" component={IChingScreen} options={{ title: 'Çin I Ching Falı' }} />
+            <Stack.Screen name="BaklaReading" component={BaklaScreen} options={{ title: '41 Bakla Falı' }} />
+            <Stack.Screen name="WaxReading" component={WaxReadingScreen} options={{ title: 'Balmumu Falı' }} />
+            <Stack.Screen name="CelticTreeReading" component={CelticTreeScreen} options={{ title: 'Kelt Ağaç Takvimi' }} />
+            <Stack.Screen name="AuraEnergy" component={AuraEnergyScreen} options={{ title: 'Aura & Çakra Falı' }} />
+            <Stack.Screen name="ScryingReading" component={ScryingScreen} options={{ title: 'Kara Ayna Durugörü' }} />
             <Stack.Screen name="Zodiac" component={ZodiacScreen} options={{ title: 'Günlük Burç' }} />
             <Stack.Screen name="Numerology" component={NumerologyScreen} options={{ title: 'Numeroloji' }} />
             <Stack.Screen name="Compatibility" component={CompatibilityScreen} options={{ title: 'Burç Uyumu' }} />

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type ReadingHistoryType = 'kahve' | 'el' | 'tarot' | 'katina' | 'sesli' | 'solitaire' | 'dogumHaritasi';
+export type ReadingHistoryType = 'kahve' | 'el' | 'yuz' | 'tarot' | 'katina' | 'sesli' | 'solitaire' | 'dogumHaritasi';
 
 export type ReadingHistoryEntry = {
   id: string;

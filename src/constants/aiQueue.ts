@@ -3,11 +3,12 @@
 // point (protects the shared Gemini quota from concurrent users), this copy
 // only drives the client-side "queued" countdown so the wait feels
 // intentional instead of surfacing as a failed request.
-export type ReadingType = 'kahve' | 'el' | 'tarot3' | 'tarot5' | 'tarot7' | 'tarot10' | 'katina' | 'sesli' | 'solitaire';
+export type ReadingType = 'kahve' | 'el' | 'yuz' | 'tarot3' | 'tarot5' | 'tarot7' | 'tarot10' | 'katina' | 'sesli' | 'solitaire';
 
 export const READING_COOLDOWN_SECONDS: Record<ReadingType, number> = {
   kahve: 5 * 60,
   el: 5 * 60,
+  yuz: 5 * 60,
   tarot3: 1 * 60,
   tarot5: 2 * 60,
   tarot7: 2 * 60,

@@ -1,0 +1,53 @@
+{
+  "_kaynak": "Klasik Rider-Waite & Thoth Tarot Ekolleri, Katina Deste-i Efendi Geleneği ve Hint-Batı Palmistri Külliyatı",
+  "tarot_kombinasyonlari": [
+    {
+      "kartlar": ["Kule", "Aşıklar"],
+      "tema": "İlişkide Ani Sarsıntı ve Gerçeklerle Yüzleşme",
+      "derin_yorum": "İlişkide sahte temeller üzerine kurulmuş dengelerin ani bir olay veya itirafla yıkılması; ancak bu yıkım ilişkinin daha dürüst ve sağlam bir zeminde yeniden doğması için gereklidir."
+    },
+    {
+      "kartlar": ["Ölüm", "Güneş"],
+      "tema": "Radikal Dönüşüm ve Muazzam Aydınlık",
+      "derin_yorum": "Kişinin hayatındaki eski bir dönemin, kimliğin ya da ilişkinin tamamen son bulması ve ardından gelen göz kamaştırıcı neşe, başarı ve ferahlık dönemi."
+    },
+    {
+      "kartlar": ["Şeytan", "Ay"],
+      "tema": "Bağımlılık, Gölge Korkular ve İllüzyon",
+      "derin_yorum": "Kişiyi tutsak eden toksik bir takıntı, kıskançlık ya da gerçek dışı kuruntuların yarattığı zihinsel sis perdesi; sezgileri arındırma ve bağımlılığı kırma uyarısı."
+    },
+    {
+      "kartlar": ["Kupa Ası", "Değnek Üçlüsü"],
+      "tema": "Yeni Bir Aşkın Ufukta Belirmesi",
+      "derin_yorum": "Kalbi dolduran taze bir sevgi kıvılcımının uzun vadeli bir geleceğe ve seyahat/uzak yol bağlantılı bir birlikteliğe doğru büyümesi."
+    },
+    {
+      "kartlar": ["İmparatoriçe", "Tılsım Onlusu"],
+      "tema": "Maddi & Manevi Bereket ve Aile Saadeti",
+      "derin_yorum": "Evlilik, yuva kurma, çocuk müjdesi veya aileden gelecek büyük bir maddi zenginlik ve kalıcı refah kapısı."
+    }
+  ],
+  "katina_derin_dinamikler": {
+    "deste_ve_mektup": "Uzaklardan gelecek, ilişkinin seyrini değiştirecek resmi veya çok samimi bir yazışma; gizli tutkuların kağıda dökülmesi.",
+    "kalp_ve_gunes": "İki ruhun kaderinde mühürlü olan ebedi aşk; tüm engellerin ve soğuklukların ilahi bir nurla erimesi.",
+    "yilan_ve_tilki": "Çiftin arasını bozmak için dedikodu ve fitne üreten, kurnazca yaklaşan iki yüzlü bir çevre enerjisi; uyanık olma çağrısı."
+  },
+  "el_fali_derin_topografya": {
+    "mistik_hac": {
+      "konum": "Kalp çizgisi ile Akıl çizgisi arasındaki dörtgen alanda (Ay Tepesi yönünde) beliren '+' veya 'x' şekli.",
+      "anlam": "Çok güçlü 6. his, doğuştan gelen durugörü ve psişik yetenekler, tehlikeleri önceden sezme gücü."
+    },
+    "akil_cizgisi_catallanmasi": {
+      "konum": "Akıl çizgisinin sonunun (Ay Tepesi ve Merkür Tepesi yönünde) ikiye ayrılması.",
+      "anlam": "Yazar/Sanatçı çatalı; hem analitik hem de sınırsız hayal gücünü birleştiren üstün zeka ve ikna kabiliyeti."
+    },
+    "venus_tepesi_izgaralari": {
+      "konum": "Başparmağın altındaki etli tepede kafes şeklinde çizgiler.",
+      "anlam": "Aşırı tutku, yüksek cinsel ve duygusal enerji, aşka derinden bağlılık ama aynı zamanda çabuk alınganlık."
+    },
+    "kader_cizgisi_kopukluklari": {
+      "konum": "Bilekten orta parmağa uzanan çizgideki kırılma ve basamaklanmalar.",
+      "anlam": "Kariyerde 28-35 yaş aralığında yaşanacak radikal meslek ve yön değişikliği; sonrasında gelen bağımsız başarı."
+    }
+  }
+}

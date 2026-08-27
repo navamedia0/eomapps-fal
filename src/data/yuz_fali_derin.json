@@ -1,0 +1,66 @@
+{
+  "_kaynak": "Kadim Doğu İlmi Sima (Kıyafetnâme), Çin Mian Xiang Yüz Okuma Sanatı ve Batı Fizyonomisi Sentezi",
+  "uc_ana_bolge": {
+    "ust_bolge_alin_ve_sakaklar": {
+      "yas_donemi": "15 - 30 Yaş (Gençlik ve Kökler)",
+      "temsil_ettigi": "Zihinsel kapasite, idealler, aileden devralınan karmik miras, hayal gücü ve vizyonerlik.",
+      "analiz_anahtari": "Geniş ve pürüzsüz bir alın yüksek entelektüel potansiyeli ve erken yaşta bağımsızlaşmayı; kavisli alın yaratıcı sezgiyi; çizgiler ise erken olgunlaşmayı gösterir."
+    },
+    "orta_bolge_kaslar_gozler_burun": {
+      "yas_donemi": "31 - 50 Yaş (Kader ve İrade Mihveri)",
+      "temsil_ettigi": "Kariyer gücü, finansal başarı, ilişkilerdeki denge, liderlik ve duygusal dayanıklılık.",
+      "analiz_anahtari": "Burun zenginlik ve benlik sarayıdır; gözler ruhun ışığı ve duygusal rezonansıdır; kaşlar sosyal güç ve dostluk bağlarıdır."
+    },
+    "alt_bolge_dudaklar_cene_yanaklar": {
+      "yas_donemi": "51+ Yaş ve Olgunluk (Bereket ve Hane Huzuru)",
+      "temsil_ettigi": "Maddi istikrar, içgüdüler, sadakat, aile huzuru ve yaşamın sonbaharındaki ruhsal doyum.",
+      "analiz_anahtari": "Güçlü ve belirgin bir çene sarsılmaz iradeyi; dolgun dudaklar sevgi dili ve cömertliği; geniş ağız büyük hedefleri simgeler."
+    }
+  },
+  "yuz_organ_ve_hat_sembolizmi": {
+    "alin": {
+      "genis_ve_acik": "Yüksek zeka, vizyoner bakış, bağımsız karar alma gücü ve liderlik potansiyeli.",
+      "yuvarlak_ve_kavisli": "Zengin hayal gücü, sanatsal incelik, empati yeteneği ve sezgisel zeka.",
+      "dar_veya_duz": "Pratiklik, somut sonuç odaklılık, disiplin ve geleneklere bağlılık.",
+      "dikey_kas_arasi_cizgisi": "Derin odaklanma, sorumluluk bilinci; çift çizgi ise keskin eleştirel analiz gücü."
+    },
+    "gozler_ve_bakis": {
+      "parlak_ve_canli": "Yüksek yaşam enerjisi, berrak niyet, duru sezgiler ve çekici bir aura.",
+      "badem_gozler": "Gizemli çekicilik, zarafet, derin duygusal zeka ve insanları kolayca etkileme gücü.",
+      "derin_ve_anlamli": "İçe dönük bilgelik, sırlar saklama yeteneği, felsefi derinlik ve sadakat.",
+      "hafif_cekik_gozler": "Stratejik zeka, pratik zeka, kriz yönetiminde üstün sakinlik ve hedef odaklılık.",
+      "iri_ve_acik_gozler": "Dışa dönüklük, samimiyet, şeffaf duygular ve sanatsal coşku."
+    },
+    "kaslar": {
+      "kavisli_ve_hilal": "Duygusal denge, nezaket, diplomatik iletişim ve insanları birleştirme yeteneği.",
+      "duz_ve_yatay": "Mantık odaklılık, doğrudan iletişim, net hedefler ve kararlılık.",
+      "kalin_ve_gur": "Güçlü tutku, yüksek enerji, mücadeleci ruh ve koruyucu içgüdü.",
+      "ince_ve_zarif": "Hassas duygusal algı, kırılganlık, estetik zevk ve zarafet."
+    },
+    "burun": {
+      "duz_ve_simetrik": "Maddi konularda istikrar, adil karakter, dürüstlük ve saygınlık.",
+      "kemerli_veya_guclu": "Liderlik arzusu, otorite, bağımsızlık ve kendi işini kurma potansiyeli.",
+      "etli_ve_yuvarlak_uc": "Maddi bereket, sıcakkanlılık, cömertlik ve parayı kendine çekme şansı.",
+      "ince_ve_zarif_uc": "Detaycılık, mükemmeliyetçilik, seçicilik ve entelektüel titizlik."
+    },
+    "dudaklar_ve_agiz": {
+      "dolgun_dudaklar": "Cömertlik, yüksek çekim, sevgi dolu yaklaşım, sanatsal haz ve hayat dolu olma.",
+      "ince_dudaklar": "Kontrollü duygular, mantık odaklılık, sır tutma gücü ve seçici arkadaşlıklar.",
+      "ust_dudak_baskisi": "Fedakarlık, başkalarını düşünme, sevgi vermeye odaklılık.",
+      "alt_dudak_baskisi": "Özgüven, alıcı olma arzusu, lükse ve konfora düşkünlük.",
+      "gamzeler": "Sosyal sevimlilik, çekicilik, talih ve insanlarda güven uyandırma enerjisi."
+    },
+    "cene": {
+      "guclu_ve_belirgin": "Sarsılmaz irade, zorluklar karşısında pes etmeme, sabır ve uzun ömürlü başarı.",
+      "sivri_ve_zarif": "Hızlı düşünme, esneklik, idealizm ve ani ilhamlar.",
+      "cukur_cene": "Sanatsal tutku, dikkat çekme isteği, romantizm ve karizmatik duruş.",
+      "yuvarlak_cene": "Huzur odaklılık, uyum, aile sevgisi ve diplomatik yaklaşım."
+    }
+  },
+  "ozel_isaretler_ve_benler": {
+    "goz_alti_beni": "Gözyaşı beni olarak da bilinir; derin duygusallık, empati ve ruh eşi arayışını simgeler.",
+    "dudak_kenari_beni": "Konuşma tatlılığı, cazibe, kısmet açıklığı ve bereketli sofralar.",
+    "alin_ortasi_beni": "Kaderde belirgin bir liderlik veya toplum önünde tanınma işareti.",
+    "yanak_beni": "Cesaret, kendini ifade etme gücü ve bağımsız karakter."
+  }
+}

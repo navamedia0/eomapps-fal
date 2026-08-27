@@ -35,6 +35,7 @@ const CORS_HEADERS = {
 const READING_COOLDOWN_SECONDS = {
   kahve: 5 * 60,
   el: 5 * 60,
+  yuz: 5 * 60,
   tarot3: 1 * 60,
   tarot5: 2 * 60,
   tarot7: 2 * 60,

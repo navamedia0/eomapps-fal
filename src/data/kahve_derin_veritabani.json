@@ -1,0 +1,1281 @@
+{
+  "_kaynak": "Geleneksel Türk Kahve Falı Külliyatı, Medyum Analizleri ve Popüler Sosyal Medya Fal Modelleri Derlemesi",
+  "semboller": {
+    "0": {
+      "sembol_adi": "kilit",
+      "genel": "Fincanda kilit çıkması, uzun süredir çözülemeyen sırların aydınlanacağını ve hayatınızdaki kilitli kapıların sonunda açılacağını müjdeler. Genellikle sabrın sonundaki selameti ve gizli saklı kalmış bazı gerçeklerin gün yüzüne çıkmasını simgeler.",
+      "ask": "İlişkilerde yaşanan iletişim kopukluklarının ve yanlış anlaşılmaların son bulacağı bir döneme girildiğini gösterir. Bekarlar için ise kalbini uzun süredir aşka kapatmış kişilerin sürpriz bir şekilde duygusal duvarlarını yıkacak biriyle karşılaşacağ��na işaret eder.",
+      "kariyer_para": "İş hayatında kriz yaratan karmaşık bürokratik engellerin ve ödenmeyen alacakların nihayet çözüme kavuşacağını müjdeler. Finansal anlamda kilitli kalmış yatırımların veya beklenen paraların serbest kalmasıyla rahat bir nefes alacaksınız.",
+      "uyari_golge": "Kilidin konumu fincanın dibindeyse geçmişteki takıntıların bugünü esir aldığını; kulpa yakınsa kendi elinizle hayatınızı zorlaştırdığınızı gösterir. Aşırı ketum davranarak fırsatları kaçırmamaya dikkat etmelisiniz."
+    },
+    "1": {
+      "sembol_adi": "madalya",
+      "genel": "Madalya, harcanan büyük emeklerin ve dökülen alın terinin nihayet hak ettiği ödülü alacağına işaret eden muştulu bir semboldür. Toplum önünde takdir edilmeyi, başarıyı ve gurur duyulacak onurlu anları temsil eder.",
+      "ask": "Aşk hayatında verilen fedakarlıkların ve gösterilen sadakatin partneriniz tarafından en üst düzeyde fark edilip taçlandırılacağını gösterir. İlişkilerdeki tüm soru işaretleri yerini güvene ve gurura bırakır.",
+      "kariyer_para": "Kariyerinizde terfi, unvan değişimi, ödül veya büyük bir projede üstün başarı elde ederek rakiplerinizi geride bırakacağınızı gösterir. Maddi açıdan ise yatırımlarınızın fazlasıyla karşılık bulacağı bereketli bir döneme giriyorsunuz.",
+      "uyari_golge": "Madalyanın gölge tarafı kibir ve başarı sarhoşluğudur; elde edilen zaferlerin başınızı döndürmesine izin vermemelisiniz. Fincanın kenarında belirdiyse başarıyı kutlarken çevrenizdeki kıskanç kişilerin hedefi olabileceğiniz konusunda uyarır."
+    },
+    "2": {
+      "sembol_adi": "sampanya",
+      "genel": "Şampanya, hayatınıza ani ve coşkulu bir neşenin gireceğini, kutlanacak büyük bir başarının kapıda olduğunu müjdeler. Sosyal hayatınızın hareketleneceği, dostlarınızla unutulmaz anlar paylaşacağınız bir dönemi simgeler.",
+      "ask": "Romantik hayatta uzun zamandır beklenen evlilik teklifi, nişan veya büyük bir barışma gibi coşkulu kutlamaların habercisidir. Bekarlar için ise sosyal ortamlarda tanışılacak heyecan verici ve popüler bir aşkın sinyalini verir.",
+      "kariyer_para": "İş yerinde büyük bir anlaşmanın imzalanması veya kutlamaya değer karlı bir projenin tamamlanması anlamına gelir. Maddi kazançların artmasıyla birlikte kendinizi ödüllendireceğiniz harcamalar yapabilirsiniz.",
+      "uyari_golge": "Şampanyanın köpüğü gibi geçici heveslere kapılarak anlık paraları çarçur etmemeniz konusunda uyarır. Aşırı sosyal hayatın getirdiği yorgunluğa ve yüzeysel ilişkilere karşı dikkatli olmalısınız."
+    },
+    "3": {
+      "sembol_adi": "pasta",
+      "genel": "Pasta, hayatınızda tatlı günlerin, kutlamaların ve keyifli anların çoğalacağını gösteren son derece olumlu bir semboldür. Sevdiklerinizle bir araya geleceğiniz neşeli günlerin ve bolluk bereketin habercisidir.",
+      "ask": "İlişkinizde tatlı dilli günlerin hakim olacağını, varsa küslüklerin tatlıya bağlanarak romantik anlara dönüşeceğini müjdeler. Evli çiftler için aileye katılacak yeni bir birey veya evlilik yıl dönümü gibi özel kutlamaları simgeler.",
+      "kariyer_para": "Ortaklı işlerde ekmek parasını paylaşma, bereketli kazançlar ve iş yerinde kutlanacak ortak başarıları temsil eder. Maddi açıdan tatmin edici, rızkın bol olduğu ve kimseye muhtaç olmayacağınız bir d��neme işaret eder.",
+      "uyari_golge": "Pastanın gölge yönü aşırı konfor düşkünlüğü ve tembelliktir; hayatın tatlı taraflarına dalıp sorumlulukları ihmal etmemelisiniz. Çevrenizdeki her 'tatlı' dilli insana ve sahte dostluklara karşı uyanık olmanız gerekir."
+    },
+    "4": {
+      "sembol_adi": "hediye_paketi",
+      "genel": "Hediye paketi, hayatınızın sürprizlere gebe olduğunu, hiç beklemediğiniz bir anda çok sevineceğiniz bir haber alacağınızı gösterir. Kaderin size sunduğu beklenmedik bir lütuf ve baht açıklığı olarak yorumlanır.",
+      "ask": "Sevgilinizden veya eşinizden alacağınız romanesk bir sürprizin, uzun süredir beklenen bir jestin ilişkideki tüm buzları eriteceğini müjdeler. Bekar kimseler için ise tamamen sürpriz bir şekilde hayatlarına girecek özel bir talibi simgeler.",
+      "kariyer_para": "Beklenmeyen bir yerden gelecek para, ikramiye, miras veya hak edilen ancak unutulmuş bir ödemenin elinize geçeceğini gösterir. İş hayatında ise sürpriz bir terfi veya yeni bir teklif kapınızı çalabilir.",
+      "uyari_golge": "Her parıldayan hediyenin altından iyi niyet çıkmayabileceği için, gelen tekliflerde ve yeni tanışacağınız insanlarda 'Truva atı' etkisine karşı dikkatli olmalısınız. Beklentiyi çok yüksek tutmak hayal kırıklığı yaratabilir."
+    },
+    "5": {
+      "sembol_adi": "balon",
+      "genel": "Balon, hayatınızdaki bazı durumların aniden yükseleceğini ancak aynı zamanda geçici veya kırılgan olabileceğini gösterir. Fincanda süzülen bir balon, umutların ve hayallerin gökyüzüyle buluşmasını simgeler.",
+      "ask": "Aşk hayatınızda fevri çıkışlarla birdenbire parlayan ancak çabuk sönen geçici heyecanlara karşı dikkatli olmanız gerektiğini söyler. Romantik ilişkilerde pembe hayaller kurarken gerçekçi zeminden kopmamak önemlidir.",
+      "kariyer_para": "Kariyerinizde hızla yükselme arzunuzu gösterirken, spekülatif para piyasalarında ve riskli yatırımlarda ani kayıplara karşı uyarır. İş projelerinin balon gibi şişirilip altının boş çıkma ihtimaline karşı temkinli olunmalıdır.",
+      "uyari_golge": "Balonun en büyük gölgesi 'şişirilmiş ego' ve hayal kırıklığıdır; en ufak bir iğne batmasında (gerçeklerle yüzleşmede) tüm hayallerin sönme riski vardır. Gerçekçi olmayan hedeflere kapılmamalısınız."
+    },
+    "6": {
+      "sembol_adi": "ucurtma",
+      "genel": "Uçurtma, özgürlük arayışınızı, hayallerinizi gökyüzüne taşırken aynı zamanda köklerinize ve kontrolünüze sadık kalmanız gerektiğini gösterir. Uzaktan yönetilen ama yükseklerde süzülen umutları simgeler.",
+      "ask": "İlişkinizde partnerinizi sıkan aşırı kontrolcü tavırlardan kaçınmanız gerektiğini, ona biraz özgürlük tanımanın bağı güçlendireceğini müjdeler. Bekarlar için rüzgarı arkasına alıp gelen özgür ruhlu bir aşkı temsil eder.",
+      "kariyer_para": "Kariyerinizde rüzgarın (şansın ve koşulların) sizden yana eseceği, projelerinizi ulusal veya daha geniş kitlelere duyurabileceğiniz bir döneme işaret eder. Maddi konularda riski dengeleyerek kazanç sağlayacaksınız.",
+      "uyari_golge": "Uçurtmanın ipini kaçırırsanız kontrolü tamamen kaybedersiniz; hayatınızdaki ipin (iradenin) kimin elinde olduğuna dikkat etmelisiniz. Ani rüzgarlara karşı dengede duramazsanız hayalleriniz savrulabilir."
+    },
+    "7": {
+      "sembol_adi": "salincak",
+      "genel": "Salıncak, hayatınızda bir ileri bir geri giden, kararsızlıkların ve dalgalı ruh hallerinin hakim olduğu bir dönemi simgeler. Duygusal olarak bir inisiyatif alma ve dengede kalma çabasını gösterir.",
+      "ask": "İlişkilerde bir gün çok mutlu, diğer gün mesafeli olunan 'git-gellerin' yaşandığı kararsız bir sürece işaret eder. Kalbi boş olanlar için geçmişteki bir kişi ile bugünkü aday arasında gidip gelinen bir zihin karmaşasını temsil eder.",
+      "kariyer_para": "İş ve maddi konularda sürekli dalgalanan, bir kazanıp bir kaybedilen dengesiz bir nakit akışına dikkat çeker. Kariyerle ilgili büyük bir karar vermeden önce bu kararsızlık evresinin geçmesini beklemeniz gerekebilir.",
+      "uyari_golge": "Salıncağın hırsına kapılıp sürekli aynı yerde dönüp durmak, ilerleme kaydedememek en büyük gölge yönüdür. Kararsızlığı bir erdem zannedip zamana oynamak fırsatları kaçırmanıza neden olabilir."
+    },
+    "8": {
+      "sembol_adi": "kayik",
+      "genel": "Kayık, küçük ama emin adımlarla hayatınızda yeni ufuklara yelken açacağınızı, kısa mesafeli seyahatleri ve içsel yolculukları müjdeler. Sakin sularda ilerleyen huzurlu bir süreci temsil eder.",
+      "ask": "Duygusal hayatınızda küçük adımlarla ilerleyen, sakin ve huzurlu bir yakınlaşmanın habercisidir. Partnerinizle birlikte baş başa çıkacağınız ufak bir tatil, ilişkinize taze bir soluk getirecektir.",
+      "kariyer_para": "Maddi olarak devasa kazançlar olmasa da geçiminizi rahatça sağlayacak küçük ama istikrarlı gelir kaynaklarını simgeler. Ortaklı işlerde aynı kayıkta kürek çekmenin getirdiği uyumu ve dayanışmayı gösterir.",
+      "uyari_golge": "Kayık küçük olduğu için fırtınalı sularda (büyük krizlerde) kolayca alabora olabilir; bu yüzden büyük riskler almaktan kaçınmalısınız. Dalgalı durumlarda doğru yönü bulmak için sağduyulu kişilerden yardım almalısınız."
+    },
+    "9": {
+      "sembol_adi": "yelkenli",
+      "genel": "Yelkenli, falda çıkabilecek en hayırlı yolculuk ve kısmet sembollerinden biridir; uzaklardan gelecek büyük haberleri ve köklü değişimleri müjdeler. Rüzgarı arkasına alarak hedefe doğru inançla ilerlemeyi simgeler.",
+      "ask": "Aşk hayatınızda uzun mesafelerin aşılacağını, uzak akraba veya şehir dışından gelecek sürpriz bir kısmetle hayatınızın yön değiştireceğini gösterir. Mevcut ilişkilerde ise ufukta görünen mutlu bir geleceğe doğru birlikte yol almaktır.",
+      "kariyer_para": "Kariyerinizde küresel, uluslararası veya şehirler arası büyük fırsatların kapınızı çalacağını, maddi olarak da rüzgarı arkanıza alıp büyüyeceğinizi gösterir. Ticaretle uğraşanlar için bol kazançlı ve bereketli seyahatler demektir.",
+      "uyari_golge": "Rüzgarın yönü her zaman aynı kalmaz; yelkensiz veya rüzgarsız kaldığınız anlarda çaresizliğe kapılmamak için B planınızın olması gerekir. Aşırı iyimserlikle tedbiri elden bırakmamalısınız."
+    },
+    "kus": {
+      "genel": "Sevinçli, müjdeli ve beklenen aydınlık bir haber.",
+      "ask": "Aşk hayatında uzun süredir haber alamadığın ya da küs olduğun kişiden gelecek zarif bir mesaj, adım veya karşılaşma.",
+      "kariyer_para": "İş başvurusuna, terfiye veya beklenen bir ödemeye dair sevindirici onay haberi.",
+      "uyari_golge": "Kuşun gagası açıksa haber çok hızlı gelir; başı aşağı bakıyorsa gecikmeli veya dikkatli okunması gereken bir detay içerebilir."
+    },
+    "balik": {
+      "genel": "Kısmet, bereket, maddi bolluk ve ruhsal zenginlik.",
+      "ask": "Duygusal anlamda çok besleyici, karşılıklı çekimin ve romantizmin yüksek olduğu kısmetli bir dönem.",
+      "kariyer_para": "Birden fazla kaynaktan gelecek para girişi, karlı bir anlaşma ya da beklenmedik bir maddi kazanç.",
+      "uyari_golge": "Balık fincanın dibindeyse bu bereket hane içine köklenecek; kenarındaysa anlık bir harcama fırsatı doğabilir."
+    },
+    "yol": {
+      "genel": "Hayatta alınacak yeni bir karar, fiziksel bir seyahat veya ruhsal bir dönüşüm rotası.",
+      "ask": "İki kişi arasındaki mesafelerin kapanması veya birlikte çıkılacak huzurlu bir seyahat.",
+      "kariyer_para": "Şehir dışı/yurt dışı bağlantılı iş fırsatları, kariyerde yeni bir vizyon edinme.",
+      "uyari_golge": "Yolun önü açıksa süreç engelsiz akar; yol çatallanıyorsa iki seçenek arasında önemli bir karar vermen gerekir."
+    },
+    "yilan": {
+      "genel": "Gizli bir rakip, arkadan konuşan sinsi bir kişi ya da kendi içindeki zehirli şüpheler.",
+      "ask": "İlişkinin arasına girmeye çalışan kıskanç bir üçüncü şahıs veya dedikodu.",
+      "kariyer_para": "İş ortamında ayağını kaydırmaya çalışan veya fikirlerini sahiplenmek isteyen bir meslektaş.",
+      "uyari_golge": "Yılan kıvrılmışsa tehlike henüz pasiftir; başı dikse temkinli olmalı ve sırlarını kimseyle paylaşmamalısın."
+    },
+    "kalp": {
+      "genel": "Saf sevgi, içsel arzu, duygusal doyum ve kalp açıklığı.",
+      "ask": "Karşılıklı güçlü duygular, yeni bir aşka adım atma ya da mevcut ilişkide tutkunun alevlenmesi.",
+      "kariyer_para": "Severek ve tutkuyla yapılacak bir iş, mesleki tatmin.",
+      "uyari_golge": "Kalp net ve simetrikse aşk kusursuzdur; kırık ya da dağınık hatlıysa geçmişten gelen bir kırgınlığın şifalanması gerekir."
+    },
+    "yuzuk": {
+      "genel": "Bağlılık, sözleşme, kalıcı bir taahhüt ve mühürlenme.",
+      "ask": "Söz, nişan, evlilik teklifi veya ilişkide resmiyet ve ciddiyet kazanma adımı.",
+      "kariyer_para": "İmza atılacak önemli bir ortaklık, uzun soluklu bir iş sözleşmesi.",
+      "uyari_golge": "Yüzüğün ortası boş ve açıksa her şey berraktır; karartı varsa aile büyüklerinden onay alma süreçleri uzayabilir."
+    },
+    "anahtar": {
+      "genel": "Düğümlerin çözülmesi, yeni bir kapının ardına kadar açılması ve sırların aydınlanması.",
+      "ask": "Karşı tarafın kalbinin kilidini açacak samimi bir konuşma veya derin bir anlayış.",
+      "kariyer_para": "Ev, araba alımı, gayrimenkul fırsatı veya kariyerde kilit bir pozisyona geçiş.",
+      "uyari_golge": "Anahtar fincanın ağzına yakınsa çözüm hemen elindedir; diptedirse sabırla doğru zamanı beklemelisin."
+    },
+    "agac": {
+      "genel": "Kök salma, aile büyümesi, uzun ömür, sabır ve sağlam temeller.",
+      "ask": "Geçici hevesler yerine ömürlük, güven veren, köklü bir beraberlik.",
+      "kariyer_para": "Gittikçe büyüyen yatırımlar, köklü bir kurumda kalıcı ve saygın bir yer edinme.",
+      "uyari_golge": "Yapraklı ağaç bolluk ve berekettir; çıplak dallı ağaç bir süre dinlenme ve enerji toplama gerekliliğine işaret eder."
+    },
+    "at": {
+      "genel": "Murat, asalet, hızla gerçekleşecek bir dilek ve zafer.",
+      "ask": "Gönlünden geçen muradına erme, gururunu okşayacak güzel bir gelişme.",
+      "kariyer_para": "Kariyerde prestij kazanma, rakipleri geride bırakarak hedefe dörtnala ulaşma.",
+      "uyari_golge": "Şaha kalkmış bir at büyük bir coşku ve gücü; sakin duran bir at ise planlı ilerlemeyi gösterir."
+    },
+    "dag": {
+      "genel": "Zorlu bir engel, aşılması gereken büyük bir sınav ve ardından gelen zirve başarısı.",
+      "ask": "Aşkta gurur, inatlaşma veya dış etkenlerden kaynaklanan geçici bir soğukluk duvarı.",
+      "kariyer_para": "Yüksek sorumluluk gerektiren ağır bir proje; sabırla çalışıldığında zirve ödülü getirir.",
+      "uyari_golge": "Dağın zirvesinde aydınlık varsa zafer kesindir; sisliyse adımlarını sağlam ve yavaş atmalısın."
+    },
+    "goz": {
+      "genel": "Nazar, kem göz, üzerindeki yoğun dikkat ve kıskançlık enerjisi.",
+      "ask": "İlişkinize dışarıdan imrenerek veya hasetle bakan kimselerin varlığı.",
+      "kariyer_para": "Başarıların ve kazancın nedeniyle iş ortamında parmakla gösterilme ve göze batma.",
+      "uyari_golge": "Telve içinde büyük bir göz varsa nazardan korunmak, başarılarını ve özel hayatını herkese anlatmamak şarttır."
+    },
+    "gemi": {
+      "genel": "Uzaklardan gelen büyük bir kısmet, denizaşırı planlar ve ferahlığa yelken açma.",
+      "ask": "Uzak mesafe ilişkisinde kavuşma ya da yeni bir şehre/ülkeye uzanan romantik bir bağ.",
+      "kariyer_para": "İthalat, ihracat, küresel projeler veya yer değişikliği getirecek büyük bir ticari adım.",
+      "uyari_golge": "Durgun suda giden gemi huzurlu bereketi; dalgalı sudaki gemi cesaret gerektiren büyük bir atılımı simgeler."
+    },
+    "bayrak": {
+      "genel": "Resmi daire, devlet kapısı, zafer, onur ve tescillenmiş bir hak.",
+      "ask": "Herkesin duyacağı, gururla ilan edilecek resmi ve meşru bir birliktelik.",
+      "kariyer_para": "Sınav kazanma, kamu ataması, mahkeme/hukuki zafer ya da patent/tescil onayı.",
+      "uyari_golge": "Dalgalanan bir bayrak kesinleşmiş bir başarıyı; direği eğik bayrak biraz bürokratik sabrı ifade eder."
+    },
+    "kopek": {
+      "genel": "Sadakat, dürüstlük, her şartta yanında duran kadim bir dost.",
+      "ask": "Sana derinden bağlı, sadakatinden şüphe duymayacağın güvenilir bir partner.",
+      "kariyer_para": "İş hayatında seni asla yarı yolda bırakmayacak sadık bir iş ortağı veya destekçi.",
+      "uyari_golge": "Köpek sakinse güven tamdır; hırlayan silüetteyse dost bildiğin birinin alınganlık gösterdiğine işaret eder."
+    },
+    "kedi": {
+      "genel": "Gizem, bağımsızlık, sezgisel zeka ve bazen de kendi çıkarını gözeten kurnazlık.",
+      "ask": "Bir yaklaşıp bir uzaklaşan, ilgisini tam kestiremediğin ama çok çekici bir figür.",
+      "kariyer_para": "İş ortamında tatlı dille kendi menfaatini koruyan esnek bir kişi.",
+      "uyari_golge": "Sezgilerine güvenmen gerektiğinin altını çizer; aşırı fedakarlıktan kaçınmalısın."
+    },
+    "aslan": {
+      "genel": "Otorite, liderlik, kudret, itibar ve koruyucu bir güç.",
+      "ask": "Karizmatik, güçlü karakterli ve seni kanatları altına alan etkileyici bir partner.",
+      "kariyer_para": "Yönetici koltuğu, terfi, kendi işinin başına geçme ve söz sahibi olma.",
+      "uyari_golge": "Ego savaşlarına girmemeli; gücünü kırıcı değil birleştirici kullanmalısın."
+    },
+    "kurt": {
+      "genel": "Yalnız savaşçı, keskin zeka, strateji ve gizli tehlikelere karşı uyanık olma.",
+      "ask": "Duygularını gizleyen, mesafeli ama içten içe çok sahiplenici bir mizaç.",
+      "kariyer_para": "Kendi başına yürüteceğin bağımsız bir proje; rakiplerini zekanla mat etme.",
+      "uyari_golge": "Aşırı yalnızlaşmaktan kaçınmalı, güvenebileceğin bir iki kişiyi yanına almalısın."
+    },
+    "guvercin": {
+      "genel": "Barış, saf niyet, aile içi uzlaşma ve ruhsal sükunet.",
+      "ask": "Kırgınlıkların son bulması, helalleşme, özür ve temiz bir başlangıç.",
+      "kariyer_para": "İş anlaşmazlıklarında tatlıya bağlanma ve adil bir paylaşım.",
+      "uyari_golge": "Çift güvercin varsa iki kişinin ortak mutluluğu ve evlilik enerjisi çok yüksektir."
+    },
+    "kartal": {
+      "genel": "Yüksek vizyon, engelleri tepeden aşma, büyük zafer ve saygınlık.",
+      "ask": "Toplumda saygı gören, idealleri yüksek ve seni yücelten biriyle bağ kurma.",
+      "kariyer_para": "Sektöründe parmakla gösterilme, üst düzey pozisyonlara tırmanış.",
+      "uyari_golge": "Küçük detaylara takılmayıp büyük resme odaklanman gerektiğini hatırlatır."
+    },
+    "baykus": {
+      "genel": "Gizli bilgelik, gece uyanışları, sezgisel uyanış ve temkinli olma uyarısı.",
+      "ask": "Görünenin ardındaki gerçeği sezme, aceleci davranmayıp gözlem yapma dönemi.",
+      "kariyer_para": "Finansal konularda gizli maddelere, sözleşme detaylarına dikkat etme gereği.",
+      "uyari_golge": "Korku ya da kötülük değil; seni olası bir yanılgıdan koruyan kozmik bir uyarı işaretidir."
+    },
+    "kelebek": {
+      "genel": "Ruhsal dönüşüm, hafiflik, neşe, kabuk değiştirme ve tazelenme.",
+      "ask": "Midede kelebekler uçurtan tatlı bir heyecan; kısa sürede büyük etki bırakan bir kıvılcım.",
+      "kariyer_para": "Yaratıcı işlerde parlayış, yeni bir hobi veya fikrin kazanca dönüşmesi.",
+      "uyari_golge": "Anın tadını çıkarırken geleceğe dair temelleri sağlam tutmayı ihmal etmemelisin."
+    },
+    "ari": {
+      "genel": "Yoğun emek, disiplinli çalışma, bereketli kazanç ve topluluk uyumu.",
+      "ask": "Birlikte emek verilen, fedakarlıklarla büyütülen sağlam ve huzurlu bir ilişki.",
+      "kariyer_para": "Döktüğün her damla alın terinin katbekat fazlasıyla geri döneceği bereketli bir hasat dönemi.",
+      "uyari_golge": "Aşırı çalışıp bedenini ve ruhunu ihmal etmemeli, dinlenmeye vakit ayırmalısın."
+    },
+    "orumcek": {
+      "genel": "Sabırla ilmek ilmek örülen planlar, entrikalar veya ağ kurma yeteneği.",
+      "ask": "Birbirine derin ve kopmaz bağlarla kenetlenme; bazen de çıkmaz bir duygu ağı.",
+      "kariyer_para": "Geniş bir network ve iş çevresi oluşturma; perde arkasından yönetilen karlı bir proje.",
+      "uyari_golge": "Kendi kurduğun vesvese ve şüphe ağlarına takılmamaya özen göstermelisin."
+    },
+    "fil": {
+      "genel": "Şans, uğur, ağırbaşlılık, engelleri ezip geçen muazzam bir güç ve hafıza.",
+      "ask": "Uzun soluklu, geçmişi sağlam ve korunaklı bir ilişki; sadık bir eş.",
+      "kariyer_para": "Büyük bir sermaye girişi, mülk edinme ve finansal güvenliğin garanti altına alınması.",
+      "uyari_golge": "Filin hortumu yukarı doğruysa haneye büyük bir şans ve bereket akmaktadır."
+    },
+    "deve": {
+      "genel": "Yüklü kısmet, sabır, çölü aşma iradesi ve miras/toplu para.",
+      "ask": "Zorluklara birlikte göğüs gerilen, zamanla olgunlaşan sarsılmaz bir bağ.",
+      "kariyer_para": "Toplu bir tazminat, miras, gayrimenkul satışı ya da yüklü bir kazanç.",
+      "uyari_golge": "Deve yüklüyse kısmet kapıdadır; oturmuş deveyse paranın gelişi biraz zaman alabilir."
+    },
+    "yildiz": {
+      "genel": "Kaderin parlaması, şöhret, ilahi korunma ve tutulan dileklerin kabulü.",
+      "ask": "Ruh eşiyle tanışma, ilişkide adeta yıldız gibi parıldama ve imrenilme.",
+      "kariyer_para": "Toplum önünde takdir edilme, ödül alma ve mesleğinde zirveye çıkma.",
+      "uyari_golge": "5 köşeli yıldız başarıyı, 6 köşeli yıldız ilahi denge ve korumayı simgeler."
+    },
+    "ay": {
+      "genel": "Bilinçaltı, sezgiler, dişillik, romantizm ve gizli duygular.",
+      "ask": "Duygusal derinlik, geceleri düşünülen bir sevgili ve mistik bir çekim.",
+      "kariyer_para": "Yaratıcılık, sanat, psikoloji ve insan ilişkilerinde yüksek başarı.",
+      "uyari_golge": "Hilal yeni başlangıçları; dolunay ise gizli kalmış şeylerin açığa çıkmasını temsil eder."
+    },
+    "gunes": {
+      "genel": "Aydınlık, neşe, karanlık günlerin geride kalması, canlılık ve şifa.",
+      "ask": "Tüm şüphelerin ve karanlıkların dağıldığı, sımsıcak ve berrak bir birliktelik.",
+      "kariyer_para": "İflastan ya da durgunluktan çıkış, karlı ve parlak yeni bir girişim.",
+      "uyari_golge": "Güneş doğmuşsa fincandaki tüm olumsuz sembollerin etkisini hafifletir ve nötrler."
+    },
+    "merdiven": {
+      "genel": "Basamak basamak yükseliş, sosyal statü artışı ve hedeflere adım adım yaklaşma.",
+      "ask": "İlişkide bir üst aşamaya geçme (tanışmadan flörte, flörtten ciddiyete).",
+      "kariyer_para": "Maaş artışı, terfi, kademe ilerlemesi ve saygınlık kazanma.",
+      "uyari_golge": "Merdivenden yukarı çıkılıyorsa yükseliş; aşağı iniliyorsa bir konuda geri adım atıp güç toplamak gerekebilir."
+    },
+    "kapi": {
+      "genel": "Yeni bir hayat evresi, fırsat eşiği, bir dönemin kapanıp yenisinin başlaması.",
+      "ask": "Yeni bir aşka kalbini açma ya da eski ilişkiyi tamamen geride bırakma kararı.",
+      "kariyer_para": "Yeni bir iş teklifi, başka bir sektöre geçiş ya da ofis açılışı.",
+      "uyari_golge": "Açık kapı hazır fırsatları; kapalı kapı henüz doğru anahtarın bulunmadığını gösterir."
+    },
+    "bicak": {
+      "genel": "Kesin karar, bir bağı koparma, ameliyat/şifa veya net bir ayrım yapma.",
+      "ask": "Toksik bir ilişkiden kesin olarak kopma veya net sınırlar çizme.",
+      "kariyer_para": "Zarar eden bir ortaklığı sonlandırma ve yeni bir rotaya girme.",
+      "uyari_golge": "Kırıcı sözler söylemekten ve fevri çıkışlardan kaçınman gerektiğini hatırlatır."
+    },
+    "mum": {
+      "genel": "Umut, ruhsal aydınlanma, adak/dilek ve karanlıkta yolunu bulma.",
+      "ask": "Umutsuz görünen bir durumda beliren minik ama çok değerli bir sevgi ışığı.",
+      "kariyer_para": "Bir belirsizlik ortamında sana yol gösterecek bilge bir danışman veya fikir.",
+      "uyari_golge": "Yanan mum umudun diri olduğunu; erimiş mum adak veya içsel arınma vaktini simgeler."
+    },
+    "kitap": {
+      "genel": "Fincanda kitap sembolü çıkması, bilgi, eğitim, resmi evraklar ve hayatınızda açılacak yeni ve temiz bir sayfanın habercisidir.",
+      "ask": "İlişkilerde yıllardır kafanızı kurcalayan sırların çözüleceğine, partnerinizle aranızdaki entelektüel bağın güçleneceğine işaret eder.",
+      "kariyer_para": "Beklediğiniz resmi bir kağıt, mahkeme kararı, sözleşme veya sınav sonucunun lehinize sonuçlanarak kariyerinizde dönüm noktası yaratacağını gösterir.",
+      "uyari_golge": "Çevrenizde saklı saklı işler çeviren insanlara ve elinize geçecek resmi evraklardaki ince detayları okumadan imza atmamaya dikkat etmelisiniz."
+    },
+    "ayakkabi": {
+      "genel": "Yolculuk, taşınma veya hayatınızda atacağınız köklü ve ani bir adımın habercisidir; genellikle fincanın tabanında veya kulpun hemen altında belirir.",
+      "ask": "Bekarlar için yeni bir aşka yelken açmak üzere yapılacak bir seyahati, evliler için ise eşle birlikte alınacak ortak bir karar doğrultusunda mekân değişikliğini simgeler.",
+      "kariyer_para": "İş sebebiyle yapılacak uzun veya kısa süreli seyahatlere, yeni bir şehre ya da pozisyona adapçınma sürecine delalet eder.",
+      "uyari_golge": "Aceleyle verilecek kararların ve fevri adımların getireceği pişmanlıklara karşı temkinli olmanız, ayaklarınızın yere sağlam basması gerekir."
+    },
+    "canta": {
+      "genel": "Sırlar, ani seyahatler, beklenmedik maddi gelişmeler ve kişinin içinde sakladığı duygusal yükleri temsil eden güçlü bir semboldür.",
+      "ask": "İlişkide uzun süredir halı altına süpürülen meselelerin ani bir patlamayla masaya yatırılacağına ve valiz toplayıp uzaklaşma ihtimaline işaret eder.",
+      "kariyer_para": "Beklenmeyen bir yerden elinize geçecek toplu para, miras veya iş amaçlı yapılacak ani bir seyahatin habercisidir.",
+      "uyari_golge": "Aşırı sır saklamanın ilişkilerde güven zedeleyebileceğine ve başkalarının yüklerini kendi çantanızda taşımaktan vazgeçmeniz gerektiğine uyarır."
+    },
+    "saat": {
+      "genel": "Zamanın ne kadar değerli olduğunu, yaklaşan büyük bir buluşmayı ve hayatınızdaki kronikleşmiş döngülerin tamamlanmak üzere olduğunu gösterir.",
+      "ask": "Aşk hayatınızda 'doğru zaman' vurgusu yapar; bazı şeylerin olgunlaşması için zamana ihtiyacınız olduğunu veya beklediğiniz kişinin vaktinde geleceğini söyler.",
+      "kariyer_para": "İş hayatınızda projeleri yetiştirmek için zamanla yarışacağınızı ve kritik saatlerde vereceğiniz kararların kazancınızı belirleyeceğini ifade eder.",
+      "uyari_golge": "Zamanı boşa harcama eğiliminize ve fırsatları kaçırma korkusuyla (FOMO) hareket ederek yanlış hamleler yapma riskine dikkat çeker."
+    },
+    "tac": {
+      "genel": "Başarı, zafer, otorite ve hayatınızın kontrolünü tamamen elinize alacağınız, toplum tarafından takdir göreceğiniz bir dönemin simgesidir.",
+      "ask": "İlişkinizde partneriniz tarafından el üstünde tutulacağınızı, kıymetinizin bilineceğini ve evlilik gibi mutlu bir taçlandırma yaşanacağını müjdeler.",
+      "kariyer_para": "İş yerinde terfi almak, lider konumuna yükselmek ve maddi anlamda hak ettiğiniz zenginliğe ve saygınlığa ulaşmak demektir.",
+      "uyari_golge": "Güç ve başarının getirebileceği kibir gölgesine kapılmamalı, etrafınızdakilere yukarıdan bakma eğiliminden kaçınmalısınız."
+    },
+    "gozyasi": {
+      "genel": "Duygusal arınma, geçmişin acılarına veda etme ve içteki kederin gözyaşlarıyla akıp gitmesini temsil eden hüzünlü ama şifalı bir semboldür.",
+      "ask": "İlişkilerde yaşanan kırgınlıkların ve yanlış anlaşılmaların dökülecek birkaç damla gözyaşı ile tatlıya bağlanacağına, kalbinizin hafifleyeceğine alamettir.",
+      "kariyer_para": "Parasal kayıplar veya iş yerindeki stres yüzünden yaşanabilecek geçici bir moral bozukluğunu, ancak sonrasında gelecek ferahlığı gösterir.",
+      "uyari_golge": "Geçmişte takılı kalıp sürekli aynı acıları yeniden yaşama psikolojisinden (kurban rolü) acilen sıyrılmanız gerektiğinin altını çizer."
+    },
+    "el": {
+      "genel": "Yardım, destek, güç birliği ve sosyal çevrenizden göreceğiniz korumayı ifade eder; elin açık veya yumruk olması anlamı doğrudan değiştirir.",
+      "ask": "Aşkta uzatılan zeytin dalını, barışma çabalarını ve partnerinizin sizeuzatacağı güven dolu eli simgeler.",
+      "kariyer_para": "İş hayatınızda üstlerinizden veya nüfuzlu bir tanıdığınızdan göreceğiniz maddi/manevi desteği, yani 'torpil' veya mentörlük ilişkisini müjdeler.",
+      "uyari_golge": "Her el uzatana güvenmemeniz gerektiğini, bazı ellerin dost görünümlü tuzaklar barındırabileceğini ve kendi ayaklarınız üzerinde durmanın önemini hatırlatır."
+    },
+    "ayak": {
+      "genel": "Yolculuklar, hayata karşı duruşunuz, geleceğe yönelik sağlam adımlar ve üzerinde yürüdüğünüz zeminin güvenliğini simgeler.",
+      "ask": "İlişkinizde attığınız her adımın geleceğe yönelik olduğunu, duygularınızın artık çok daha emin ve kararlı temeller üzerine kurulduğunu gösterir.",
+      "kariyer_para": "Yeni bir iş teklifi veya kariyer yolculuğu için atılacak ilk adımı, taşınma veya yeni bir düzen kurma masraflarını işaret eder.",
+      "uyari_golge": "Bastığınız toprağa dikkat etmeniz, sizi aşağı çekmek isteyen toksik ortamlardan ve yanlış insanlardan hızla uzaklaşmanız gerektiği konusunda uyarır."
+    },
+    "kuyu": {
+      "genel": "Derin sırlar, bilinçaltı korkuları, beklenmedik derin kazançlar veya içinden çıkılması zor gibi görünen karmaşık durumları temsil eder.",
+      "ask": "Aşk hayatınızda birbirinizden sakladığınız derin duyguları veya ilişkideki çözülmemiş köklü travmaları yüzeye çıkarma vaktinin geldiğini gösterir.",
+      "kariyer_para": "Beklenmeyen bir yerden (miras, toprak altı yatırımları, gizli fonlar) gelecek büyük paraya veya iş yerindeki karanlık oyunlara işaret eder.",
+      "uyari_golge": "Bilinçaltınızdaki endişelere ve kuruntulara yenik düşmemeniz, kendi kazdığınız kuyuya düşebileceğiniz manipülatif tuzaklardan uzak durmanız gerekir."
+    },
+    "kopru": {
+      "genel": "İki durum, insan veya dönem arasında kurulacak bağ, uzlaşma, krizlerin aşılması ve hayatınızda güvenli bir geçiş noktasını simgeler.",
+      "ask": "Araları bozuk olan çiftlerin buzları eriteceğini, aileler veya iki farklı dünya arasındaki engellerin köprü kurularak aşılacağını müjdeler.",
+      "kariyer_para": "İş anlaşmalarında arabuluculuk yapmak, iki farklı departmanı birleştiren ortak projeler yürütmek ve maddi sıkıntılardan düzlüğe çıkmak demektir.",
+      "uyari_golge": "Köprüleri kalıcı olarak yakmaktan kaçınmanız gerektiğini, kiminle hangi bağı kopardığınıza dikkat ederek gelecekteki dönüş yollarınızı açık bırakmanız konusunda uyarır."
+    },
+    "semsiye": {
+      "genel": "Şemsiye sembolü, fal sahibinin hayatında sığınacak güvenli bir liman aradığını ve yakın zamanda dış etkenlerden korunacağı bir döneme gireceğini müjdeler.",
+      "ask": "İlişkilerde yaşanan fırtınalı ve belirsiz günlerin geride kalarak partnerlerin birbirine sığınacağı huzurlu ve koruyucu bir sürece işaret eder.",
+      "kariyer_para": "İş hayatında üst yönetici veya güçlü bir sponsordan göreceğiniz maddi ve manevi koruma sayesinde krizleri rahatça atlatacağınıza delalet eder.",
+      "uyari_golge": "Fincanın sapına yakınsa kendi sorunlarınızdan kaçmak için sürekli başkalarının arkasına saklandığınıza ve sorumluluk almaktan kaçındığınıza dikkat çeker."
+    },
+    "silah": {
+      "genel": "Silah, ani bir öfke patlamasına, beklenmeyen sert bir habere ya da kişinin hayatında alacağı kesin ve keskin kararlara işaret eder.",
+      "ask": "Aşk hayatında fevri çıkışların, kırıcı sözlerin ve üçüncü şahıslardan gelebilecek ani müdahalelerin ilişkide yaratacağı tehlikeli gerilimleri simgeler.",
+      "kariyer_para": "İş ortamında rekabetin kızışacağına, rakiplerin hamlelerine karşı tetikte olunması gerektiğine ve ani parasal harcamalara karşı uyarır.",
+      "uyari_golge": "Aşırı savunmacı tutumların ve paratoner gibi sürekli çatışma çekme eğiliminin hem ruhsal hem de sosyal ilişkilerde derin yaralar açabileceğini gösterir."
+    },
+    "araba": {
+      "genel": "Araba, yakın zamanda yapılacak hayırlı bir seyahate, hayatın hız kazanmasına ve uzun süredir beklenen yolların açılmasına yorulur.",
+      "ask": "Bekar olanlar için ani gelişen heyecanlı bir tanışmaya, evliler içinse ortak bir seyahatle tazelenecek ilişki dinamiklerine işaret eder.",
+      "kariyer_para": "Kariyerde yön değişikliği, yeni bir projeye başlama veya taşınma gibi hareketli süreçlerin maddi kazançları beraberinde getireceğini gösterir.",
+      "uyari_golge": "Yolun tıkalı veya arabanın tekerleğinin eksik çıkması, aceleci kararlar yüzünden girilecek yanlış yollara ve maddi kayıplara karşı net bir uyarıdır."
+    },
+    "ucak": {
+      "genel": "Uçak, çok hızlı gelişecek olaylara, uzaklardan alınacak ani haberlere ve kişinin hayatında radikal bir vizyon değişikliğine delalet eder.",
+      "ask": "Uzak mesafeli ilişkilerdeki engellerin kalkacağına veya ani bir tatil planıyla aşk hayatına yepyeni bir soluk geleceğine yorumlanır.",
+      "kariyer_para": "Yurtdışı bağlantılı işler, uluslararası kariyer fırsatları ve aniden elinize geçecek toplu bir para akışının habercisidir.",
+      "uyari_golge": "Yerde duran veya düşen uçak sembolü, hayallerin gerçeğe dönüşmesinde yaşanacak büyük hayal kırıklıklarını ve aceleciliğin getirdiği riskleri vurgular."
+    },
+    "bulut": {
+      "genel": "Bulut, kafanızı kurcalayan belirsizlikleri, geçici kafa karışıklıklarını ve kısa süreli moral bozukluklarını temsil eden klasik bir fal sembolüdür.",
+      "ask": "Partnerinizle aranızda yanlış anlaşılmalardan kaynaklanan sisli bir dönemin olduğunu, ancak bu durumun kalıcı olmadığını gösterir.",
+      "kariyer_para": "İşlerinizde göreceğiniz geçici duraksamalara ve parasal konularda önünüzü net göremediğiniz bir karar aşamasında bulunduğunuza işaret eder.",
+      "uyari_golge": "Koyu ve kalın bulutlar, melankoliye kapılıp elinizdeki fırsatları görememe riskine karşı ruh halinizi acilen toparlamanız gerektiğinin altını çizer."
+    },
+    "cicek": {
+      "genel": "Çiçek, neşe, kutlama, övgü ve kişinin emeklerinin karşılığını alarak sosyal hayatında parlayacağı çok keyifli bir dönemi müjdeler.",
+      "ask": "Romantizmin zirve yapacağı, sevdiğiniz kişiden alacağınız hoş sürprizler ve ilişkideki tatlı dilli yaklaşımın getirdiği huzuru simgeler.",
+      "kariyer_para": "Çalışmalarınızın takdir göreceği, yöneticilerinizden övgü alacağınız ve bereketli kazanç kapılarının aralanacağı bir d��neme girdiğinizi gösterir.",
+      "uyari_golge": "Solmuş veya yapraklarını dökmüş bir çiçek, gösterişe aldanıp kalıcı olmayan geçici heveslerin peşinden gitmenin getireceği pişmanlığı hatırlatır."
+    },
+    "gul": {
+      "genel": "Gül, Türk kahve falında saf aşkın, tutkunun ve kalbinin en derinindeki kişinin size karşı beslediği derin duyguların en net kanıtıdır.",
+      "ask": "Evlilik teklifi, büyük bir aşk itirafı veya mevcut ilişkide yeniden alevlenen tutkulu ve romantik bir dönemin kapıda olduğunu gösterir.",
+      "kariyer_para": "İş hayatında sevdiğiniz ve tutkuyla bağlandığınız bir projeden elde edeceğiniz tatmin edici ve sevindirici sonuçların habercisidir.",
+      "uyari_golge": "Gülün dikenleri ise, bu büyük mutluluğun ve sevginin çevrenizdeki kıskanç insanlar tarafından hedef alınabileceğine karşı dikkatli olmanız gerektiğini söyler."
+    },
+    "lale": {
+      "genel": "Lale, zarafetin, sabrın, geleneksel değerlerin ve uzun süredir beklenen hayırlı bir dileğin inşallah gerçekleşeceğinin müjdecisidir.",
+      "ask": "Aşkta asil, saygılı ve kalıcı ilişkilerin kurulacağına; yalnızlar içinse hayalini kurdukları o düzgün karakterli insanın hayatlarına gireceğine yorulur.",
+      "kariyer_para": "Sabırlı çalışmalarınızın meyvesini toplayacağınız, itibar göreceğiniz ve kariyerinizde asil bir duruş sergileyeceğiniz kazançlı bir dönemi gösterir.",
+      "uyari_golge": "Ters duran lale, kişinin taşıdığı gereksiz gurur ve kibir yüzünden elindeki değerli fırsatları ve ilişkileri zedeleyebileceği konusunda uyarır."
+    },
+    "akrep": {
+      "genel": "Akrep, yakın çevrenizde size dost gibi görünen ancak arkanızdan iş çeviren gizli düşmanların ve sinsi tuzakların habercisidir.",
+      "ask": "İlişkinizde zehirli, manipülatif davranışlar sergileyen ve sizi sürekli aşağı çeken yıpratıcı bir enerjiye veya üçüncü şahıslara işaret eder.",
+      "kariyer_para": "İş yerinde arkanızdan kuyu kazan mesai arkadaşlarına, imza atarken dikkat edilmesi gereken gizli maddelere ve maddi kayıplara karşı uyarır.",
+      "uyari_golge": "Bu sembol, en çok güvendiğiniz kişilere bile körü körüne güvenmemeniz ve sezgilerinize kulak vererek hareket etmeniz gerektiğini kesin bir dille vurgular."
+    },
+    "tilki": {
+      "genel": "Tilki, kurnazlık, hilekar insanlar, yalanlar ve çevrenizde menfaati için size yaklaşan çıkarcı karakterleri simgeler.",
+      "ask": "Aşk hayatında size karşı dürüst olmayan, ikili oynayan veya duygularınızı kendi çıkarları doğrultusunda kullanan bir kişiye karşı uyanık olmanız gerektiğini gösterir.",
+      "kariyer_para": "Ticari ilişkilerde ve ortaklıklarda altından kalkamayacağınız hileli durumlarla karşılaşmamak için her sözleşmeyi dikkatlice incelemeniz icap eder.",
+      "uyari_golge": "Kendi iç sesinizin size söylediği şüpheleri görmezden gelmemeniz gerektiğini, aksi takdirde iyi niyetinizin suiistimal edileceğini ihtar eder."
+    },
+    "geyik": {
+      "genel": "Faldaki geyik, asalet, hız ve müjde anlamına gelir; genellikle uzaktan gelecek önemli bir haberin veya temiz bir dileğin kısa sürede gerçekleşeceğinin habercisidir.",
+      "ask": "Aşk hayatında sürpriz gelişmelerin ve heyecan verici adımların habercisidir; yalnızlar için ani bir aşk, ilişkisi olanlar için ise taze bir heyecan dönemini müjdeler.",
+      "kariyer_para": "Kariyerde hızla yükselme, beklenen terfi veya yeni bir projeden gelecek bereketli kazanç olarak yorumlanır.",
+      "uyari_golge": "Çabuk parlayıp sönmeye veya etraftaki narin kalpleri kırmaya karşı dikkatli olunması gerektiği konusunda uyarır."
+    },
+    "tavsan": {
+      "genel": "Tavşan, bolluk, bereket ve sezgi gücünü simgelerken, aynı zamanda ani kararları ve hareketliliği temsil eder.",
+      "ask": "İlişkilerde hareketli bir döneme girildiğini, duygusal kararların hızla alınacağını ve yeni tanışmaların kapıda olduğunu gösterir.",
+      "kariyer_para": "Maddi anlamda ani bir rahatlama ve beklenmeyen para girişlerine işaret ederken, iş hayatında çevik adımlar atmayı gerektirir.",
+      "uyari_golge": "Korkaklık, kararsızlık veya her fırsatta kaçma eğilimi gösterme gibi gölge yönlere karşı temkinli olunmalıdır."
+    },
+    "kaplumbaga": {
+      "genel": "Kaplumbağa, ağır ama emin adımlarla ilerleyen başarıyı, sabrı, uzun ömrü ve sağlam temelleri temsil eder.",
+      "ask": "Aşkta yavaş ama güven dolu adımların atılacağını, evliliğe giden yolda sabırlı olunması gerektiğini ve sağlam bağları simgeler.",
+      "kariyer_para": "İş hayatında geç gelen ama kalıcı olan zaferleri, birikimleri ve sağlam yatırımları müjdeler.",
+      "uyari_golge": "Aşırı yavaşlık, fırsatları kaçırma riski veya olaylar karşında pasif kalma durumuna karşı uyarı niteliğindedir."
+    },
+    "yunus": {
+      "genel": "Yunus balığı, neşe, dostluk, şans ve zorlukların üstesinden kolayca gelmeyi simgeleyen en hayırlı sembollerdendir.",
+      "ask": "İlişkilerde huzur, neşe ve karşılıklı anlayışın hakim olacağı, sorunların tatlılıkla çözüleceği bir dönemi gösterir.",
+      "kariyer_para": "Ortaklı işlerde büyük başarılar, dost yardımıyla elde edilecek kazançlar ve kariyerde neşeli bir dönemi müjdeler.",
+      "uyari_golge": "Herkesi dost sanma safdilliğine düşmemek ve yüzeysel ilişkilere aldanmamak konusunda uyarı verir."
+    },
+    "fare": {
+      "genel": "Fare, genellikle dedikodu, maddi kayıp, hırsızlık veya çevredeki gizli düşmanların habercisi olan uyarıcı bir semboldür.",
+      "ask": "İlişkilerde güven sarsıcı konuşmaların, arkadan iş çevrilmelerin veya küçük bahanelerle büyüyen huzursuzlukların işaretidir.",
+      "kariyer_para": "Maddi konularda gereksiz para çıkışlarına, bütçe delinmelerine ve iş yerindeki sinsi rekabete dikkat çeker.",
+      "uyari_golge": "Çevrenizdeki kişilere karşı aşırı güven duymamanız ve sırlarınızı herkesle paylaşmamanız gerektiği konusunda uyarır."
+    },
+    "melek": {
+      "genel": "Melek sembolü, ilahi koruma, dileklerin kabulü, iç huzuru ve manevi olarak rahatlama anlamına gelir.",
+      "ask": "Aşkta hayırlı bir kısmet, ilişkideki küslüklerin son bulması ve ilahi adaletin tecelli ederek kalbinin huzur bulması demektir.",
+      "kariyer_para": "Kariyerde sıkışık anlarda hızır gibi yetişecek yardımları, temiz kazançları ve vicdani projelerden gelecek başarıyı gösterir.",
+      "uyari_golge": "Sadece beklemekle yetinmeyip gayret göstermek gerektiği, aksi halde fırsatların gölgelenebileceği konusunda uyarır."
+    },
+    "seytan": {
+      "genel": "Şeytan sembolü, vesvese, kötü niyet, nefse yenik düşme ve kişiyi yanıltabilecek cazibeli durumları temsil eder.",
+      "ask": "İlişkilerde fesatlıkların dönmesi, yanlış anlaşılmalar veya toxic (zehirli) bir çekimin yarattığı çıkmazları simgeler.",
+      "kariyer_para": "Haram para, riskli yatırımlar, etik olmayan teklifler ve iş yerindeki tuzaklı durumlara karşı büyük bir uyarıdır.",
+      "uyari_golge": "Kendi iç sesindeki bencil ve karanlık dürtülere kapılmama, anlık zevklere aldanıp geleceği tehlikeye atmama uyarısıdır."
+    },
+    "bebek": {
+      "genel": "Bebek, masumiyet, yeni bir başlangıç, temiz bir sayfa ve hayatın getireceği sürpriz taze enerjileri müjdeler.",
+      "ask": "Aşk hayatında yepyeni bir sayfa açılmasını, ilişkide tazelenmeyi ya da aileye katılacak yeni bir bireyin müjdesini verir.",
+      "kariyer_para": "Küçük adımlarla başlayıp büyüyecek yeni bir iş fikrini, projenin doğumunu ve temiz rızıkları simgeler.",
+      "uyari_golge": "Yeni başlangıçların sorumluluğunu almaya hazır olmak gerektiği, acemilikle yapılan hatalara dikkat edilmesi uyarısıdır."
+    },
+    "yasli_adam": {
+      "genel": "Yaşlı adam, bilgelik, tecrübe, akıl hocalığı ve geçmişten alınan dersleri simgeleyen olgunluk sembolüdür.",
+      "ask": "İlişkilerde olgunlaşma, sorunlara daha mantıklı yaklaşma ve aile büyüklerinden alınacak hayırlı nasihatleri gösterir.",
+      "kariyer_para": "İş hayatında sözü dinlenen bir üst düzey yöneticiden veya tecrübeli bir kişiden görülecek büyük desteği ifade eder.",
+      "uyari_golge": "Fazla inatçı, yeniliklere kapalı ve katı tutumlar sergileyerek kendi kendini kısıtlamamak gerektiği konusunda uyarır."
+    },
+    "gelin": {
+      "genel": "Gelin sembolü, muradına ermek, hayırlı bir kısmet, büyük bir mutluluk ve uzun süredir beklenen bir kavuşmayı temsil eder.",
+      "ask": "Bekarlar için evlilik yolunda atılacak resmi adımları, evliler için ise ilişkide ikinci bir bahar ve yenilenen romantizmi müjdeler.",
+      "kariyer_para": "Verilen emeklerin karşılığını fazlasıyla almaya, ortaklıkların resmiyete dökülmesine ve bereketli kazançlara işaret eder.",
+      "uyari_golge": "Dış görünüşe veya gösterişe fazla kapılıp özdeki huzuru göz ardı etmeme ve nazar değmesine karşı uyanık olma uyarısıdır."
+    },
+    "damat": {
+      "genel": "Falda damat figürünün görülmesi, mutlu bir yuva kurma arzusunun, evlilik hazırlıklarının veya hayatınızı kökten değiştirecek hayırlı bir kısmetin habercisidir.",
+      "ask": "Bekarlar için yakın zamanda karşısına çıkacak ciddi ve evlilik odaklı bir eş adayına, evliler için ise ilişkide tazelenmeye işaret eder.",
+      "kariyer_para": "Ortaklı işlerde güven kazanmaya, iş hayatında imzalanacak resmi ve kazançlı sözleşmelere delalet eder.",
+      "uyari_golge": "Aceleyle verilecek kararların veya dış görünüşe aldanarak atılacak yanlış adımların hayal kırıklığı yaratabileceği konusunda uyarır."
+    },
+    "siluet": {
+      "genel": "Belirsiz bir siluet görmek, hayatınıza girmeye çalışan ama niyetini tam belli etmeyen gizemli bir kişinin veya geleceğe dair henüz netleşmemiş durumların habercisidir.",
+      "ask": "Geçmişten gelen ve unutamadığınız birinin gölgesinin hala üzerinizde olduğuna ya da kafanızı karıştıran gizli bir hayranınıza işaret eder.",
+      "kariyer_para": "İş yerinizde arkanızdan çevrilen işlere veya henüz netleşmemiş, beklemek zorunda olduğunuz kariyer fırsatlarına dikkat çeker.",
+      "uyari_golge": "Her gördüğünüz gölgeden korkmamanız ancak herkesin niyetini de açıkça belli etmediği gerçeğiyle yüzleşip temkinli olmanız gerekir."
+    },
+    "dans_eden_kadin": {
+      "genel": "Faldaki dans eden kadın, neşenin, kutlamaların, hayatın akışına kapılmanın ve içsel özgürlüğün simgesidir.",
+      "ask": "Aşk hayatınızda rutinin kırılacağı, romantik ve eğlenceli anların artacağı, karşı cinsin dikkatini fazlasıyla çekeceğiniz bir dönemi müjdeler.",
+      "kariyer_para": "Yaratıcı projelerde başarı elde etmeye, stresli bir dönemin ardından rahat bir nefes almaya ve maddi olarak ferahlamaya işaret eder.",
+      "uyari_golge": "Anlık zevklere ve eğlenceye fazla kapılıp uzun vadeli sorumlulukları ihmal etmemeniz konusunda bir denge uyarısıdır."
+    },
+    "sandalye": {
+      "genel": "Sandalye sembolü, kısa süreli bir duraklamayı, sabit bir konuma geçmeyi, misafir ağırlamayı veya bir konuda karar kılmak için oturup düşünmeyi ifade eder.",
+      "ask": "İlişkinizde ya da yalnızlığınızda artık bir karara varmanız gerektiğinin, duygusal anlamda sabit bir yere oturma isteğinin göstergesidir.",
+      "kariyer_para": "Mevcut pozisyonunuzu koruma çabasına, terfi beklenen durumlarda kısa bir rötara ya da yeni bir masa başı göreve işaret eder.",
+      "uyari_golge": "Hareketsiz kalmanın ve konfor alanından çıkmamanın fırsatları kaçırmanıza neden olabileceği konusunda uyarır."
+    },
+    "masa": {
+      "genel": "Masa, önemli kararların alınacağı toplantıları, kalabalık aile sofralarını ve hayatı belli bir düzene sokma çabasını temsil eder.",
+      "ask": "İlişkinizdeki sorunları masaya yatırıp açıkça konuşarak çözüme kavuşturacağınız, karşılıklı uzlaşı sağlayacağınız bir döneme işaret eder.",
+      "kariyer_para": "İş görüşmeleri, resmi evrak işleri, ticari anlaşmalar ve kazançlı ortaklıklar için en hayırlı sembollerden biridir.",
+      "uyari_golge": "Masa etrafındaki insanlara karşı aşırı açık vererek stratejik hatalar yapmamaya özen göstermelisiniz."
+    },
+    "yatak": {
+      "genel": "Falda yatak görülmesi, fiziksel ve zihinsel dinlenme ihtiyacını, hastalıktan şifa bulmayı ya da özel hayatla ilgili mahrem durumları simgeler.",
+      "ask": "Tutkulu ilişkilerin, tensel çekimin ve ev içindeki huzurun veya tam tersi ilişkideki yorgunlukların göstergesidir.",
+      "kariyer_para": "Çok çalışmaktan yorulan bünyenin mola vermesi gerektiğine ya da pasif gelir kaynaklarının gündeme geleceğine delalet eder.",
+      "uyari_golge": "Tembelliğe alışma riskine ve hayata karşı atalet halinin fırsatları kaçırmasına yol açabileceğine dikkat çeker."
+    },
+    "ayna": {
+      "genel": "Ayna sembolü, gerçeklerle yüzleşmeyi, kişinin kendi iç dünyasını ve kusurlarını görmesini, maskelerin düşmesini ifade eder.",
+      "ask": "Aşkta kendinizi kandırdığınız noktaları fark etmenize, karşı tarafın gerçek yüzünü görmenize veya eski bir hatayla yüzleşmenize yorulur.",
+      "kariyer_para": "Yaptığınız işlerin ve harcamaların bir dökümünü çıkarma zamanının geldiğine, dürüstlükle atılacak adımların kazanç getireceğine işaret eder.",
+      "uyari_golge": "Her şeyi kendi merceğinizden görüp bencilce yaklaşma eğiliminize ve dış dünyaya karşı önyargılı olmanıza karşı uyarır."
+    },
+    "pencere": {
+      "genel": "Pencere, yeni ufukları, dış dünyadan gelecek haberleri, kafanızdaki soru işaretlerinin aydınlanmasını ve ferahlamayı müjdeler.",
+      "ask": "Kalbinizi yeni insanlara açmaya, geçmişin kötü anılarını geride bırakıp dışarıdan gelecek taze bir aşk nefesini içeri almaya işaret eder.",
+      "kariyer_para": "Ufukta gözlenen yeni iş teklifleri, yurtdışı imkanları veya kariyerinizde taze bir soluk alacağınız gelişmelerin habercisidir.",
+      "uyari_golge": "Sürekli dışarıya bakıp başkalarının hayatını izlerken kendi iç huzurunuzu ve fırsatlarınızı ıskalamamanız gerektiği konusunda uyarır."
+    },
+    "balkon": {
+      "genel": "Balkon, olaylara dışarıdan ve daha geniş bir perspektiften bakmayı, sosyal ilişkileri ve iç dünyayla dış dünya arasındaki köprüyü simgeler.",
+      "ask": "İlişkinize biraz mesafe koyarak durumu tartan taraf olacağınıza veya sosyal çevreniz vasıtasıyla yeni biriyle tanışacağınıza işaret eder.",
+      "kariyer_para": "Mevcut iş durumunuzu yüksekten izleyip strateji belirlemeye, terfi veya yeni bir projeye adım atmadan önceki hazırlık aşamasına delalet eder.",
+      "uyari_golge": "Yaşanan olayların içine girmekten kaçıp sürekli uzaktan izleyici kalmanın yalnızlaşmaya yol açabileceği konusunda uyarır."
+    },
+    "cadir": {
+      "genel": "Çadır sembolü, geçici yer değişikliklerini, seyahatleri, kamp yapma planlarını ya da hayatta henüz kök salmamış, geçici durumları gösterir.",
+      "ask": "Aşkta bağlayıcı kararlar almaktan kaçındığınızı, geçici ilişkilerle vakit geçirdiğinizi veya kısa süreli bir ayrılık/seyahat yaşayacağınızı belirtir.",
+      "kariyer_para": "Geçici işler, seyahat gerektiren görevler veya mevcut projelerin taşınması/değişmesi gibi geçici hareketliliklere işaret eder.",
+      "uyari_golge": "Sürekli göçebe bir ruh haletiyle yaşamanın hayatınıza kalıcı bir düzen ve huzur getirmesini engellediği konusunda uyarır."
+    },
+    "kale": {
+      "genel": "Falda kale çıkması, güçlü bir koruma kalkanına sahip olduğunuzu ve hayatınızda sarsılmaz bir döneme girdiğinizi gösterir.",
+      "ask": "Aşk hayatınızda duvarlarınızı ördüğünüzü, partnerinize karşı mesafeli durarak kendinizi korumaya aldığınızı gösterir.",
+      "kariyer_para": "İş hayatında sağlam yatırımlar yapacağınızı, kariyerinizde zapt edilmez bir güç elde ederek güvenliğinizi garantileyeceğinizi müjdeler.",
+      "uyari_golge": "Aşırı savunmacı tavırlar ve insanlara karşı örülen duvarlar, yalnızlaşmanıza ve fırsatları kaçırmanıza neden olabilir."
+    },
+    "kule": {
+      "genel": "Yüksek bir kule, hayatınızda uzun vadeli hedeflere odaklandığınızı ve zirveye tırmanma çabanızı simgeler.",
+      "ask": "İlişkinizde partnerinizi çok yüksek bir kaideye koyduğunuzu, bu yüzden iletişimde kopukluklar yaşayabileceğinizi gösterir.",
+      "kariyer_para": "Kariyerinizde terfi alarak daha yüksek bir konuma geleceğinizi, fakat bu durumun sizi çevrenizden soyutlayabileceğini gösterir.",
+      "uyari_golge": "Fincanın tepesinde çıkarsa kibirli tavırlara; kenarda çıkarsa yalnızlık hissetmeye ve kule gibi izole olmaya işarettir."
+    },
+    "cami_minaresi": {
+      "genel": "Maneviyatın, huzurun ve içsel arınmanın simgesidir; dualarınızın kabul olacağı bir döneme işaret eder.",
+      "ask": "İlişkinizde ilahi adaletin tecelli edeceğini, kalbi temiz, hayırlı ve huzurlu bir birlikteliğe adım atacağınızı gösterir.",
+      "kariyer_para": "Helal kazanç elde edeceğinizi, iş hayatınızda dürüstlüğünüz sayesinde toplumsal saygınlığınızın artacağını müjdeler.",
+      "uyari_golge": "Maddi konuları tamamen bir kenara bırakıp sadece maneviyata odaklanmanın getireceği gerçekçi olmayan beklentilere karşı uyarır."
+    },
+    "deniz_feneri": {
+      "genel": "Karanlık bir dönemden sonra gelecek netliği, aydınlanmayı ve hayatınıza yön verecek rehber bir haberi simgeler.",
+      "ask": "Aşkta kafanızı karıştıran karanlık noktaların aydınlanacağını, doğru insanı bulma konusunda artık yönünüzü net olarak görebileceğinizi müjdeler.",
+      "kariyer_para": "İş hayatındaki belirsizliklerin son bulacağını, doğru stratejilerle krizlerden çıkarak başarıya ulaşacağınızı gösterir.",
+      "uyari_golge": "Sürekli başkalarına rehberlik edip kendi hayatınızdaki sorunları göz ardı etmemeniz gerektiğine dikkat çeker."
+    },
+    "degirmen": {
+      "genel": "Zamanın çarklarının lehinize dönmeye başladığını, sürekli ve üretken bir döngüye girdiğinizi gösterir.",
+      "ask": "Aşk hayatınızda sabırla ektiğiniz tohumların meyvesini vermeye başlayacağını, ilişkide taşların yerine oturacağını gösterir.",
+      "kariyer_para": "Sürekli ve istikrarlı bir para akışının olacağını, ticari konularda çarkların döneceğini ve emeklerinizin karşılığını fazlasıyla alacağınızı müjdeler.",
+      "uyari_golge": "Sürekli aynı kısır döngüde dönüp durma hissine kapılmamak için monotonluktan kaçınmanız konusunda uyarır."
+    },
+    "cesme": {
+      "genel": "Hayat enerjinizin tazeleneceğini, uzun süredir tıkalı olan şans yollarınızın akışa geçeceğini müjdeler.",
+      "ask": "Duygusal anlamda ferahlayacağınızı, kalbinizi yoran acıların akıp gideceğini ve taze bir aşk enerjisiyle dolacağınızı gösterir.",
+      "kariyer_para": "Maddi sıkıntılardan kurtulup rahat bir nefes alacağınızı, hanenize bol rızık ve bereket akışının olacağını gösterir.",
+      "uyari_golge": "Gelen paranın veya enerjinin hane dışına çok hızlı akıp gitmesi (israf) konusunda dikkatli olmanız gerekir."
+    },
+    "surahi": {
+      "genel": "Ev içine dolup taşacak bereketi, misafirleri ve sırlar ile ilgili yaşanacak paylaşımları simgeler.",
+      "ask": "İlişkinizde içini dökmek, uzun süredir biriken duyguları ve sırları partnerinizle paylaşarak arınmak anlamına gelir.",
+      "kariyer_para": "Maddi kaynaklarınızı doğru yönettiğinizi, haneye girecek toplu paranın akıllıca bölüştürüleceğini gösterir.",
+      "uyari_golge": "Ağzı açık surahi, sırlarınızın yanlış kişilerin eline geçebileceği veya etrafa yanlış bilgiler yayılacağı konusunda uyarır."
+    },
+    "fincan": {
+      "genel": "Kahve falının kendi içinde bir başka falı barındırması, yakın zamanda alınacak sürpriz bir haberin ve misafirin habercisidir.",
+      "ask": "Karşılıklı fincan tabağıyla birlikte çıkması, iki tarafın niyetlerinin örtüştüğünü ve ortak bir geleceğe adım atılacağını gösterir.",
+      "kariyer_para": "Ortaklı işlerde karşılıklı güvenin artacağını, toplantılar ve görüşmeler yoluyla yeni kazanç kapılarının aralanacağını müjdeler.",
+      "uyari_golge": "Dedikodulara ve başkalarının hayatına çok fazla odaklanarak kendi enerjinizi tüketmemeniz gerektiğine dikkat çeker."
+    },
+    "kadeh": {
+      "genel": "Kutlamaları, başarı keyfini ve sosyal ortamlarda yaşanacak neşeli buluşmaları simgeler.",
+      "ask": "Romantik bir akşam yemeğini, ilişkideki krizlerin tatlıya bağlanarak kutlanacağını veya yeni bir çapkınlık dönemini müjdeler.",
+      "kariyer_para": "İş yerinde elde edilen büyük bir başarı sonrası kutlama yapılacağını, sevinçli haberlerle maddi ödüller alınacağını gösterir.",
+      "uyari_golge": "Eğlenceye ve keyfe aşırı düşkünlük nedeniyle atılacak yanlış adımlara veya kaçırılacak fırsatlara karşı dikkatli olmalısınız."
+    },
+    "sise": {
+      "genel": "İçinde saklı tutulan duyguları, gizli niyetleri veya şifalı bir dönemin başlangıcını temsil eder.",
+      "ask": "İçinizde tuttuğunuz sevgiyi veya kırgınlıkları artık dışa vurma vaktinin geldiğini, gizli bir hayranınızın olduğunu gösterir.",
+      "kariyer_para": "Gizli yürütülen bazı iş projelerinin ve planların nihayet gün yüzüne çıkıp size kazanç sağlayacağını müjdeler.",
+      "uyari_golge": "Şişenin kapalı olması duygularınızı çok fazla bastırdığınızı gösterir; aksi takdirde bu birikim ani bir patlamaya yol açabilir."
+    },
+    "kazan": {
+      "genel": "Fincanda büyük bir kazan görülmesi, hayatınızda köklü değişimlerin, kalabalık meclislerin ve kaynayan dedikoduların habercisidir.",
+      "ask": "Aşk hayatınızda duyguların zirve yapacağı, tutkulu ama aynı zamanda kıskançlıkların da kaynayacağı hareketli bir döneme işaret eder.",
+      "kariyer_para": "İş hayatınızda büyük projelerin pişmekte olduğunu, ticari kazançlarınızın artarak bereketleneceğini gösterir.",
+      "uyari_golge": "Etrafınızda dönen işlere ve arkanızdan konuşulanlara karşı dikkatli olmalı, öfkeyle karar almaktan kaçınmalısınız."
+    },
+    "kasik": {
+      "genel": "Kaşık sembolü, rızkın artmasına, misafir ağırlamaya ve hayatı çorbaya dönüştüren pratik çözümlere delalet eder.",
+      "ask": "İlişkinizdeki sorunları tatlıya bağlayacağınız, partnerinizle yemekli buluşmalar ve keyifli anlar yaşayacağınız bir süreçtir.",
+      "kariyer_para": "Maddi anlamda elinizin bollaşacağına, emeğinizin karşılığını fazlasıyla alacağınıza ve kazancınızı bölüşeceğinize işaret eder.",
+      "uyari_golge": "Herkesin hayatına çok fazla müdahale etmemeye ve çorbaya tuz eker gibi gereksiz eleştirilerden kaçınmaya özen gösterin."
+    },
+    "catal": {
+      "genel": "Çatal, hayat yolunda yapılacak kritik seçimleri, yol ayrımlarını ve ikilemleri simgeleyen keskin bir semboldür.",
+      "ask": "Aşkta iki kişi arasında kalma ya da ilişkiyi sürdürüp sürdürmeme konusunda verilecek kökten kararların eşiğinde olduğunuzu gösterir.",
+      "kariyer_para": "Kariyerinizde yön değiştirmenizi gerektirecek teklifler alabilir, finansal yatırımlarınızda stratejik tercihler yapmak zorunda kalabilirsiniz.",
+      "uyari_golge": "Kararsızlık enerjisiyle hareket etmek fırsatları kaçırmanıza neden olabilir; kalbinizin ve mantığınızın sesini dengeleyin."
+    },
+    "tencere": {
+      "genel": "Tencere, ev hayatını, aile saadetini, bolluğu, bereketi ve kaynayan huzurlu yuvaları temsil eder.",
+      "ask": "Mevcut ilişkinizi resmiyete dökme, evlilik hazırlıkları yapma ya da aileler arası tanışma gibi gelişmeler kapıdadır.",
+      "kariyer_para": "Düzenli bir gelir, birikim yapma imkanı ve ortaklaşa yürütülen işlerden elde edilecek tatmin edici kazançları müjdeler.",
+      "uyari_golge": "Ev içindeki huzurun dışarıdan gelen kişilerden etkilenmesine izin vermemeli, evinizin sırrını herkesle paylaşmamalısınız."
+    },
+    "sepet": {
+      "genel": "Sepet, emeklerin toplanma vaktini, sürpriz hediyeleri, bolluğu ve hayatın size sunduğu meyveleri simgeler.",
+      "ask": "Aşk hayatınızda beklediğiniz ilgiyi ve sürpriz teklifleri bir sepet dolusu mutlulukla alacağınız romantik günlere hazırdır.",
+      "kariyer_para": "Geçmişte ektiğiniz tohumların meyvesini toplama, yatırımlarınızdan kâr elde etme ve rızkın genişlemesi anlamına gelir.",
+      "uyari_golge": "Çok fazla sorumluluğu aynı sepete koyarak kendinizi aşırı yüklemeyin; dengeli ve seçici olmaya gayret edin."
+    },
+    "sandik": {
+      "genel": "Sandık, uzun süredir saklanan sırları, geçmişten gelen anıları, miras konularını ve büyük maddi değerleri müjdeler.",
+      "ask": "Geçmişte kalmış bir aşkın yeniden gündeme gelmesi ya da ilişkinizde kalbinizin en derinlerindeki duyguları açığa çıkarma vaktidir.",
+      "kariyer_para": "Beklenen bir miras, unutulmuş bir alacak veya uzun vadeli büyük bir yatırımın nihayet gün yüzüne çıkması demektir.",
+      "uyari_golge": "Geçmişin tozlu raflarında takılı kalmak bugünü yaşamanıza engel olabilir; eski defterleri sürekli açmaktan vazgeçin."
+    },
+    "zincir": {
+      "genel": "Zincir, sağlam bağları, sadakati simgelediği gibi aynı zamanda kısıtlanma, rutinler ve boyunduruk altında hissetme durumunu gösterir.",
+      "ask": "İlişkinizde kopması zor, güçlü bir aidiyet bağı kurulduğunu ancak bu bağın bazen sizi sıktığını hissedebileceğinizi belirtir.",
+      "kariyer_para": "Uzun süreli sözleşmeler, resmi işler ve garanti kazançlar sağlayan ancak sizi kısıtlayan bir iş düzenine işaret eder.",
+      "uyari_golge": "Sizi aşağı çeken toksik alışkanlıklardan veya insanlardan kurtulma zamanı geldi; esaret hissettiğiniz yerleri sorgulayın."
+    },
+    "ip_yumagi": {
+      "genel": "İp yumakları, karmaşık görünen ama ucundan tutulduğunda çözülecek olayları, planları ve zihinsel meşguliyetleri yansıtır.",
+      "ask": "Aşkta kafanızı kurcalayan soru işaretlerini partnerinizle konuşarak çözüme kavuşturacağınız, taşların yerine oturacağı bir dönemdir.",
+      "kariyer_para": "Karmaşık projeleri yoluna koyma, hesapları denkleştirme ve iş hayatındaki bürokratik engelleri saf dışı bırakma anlamı taşır.",
+      "uyari_golge": "Olayları kafanızda fazlasak büyütüp kendinizi bir çıkmaza sokmayın; sabırlı olun ve yumak gibi düğümleri yavaşça çözün."
+    },
+    "dugum": {
+      "genel": "Düğüm sembolü, çözülmesi sabır gerektiren sorunları, ahitleri, sözleşmeleri ve karmaşık durumları ifade eder.",
+      "ask": "İlişkideki çıkmazların veya yanlış anlaşılmaların tatlı bir dille açılacağı, ortak bir noktada buluşma zamanının geldiğini gösterir.",
+      "kariyer_para": "İmzalanacak resmi evraklar, çözülmesi gereken hukuki veya finansal sorunlar ve sıkışık bütçeyi düzeltme çabasıdır.",
+      "uyari_golge": "İçinden çıkamadığınız durumlarda aceleci davranmak düğümü daha çok sıkıştırabilir; profesyonel veya tarafsız bir destek alın."
+    },
+    "makas": {
+      "genel": "Makas, keskin ayrımları, bitişleri, boşanmaları, dostlukların sonlanmasını veya radikal bir temizliği simgeler.",
+      "ask": "Ömrünü tamamlamış, size zarar veren bir ilişkinin veya evliliğin keskin bir kararla bitişine işaret eden uyarıcı bir semboldür.",
+      "kariyer_para": "Verimsiz ortaklıkların sonlandırılması, gereksiz masrafların kesilmesi ve iş yerinde köklü personel veya görev değişiklikleridir.",
+      "uyari_golge": "Anlık bir öfkeyle kesip atmayın; kestirip atarken ileride pişman olabileceğiniz köprüleri tamamen yakmamaya dikkat edin."
+    },
+    "igne": {
+      "genel": "Fincanda iğne sembolü, keskin sözlerin, batıcı durumların veya ince eleyip sık dokumanın habercisidir. Genellikle fincanın kenarında çıkması, sahibinin yakın zamanda çevresindekilere karşı aşırı eleştirel olacağına işaret eder.",
+      "ask": "Aşk hayatında partnerinizle aranızda geçecek kırıcı ve iğneleyici diyaloglara karşı temkinli olmanız gerektiğini gösterir. Bekarlar için ise kalbini batmalardan korumak adına yeni ilişkilere karşı bir süreliğine mesafe koyma isteğidir.",
+      "kariyer_para": "İş hayatında detay gerektiren projelerde büyük başarılar elde edeceğinizi, ancak iş arkadaşlarınızla olan iletişimde sivri dilli olmaktan kaçınmanız gerektiğini vurgular.",
+      "uyari_golge": "Aşırı eleştirel yaklaşımınızın hem sizi hem de sevdiklerinizi yaralayabileceği, sivri dillerden uzak durmanız gerektiği konusunda bir gölge uyarıdır."
+    },
+    "iplik": {
+      "genel": "İplik, karmaşık ilişkilerin, çözülmeyi bekleyen meselelerin ve olaylar arasındaki gizli bağların simgesidir. Fincanda düzgün sarılmışsa düzeni, karışık ve düğümlü ise hayatınızdaki kaosları temsil eder.",
+      "ask": "İlişkilerde karmaşıklaşan durumların yavaş yavaş çözüleceğine, bağların daha da kuvvetleneceğine işaret eder. Bekarlar için ise uzun süredir çözülemeyen bir gönül meselesinin nihayet bir neticeye bağlanmasıdır.",
+      "kariyer_para": "Maddi konularda bütçenizi yeniden yapılandırmanız ve dağınık işleri bir araya getirmeniz gereken bir döneme girdiğinizi gösterir.",
+      "uyari_golge": "Dedikodulara ve başkalarının hayatına atılan 'ilmeklere' kapılmamak, kendi hayatınızın kontrolünü başkalarının eline vermemek adına uyarır."
+    },
+    "pusula": {
+      "genel": "Pusula, hayatınızda yön bulma, uzun vadeli kararlar alma ve yeni bir rota çizme ihtiyacının en net göstergesidir. Kararsızlıkların son bulacağı ve doğru yolu bulacağınız bir dönemi müjdeler.",
+      "ask": "Aşk hayatınızda hangi yöne gideceğinizi bilemediğiniz bir süreçten çıkıp, duygusal pusulanızın sizi doğru kişiye veya doğru karara götüreceğini müjdeler.",
+      "kariyer_para": "Kariyerinizde yeni bir yön tayin etme, şehir veya iş değiştirme gibi büyük kararların eşiğinde olduğunuzu ve bu kararların sizi başarıya ulaştıracağını gösterir.",
+      "uyari_golge": "Kendi iç sesinizi dinlemek yerine sürekli başkalarının yönlendirmelerine kulak asmanın sizi asıl hedefinizden uzaklaştırabileceği konusunda uyarır."
+    },
+    "durbun": {
+      "genel": "Dürbün, geleceğe yönelik planları, uzaklardan gelecek haberleri ve olayları daha geniş bir perspektiften görme çabasını simgeler. Fincanın tabanına yakınsa geçmişe özlemi, kenara yakınsa gelecek beklentilerini gösterir.",
+      "ask": "Uzaktaki bir sevgiliden gelecek müjdeli haberi veya eski bir partnerin sizi uzaktan takip ettiğini gösteren klasik bir fal sembolüdür.",
+      "kariyer_para": "İş hayatında kısa vadeli kazançlar yerine uzun vadeli stratejilere odaklanmanız gerektiğini, büyük resmi görmek için biraz geriye çekilmenizin şart olduğunu belirtir.",
+      "uyari_golge": "Geleceği planlarken 'şanı ve anı' kaçırma riskine dikkat çeker; sürekli tetikte olmak ruhsal olarak sizi yorabilir."
+    },
+    "gozluk": {
+      "genel": "Gözlük, olaylara farklı bir açıdan bakma zorunluluğunu, gerçekleri net görememe durumunu veya bir konuda körü körüne inanmayı simgeler. Genellikle yanılgıların son bulacağına yorulur.",
+      "ask": "Aşkta karşınızdaki kişinin gerçek yüzünü veya niyetini nihayet net bir şekilde göreceğinizi, pembe gözlükleri çıkarıp gerçeklerle yüzleşeceğinizi ifade eder.",
+      "kariyer_para": "İş sözleşmelerini, atılacak imzaları ve finansal belgeleri incelerken iki kez okumanız, gizli detayları kaçırmamanız gerektiğine dair çok net bir uyarıdır.",
+      "uyari_golge": "Önyargılarınızın veya başkalarının size empoze ettiği bakı�� açısının gerçekleri ıskalamanıza neden olabileceği gölgesine dikkat çeker."
+    },
+    "nargile": {
+      "genel": "Nargile, keyif, muhabbet, rahatlama ve aynı zamanda olayları ağırdan alma, demlenme sürecini temsil eder. Fal sahibinin yakın zamanda huzurlu bir ortamda dostlarıyla vakit geçireceğini gösterir.",
+      "ask": "İlişkilerde romantik ve sakin bir döneme girildiğini, kavgaların geride kalarak duman olup uçacağını ve keyifli anların paylaşılacağını müjdeler.",
+      "kariyer_para": "Yoğun iş temposundan sonra hak edilen bir dinlenme molasını veya aceleye getirilmemesi gereken finansal yatırımların ağır aksak ama emin adımlarla ilerlemesini simgeler.",
+      "uyari_golge": "Her şeyi akışa bırakıp aşırı rahatlamanın, bazı önemli fırsatları kaçırmanıza veya tembelliğe alışmanıza yol açabileceği konusunda uyarır."
+    },
+    "ates": {
+      "genel": "Ateş sembolü, tutku, enerji, dönüşüm ve aynı zamanda hızlı gelişen olayların habercisidir. Fincanda çıktığı yere göre hem yapıcı hem de yıkıcı bir güce sahip olduğunu gösterir.",
+      "ask": "Aşk hayatında büyük bir tutku, ani başlayan çekim veya ilişkideki sönmüş küllerin yeniden alevlenmesi anlamına gelir. Bekarlar için kalp çarpıntısı yaratacak ani bir tanışmadır.",
+      "kariyer_para": "İş hayatında hızla ilerleyeceğiniz, projelerinize büyük bir motivasyonla sarılacağınız ve rakiplerinize karşı üstünlük kuracağınız enerjik bir dönemi işaret eder.",
+      "uyari_golge": "Öfkeyle kalkıp zararla oturma riskine, par par parlayıp çabuk sönen geçici heveslere karşı dikkatli olmanız gerektiğinin altını çizer."
+    },
+    "alev": {
+      "genel": "Alev, ateşin en dinamik hali olup ani bir aydınlanma, ilham, heyecan ve ruhsal bir yükselişi simgeler. Fincanın ağzına yakınsa yakın zamanda yaşanacak sevinçli bir olaya delalet eder.",
+      "ask": "Duyguların doruklarda yaşandığı, kalbinizin hızla çarpacağı romantik bir sürprizi ve ilişkinizde aşamadığınız bir engeli tutkuyla yakıp geçmenizi sağlar.",
+      "kariyer_para": "Yaratıcı projelerde ard arda gelecek başarıları, ilham dolu fikirleri ve yöneticilerinizin dikkatini çekecek parlak bir dönemi müjdeler.",
+      "uyari_golge": "Aşırı hırsın ve kontrolsüz tutkunun etrafınızdakileri yakabileceği, bu enerjinin yıkıcı bir yangına dönüşmemesi için kontrol altında tutulması gerektiğidir."
+    },
+    "yanardag": {
+      "genel": "Yanardağ, uzun süredir içte biriken duyguların, stresin veya öfkenin artık dışa vurma patlama noktasına geldiğini gösteren güçlü bir fincan figürüdür.",
+      "ask": "İlişkide uzun süredir halı altına süpürülen meselelerin nihayet büyük bir tartışma veya duygusal patlamayla gün yüzüne çıkacağını ve taşların yerinden oynayacağını gösterir.",
+      "kariyer_para": "İş yerinde biriken baskıların ve haksızlıkların artık katlanılamaz hale gelerek köklü değişimlere, belki de ani istifalara veya büyük kariyer hamlelerine yol açacağını belirtir.",
+      "uyari_golge": "İçinizde biriktirdiğiniz öfkenin kontrolsüzce patlaması hem size hem de sevdiklerinize zarar verebilir; bu nedenle zamanında konuşmanız gerektiğine dair büyük bir uyarıdır."
+    },
+    "simsek": {
+      "genel": "Şimşek, ani gelişen olayları, beklenmedik haberleri, şok edici değişimleri ve zihinsel bir uyanışı simgeler. Fincanda çakan şimşek, hayatınızda her şeyin bir anda altüst olup yeniden şekilleneceğini gösterir.",
+      "ask": "Beklenmedik bir aşk itirafı, aniden biten veya ani bir kararla resmiyete dökülen ilişkiler gibi duygusal anlamda sarsıcı ve hızlı gelişmeleri müjdeler.",
+      "kariyer_para": "Kariyerinizde ani bir terfi, sürpriz bir iş teklifi veya finansal anlamda şok edici ama sonradan lehinize dönecek ani piyasa hareketliliklerine işaret eder.",
+      "uyari_golge": "Hayatınızdaki ani sarsıntılara karşı hazırlıklı olmanız gerektiğini, her an her şeyin değişebileceği bir kaos ortamında sakin kalmanın önemini hatırlatır."
+    },
+    "yagmur": {
+      "genel": "Fincanda yağmur damlaları genellikle rahmet, bereket ve uzun süredir beklenen duygusal bir arınmanın habercisidir.",
+      "ask": "İlişkinizdeki soğuklukların ve yanlış anlaşılmaların yerini sıcak, tazeleyici ve yapıcı bir döneme bırakacağını müjdeler.",
+      "kariyer_para": "Maddi sıkıntılardan kurtulma, borçları kapatma ve bereketli kazanç kapılarının açılması anlamına gelir.",
+      "uyari_golge": "Aşırı sulu veya dağınık çıkması, sürekli ağlamaya, melankoliye ve fırsatları kaçırmaya sebep olacak bir karamsarlığa işaret eder."
+    },
+    "kar_tanesi": {
+      "genel": "Benzersizliği, saflığı ve dış dünyanın soğukluğuna karşı içsel direnci simgeleyen nadir ve masalsı bir semboldür.",
+      "ask": "Aşk hayatınızda ezber bozan, aradığınız kriterlere tam uyan ama mesafeli duran özel biriyle ani bir karşılaşma yaşayabilirsiniz.",
+      "kariyer_para": "İş hayatınızda eşsiz bir proje üreteceğinizi, ancak bu fikri hayata geçirirken rakiplerinize karşı soğuk ve stratejik olmanız gerektiğini gösterir.",
+      "uyari_golge": "Çok fazla kar tanesi yalnızlığı, duygusal donukluğu ve etrafınızdaki insanlara karşı aşırı duvar ördüğünüzü gösterir."
+    },
+    "ruzgar": {
+      "genel": "Ani değişimlerin, beklenmedik haberlerin ve hayatınıza yön verecek taze solukların habercisidir.",
+      "ask": "Aşk rüzgarları kalbinizi havalandıracak; rutin giden ilişkinize hareket gelebilir veya ani bir tutku kapınızı çalabilir.",
+      "kariyer_para": "Kariyerinizde rüzgarı arkanıza alarak hızlı bir yükseliş yaşayacağınızı, taşınma veya görev değişimi gibi yeniliklerin kapıda olduğunu belirtir.",
+      "uyari_golge": "Şiddetli bir fırtına gibi görünüyorsa, hayatınızın kontrolünü geçici olarak kaybedebileceğinize ve savrulmalara karşı dikkatli olmanız gerektiğine delalettir."
+    },
+    "nehir": {
+      "genel": "Hayatın akışını, zamanın getirdiklerini ve olayların doğal bir denge içinde kendi yolunu bulmasını temsil eder.",
+      "ask": "Duygularınızın nehir gibi coşkulu ve engelsiz akacağını, partnerinizle aranızdaki akışın huzurla devam edeceğini gösterir.",
+      "kariyer_para": "Para akışınızın düzenli hale geleceğini, projelerinizin kesintisiz bir şekilde ilerleyerek kazanca dönüşeceğini müjdeler.",
+      "uyari_golge": "Nehrin bulanık veya tıkalı çıkması, hayatın akışına direndiğinizi ve bu inatlaşmanın sizi yorduğunu söyler."
+    },
+    "sel": {
+      "genel": "Bastırılmış duyguların, kontrol edilemeyen olayların ve ani bir kargaşanın fincandaki en çarpıcı yansımasıdır.",
+      "ask": "İlişkinizde birikmiş öfkelerin ve söylenmemiş sözlerin büyük bir tartışmayla dışarı taşacağı uyarısını yapar.",
+      "kariyer_para": "Maddi konularda ani ve planlanmamış büyük harcamalara, bütçenin sarsılmasına ve iş yerinde kriz yönetimi gerektirecek durumlara işaret eder.",
+      "uyari_golge": "Bu sembol mutlak bir kontrol kaybını simgeler; fevri kararlar almaktan ve öfkeyle hareket etmekten kesinlikle kaçınmalısınız."
+    },
+    "ada": {
+      "genel": "Kişinin kendi kabuğuna çekilme isteğini, yalnızlığı, huzuru ve dış dünyadan soyutlanma arzusunu simgeler.",
+      "ask": "İlişkide yaşanan yorgunluklar nedeniyle biraz zamana ve kendi başınıza kalıp kafanızı dinlemeye ihtiyaç duyduğunuzu gösterir.",
+      "kariyer_para": "Ortaklı işlerden uzaklaşarak bireysel çalışmalara yönelme kararını ve kendi işinizin patronu olma potansiyelini vurgular.",
+      "uyari_golge": "Adaya ulaşmanın zor görünmesi, aşırı yalnızlaşma, sosyal çevreden kopma ve dış dünyaya karşı yabancılaşma tehlikesine dikkat çeker."
+    },
+    "magara": {
+      "genel": "Sırları, iç gözlemi, bilinçaltının derinliklerini ve korunma ihtiyacını temsil eden gizemli bir semboldür.",
+      "ask": "Partnerinizden sakladığınız bazı düşünceleri veya geçmişten gelen çözülmemiş travmalarınızı gün yüzüne çıkarma vaktinin geldiğini söyler.",
+      "kariyer_para": "Finansal konularda bazı şeyleri gizli tutmanız gerektiğini, stratejilerinizi başkalarıyla paylaşmamanızın menfaatinize olacağını belirtir.",
+      "uyari_golge": "Mağaranın çok karanlık çıkması, depresif düşüncelere kapılma riskini ve olaylardan kaçmak için gerçeğe sırt çevirdiğinizi ikaz eder."
+    },
+    "orman": {
+      "genel": "Çok yönlü olayları, kalabalık çevreleri, kafa karışıklığını ve keşfedilmeyi bekleyen büyük potansiyelleri müjdeler.",
+      "ask": "Aşk hayatınızda seçenekler arasında kafanızın karışabileceğini ya da sosyal çevrenizin ilişkinize müdahale edebileceğini gösterir.",
+      "kariyer_para": "Geniş bir sektörel ağa sahip olacağınızı, önünüzde birçok farklı iş fırsatı (ağaçlar) olduğunu ancak yönünüzü bulmakta zorlanabileceğinizi belirtir.",
+      "uyari_golge": "Ormanda kaybolmuş hissi, hayatınızdaki karmaşadan dolayı asıl hedefinizi gözden kaçırdığınızın göstergesidir."
+    },
+    "yaprak": {
+      "genel": "Yeniden doğuşu, mevsimsel değişimleri, hafiflemeyi ve umut dolu yeni sayfaları müjdeler.",
+      "ask": "İlişkinizde köhnemiş alışkanlıkların geride kalacağını, taze bir heyecanla ve yeşeren umutlarla yola devam edeceğinizi gösterir.",
+      "kariyer_para": "Beklenen bir evrakın, resmi bir iznin veya iş başvurusunun olumlu sonuçlanarak yüzünüzü güldüreceğine delalettir.",
+      "uyari_golge": "Solmuş veya düşmek üzere olan bir yaprak, enerjinizin düştüğünü, bazı konularda geç kalmışlık hissi yaşayabileceğinizi ihtar eder."
+    },
+    "tohum": {
+      "genel": "Gelecekte büyük ağaçlar verecek küçük adımların, sabrın ve henüz gün yüzüne çıkmamış potansiyelin simgesidir.",
+      "ask": "Yeni başlayan ilişkilerin sağlam temeller üzerine kurulduğunu; zamanla bu sevginin çok büyük bir aşka dönüşeceğini müjdeler.",
+      "kariyer_para": "Küçük bir sermaye ile atılan yatırımın veya yeni bir projenin gelecekte çok büyük kazançlar getireceğinin ilk tohumları atılıyor.",
+      "uyari_golge": "Sabırsız davranıp tohumu sürekli topraktan çıkarmaya çalışmak gibi, henüz olgunlaşmamış planları aceleye getirmemelisiniz."
+    },
+    "meyve": {
+      "genel": "Fincanda meyve görmek genel olarak bolluk, bereket, tatlı kazançlar ve emeklerin karşılığını almaya işaret eder.",
+      "ask": "İlişkilerde tatlı dilli olmaya, huzurlu ve keyifli bir döneme, yalnızlar için ise hayırlı bir kısmetin müjdesine delalet eder.",
+      "kariyer_para": "Maddi anlamda rahatlama, ticari başarılar ve yapılan yatırımların meyvelerini toplama zamanının geldiğini gösterir.",
+      "uyari_golge": "Elde edilen başarıların şımarıklığa yol açmaması ve eldeki nimetin kıymetinin bilinmesi gerektiği konusunda bir uyarıdır."
+    },
+    "elma": {
+      "genel": "Elma sembolü sağlık, kısmet, temiz niyet ve aynı zamanda günah veya yasakelma gibi derin arzuları temsil eder.",
+      "ask": "Karşılıklı büyük bir aşk, tutku ve evlilik yolunda atılacak hayırlı adımların habercisidir.",
+      "kariyer_para": "İş hayatında helal kazanca, yeni projelere ve yöneticilerden takdir görmeye yorulur.",
+      "uyari_golge": "Çevredeki cazip ama tehlikeli tekliflere ve yasak ilişkilerden doğabilecek pişmanlıklara karşı dikkatli olunmalıdır."
+    },
+    "nar": {
+      "genel": "Nar, Türk kahvesi falında bolluk, bereket, aile saadeti ve kalabalık haneyi simgeleyen en güçlü sembollerdendir.",
+      "ask": "Evlilik, çocuk sahibi olma veya mevcut ilişkide sevginin ve tutkunun zirve yapması anlamına gelir.",
+      "kariyer_para": "Çoğalan kazanç, ortaklı işlerde büyük karlar ve bereketli bir maddi döneme girildiğini gösterir.",
+      "uyari_golge": "Çok fazla göz önünde olmak ve zenginliği dışa vurmak, yakın çevredeki kıskançlık ve kem gözleri üzerinize çekebilir."
+    },
+    "uzum": {
+      "genel": "Salkım salkım üzüm, parça parça gelecek rızka, tatlı dilliliğe ve huzurlu bir sosyal çevreye işaret eder.",
+      "ask": "Gönül ilişkilerinde tatlı tatlı ilerleyen, ailelerin de onaylayacağı huzurlu bir beraberliği müjdeler.",
+      "kariyer_para": "Düzenli ve artarak gelen gelir, borçların kapanması ve ortaklı kazançların bolluğunu gösterir.",
+      "uyari_golge": "Dedikodulara ve tatlı dilli görünüp arkadan iş çeviren niyetli insanlara karşı uyanık olunmalıdır."
+    },
+    "zeytin_dali": {
+      "genel": "Barışın, huzurun, şifa bulmanın ve uzun süredir küs olunan biriyle tatlıya bağlanacak işlerin simgesidir.",
+      "ask": "Eski sevgilinin barışma teklifiyle dönmesi veya mevcut ilişkideki kırgınlıkların son bulması demektir.",
+      "kariyer_para": "İş yerindeki anlaşmazlıkların tatlılıkla çözülmesi, mahkeme veya resmi işlerin lehe sonuçlanması anlamına gelir.",
+      "uyari_golge": "Barışma adı altında yapılan tavizlerde sınırın korunması ve herkesin ikinci bir şansı hak etmediği unutulmamalıdır."
+    },
+    "bugday_basagi": {
+      "genel": "Sabrın sonundaki selameti, rızkın artmasını, helal kazancı ve bereketli bir geleceği temsil eder.",
+      "ask": "Emek verilen bir ilişkinin nihayet evlilik gibi ciddi ve kalıcı bir boyuta taşınacağının göstergesidir.",
+      "kariyer_para": "Uzun süreli emeklerin maddi olarak fazlasıyla geri döneceği, toprak ve gayrimenkul yatırımlarının yüz güldüreceği bir döneme girilmektedir.",
+      "uyari_golge": "Aceleci davranmamak ve hasat zamanını beklemek gerekir; sabırsızlık tüm emeği zayi edebilir."
+    },
+    "mantar": {
+      "genel": "Aniden gelişen sürpriz olayları, şansı ve bazen de gizli saklı kalmış durumların ortaya çıkmasını ifade eder.",
+      "ask": "Beklenmedik bir anda karşınıza çıkacak yeni bir aşk veya mevcut ilişkide sürpriz bir gelişme yaşanabilir.",
+      "kariyer_para": "Umulmadık bir yerden gelecek para, beklenmedik bir terfi veya ani bir iş fırsatının kapıyı çalması demektir.",
+      "uyari_golge": "Çabuk parlayıp sönen heveslere kapılmamak ve her 'aniden' gelen fırsatın güvenilir olmayabileceğini hesaba katmak gerekir."
+    },
+    "kaktus": {
+      "genel": "Etrafına dikenlerini batıran, savunmada olan, zor şartlara direnen ancak içinde gizli bir güzellik barındıran yapıyı simgeler.",
+      "ask": "İlişkilerde duvarları örmüş, kolay güvenmeyen, kırılgan ama sert görünen bir partneri veya durumu işaret eder.",
+      "kariyer_para": "İş yerinde tahammül sınırlarının zorlandığı, stresli ve rekabetçi bir ortamda ayakta kalmaya çalışıldığını gösterir.",
+      "uyari_golge": "Aşırı savunmacı tutumun artık insanları uzaklaştırdığına dikkat çekilir; biraz yumuşamak ve dikenleri indirmek gerekebilir."
+    },
+    "sarmasik": {
+      "genel": "Bir şeye ya da kişiye aşırı bağlanma, bağımlılık, sarıp sarmalama veya bazı durumlarda kurtulması zor bir sarıp sarmalayan durumu ifade eder.",
+      "ask": "Toksik olabilecek kadar sahiplenici, boğucu bir ilişki veya kopması zor tutkulu bir bağı simgeler.",
+      "kariyer_para": "İş hayatında sizi aşağı çeken bağlar, süregelen ama ilerleme kaydetmeyen angarya işler veya sinsi ortaklıklar anlamına gelebilir.",
+      "uyari_golge": "Özgürlüğü kısıtlayan ilişkilerden ve sizi boğan taahhütlerden kendinizi sıyırmanız için ciddi bir uyarıdır."
+    },
+    "palmiye": {
+      "genel": "Zafer, ferahlama, yüksek başarı, uzun bir seyahat ve dertlerin son bulup tatil havasına girilmesi demektir.",
+      "ask": "Yurtdışı veya şehir dışı kökenli bir aşk, sevgilinizle çıkılacak uzun ve huzurlu bir tatilin müjdesidir.",
+      "kariyer_para": "Kariyerde zirveye çıkma, rakiplere karşı kazanılan büyük bir zafer ve maddi ferahlık dönemidir.",
+      "uyari_golge": "Elde edilen bu yüksek özgüvenin kibre dönüşmemesi ve başarı sarhoşluğuyla tedbiri elden bırakmamak gerekir."
+    },
+    "nilufer": {
+      "genel": "Fincanda nilüfer çiçeği görmek, ruhsal bir arınma dönemine girdiğinizi ve hayatınızdaki çamurlu sulardan sıyrılarak huzura kavuşacağınızı müjdeler.",
+      "ask": "İlişkinizdeki eski kırgınlıkların ve yanlış anlaşılmaların geride kalacağı, duygusal olarak taze bir başlangıç yapacağınız barış dolu günleri simgeler.",
+      "kariyer_para": "Maddi sıkıntılardan arınarak ferahlayacağınızın, emeklerinizin karşılığını hem maddi hem de manevi huzurla alacağınızın habercisidir.",
+      "uyari_golge": "Çevrenizdeki bazı kişilerin sahte masumiyetine aldanmamanız ve huzurunuzu bozacak enerjilerden uzak durmanız konusunda bir uyarıdır."
+    },
+    "inci": {
+      "genel": "Zorlukların ve gözyaşlarının ardından gelecek olan çok değerli, kıymetli bir kazancın ve kalbi saf bir dönemin habercisidir.",
+      "ask": "İlişkide derinleşme, evlilik teklifi veya partnerinizin gözünüzdeki değerinin katlanarak artacağı çok özel ve romantik anları müjdeler.",
+      "kariyer_para": "Uzun süredir üzerinde çalıştığınız bir projenin meyvesini göz alıcı bir şekilde toplayacağınıza ve finansal olarak rahatlayacağınıza işaret eder.",
+      "uyari_golge": "Değerli olanı korumak adına fazla sakınmacı veya kibirli tavırlar sergilememeniz, elinizdekilerin kıymetini bilmeniz gerekir."
+    },
+    "elmas": {
+      "genel": "Kırılmaz bir iradeyi, kalıcı başarıları ve hayatınızda asla bozulmayacak sağlam bağları simgeleyen en güçlü fal sembollerindendir.",
+      "ask": "Aşk hayatınızda ömür boyu sürecek taahhütlerin, kopmaz bağların ve çok güçlü bir tutkunun hayatınıza gireceğini gösterir.",
+      "kariyer_para": "İş hayatında zirveye tırmanmak, büyük servet elde etmek ve rakiplerinizi geride bırakarak parlamak anlamına gelir.",
+      "uyari_golge": "Her ne kadar güçlü olsanız da sert duruşunuzun çevrenizdekileri kırmasına izin vermemeli, empati yeteneğinizi kaybetmemelisiniz."
+    },
+    "altin_kesesi": {
+      "genel": "Beklenmedik bir zenginliğin, toplu para girişinin ve maddi anlamda yüzünüzü güldürecek bolluk bereket döneminin işaretidir.",
+      "ask": "İlişkinizde maddi konulardan kaynaklanan baskıların kalkacağını, ortak geleceğe yatırımlar yapacağınız güvenli bir dönemi gösterir.",
+      "kariyer_para": "Beklenen bir mirasın, ikramiyenin veya büyük bir kazancın kapıda olduğunu, ticari girişimlerinizin karlı sonuçlanacağını müjdeler.",
+      "uyari_golge": "El pozisyonuna dikkat edin; para hızla geleceği gibi hızla da gidebilir, bu yüzden ani harcamalara karşı tasarruflu olmalısınız."
+    },
+    "madeni_para": {
+      "genel": "Parça parça ama istikrarlı gelecek gelirleri, alın terini ve sabırla bir araya getirilecek küçük birikimleri temsil eder.",
+      "ask": "Aşkta büyük iddialardan ziyade küçük, samimi ve güven veren adımlarla yürüyen ilişkilerin uzun ömürlü olacağını gösterir.",
+      "kariyer_para": "Geleceğe yönelik atılacak küçük maddi adımların zamanla büyük bir sermayeye dönüşeceğini ve bütçenizi dengeleyeceğinizi belirtir.",
+      "uyari_golge": "Küçük hesaplar peşinde koşarken büyük fırsatları kaçırmamaya dikkat etmeli, cimrilik ile tutumluluk arasındaki çizgiyi korumalısınız."
+    },
+    "hazine_sandigi": {
+      "genel": "Uzun süredir saklı kalmış yeteneklerinizin, unuttuğunuz bir alacağın veya hayatınızın büyük sırrının gün yüzüne çıkması demektir.",
+      "ask": "Partnerinizle aranızdaki saklı kalmış duyguların, bastırılmış tutkuların patlama yaşayacağı ve ilişkinize zenginlik katacağı bir dönemdir.",
+      "kariyer_para": "Kariyerinizde büyük bir potansiyeli keşfedeceğinize, sürpriz kazanç kapılarının aralanacağına ve maddi refaha ulaşacağınıza delalet eder.",
+      "uyari_golge": "Sandık kapalıysa henüz zamanı gelmemiştir; sabırlı olmalı ve sahip olduğunuz değerleri herkesle hemen paylaşmamalısınız."
+    },
+    "muhur": {
+      "genel": "Hayatınızda resmiyet kazanacak kararların, imzalanacak önemli sözleşmelerin ve geri dönüşü olmayan bağlayıcı adımların simgesidir.",
+      "ask": "Evlilik, nişan veya resmiyete dökülecek ciddi bir birlikteliğin artık kesinleştiğini ve kararların netleşeceğini gösterir.",
+      "kariyer_para": "İş görüşmelerinin olumlu sonuçlanması, sözleşme imzalanması ve hukuki konuların lehinize sonuçlanması anlamına gelir.",
+      "uyari_golge": "Mühür basmadan önce maddeleri iki kez okumalı, fevri kararlarla ileride bağlayıcı sıkıntılar yaratacak imzalar atmamalısınız."
+    },
+    "mektup": {
+      "genel": "Uzaktan alacağınız yazılı bir haberi, resmi bir evrakı veya uzun süredir beklediğiniz bir gelişmenin yazılı kanıtını müjdeler.",
+      "ask": "Sevgilinizden gelecek duygusal bir itiraf, uzun mesafeli ilişkilerde kavuşma müjdesi veya kırgınlıkları bitiren tatlı bir mesajdır.",
+      "kariyer_para": "İş başvurularından olumlu dönüş, resmi yazışmalar veya beklenen bir ödemenin evrak işlemlerinin tamamlanması demektir.",
+      "uyari_golge": "Gelen haberin içeriğini dikkatlice incelemeli, yanlış anlaşılmaya müsait yazışmalarda net bir dil kullanmaya özen göstermelisiniz."
+    },
+    "zarf": {
+      "genel": "İçinde sürpriz bir haber barındıran, kapalı bir süreci ve yakın zamanda hayatınıza dahil olacak gizemli bir gelişmeyi temsil eder.",
+      "ask": "Beklemediğiniz birinden alacağınız aşk ilanı veya partnerinizden gelecek sürpriz bir hediye/davet anlamına gelir.",
+      "kariyer_para": "Finansal bir teklif, fatura, borç veya iş teklifi içeren resmi bir zarfın kısa süre içinde elinize ulaşacağını gösterir.",
+      "uyari_golge": "Zarfın ağzı açıksa sırlarınızın başkaları tarafından duyulabileceğine, kapalıysa gizliliğe önem vermeniz gerektiğine işarettir."
+    },
+    "telefon": {
+      "genel": "Hızlı iletişim, anlık haberleşme ve hayatınızı etkileyecek ani bir telefon görüşmesinin çok yakında gerçekleşeceğini gösterir.",
+      "ask": "Gönül meselelerinde ani bir telefonla tüm buzların eriyeceğini, aradaki mesafelerin sesle kapanacağını müjdeler.",
+      "kariyer_para": "İş arayanlar için telefonda gelecek mülakat çağrısı, ani bir iş teklifi veya ticaret erbabı için hızlı gelişen para trafiğidir.",
+      "uyari_golge": "Telefonda duyduğunuz her habere hemen inanmamalı, manipülatif söylemlere karşı kulaklarınızı tıkamalısınız."
+    },
+    "zil": {
+      "genel": "Fincanda zil sembolü, ani bir haberin veya uyanışın habercisidir, genellikle ses getirecek gelişmelere işaret eder.",
+      "ask": "Aşk hayatında uzun süredir sessiz kalan duyguların ani bir itirafla canlanacağına ve partnerinizle aranızdaki heyecanın artacağına yorulur.",
+      "kariyer_para": "İş hayatında adınızı duyuracak başarılı bir projeye imza atacağınıza ve maddi anlamda sürpriz bir kazanç elde edeceğinize işaret eder.",
+      "uyari_golge": "Çevrenizdeki dedikodulara ve ani verilen fevri kararlara karşı dikkatli olmanız, her duyduğunuza inanmamanız konusunda uyarır."
+    },
+    "trompet": {
+      "genel": "Trompet, büyük bir duyurunun, zaferin veya kalabalıklar önünde yaşanacak gurur dolu bir anın sembolüdür.",
+      "ask": "İlişkinizi resmiyete dökmek veya herkesin duyacağı büyük bir aşk ilanında bulunmak anlamlarına gelir; bekarlar için gürültülü bir çevre değişimidir.",
+      "kariyer_para": "Kariyerinizde terfi, unvan değişikliği veya toplu bir başarı ile üst yönetimin dikkatini çekerek ses getireceğiniz bir döneme girdiğinizi gösterir.",
+      "uyari_golge": "Çevrenizdeki insanların kıskançlığını üzerinize çekebilecek büyük iddialarda bulunmaktan kaçınmanız ve tevazuyu elden bırakmamanız gerekir."
+    },
+    "saz": {
+      "genel": "Geleneksel Türk kahve falında saz, sitemin, hasretin, içsel dertleşmelerin ve nostaljik duyguların habercisidir.",
+      "ask": "Duygusal anlamda kırgınlıkların tatlıya bağlanacağı, eski günlerin yad edileceği ve karşılıklı dertleşmeyle bağların güçleneceği bir süreci simgeler.",
+      "kariyer_para": "Sanatsal veya yaratıcı işlerle uğraşanlar için ilham dolu bir dönemi müjdelerken, maddi konularda geleneksel yöntemlere bağlı kalmanız gerektiğini vurgular.",
+      "uyari_golge": "Geçmişe takılıp kalma eğiliminize ve sürekli eski hataları gündeme getirerek bugünü zedeleme riskinize karşı bir uyarıdır."
+    },
+    "gitar": {
+      "genel": "Gitar, sosyal ilişkilerde hareketliliği, eğlenceyi, neşeli ortamları ve genç enerjiyi temsil eder.",
+      "ask": "Romantik ve keyifli anların yanı sıra, yeni bir sosyal ortamda başlayacak flörtöz ve heyecan verici bir ilişki potansiyeline işaret eder.",
+      "kariyer_para": "İş hayatında ekip çalışmalarında uyum yakalayacağınıza, sosyal ağlarınızı kullanarak kazanç sağlayacağınıza ve yaratıcı sektörlerde şansınızın açılacağına delalet eder.",
+      "uyari_golge": "Sadece anlık eğlencelere odaklanıp uzun vadeli sorumlulukları ihmal etmemeniz ve yüzeysel ilişkilerde kaybolmamanız konusunda uyarır."
+    },
+    "piyano": {
+      "genel": "Piyano, hayatın dengesini, disiplini, estetiği ve ince zevkleri simgeleyen ağırbaşlı bir semboldür.",
+      "ask": "İlişkilerde karşılıklı uyumun, saygının ve adım adım in��a edilen kalıcı bir romantizmin göstergesidir.",
+      "kariyer_para": "Kariyerinizde sistematik ve planlı çalışarak uzun vadeli başarılara ulaşacağınızı, maddi anlamda da istikrarlı bir büyüme yakalayacağınızı belirtir.",
+      "uyari_golge": "Her şeyi kontrol etme arzunuzun ve mükemmeliyetçi yapınızın hem sizi hem de çevrenizdekileri yıpratabileceğine dikkat çeker."
+    },
+    "nota": {
+      "genel": "Fincanda tekli veya çoklu notalar, hayatın ritmini bulmaya, küçük ama mutlu detaylara ve uyumlu gelişmelere işaret eder.",
+      "ask": "Sevgilinizle aynı frekansta olduğunuzu, birbirinizi kelimeler olmadan bile anladığınızı gösteren romantik ve uyumlu bir dönemi müjdeler.",
+      "kariyer_para": "İş yerinde işlerin yoluna gireceğine, projelerin bir melodi gibi kusursuz bir uyumla ilerleyeceğine ve küçük ek gelirlerin yüzünüzü güldüreceğine alamettir.",
+      "uyari_golge": "Detaylarda çok fazla boğulup büyük resmi kaçırmamanız ve hayatın akışındaki geçici uyumsuzlukları kafanıza takmamanız gerektiği konusunda uyarır."
+    },
+    "maske": {
+      "genel": "Maske, gerçek niyetlerin gizlendiğini, ikiyüzlülüğü veya hayatta takınılan rolleri temsil eden uyarıcı bir semboldür.",
+      "ask": "Aşk hayatında partnerinizin veya sizin bazı şeyleri içe attığınızı, gerçek duyguların tam olarak ifade edilemediğini gösterir.",
+      "kariyer_para": "İş çevrenizde dost gibi görünen ama arkanızdan iş çeviren kişilere karşı son derece uyanık olmanız, sözleşmelerde gizli maddelere dikkat etmeniz gerekir.",
+      "uyari_golge": "Kendi gerçek duygularınızı bastırarak yaşamaktan vazgeçmeniz ve çevrenizdeki sahte ilişkilere karşı kör olmamanız yönünde çok ciddi bir ikazdır."
+    },
+    "terazi": {
+      "genel": "Terazi, adalet, hakkaniyet, karar verme süreçleri ve hayatın dengesini bulma çabasının en net simgesidir.",
+      "ask": "İlişkilerde verilen ve alınan sevginin dengelenmesini, uzun süredir kafanızı kurcalayan bir konuda hakkaniyetli bir karara varılmasını simgeler.",
+      "kariyer_para": "Bekleyen hukuki veya resmi işlerinizin lehinize sonuçlanacağına, ortaklı işlerde ve parasal konularda adil paylaşımlar yapılacağına işaret eder.",
+      "uyari_golge": "Sürekli tartıp biçmekten dolayı karar vermekte gecikebileceğinize ve bu kararsızlığın fırsatları kaçırmanıza neden olabileceğine dikkat çeker."
+    },
+    "adliye_sarayi": {
+      "genel": "Adliye sarayı sembolü, resmi kurumlar, mahkemeler, imzalanacak önemli evraklar ve büyük bürokratik süreçleri temsil eder.",
+      "ask": "Boşanma, nafaka veya evlilik sözleşmesi gibi resmi konuların gündeme gelebileceği, ilişkilerde hukuki boyutların ağırlık kazanacağı bir döneme işaret eder.",
+      "kariyer_para": "Devlet kapısındaki işlerinizin çözüme kavuşacağını, resmi makamlardan beklediğiniz haberin olumlu ya da net bir şekilde geleceğini gösterir.",
+      "uyari_golge": "Resmi evraklarda, imzalanacak sözleşmelerde ve yasal prosedürlerde son derece dikkatli olmanız, en ufak bir ihmale yer vermemeniz konusunda uyarır."
+    },
+    "kelepce": {
+      "genel": "Kelepçe, kısıtlanmışlık hissiyatını, çıkmazları, hukuki sorunları veya bir duruma sıkı sıkıya bağımlı olmayı simgeler.",
+      "ask": "İlişkinizde sizi sıkan, özgürlüğünüzü kısıtlayan toksik bir dinamik olduğunu veya partnerinizle birbirinize çok bağımlı hale geldiğinizi gösterir.",
+      "kariyer_para": "Maddi borçlar veya iş yerindeki katı kurallar yüzünden ellerinizin kolunuzun bağlı hissedebileceğiniz, sıkışık bir döneme delalet eder.",
+      "uyari_golge": "Kendi kendinizi hapsettiğiniz kalıplardan kurtulmanız, korkularınızla yüzleşmeniz ve sizi esir alan zararlı alışkanlıkları veya ilişkileri bitirmeniz için bir uyarıdır."
+    },
+    "tavus_kusu": {
+      "genel": "Fincanda görkemi, zarafeti ve dikkat çekme isteğini temsil eder; kişinin çevresinde hayranlık uyandıracağı bir döneme girdiğini müjdeler.",
+      "ask": "Aşk hayatında ego çatışmalarına ve dış görünüşe fazlaca önem vermeye işaret eder; gururun bir kenara bırakılması gereken bir süreçtir.",
+      "kariyer_para": "Maddi anlamda lüks harcamalara yönelme ve iş ortamında yetenekleri sergileyerek terfi alma ihtimalini gösterir.",
+      "uyari_golge": "Kibir ve aşırı gösterişe kaçma eğilimine karşı uyarıdır; samimiyetsiz dostluklar hayal kırıklığı yaratabilir."
+    },
+    "leylek": {
+      "genel": "Geleneksel Türk kahve falında seyahatin, beklenmeyen güzel haberlerin ve hayatın akışında köklü değişimlerin habercisidir.",
+      "ask": "İlişkisi olanlar için yuva kurma veya evlilik adımı anlamına gelirken, bekarlar için uzun yoldan gelecek sürpriz bir taliptir.",
+      "kariyer_para": "Şehir veya ülke dışı iş teklifleri, tayinler ve kariyerde yön değiştirecek seyahatleri işaret eder.",
+      "uyari_golge": "Kararsızlık ve sürekli bir yerlere gitme arzusu yüzünden anı kaçırmaya, istikrarsızlığa dikkat edilmelidir."
+    },
+    "karga": {
+      "genel": "Falda genellikle dedikodu, kötü haber ve arkadan çevrilen işlerin simgesi olarak kabul edilir.",
+      "ask": "İlişkilerde üçüncü şahısların müdahalesine, kıskançlığa ve yanlış anlaşılmalardan kaynaklanan gerginliklere işaret eder.",
+      "kariyer_para": "İş yerinde arkanızdan kuyunuzu kazan mesai arkadaşlarına ve maddi kayıplara sebep olabilecek kötü niyetli kişilere karşı uyarıdır.",
+      "uyari_golge": "Aşırı vesveseci ve karamsar bir ruh haline bürünmenin enerjinizi düşüreceğini unutmayın."
+    },
+    "horoz": {
+      "genel": "Sabahın ilk ışıklarını müjdelediği gibi, yeni bir dönemin başlangıcını, uyanışı ve otoriteyi simgeler.",
+      "ask": "İlişkilerde baskın olma çabasını, liderlik taslayan partneri veya ani bir kıskançlık krizini temsil eder.",
+      "kariyer_para": "İş hayatında erken saatlerde atılacak önemli adımları, terfi etmeyi ve maddi konularda kontrolü ele almayı müjdeler.",
+      "uyari_golge": "Yersiz bir gurur, aşırı iddiacı tavırlar ve erken öten horoz gibi zamansız çıkışlar yapma riskine karşı dikkatli olunmalıdır."
+    },
+    "tavuk": {
+      "genel": "Evcil hayatı, bereketli kazançları ve korumacı, anaç enerjiyi fincanda gözler önüne serer.",
+      "ask": "Aşkta fedakar, koruyucu ama bir o kadar da sahiplenici bir partnerin varlığına işaret eder.",
+      "kariyer_para": "Küçük ama istikrarlı adımlarla büyüyen kazançları, evden yürütülen işleri ve birikimleri simgeler.",
+      "uyari_golge": "Çok fazla detayla uğraşmaktan büyük resmi kaçırmaya ve dedikoducu çevreye kapılmaya dikkat edilmelidir."
+    },
+    "ordek": {
+      "genel": "Su üstündeki sükuneti ve akışına bırakmayı simgeler; duygusal olarak rahatlama döneminin geldiğini gösterir.",
+      "ask": "Romantik ilişkilerde uyumlu, huzurlu ve sakin bir dönemin kapıda olduğunu, su gibi akıp giden bir aşkı müjdeler.",
+      "kariyer_para": "Ticari konularda sabırlı bekleyişin meyvesini vereceğini ve parasal sıkıntıların geride kalacağını gösterir.",
+      "uyari_golge": "Aşırı pasif kalma ve olaylar karşısında inisiyatif alamama gölge yönünü oluşturur."
+    },
+    "kugu": {
+      "genel": "Asalet, duru güzellik ve uzun süreli, sadık birlikteliklerin en güçlü simgelerinden biridir.",
+      "ask": "Ruh eşini bulma, derin ve koşulsuz bir aşka yelken açma ya da mevcut ilişkide ikinci bir bahar yaşama anlamına gelir.",
+      "kariyer_para": "Sanatsal projelerde başarı, hak edilen saygınlığı kazanma ve temiz parayı simgeler.",
+      "uyari_golge": "Dışarıdan her şey mükemmel görünürken içeride yaşanan yalnızlık hissine ve mükemmeliyetçi baskıya dikkat edilmelidir."
+    },
+    "pelikan": {
+      "genel": "Paylaşımcı yapıyı, cömertliği ve fedakarlığı temsil eder; başkalarına yardım edeceğiniz bir dönemi gösterir.",
+      "ask": "İlişkide çok veren, sürekli fedakarlık yapan tarafın siz olduğunuzu ve bu dengesizliğin yorabileceğini gösterir.",
+      "kariyer_para": "Ortaklı işlerde kazancı hakça bölüşmeyi, sosyal sorumluluk projelerini ve yardımlaşma ile gelen bereketi simgeler.",
+      "uyari_golge": "İyi niyetinizin suistimal edilmesine ve elinizdekileri yanlış kişilere cömertçe dağıtmanıza karşı bir uyarıdır."
+    },
+    "papagan": {
+      "genel": "Dedikoduyu, kulaktan kulağa yayılan sözleri ve taklitçi davranışları fincanda ele verir.",
+      "ask": "İlişkiniz hakkında etrafta konuşulan laflara kulak asmamanız gerektiğini, aksi takdirde huzurunuzun kaçacağını söyler.",
+      "kariyer_para": "İş yerinde sırlarımızın yanlış kişilere ulaşabileceğine ve imza atarken söylenenlere değil yazılanlara bakılması gerektiğine işaret eder.",
+      "uyari_golge": "Ağzınızdan çıkanlara dikkat etmemeniz yüzünden yanlış anlaşılmaya ve başkasının sözünü kendi sözünüz gibi benimsemeye açıksınız."
+    },
+    "yarasa": {
+      "genel": "Karanlıkta kalan sırlar, bilinçaltı korkuları ve beklenmedik bir durumun gizlenmeye çalışıldığını gösterir.",
+      "ask": "Aşk hayatında gözden kaçan bazı gerçeklerin veya partnerin sizden sakladığı yönlerin gün yüzüne çıkacağını bildirir.",
+      "kariyer_para": "Gözden kaçan finansal riskler, yasal konularda karanlıkta kalan detaylar ve gizli düşmanlara karşı uyarır.",
+      "uyari_golge": "Gündüzü gece gibi yaşamak, gerçeklerden kaçmak ve karamsar bir bakış açısıyla hareket etmek büyük fırsatları kaçırmanıza neden olabilir."
+    },
+    "sincap": {
+      "genel": "Fincanın genellikle kenarına yakın veya kulba doğru çıkan sincap, yakın zamanda küçük ama sevindirici kazançların ve hazırlıkların habercisidir.",
+      "ask": "İlişkilerde geleceğe yönelik ufak adımlar atılacağına, evlilik veya ortak yaşam için ufak tefek birikimler yapılacağına işaret eder.",
+      "kariyer_para": "Geleceğinizi güvence altına almak için yaptığınız küçük yatırımların meyvesini vermeye başlayacağı bir döneme giriyorsunuz.",
+      "uyari_golge": "Fazla detaycı ve tedirgin yapınız nedeniyle elinizdeki büyük fırsatları kaçırabilir, gereksiz yere her şeyi saklama eğilimi gösterebilirsiniz."
+    },
+    "kirpi": {
+      "genel": "Fincanda ya da tabakta görülen kirpi, kişinin etrafına ördüğü duvarları ve savunma mekanizmalarını temsil eder.",
+      "ask": "Geçmişte yaşadığınız kırgınlıklar yüzünden yeni gelen kişilere karşı aşırı şüpheci ve diken üstünde bir tutum sergiliyorsunuz.",
+      "kariyer_para": "İş ortamında arkanızdan çevrilen işlere karşı sezgilerinizin çok kuvvetli olduğunu ve kendinizi başarılı bir şekilde koruyacağınızı gösterir.",
+      "uyari_golge": "Her eleştiriye saldırı olarak yaklaşmanız, sizi sevdiklerinizden uzaklaştırabilir; biraz yumuşamakta fayda var."
+    },
+    "kunduz": {
+      "genel": "Çalışkanlığı ve emeği simgeleyen kunduz, alın teriyle elde edilecek kalıcı başarıların ve yuva kurma çabasının göstergesidir.",
+      "ask": "Mevcut ilişkinizi sağlam temeller üzerine oturtmak için büyük bir gayret gösterdiğinizi ve emeklerinizin karşılığını alacağınızı müjdeler.",
+      "kariyer_para": "Projelerinizde gösterdiğiniz yoğun çalışma temposu, uzun vadeli maddi güvenliğin ve kalıcı işlerin kapısını aralayacaktır.",
+      "uyari_golge": "Sürekli çalışmak ve üretmek zorunda hissetmeniz, sosyal hayatınızı ihmal etmenize ve tükenmişlik yaşamanıza neden olabilir."
+    },
+    "ayi": {
+      "genel": "Koca yapılı ayı, falda hem güçlü bir desteği hem de etrafta dolanan sinsi ve tehlikeli bir rakibi aynı anda simgeleyebilir.",
+      "ask": "Hayatınızdaki kişinin korumacı ama bir o kadar da baskıcı ve kıskanç tavırlarıyla baş etmek zorunda kalabilirsiniz.",
+      "kariyer_para": "Maddi anlamda büyük bir güç kazanacağınıza ancak iş yerinde otoriter ve kaba bir yöneticiyle karşı karşıya geleceğinize işaret eder.",
+      "uyari_golge": "Güvendiğiniz dağlara kar yağabilir; çevrenizdeki bazı kişilerin iyi niyet maskesi altındaki çıkarcı tutumlarına karşı uyanık olun."
+    },
+    "maymun": {
+      "genel": "Hareketi ve neşeyi simgeleyen maymun, hayatınıza girecek hareketli günlerin ve ani sürprizlerin habercisidir.",
+      "ask": "Aşk hayatınızda çocuksu sürprizler ve eğlenceli anlar ön plana çıkarken, kararsızlıklar da baş gösterebilir.",
+      "kariyer_para": "İş yerinde dedikoduların artabileceği bir döneme işaret eder; pratik zekanızla krizleri avantaja çevirebilirsiniz.",
+      "uyari_golge": "Odaklanma sorunu yaşayabilir, bir işi bitirmeden diğerine atlarsanız yakın çevrenizde güven kaybına uğrayabilirsiniz."
+    },
+    "goril": {
+      "genel": "Fincanın tabanında veya orta katmanlarında belirginleşen goril, bastırılmış öfkeyi ve ezici bir gücü temsil eder.",
+      "ask": "İlişkinizde ya da aile içinde üzerinizde kurulan baskılara karşı artık patlama noktasına geldiğinizi gösterir.",
+      "kariyer_para": "İş hayatında üstesinden gelmeniz gereken zorlu ve baskın bir otorite figürüyle mücadele etmek zorunda kalabilirsiniz.",
+      "uyari_golge": "Öfkeyle kalkıp zararla oturma riskiniz çok yüksek; fevri hareketler yerine stratejik sabır göstermelisiniz."
+    },
+    "zebra": {
+      "genel": "Zebra, hayatınızdaki siyah ve beyaz gibi kesin çelişkileri, kararsızlıkları ve farklı kültürlerden insanları simgeler.",
+      "ask": "Aşk hayatınızda mantığınız ve duygularınız arasında kalabilir, partnerinizin iki yüzlü tavırları karşısında şaşırabilirsiniz.",
+      "kariyer_para": "Finansal konularda riskli kararlar alırken iki defa düşünmeniz gereken, belirsizliklerle dolu bir döneme işaret eder.",
+      "uyari_golge": "Her şeyi siyah veya beyaz olarak görme isyanınız, hayatın gri tonlarındaki güzellikleri kaçırmanıza sebep olabilir."
+    },
+    "zurafa": {
+      "genel": "Uzun boyunlu zürafa, olaylara yukarıdan bakabilme yeteneğini, uzaklardan gelecek haberleri ve yüksek hedefleri müjdeler.",
+      "ask": "Gönül işlerinde yüksek standartlar belirlediğinizi ve sıradan ilişkilerden sıkılarak daha entelektüel bağlar aradığınızı gösterir.",
+      "kariyer_para": "Geleceğe dönük büyük vizyonlar peşinde koştuğunuzu ve yakın zamanda uzaklardan gelecek olumlu bir iş haberi alacağınızı belirtir.",
+      "uyari_golge": "Çevrenizdeki insanlara yukarıdan bakma eğilimi gösterebilir, kibirli tavırlarınız yüzünden yalnızlaşabilirsiniz."
+    },
+    "hipopotam": {
+      "genel": "Su altından gelen gizli güçleri ve derin duyguları simgeleyen hipopotam, bastırılmış meselelerin su yüzüne çıkacağını gösterir.",
+      "ask": "İlişkinizde uzun süredir halı altına süpürülmüş büyük sorunlar nihayet konuşulacak ve somut kararlar alınacaktır.",
+      "kariyer_para": "Beklenmeyen büyük bir ödeme veya hane içine girecek yüklü miktar, maddi sıkıntılarınızı hafifletecektir.",
+      "uyari_golge": "Hantallık ve sessizlik maskesinin arkasına saklanarak sorumluluklardan kaçma eğiliminiz krizleri büyültebilir."
+    },
+    "gergedan": {
+      "genel": "Zırhlı yapısıyla gergedan, engelleri ve zorlukları hiçe sayarak hedefe doğru durmaksızın koşan iradeyi temsil eder.",
+      "ask": "Aşkta karşınıza çıkan tüm engellere ve eleştirilere rağmen sevdiğiniz kişinin arkasında kaya gibi duracağınızı gösterir.",
+      "kariyer_para": "İş hayatındaki rakiplerinizi ve önünüze çıkan bürokratik engelleri kararlılığınız sayesinde ezip geçeceksiniz.",
+      "uyari_golge": "Körü körüne inatlaşmak ve karşı tarafın sesini hiç dinlememek, zafer kazansanız bile yalnız kalmanıza yol açabilir."
+    },
+    "kilit": {
+      "genel": "Fincanın konumuna göre ya büyük bir sırrın açığa çıkacağını ya da uzun süredir kapalı olan kapıların nihayet aralanacağını müjdeleyen güçlü bir semboldür.",
+      "ask": "İlişkilerde yaşanan tıkanıklıkların ve iletişim kopukluklarının son bulacağına, kalbinin kapılarını doğru kişiye açmaya hazır olduğuna işaret eder.",
+      "kariyer_para": "Maddi konularda uzun süredir beklenen onayların, borçların kapanmasının veya kilitlenmiş projelerin hızla çözüme kavuşmasının habercisidir.",
+      "uyari_golge": "Çevrenizdeki bazı kişilere karşı aşırı ketum davranmanızın yanlış anlaşılmalara yol açabileceği konusunda sizi uyarır."
+    },
+    "madalya": {
+      "genel": "Emeğin, çabanın ve sabrın sonunda hak edilen büyük bir takdirin, başarının ve onurun fincandaki en net yansımasıdır.",
+      "ask": "İlişkide gösterilen fedakarlıkların partner tarafından nihayet fark edileceğine ve ilişkinizin bir üst seviyeye taşınacağına delalet eder.",
+      "kariyer_para": "İş hayatında terfi, unvan veya yüksek bir prim gibi somut bir ödül alarak maddi rahatlama yaşayacağınız döneme giriyorsunuz.",
+      "uyari_golge": "Kazanılan başarıların ego yaratmasına izin vermemeli, kibirten kaçınarak aynı özveriyle yola devam etmelisiniz."
+    },
+    "sampanya": {
+      "genel": "Sosyal ortamlarda yaşanacak coşkulu kutlamaların, ani sevinçlerin ve hayatınıza neşe katacak parlak anların habercisidir.",
+      "ask": "Bekar olanlar için heyecan dolu, baş döndürücü yeni bir aşka; evliler için ise tazelenen romantik akşamlara işaret eder.",
+      "kariyer_para": "Ortaklı işlerde veya büyük bir anlaşmanın imza töreninde kutlama yapacağınız, kazançlı ve bereketli bir dönemin başlangıcıdır.",
+      "uyari_golge": "Anlık coşkulara kapılıp gereksiz ve lüks harcamalar yapmaktan kaçınmanız, bütçenizi korumanız gerekebilir."
+    },
+    "pasta": {
+      "genel": "Paylaşımın, kalabalık kutlamaların, doğum günü gibi özel buluşmaların ve tatlı telaşların fincandaki tatlı göstergesidir.",
+      "ask": "Aşk hayatınızda tatlı dille çözülecek ufak anlaşmazlıkların ardından partnerinizle keyifli ve romantik anlar yaşayacağınıza işaret eder.",
+      "kariyer_para": "Ekip arkadaşlarınızla birlikte kutlayacağınız ortak bir başarının ve iş yerinde huzurlu, tatlı bir çalışma ortamının müjdesidir.",
+      "uyari_golge": "Sosyal ilişkilerde herkesi memnun etmeye çalışırken kendi enerjinizi tüketmemeye ve tatlı sözlerin ardındaki samimiyetsizliğe dikkat edin."
+    },
+    "hediye_paketi": {
+      "genel": "Beklenmedik bir sürprizin, hayatınıza umulmadık bir yerden girecek güzel bir haberin veya maddi bir lütfun simgesidir.",
+      "ask": "Sevgilinizden veya talibinizden alacağınız anlamlı bir sürpriz hediyeyle şımartılacağınıza ve aranızdaki bağın güçleneceğine alamettir.",
+      "kariyer_para": "Beklemediğiniz bir yerden elinize geçecek para, miras veya uzun süredir unuttuğunuz bir alacağın tahsil edilmesi anlamına gelir.",
+      "uyari_golge": "Her sunulan hediyenin veya fırsatın masum olmadığını, arkasında gizli beklentiler olabileceğini göz ardı etmeyin."
+    },
+    "balon": {
+      "genel": "Hafifleyen dertlerin, havada kalan belirsizliklerin ve anlık ama yükseltici motivasyonların falda en çok görülen sembollerindendir.",
+      "ask": "İlişkinizde üzerinizde baskı yaratan konuların havaya karışıp uçacağını, daha hafif ve neşeli bir döneme gireceğinizi gösterir.",
+      "kariyer_para": "Projelerinizin hız kazanacağını ancak spekülatif yatırımlarda elinizi çabuk tutmanız gerektiğini, aksi halde kazancın uçup gidebileceğini söyler.",
+      "uyari_golge": "Çok çabuk gaza gelme ve hayal kırıklığına uğrama potansiyeline karşı gerçekçi zemin basmayı ihmal etmeyin."
+    },
+    "ucurtma": {
+      "genel": "Hayallerin gökyüzüyle buluşması, hedeflere doğru rüzgarı arkaya alarak özgürce süzülme döneminin başladığını gösterir.",
+      "ask": "Aşkta kontrolü biraz serbest bırakmanın, akışa uymanın ve partnerinizle birlikte yeni ufuklara yelken açmanın zamanı gelmiştir.",
+      "kariyer_para": "Uzak mesafeli işler, seyahatler veya uluslararası projelerden yana rüzgarın sizden yana eseceği kazançlı bir süreçtir.",
+      "uyari_golge": "İpleri elinizden tamamen kaçırırsanız hayallerinizin rüzgarda savrulup kaybolabileceği, dengede kalmanız gerektiği konusunda uyarır."
+    },
+    "salincak": {
+      "genel": "Duygusal dalgalanmaların, kararsızlıkların ve hayatın sizi bir aşağı bir yukarı salladığı hassas bir psikolojik dönemi simgeler.",
+      "ask": "Aşkta 'Seviyor mu, sevmiyor mu?' ikilemleri arasında gidip geleceğinizi, duygusal olarak yorgun hissedebileceğinizi gösterir.",
+      "kariyer_para": "Maddi konularda gelir gider dengesinde dalgalanmalar yaşanabilir; bu süreçte büyük riskler almak yerine sabırlı olunmalıdır.",
+      "uyari_golge": "Sürekli aynı döngüde dönüp durduğunuzu hissediyorsanız, bu rutini kırmak için cesur bir adım atmanız şarttır."
+    },
+    "kayik": {
+      "genel": "Küçük ama emin adımlarla çıkılacak kısa bir yolculuğun, hayatınızdaki sakin sularda ilerleme çabasının göstergesidir.",
+      "ask": "Partnerinizle birlikte baş başa geçireceğiniz huzurlu bir kaçamak veya ilişkinizdeki dalgalı günlerin geride kalması anlamına gelir.",
+      "kariyer_para": "Maddi anlamda devasa adımlar değil ama küçük birikimler ve ufak çaplı yatırımlarla geleceğinizi güvence altına alacağınız bir dönemdir.",
+      "uyari_golge": "Küçük kayıkla büyük okyonuslara açılmaya çalışmak tehlikelidir; kapasitenizi ve gücünüzü aşan riskler almaktan kaçının."
+    },
+    "yelkenli": {
+      "genel": "Hayatınızda büyük bir değişimin, yeni bir coğrafyaya taşınmanın veya kaderinizi değiştirecek devasa bir dönüm noktasının habercisidir.",
+      "ask": "Rüzgarı arkanıza alarak aşkta yepyeni ve temiz bir sayfa açacağınızı, ruh eşinizle uzun soluklu bir yola çıkacağınızı müjdeler.",
+      "kariyer_para": "Kariyerinizde rüzgarın tamamen lehinize eseceği, uluslararası işler veya büyük terfilerle bol kazançlı bir döneme girdiğinizi gösterir.",
+      "uyari_golge": "Fırtınalı havalarda yelkenleri zamanında indirmezseniz zorluk yaşayabilirsiniz; doğru zamanda doğru hamleyi yapın."
+    },
+    "denizkizi": {
+      "genel": "Fincanın tabanında veya kenarında beliren denizkizi, gizemli çekiciliği, hayal gücünü ve ruhsal derinliği simgeler. Kişinin hayatında büyüleyici ama bir o kadar da ele avuca sığmaz bir döneme girmekte olduğunu gösterir.",
+      "ask": "Aşk hayatında karşı konulmaz bir çekim ve tutku rüzgarı estirirken, aynı zamanda bağlanma korkusu veya ulaşılmaz bir aşka duyulan özlemi temsil eder.",
+      "kariyer_para": "Kariyerde yaratıcı projelerle dikkat çekme ve sanatsal alanlarda başarı yakalama potansiyeli sunar; maddi konularda ise akışta kalmanın önemine işaret eder.",
+      "uyari_golge": "Illüzyonlara kapılma, gerçekleri göz ardı etme ve manipülatif insanlara karşı tetikte olma uyarısı yapar."
+    },
+    "ahtapot": {
+      "genel": "Ahtapot sembolü, çok yönlülüğü, zekayı ve hayatın birçok farklı koluna aynı anda dokunma çabasını gösterir. Karmaşık durumların ve çözülmesi gereken düğümlerin habercisidir.",
+      "ask": "İlişkilerde aşırı sahiplenici, boğucu veya kontrolcü tutumların partneri sıktığını, denge kurulması gerektiğini vurgular.",
+      "kariyer_para": "İş yaşamında aynı anda birçok sorumluluğu üstlenerek multitasking yapma becerisini gösterir; parasal konularda ise gelir kaynaklarını çeşitlendirme fırsatı doğar.",
+      "uyari_golge": "Her şeye yetişmeye çalışırken tükenme riskine ve etraftaki sinsi, yapışkan insanlara karşı dikkatli olunması gerektiğine işaret eder."
+    },
+    "yengec": {
+      "genel": "Yengeç, kabuğuna çekilme, duygusal korunma ihtiyacı ve geçmişe takılıp kalma eğilimini simgeler. Fincanda genellikle sezgilerin çok güçlü olduğu bir döneme işaret eder.",
+      "ask": "Aşkta kırılganlık ve incinme korkusu nedeniyle duvarlar örüldüğünü, partnerin içeri girmesine izin vermekte zorlanıldığını gösterir.",
+      "kariyer_para": "İş hayatında ani çıkışlar veya geri adımlar yaşanabileceğini, finansal konularda ise temkinli ve garantici adımlar atılması gerektiğini belirtir.",
+      "uyari_golge": "Geçmişin travmalarını bugüne taşıma hatasına düşmemek ve aşırı alıngan/savunmacı ruh halinden sıyrılmak gerekir."
+    },
+    "istakoz": {
+      "genel": "İstakoz, zorlu kabuk değişimlerini, büyük dönüşümleri ve koruma içgüdüsünü temsil eder. Kişinin hayatında köklü bir yenilenme sürecine girdiğinin göstergesidir.",
+      "ask": "İlişkilerde yaşanan sert tartışmaların ardından gelen olgunlaşma evresini ve duygusal kaleyi koruma çabasını simgeler.",
+      "kariyer_para": "Kariyerde zorlu bir süreci geride bırakarak hak edilen makama veya maddi kazanca ulaşmanın, kabuk kırmanın somut karşılığıdır.",
+      "uyari_golge": "Sert ve uzlaşmaz tavırların çevredeki insanları korkutabileceği, biraz daha esnek olunması gerektiği konusunda uyarır."
+    },
+    "denizati": {
+      "genel": "Denizatı, iyi haberlerin, şansın ve sezgisel rehberliğin sembolüdür. Fincanda narin ama kararlı adımlarla ilerleyen olumlu gelişmeleri müjdeler.",
+      "ask": "Aşk hayatında sürpriz, tatlı ve masum başlangıçların, uzun zamandır beklenen romantik haberlerin kapıda olduğunu gösterir.",
+      "kariyer_para": "İş hayatında küçük ama istikrarlı adımlarla büyük başarılar elde edileceğini, maddi anlamda ise sürpriz bir rahatlama yaşanacağını belirtir.",
+      "uyari_golge": "Akıntıya kapılıp yön kaybetmemek ve küçük detaylarda boğulmadan büyük resme odaklanmak önemlidir."
+    },
+    "ugurbocegi": {
+      "genel": "Uğur böceği, adından da anlaşılacağı üzere en güçlü şans ve bereket sembollerinden biridir. Beklenmedik sevinçleri ve dileklerin gerçekleşmesini müjdeler.",
+      "ask": "Aşkta yüzleri güldürecek gelişmelerin, mutlu sürprizlerin ve kalbi boş olanlar için hayırlı bir karşılaşmanın habercisidir.",
+      "kariyer_para": "İş ve para konularında krizlerin ansızın lehine döneceğini, emeklerin karşılığının fazlasıyla alınacağı şanslı bir dönemi gösterir.",
+      "uyari_golge": "Bu şansın geçici olabileceğini unutmadan, gelen fırsatları doğru değerlendirmek ve rehavete kapılmamak gerekir."
+    },
+    "karinca": {
+      "genel": "Karınca, çalışkanlığı, sabrı, disiplini ve toplumsal dayanışmayı simgeler. Büyük hedeflere küçük ama emin adımlarla ulaşılacağının kanıtıdır.",
+      "ask": "İlişkilerde emek vermenin, fedakarlığın ve sabırla örülen sağlam bağların zamanının geldiğini gösterir.",
+      "kariyer_para": "İş hayatında yoğun çalışma temposunu, alın terini ve sabırlı birikimler sonucunda elde edilecek bereketli kazançları temsil eder.",
+      "uyari_golge": "Sürekli çalışmaktan hayatın tadını çıkarmayı unutma riskine ve angarya işler altında ezilme tehlikesine karşı uyarıdır."
+    },
+    "cekirge": {
+      "genel": "Çekirge, ani sıçramaları, risk almayı, bazen de istikrarsızlık ve sabırsızlığı simgeler. Hayatta hızlı değişimlerin yaşanacağı bir döneme işaret eder.",
+      "ask": "Aşkta daldan dala konma eğilimini, bir karar vermekte zorlanmayı veya ani gelişen heyecanlı ama geçici ili��kileri temsil eder.",
+      "kariyer_para": "Kariyerde riskli hamleler yapma isteğini gösterirken; finansal konularda anlık harcamalara ve spekülasyonlara dikkat edilmesi gerektiğini vurgular.",
+      "uyari_golge": "Plansız hareket etmenin getireceği pişmanlıklara ve daldan dala atlayarak odak kaybetme sorununa karşı dikkatli olunmalıdır."
+    },
+    "salyangoz": {
+      "genel": "Salyangoz, yavaş ama emin adımları, zamanla gelen gelişmeleri ve içsel dünyada kabuğa çekilme halini gösterir. Acele işlerin ters gideceğinin işaretidir.",
+      "ask": "Aşk hayatında olayların çok yavaş ilerlediğini, partnerlerin birbirini tartmakta acele etmediğini ve sabırlı olunması gerektiğini söyler.",
+      "kariyer_para": "Kariyerde beklenen terfi veya ödemelerin gecikebileceğini, ancak sabredilirse kesinlikle hedefe ulaşılacağını ifade eder.",
+      "uyari_golge": "Tembellik, eylemsizlik ve fırsatları kaçıracak kadar ağırkanlı olma tuzaklarına karşı uyarı niteliğindedir."
+    },
+    "bukalemun": {
+      "genel": "Bukalemun, ortama ve şartlara göre kabuk değiştirmeyi, uyum yeteneğini ancak aynı zamanda güvenilmezlik unsurlarını barındırır. Kişinin stratejik davranması gereken bir süreci gösterir.",
+      "ask": "İlişkilerde partnerin gerçek yüzünü sakladığını, ikili oynamalar veya samimiyetsiz tutumların söz konusu olabileceğini fısıldar.",
+      "kariyer_para": "İş yerindeki politik ortamlara ayak uydurma zorunluluğunu ve stratejik hamleler yapılması gerektiğini, paranın ise değişken olduğunu belirtir.",
+      "uyari_golge": "Kendi öz benliğini ve değerlerini kaybetme riskine, etraftaki iki yüzlü insanlara karşı aşırı dikkatli olma zorunluluğuna dikkat çeker."
+    },
+    "supurge": {
+      "genel": "Evdeki veya zihindeki olumsuzlukların temizlenmesi, dertlerin bitmesi ve ferahlığa çıkılacağının müjdecisidir.",
+      "ask": "İlişkideki eski kırgınlıkların süpürülüp atılmasına, geçmişteki hataların geride bırakılarak temiz bir sayfa açılmasına işaret eder.",
+      "kariyer_para": "İş yerinde biriken işlerin orantılı bir şekilde bitirilmesini, borçların kapatılarak maddi bir rahatlama yaşanmasını sağlar.",
+      "uyari_golge": "Aceleci kararlarla yanlış kişileri veya değerli fırsatları da çöpe atmaya karşı dikkatli olunmalıdır."
+    },
+    "lamba": {
+      "genel": "Karanlıkta kalan konuların aydınlanması, gerçeğin ortaya çıkması ve ani bir ilham veya aydınlanma yaşanması anlamına gelir.",
+      "ask": "Platonik duyguların karşılık bulması, sevgilinizin niyetini net bir şekilde görmeniz ve ilişkinizde kafanızdaki soru işaretlerinin yok olmasıdır.",
+      "kariyer_para": "Eğitim veya kariyerde projelerin onaylanması, parlak bir fikir sayesinde elde edilecek maddi kazanç ve başarıyı simgeler.",
+      "uyari_golge": "Her parlayan şeyi altın sanmamak gerekir; bazı yapay ışıklar gözünüzü kamaştırıp sizi yanıltabilir."
+    },
+    "avize": {
+      "genel": "Göz alıcı bir döneme girildiğinin, toplumsal ortamlarda parlamanın ve şatafatlı gelişmelerin habercisidir.",
+      "ask": "Gösterişli buluşmalar, kalabalık ortamlarda yaşanacak romantik tanışmalar ve ilişkide ilgi odağı olmak demektir.",
+      "kariyer_para": "Kariyerde zirveye tırmanma, büyük prestij kazanma ve yüksek gelirli, dikkat çekici pozisyonlara terfi etmedir.",
+      "uyari_golge": "Sürekli dışarıdan onay beklemek ve gösterişe fazla kapılarak öz değerinizi unutma riskine karşı uyarıdır."
+    },
+    "tabut": {
+      "genel": "Bir dönemin, alışkanlığın veya toksik bir durumun kesin olarak son bulması ve büyük bir dönüşüm yaşanmasıdır.",
+      "ask": "Tıkanmış, artık yürümeyen bir ilişkinin veya evliliğin mutsuz bir şekilde sonlanması ya da kökten değişmesidir.",
+      "kariyer_para": "Riskli bir ortaklığın veya batmak üzere olan bir işin tamamen kapanarak yeni bir sektöre yönelme zorunluluğudur.",
+      "uyari_golge": "Bitmesi gereken şeyleri korku yüzünden tutmaya çalışmak acıyı uzatır; kabullenmek ve yasını tutmak şarttır."
+    },
+    "mezar_tasi": {
+      "genel": "Geçmişe ait kapanmamış defterlerin, unutulmaya yüz tutmuş anıların veya bir vicdan azabının yeniden gün yüzüne çıkmasıdır.",
+      "ask": "Eski sevgilinin geri dönmesi ya da geçmişteki eski bir aşk yarasının tekrar sızlaması şeklinde yorumlanır.",
+      "kariyer_para": "Geçmişte yapılan hatalı bir yatırımın veya unutulmuş bir borcun, davanın tekrar karşınıza çıkmasıdır.",
+      "uyari_golge": "Geçmişin mezarında yaşamaktan vazgeçmeli, bugüne ve geleceğe odaklanarak enerjinizi tüketmemelisiniz."
+    },
+    "iskelet": {
+      "genel": "Zorlu bir süreçten geriye sadece iskeletin, yani temel gerçeklerin kalması; maddi ve manevi tükenmişlik hissidir.",
+      "ask": "İlişkilerde sevgi bağının zayıflayıp sadece mantık veya mecburiyet üzerine kurulu kuru bir iskelet gibi kalmasıdır.",
+      "kariyer_para": "Maddi açıdan kemer sıkma dönemi, bütçenin fazlalıklardan arındırılarak en temel ihtiyaçlara indirgenmesidir.",
+      "uyari_golge": "Haddinden fazla zayıflama, sağlık sorunları veya olayların sadece kötü yönünü görüp karamsarlığa kapılma tehlikesidir."
+    },
+    "hayalet": {
+      "genel": "Asılsız korkular, kuruntular, belirsizlikler ve kişinin kendi gölgesiyle yüzleşmesi durumunu simgeler.",
+      "ask": "Ortada somut bir şey yokken kuruntu yapma, eski bir hayaletin (eski partnerin) zihni meşgul etmesi demektir.",
+      "kariyer_para": "Beklenen bir paranın gecikmesi, hayali projeler peşinde koşarak zaman ve para kaybetme riskidir.",
+      "uyari_golge": "Kendi korkularınızı gerçeğe dönüştürmekten kaçının; ortada var olmayan tehlikeler için canınızı sıkmayın."
+    },
+    "sihirli_kure": {
+      "genel": "Geleceği sezme yeteneğinin artması, sezgilerin güçlü olması ve gizli kalmış sırların ortaya çıkmasıdır.",
+      "ask": "Partnerinizin sizden sakladığı şeyleri sezgi yoluyla anlama, telepati ve ilişkide kaderin ortak çizgisiyle karşılaşmadır.",
+      "kariyer_para": "Öngörülü yatırımlar yapmak, doğru zamanda doğru hamleyi sezerek büyük bir finansal avantaj elde etmektir.",
+      "uyari_golge": "Gerçekleri göz ardı edip sadece kendi hayal dünyanıza ve kuruntularınıza göre hareket etme hatasına düşmeyin."
+    }
+  },
+  "kombinasyonlar": [
+    {
+      "semboller": [
+        "kus",
+        "yol"
+      ],
+      "anlam": "Uzak bir yerden gelecek çok sevindirici bir haber veya bir seyahat vesilesiyle gerçekleşecek mutlu bir kavuşma.",
+      "falci_yorumu": "Bak telvede açık bir yolun tam ucuna konmuş bir kuş var; bu demek oluyor ki çok yakında kilometreleri aşan ya da uzun süredir beklediğin o telefon/mesaj kapını çalacak."
+    },
+    {
+      "semboller": [
+        "balik",
+        "gemi"
+      ],
+      "anlam": "Uluslararası veya şehirlerarası boyutta büyük bir maddi kazanç, ticaret veya denizaşırı bir yatırımın bereketi.",
+      "falci_yorumu": "Gemi telvenin üzerinden adeta hazine taşıyarak geçiyor; hanene dışarıdan akacak büyük bir maddi rahatlama ve kısmet kapısı aralanmış."
+    },
+    {
+      "semboller": [
+        "yilan",
+        "yuzuk"
+      ],
+      "anlam": "İlişkinin ciddiyete binmesini veya evliliği kıskanan, araya nifak sokmak isteyen yakın bir kişi.",
+      "falci_yorumu": "Yüzüğün etrafına dolanmaya çalışan ince bir kıvrım görüyorum. Sevdiğin insanla arandaki bağı nazar ve dedikodulardan özenle korumalısın; herkese ilişkinin detaylarını anlatma."
+    },
+    {
+      "semboller": [
+        "kalp",
+        "anahtar"
+      ],
+      "anlam": "Kapalı bir kalbin açılması, gizli bir aşk itirafı veya ruh eşiyle duygusal kilidin kırılması.",
+      "falci_yorumu": "Anahtar tam kalbin merkezine doğru uzanmış; karşındaki insanın gururunu veya korkularını kırıp sana içini tamamen dökeceği o sihirli an çok yakın."
+    },
+    {
+      "semboller": [
+        "dag",
+        "bayrak"
+      ],
+      "anlam": "Tüm zorluklara, engellere ve bürokrasiye rağmen dağın zirvesine dikilecek mutlak bir zafer bayrağı.",
+      "falci_yorumu": "Çok yorulmuşsun, yokuş yukarı tırmanmaktan nefesin daralmış ama bak zirvede bayrak dalgalanıyor. Bu mücadele senin mutlak galibiyetinle taçlanacak."
+    },
+    {
+      "semboller": [
+        "goz",
+        "balik"
+      ],
+      "anlam": "Kazanılan paraya veya elde edilen kısmete anında değen nazar ve kıskançlık.",
+      "falci_yorumu": "Kısmetin öyle açık ki çevrendekilerin gözü ister istemez üzerine çekiliyor. Eline geçen parayı ya da yakaladığın fırsatı davul zurnayla duyurmak yerine sessizce büyüt."
+    },
+    {
+      "semboller": [
+        "at",
+        "kapi"
+      ],
+      "anlam": "Hızlıca gerçekleşecek büyük bir murat ve önünde açılan prestijli yeni bir hayat kapısı.",
+      "falci_yorumu": "Şaha kalkmış bir at açık bir kapının önünde duruyor; beklediğin o büyük şans sana hızla geliyor ve hayatında yepyeni, aydınlık bir sayfa açıyor."
+    },
+    {
+      "semboller": [
+        "agac",
+        "ev"
+      ],
+      "anlam": "Hane içinde kök salma, ev alma, yuva kurma ve aileye yeni bir üyenin (bebek/gelin/damat) katılması.",
+      "falci_yorumu": "Evin hemen yanından yükselen köklü bir ağaç var; hanenize hem maddi bereket hem de aile bağlarını perçinleyecek kalıcı bir huzur yerleşiyor."
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "trigrams": [
+    { "binary": "111", "name": "Qian (Gök)", "element": "Metal / Saf Eril", "nature": "Yaratıcı Güç, Liderlik, Sarsılmaz İrade" },
+    { "binary": "000", "name": "Kun (Yer)", "element": "Toprak / Saf Dişil", "nature": "Kabul Edicilik, Besleyicilik, Sonsuz Sabır" },
+    { "binary": "100", "name": "Zhen (Gök Gürültüsü)", "element": "Ağaç / Hareket", "nature": "Ani Uyanış, Başlangıç, Sarsıntı" },
+    { "binary": "010", "name": "Kan (Su)", "element": "Su / Uçurum", "nature": "Tehlike, Derinlik, Akışkan Zeka" },
+    { "binary": "001", "name": "Gen (Dağ)", "element": "Toprak / Dinginlik", "nature": "Durma, Meditasyon, Aşılmaz Sınır" },
+    { "binary": "011", "name": "Xun (Rüzgar / Ağaç)", "element": "Ağaç / Nüfuz", "nature": "Yumuşak Nüfuz, Esneklik, Yayılma" },
+    { "binary": "101", "name": "Li (Ateş)", "element": "Ateş / Işık", "nature": "Aydınlanma, Netlik, Bağımlılık ve Çekim" },
+    { "binary": "110", "name": "Dui (Göl)", "element": "Metal / Neşe", "nature": "Açık Kalp, Sevinç, Paylaşım" }
+  ],
+  "hexagrams": [
+    {
+      "number": 1,
+      "name": "Qian / Yaratıcı İlahi Güç",
+      "upper": "Gök",
+      "lower": "Gök",
+      "judgment": "Büyük başarı ve hayır. Gökyüzünün kesintisiz döngüsü gibi durmaksızın ilerle.",
+      "wisdom": "Eril iradenin ve saf yaratıcılığın zirvesi. Tereddüt etmeden liderliği eline al; ancak kibre kapılma.",
+      "action": "Büyük projeleri başlat, vizyonunu açıkça ortaya koy."
+    },
+    {
+      "number": 2,
+      "name": "Kun / Kabul Edici Toprak",
+      "upper": "Yer",
+      "lower": "Yer",
+      "judgment": "Toprağın sonsuz şefkati ve bereketi. Ön plana fırlamak yerine arkadan destekle.",
+      "wisdom": "Şu an liderlik etme değil, sabırla dinleme ve besleme zamanı. Direnmek yerine teslimiyet bereketi getirir.",
+      "action": "Alçakgönüllü ol, olayların doğal ritminde olgunlaşmasına izin ver."
+    },
+    {
+      "number": 3,
+      "name": "Zhun / Başlangıçtaki Zorluk",
+      "upper": "Su",
+      "lower": "Gök Gürültüsü",
+      "judgment": "Topraktan ilk filizin çıkışı gibi sancılı ama umut dolu başlangıç. Sabır ve yardım iste.",
+      "wisdom": "Kaosun içinden düzen doğuyor. Hemen sonuç bekleme; köklerini sağlamlaştır ve deneyimli kişilerden destek al.",
+      "action": "Adımlarını küçük ve sağlam at, aceleci olma."
+    },
+    {
+      "number": 4,
+      "name": "Meng / Gençlik Saflığı ve Öğrenme",
+      "upper": "Dağ",
+      "lower": "Su",
+      "judgment": "Bilgisizlik ayıp değil; bilgelik arayışı kutsaldır. Ustaya saygıyla yaklaş.",
+      "wisdom": "Henüz bilmediğin çok şey var. Kibirli görünmek yerine bir öğrenci gibi soru sor ve dinle.",
+      "action": "Eğitime, mentorluğa ve tecrübeli rehberlere kulak ver."
+    },
+    {
+      "number": 11,
+      "name": "Tai / Barış ve Kusursuz Uyum",
+      "upper": "Yer",
+      "lower": "Gök",
+      "judgment": "Gök ile yerin kavuşumu. Bolluk, refah ve gönül rahatlığı dönemi.",
+      "wisdom": "Her şey mükemmel bir ahenk içinde akıyor. Küçükler gidiyor, büyükler ve asil olanlar geliyor.",
+      "action": "Gönül rahatlığıyla evlilik, ortaklık ve büyük yatırımlar yap."
+    },
+    {
+      "number": 12,
+      "name": "Pi / Tıkanıklık ve Durgunluk",
+      "upper": "Gök",
+      "lower": "Yer",
+      "judgment": "Gök yukarı çekiliyor, yer aşağı düşüyor. İletişimsizlik ve kilitlenme dönemi.",
+      "wisdom": "Zorla kapı açmaya çalışma. Şu an kötüler revaçta gibi görünse de içsel asaletini koru ve geri çekil.",
+      "action": "Gereksiz münakaşalardan kaçın, enerjini koru."
+    },
+    {
+      "number": 29,
+      "name": "Kan / Çifte Uçurum ve Derin Sınav",
+      "upper": "Su",
+      "lower": "Su",
+      "judgment": "Uçurumun kenarında su gibi ak. Samimi ve dürüst kalırsan felaketten sağ çıkarsın.",
+      "wisdom": "Korkularla yüzleşme vakti. Tıpkı suyun en derin yarıklardan bile çıkış yolu bulması gibi, esnek ve dürüst ol.",
+      "action": "Hileden ve yalandan kesinlikle uzak dur; kalbinin masumiyetine sığın."
+    },
+    {
+      "number": 64,
+      "name": "Wei Ji / Henüz Tamamlanmamış Olan",
+      "upper": "Ateş",
+      "lower": "Su",
+      "judgment": "Tilki nehri geçerken kuyruğunu ıslatır. Bitiş çizgisine yakınsın ama son adımı dikkatle at.",
+      "wisdom": "Her son yeni bir başlangıcın tohumudur. Zafer sarhoşluğuna kapılmadan son kontrolleri yap.",
+      "action": "Disiplini elden bırakma, hikaye henüz bitmedi."
+    }
+  ]
+}

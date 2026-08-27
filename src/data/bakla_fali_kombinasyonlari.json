@@ -1,0 +1,41 @@
+{
+  "ocaklar": [
+    {
+      "key": "hane",
+      "name": "1. Hane ve Baş Ocağı",
+      "description": "Kişinin kendi iç dünyası, aklı, hanesindeki huzur ve en yakın aile fertlerinin durumu."
+    },
+    {
+      "key": "kalp",
+      "name": "2. Kalp ve Sevda Ocağı",
+      "description": "Aşk, sevilen kişinin niyeti, gizli duygular, evlilik ve gönül muratları."
+    },
+    {
+      "key": "yol",
+      "name": "3. Yol ve Rızık Ocağı",
+      "description": "Gidilecek seyahatler, resmi kapılar, iş/para kazançları ve geleceğe dair kısmetler."
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Dört Göz Açılımı (Dörtlü Çift Baklalar)",
+      "meaning": "Tüm ocaklarda çift ve dengeli baklaların düşmesi; çok yakında haneye gelecek olan müjdeli bir haber, resmi evrak zaferi ve dört başı mamur bir huzur.",
+      "outcome": "Dileğin tez vakitte (4 gün veya 4 hafta) gerçekleşecek."
+    },
+    {
+      "name": "Açık Yol (Tekli ve İlerleyen Baklalar)",
+      "meaning": "Yol ocağında tek ve temiz bir baklanın ayrılması; önünde hiçbir engelin kalmadığı ferah bir seyahat veya yeni bir iş teklifi.",
+      "outcome": "Kararsız kaldığın adımı hemen at; yolun sonu aydınlık."
+    },
+    {
+      "name": "Düğümlü Ocak (Üçlü Yığılma)",
+      "meaning": "Kalp ocağında baklaların üst üste binmesi; karşı tarafın gururu, üçüncü kişilerin laf taşıması veya geçmişten gelen bir kırgınlığın düğüm yapması.",
+      "outcome": "Sabırlı ol; baskı kurmak yerine zamana bırakıldığında düğüm kendiliğinden çözülecek."
+    },
+    {
+      "name": "Kısmet Sofrası (Geniş Dağılım)",
+      "meaning": "Hane ocağında baklaların yuvarlak bir sofra gibi dağılması; haneye girecek bereketli toplu para, kutlama veya düğün/nişan meclisi.",
+      "outcome": "Maddi sıkıntılar geride kalıyor; paylaşılan rızık çoğalacak."
+    }
+  ]
+}

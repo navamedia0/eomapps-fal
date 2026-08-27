@@ -1,0 +1,35 @@
+{
+  "flameSignals": [
+    { "type": "Parlak ve Dik Alev", "meaning": "Niyetin çok temiz, enerjin güçlü; dilediğin şey hızla sana doğru çekiliyor." },
+    { "type": "Çıtırtılı ve Dans Eden Alev", "meaning": "Ruhsal bir rehberin veya sevdiğin birinin ruhsal frekansı seninle; yakında bir mesaj alacaksın." },
+    { "type": "Mavi / Mor Hareli Alev", "meaning": "Manevi koruma altındasın; sezgilerin zirvede, içine doğan hislere güven." },
+    { "type": "Dumanlı ve Kırpışan Alev", "meaning": "Zihninde fazla vesvese ve şüphe var; niyetini netleştirip sakinleşmelisin." }
+  ],
+  "waxShapes": [
+    {
+      "name": "Çift Halka / Sonsuzluk Düğümü",
+      "meaning": "İki ruhun kadersel olarak birbirine bağlanması; evlilik teklifi, kalıcı bir ilişki veya küslüklerin barışla mühürlenmesi.",
+      "focus": "Aşk ve Evlilik"
+    },
+    {
+      "name": "Açılmış Kanat / Kuş Silüeti",
+      "meaning": "Uzak bir şehirden veya ülkeden gelecek sevindirici haber; özgürleşme ve kanatlanıp yükselme.",
+      "focus": "Haber ve Seyahat"
+    },
+    {
+      "name": "Gül / Çiçek Tomurcuğu",
+      "meaning": "Kalbinin bir süredir kurak kalmış bahçesinde yeni bir sevdanın filizlenmesi; romantik bir sürpriz.",
+      "focus": "Yeni Aşk & Duygusal İyileşme"
+    },
+    {
+      "name": "Köprü / Patika Yolu",
+      "meaning": "Geçmiş ile gelecek arasındaki zorlu geçişin tamamlanması; küs olduğun biriyle aranda kurulan barış köprüsü.",
+      "focus": "Uzlaşma ve İlerleme"
+    },
+    {
+      "name": "Gözyaşı Damlası",
+      "meaning": "İçine attığın kederin suya akarak senden uzaklaşması; yerini tatlı bir tebessüme bırakacak arınma.",
+      "focus": "Şifa ve Rahatlama"
+    }
+  ]
+}

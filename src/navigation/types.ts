@@ -13,7 +13,16 @@ export type RootStackParamList = {
   TarotResult: { spreadId: SpreadId; picks: TarotPick[] };
   DreamChat: undefined;
   ProfileChat: undefined;
-  ImageReading: { kind: 'coffee' | 'palm' };
+  ImageReading: { kind: 'coffee' | 'palm' | 'face' | 'tea' };
+  MatrixOfDestiny: undefined;
+  KursunDokme: undefined;
+  RuneReading: undefined;
+  IChingReading: undefined;
+  BaklaReading: undefined;
+  WaxReading: undefined;
+  CelticTreeReading: undefined;
+  AuraEnergy: undefined;
+  ScryingReading: undefined;
   Zodiac: undefined;
   Numerology: undefined;
   Compatibility: undefined;

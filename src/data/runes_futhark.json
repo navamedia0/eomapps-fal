@@ -1,0 +1,244 @@
+{
+  "runes": [
+    {
+      "id": "fehu",
+      "symbol": "ᚠ",
+      "name": "Fehu",
+      "meaning": "Maddi Bereket, Hayvancılık, Zenginlik",
+      "element": "Ateş / Toprak",
+      "upright": "Emeklerinin karşılığını alma, finansal bolluk, yeni kazanç kapıları ve güvenli büyüme.",
+      "reversed": "Maddi kayıp, savurganlık, açgözlülük veya elde edilen başarının kıymetini bilememe.",
+      "advice": "Kazancını sadece biriktirme; bereket paylaşıldıkça ve akışta kaldıkça çoğalır."
+    },
+    {
+      "id": "uruz",
+      "symbol": "ᚢ",
+      "name": "Uruz",
+      "meaning": "Yaban Öküzü, Ham Yaşam Gücü, Sağlık",
+      "element": "Toprak",
+      "upright": "Büyük bedensel ve ruhsal güç, şifa, engelleri ezip geçen sarsılmaz motivasyon.",
+      "reversed": "Tükenmişlik, inatçılık, kontrolsüz öfke veya sağlığı ihmal etme uyarısı.",
+      "advice": "İçindeki vahşi gücü yıkmak için değil, kendini inşa etmek için kullan."
+    },
+    {
+      "id": "thurisaz",
+      "symbol": "ᚦ",
+      "name": "Thurisaz",
+      "meaning": "Thor'un Çekici, Diken, Koruma Kalkanı",
+      "element": "Ateş",
+      "upright": "Kötü niyetlere karşı güçlü koruma kalkanı, düşmanları püskürtme, kadersel dönüm noktası.",
+      "reversed": "Dürtüsel kararlar, tehlikeli inat, kapıyı çalmadan içeri dalmanın getireceği zarar.",
+      "advice": "Harekete geçmeden önce bir adım geri çekil ve durumu iyice gözlemle."
+    },
+    {
+      "id": "ansuz",
+      "symbol": "ᚨ",
+      "name": "Ansuz",
+      "meaning": "Odin'in Nefesi, İlahi Söz, Bilgelik",
+      "element": "Hava",
+      "upright": "İlham dolu sözler, bilge bir rehberden gelen öğüt, sınav ve mülakatlarda başarı.",
+      "reversed": "Yalan haber, yanlış yönlendirme, dedikodu ve iletişim kopukluğu.",
+      "advice": "Rüyalarındaki ve çevrendeki işaretlere kulak ver; ilahi mesajlar fısıldanıyor."
+    },
+    {
+      "id": "raidho",
+      "symbol": "ᚱ",
+      "name": "Raidho",
+      "meaning": "Savaş Arabası, Yolculuk, Kozmik Düzen",
+      "element": "Hava",
+      "upright": "Fiziksel veya ruhsal bir seyahat, işlerin rayına oturması, doğru ritmi yakalama.",
+      "reversed": "Yolculukta gecikmeler, adaletsizlik, planların aksaması ve ritim kaybı.",
+      "advice": "Varış noktasına değil, yolun sana öğrettiklerine ve içsel ritmine odaklan."
+    },
+    {
+      "id": "kenaz",
+      "symbol": "ᚲ",
+      "name": "Kenaz",
+      "meaning": "Meşale, Yaratıcı Ateş, Aydınlanma",
+      "element": "Ateş",
+      "upright": "Karanlıkta parlayan fikir, sanatsal ilham, aşkta tutku ve gizli kalanın açığa çıkması.",
+      "reversed": "İçsel ateşin sönmesi, yaratıcı tıkanıklık, tutkunun kör edici bir takıntıya dönüşmesi.",
+      "advice": "Kendi ışığını kimseden saklama; samimiyetin karanlıkları aydınlatacaktır."
+    },
+    {
+      "id": "gebo",
+      "symbol": "ᚷ",
+      "name": "Gebo",
+      "meaning": "Hediye, Eşit Ortaklık, Birlik",
+      "element": "Hava",
+      "upright": "Karşılıklı sevgiye dayalı ortaklık, cömert bir hediye, aşkta mükemmel denge.",
+      "reversed": "Gebo'nun tersi yoktur; ancak aşırı bağımlılık veya tek taraflı fedakarlık uyarısı taşır.",
+      "advice": "Almak ile vermek arasındaki teraziyi dengede tut; her armağan bir bağ kurar."
+    },
+    {
+      "id": "wunjo",
+      "symbol": "ᚹ",
+      "name": "Wunjo",
+      "meaning": "Neşe, Zafer Bayrağı, Uyum ve Huzur",
+      "element": "Toprak",
+      "upright": "Gönül muradına erme, kutlama, krizlerin son bulması ve kalpte derin ferahlık.",
+      "reversed": "Hayal kırıklığı, geciken sevinç, arkadaş çevresinde yanlış anlaşılmalar.",
+      "advice": "Karanlık fırtına dindi; şimdi kazandığın huzurun tadını çıkarma zamanı."
+    },
+    {
+      "id": "hagalaz",
+      "symbol": "ᚺ",
+      "name": "Hagalaz",
+      "meaning": "Dolu Fırtınası, Kaos, Doğal Yıkım",
+      "element": "Buz / Su",
+      "upright": "Eski yapıları yıkan kadersel fırtına; kontrol dışı ani olaylar ama ardından gelen arınma.",
+      "reversed": "Hagalaz'ın tersi yoktur; kaçınılmaz değişime direnmenin getirdiği acıyı anlatır.",
+      "advice": "Fırtınayı durduramazsın ama geçtikten sonra toprağın nasıl bereketlendiğini göreceksin."
+    },
+    {
+      "id": "nauthiz",
+      "symbol": "ᚾ",
+      "name": "Nauthiz",
+      "meaning": "İhtiyaç, Zorunluluk, Dayanıklılık Ateşi",
+      "element": "Ateş",
+      "upright": "Kısıtlanma hissi, sabır sınavı, yokluktan güç doğurma ve irade terbiyesi.",
+      "reversed": "Kendi yarattığın krizler, acelecilik yüzünden yapılan hatalar ve sabırsızlık.",
+      "advice": "Zorluklar seni cezalandırmak için değil, çelik gibi sertleştirmek için var."
+    },
+    {
+      "id": "isa",
+      "symbol": "ᛁ",
+      "name": "Isa",
+      "meaning": "Buz, Duraklama, Dinginlik",
+      "element": "Buz / Su",
+      "upright": "İşlerin donması, bekleme dönemi, içe çekilme ve kış uykusu gibi enerji toplama.",
+      "reversed": "Isa'nın tersi yoktur; buzu zorla kırmaya çalışmanın tehlikelerine işaret eder.",
+      "advice": "Şu an eylem zamanı değil, bekleme zamanı. Nehir çözülene kadar sabret."
+    },
+    {
+      "id": "jera",
+      "symbol": "ᛃ",
+      "name": "Jera",
+      "meaning": "Hasat, Yıllık Döngü, Adaletli Ödül",
+      "element": "Toprak",
+      "upright": "Aylardır verilen emeğin meyvelerini toplama, bereketli hasat, hak edilen zafer.",
+      "reversed": "Jera'nın tersi yoktur; tohum ekmeden hasat beklemenin boşuna olduğunu hatırlatır.",
+      "advice": "Her şeyin bir mevsimi var; sabırla suladığın fidan nihayet meyve veriyor."
+    },
+    {
+      "id": "eihwaz",
+      "symbol": "ᛇ",
+      "name": "Eihwaz",
+      "meaning": "Porsuk Ağacı, Yggdrasil, Ölümsüzlük",
+      "element": "Tüm Elementler",
+      "upright": "Kökleri derinlerde olan dayanıklılık, ölüm-yeniden doğuş eşiği, ruhsal dönüşüm.",
+      "reversed": "Eihwaz'ın tersi yoktur; geçmişin hayaletlerinden korkmak yerine onları kucaklamayı öğütler.",
+      "advice": "En sert rüzgarlarda bile dimdik dur; senin köklerin yerin en derin katmanlarında."
+    },
+    {
+      "id": "perthro",
+      "symbol": "ᛈ",
+      "name": "Perthro",
+      "meaning": "Zar Kupası, Kaderin Sırrı, Gizem",
+      "element": "Su",
+      "upright": "Açığa çıkacak büyük bir sır, beklenmedik kadersel şans, kadınsal sezgi gücü.",
+      "reversed": "Hayal kırıklığı, sinsi planların suya düşmesi veya kumar gibi gereksiz riskler.",
+      "advice": "Kader çarkı dönüyor; gizli kalan gerçekler çok yakında gün ışığına çıkacak."
+    },
+    {
+      "id": "algiz",
+      "symbol": "ᛉ",
+      "name": "Algiz",
+      "meaning": "Geyik Boynuzu, İlahi Koruma, Sığınak",
+      "element": "Hava",
+      "upright": "Yüksek ilahi güçler tarafından korunma, sezgisel radar, tehlikeleri önceden sezme.",
+      "reversed": "Savunmasız kalma, uyarılara kulak asmama, gereksiz fedakarlıklarla kendini yıpratma.",
+      "advice": "Sezgilerine güven; içindeki o küçük ses seni her türlü tehlikeden koruyacaktır."
+    },
+    {
+      "id": "sowilo",
+      "symbol": "ᛊ",
+      "name": "Sowilo",
+      "meaning": "Güneş Çarkı, Zafer Işığı, Yaşam Enerjisi",
+      "element": "Ateş",
+      "upright": "Karanlığı yırtan parlak zafer, tam sağlık ve canlılık, şüphelerin dağılması.",
+      "reversed": "Sowilo'nun tersi yoktur; aşırı gurur ve yakıcı egoya karşı dikkatli olunmasını söyler.",
+      "advice": "Işığın en yüksek noktada; hedefine doğru tereddütsüz ve onurla yürü."
+    },
+    {
+      "id": "tiwaz",
+      "symbol": "ᛏ",
+      "name": "Tiwaz",
+      "meaning": "Tyr'ın Kılıcı, Onur, Adalet ve Zafer",
+      "element": "Hava",
+      "upright": "Haklı davanın kazanılması, cesur liderlik, fedakarlıkla gelen şanlı zafer.",
+      "reversed": "Mücadeleden kaçma, adaletsiz yenilgi, inançsızlık ve cesaret kaybı.",
+      "advice": "Haklı olduğun yoldan dönme; doğru niyetle çekilen kılıç asla körelmez."
+    },
+    {
+      "id": "berkano",
+      "symbol": "ᛒ",
+      "name": "Berkano",
+      "meaning": "Huş Ağacı, Doğurganlık, Yeni Doğuş",
+      "element": "Toprak",
+      "upright": "Yeni bir projenin veya bebeğin doğuşu, hane huzuru, şefkat ve sevgiyle büyüme.",
+      "reversed": "Aile içi sürtüşmeler, projelerde duraklama, aşırı korumacı tavırların yarattığı baskı.",
+      "advice": "Yeni başlangıçlarını sevgiyle besle; toprağa ektiğin tohum güvenle filizleniyor."
+    },
+    {
+      "id": "ehwaz",
+      "symbol": "ᛖ",
+      "name": "Ehwaz",
+      "meaning": "Kutsal At, Sadık Yoldaşlık, İlerleme",
+      "element": "Toprak",
+      "upright": "Güvenilir bir ortakla hızlı ilerleme, mekan veya iş değişikliği, sadakat.",
+      "reversed": "Uyumsuz ortaklık, ani yol engelleri, güvensizlik ve iletişim kopukluğu.",
+      "advice": "Yol arkadaşına güven; iki gücün uyumu tek başına yapacağından çok daha hızlı yol aldırır."
+    },
+    {
+      "id": "mannaz",
+      "symbol": "ᛗ",
+      "name": "Mannaz",
+      "meaning": "İnsan, Toplum Bilinci, Bütünlük",
+      "element": "Hava",
+      "upright": "İnsanlarla kurulan derin bağ, kendini tanıma, ortak akıl ve sosyal destek.",
+      "reversed": "Yalnızlık hissi, kibir, toplumdan dışlanma veya başkalarını suçlama eğilimi.",
+      "advice": "Kendini bil; insan aynasında gördüğün her kusur ve güzellik aslında senin bir parçandır."
+    },
+    {
+      "id": "laguz",
+      "symbol": "ᛚ",
+      "name": "Laguz",
+      "meaning": "Su Akışı, Sezgi, Bilinçaltı Okyanusu",
+      "element": "Su",
+      "upright": "Akışta kalma, derin rüyalar ve sezgiler, duygusal şifa ve yaratıcılık dalgası.",
+      "reversed": "Duygusal boğulma, aşırı kuruntu, akıntıya karşı kürek çekme ve yanılgılar.",
+      "advice": "Zihninin kontrolünü biraz gevşet ve kalbinin doğal akışına teslim ol."
+    },
+    {
+      "id": "ingwaz",
+      "symbol": "ᛜ",
+      "name": "Ingwaz",
+      "meaning": "Tohum, Toprak Tanrısı Frey, Tamamlanma",
+      "element": "Toprak / Su",
+      "upright": "Bir dönemin başarıyla kapanışı, kuluçka döneminin bitişi, yeni gücün patlaması.",
+      "reversed": "Ingwaz'ın tersi yoktur; enerjini boş yere harcamayıp içinde olgunlaştırmanı öğütler.",
+      "advice": "Tohum çatlamak üzere; içinde biriktirdiğin güç yakında dünyaya armağan olacak."
+    },
+    {
+      "id": "dagaz",
+      "symbol": "ᛞ",
+      "name": "Dagaz",
+      "meaning": "Şafak Vakti, Aydınlık Dönüşüm, Uyanış",
+      "element": "Ateş / Hava",
+      "upright": "Karanlık gecenin bitişi, şafak söküşü, radikal aydınlanma ve mucizevi çözümler.",
+      "reversed": "Dagaz'ın tersi yoktur; ışığın gelişini kabul edip eski karanlığa veda etmeyi söyler.",
+      "advice": "En karanlık an, şafağın sökmesine en yakın andır. Gözlerini aç, gün doğuyor."
+    },
+    {
+      "id": "othala",
+      "symbol": "ᛟ",
+      "name": "Othala",
+      "meaning": "Ata Toprağı, Hane Mirası, Kutsal Sınırlar",
+      "element": "Toprak",
+      "upright": "Aileden gelen miras ve bereket, köklere saygı, kalıcı mülk edinme ve yuva kurma.",
+      "reversed": "Miras kavgaları, köklerden kopuş, aşırı gelenekçilik yüzünden fırsatları kaçırma.",
+      "advice": "Köklerini onurlandır; arkandaki ataların bilgeliği ve duası seni koruyor."
+    }
+  ]
+}

@@ -1,0 +1,450 @@
+import { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '@/navigation/types';
+import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import ShareButton from '@/components/ShareButton';
+import { tossCoins, getHexagramFromLines, type IChingLine, type Hexagram } from '@/services/ichingEngine';
+import { interpretIChingReading } from '@/services/readings-ai';
+import { getCoins, spendCoins } from '@/services/coins';
+import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'IChingReading'>;
+
+export default function IChingScreen({ navigation }: Props) {
+  const [lines, setLines] = useState<IChingLine[]>([]);
+  const [hexagram, setHexagram] = useState<Hexagram | null>(null);
+  const [selectedMode, setSelectedMode] = useState<'standard' | 'deep'>('standard');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleTossNextLine = () => {
+    if (lines.length >= 6) return;
+    const newLine = tossCoins();
+    const updated = [...lines, newLine];
+    setLines(updated);
+
+    if (updated.length === 6) {
+      const built = getHexagramFromLines(updated);
+      setHexagram(built);
+    }
+  };
+
+  const handleInterpret = async (targetMode: 'standard' | 'deep' = selectedMode) => {
+    if (!hexagram) return;
+    setLoading(true);
+    setError(null);
+    setCoinFallback(null);
+
+    const cost = targetMode === 'deep' ? DEEP_IMAGE_READING_COIN_COST : READING_COIN_COST;
+    const spent = await spendCoins(cost);
+    if (!spent) {
+      setCoinFallback({ coins: await getCoins(), cost });
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const reading = await interpretIChingReading(hexagram, targetMode);
+      setResult(reading);
+    } catch {
+      setError('Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = () => {
+    setLines([]);
+    setHexagram(null);
+    setResult(null);
+    setError(null);
+  };
+
+  return (
+    <MysticTableBackground>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <MaterialCommunityIcons name="yin-yang" size={42} color={GOLD} />
+          <Text style={styles.title}>Çin I Ching (Değişimler Kitabı)</Text>
+          <Text style={styles.subtitle}>3 Kadim Bronz Sikke ile 64 Heksagram Kehaneti</Text>
+        </View>
+
+        {!hexagram ? (
+          <View style={styles.tossCard}>
+            <Text style={styles.tossTitle}>
+              {lines.length === 0
+                ? 'Sorunu veya Niyetini Düşün'
+                : `${lines.length + 1}. Çizgi İçin Sikkeleri At (${lines.length}/6)`}
+            </Text>
+            <Text style={styles.tossDesc}>
+              3000 yıllık Taoist geleneğe göre her atışta 3 bronz sikke havaya bırakılır. Yazı ve Turaların toplamı Yin veya Yang çizgisini oluşturur.
+            </Text>
+
+            {/* Mevcut Çizgiler */}
+            {lines.length > 0 && (
+              <View style={styles.linesStack}>
+                {[...lines].reverse().map((l, i) => (
+                  <View key={i} style={styles.lineRow}>
+                    <Text style={styles.lineIndex}>{6 - i}. Çizgi:</Text>
+                    <View style={styles.lineVisual}>
+                      {l.isYang ? (
+                        <View style={styles.yangSolid} />
+                      ) : (
+                        <View style={styles.yinBrokenRow}>
+                          <View style={styles.yinHalf} />
+                          <View style={styles.yinGap} />
+                          <View style={styles.yinHalf} />
+                        </View>
+                      )}
+                    </View>
+                    <Text style={styles.lineType}>
+                      {l.isYang ? 'Yang (—)' : 'Yin (- -)'} {l.isChanging ? '⚡' : ''}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            <Pressable onPress={handleTossNextLine} style={({ pressed }) => [styles.primaryBtn, pressed && styles.btnPressed]}>
+              <MaterialCommunityIcons name="circle-multiple-outline" size={22} color={NIGHT_CARD} />
+              <Text style={styles.primaryBtnText}>
+                {lines.length === 0 ? 'İlk Çizgiyi At (1/6)' : `Sikkeleri Çevir (${lines.length + 1}/6)`}
+              </Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View style={styles.hexagramWrap}>
+            <View style={styles.hexCard}>
+              <Text style={styles.hexNumber}>Heksagram #{hexagram.number}</Text>
+              <Text style={styles.hexName}>{hexagram.name}</Text>
+              <Text style={styles.hexTrigrams}>Üst: {hexagram.upper} | Alt: {hexagram.lower}</Text>
+              <View style={styles.hexDivider} />
+              <Text style={styles.hexJudgment}>📜 {hexagram.judgment}</Text>
+              <Text style={styles.hexWisdom}>💡 Bilgelik: {hexagram.wisdom}</Text>
+            </View>
+
+            {!result && !loading && (
+              <View style={styles.modeSection}>
+                <Text style={styles.modeTitle}>I Ching Yorum Seviyesi:</Text>
+                <View style={styles.modeCardsRow}>
+                  <Pressable
+                    onPress={() => setSelectedMode('standard')}
+                    style={[styles.modeCard, selectedMode === 'standard' && styles.modeCardActive]}
+                  >
+                    <MaterialCommunityIcons name="star-crescent" size={18} color={selectedMode === 'standard' ? GOLD : TEXT_MUTED} />
+                    <Text style={styles.modeCardTitle}>Standart Yorum</Text>
+                    <Text style={styles.modeCardDesc}>Taoist bilgelik ve karar özeti (15 Coin)</Text>
+                  </Pressable>
+
+                  <Pressable
+                    onPress={() => setSelectedMode('deep')}
+                    style={[styles.modeCard, styles.modeCardDeep, selectedMode === 'deep' && styles.modeCardDeepActive]}
+                  >
+                    <MaterialCommunityIcons name="crown" size={18} color={GOLD} />
+                    <Text style={[styles.modeCardTitle, { color: '#F5C862' }]}>Kapsamlı Derin</Text>
+                    <Text style={styles.modeCardDesc}>4 Boyutlu Yin/Yang dönüşüm analizi (20 Coin)</Text>
+                  </Pressable>
+                </View>
+
+                <Pressable
+                  onPress={() => handleInterpret(selectedMode)}
+                  style={({ pressed }) => [styles.primaryBtn, selectedMode === 'deep' && styles.btnDeep, pressed && styles.btnPressed]}
+                >
+                  <MaterialCommunityIcons name={selectedMode === 'deep' ? 'crown' : 'star-crescent'} size={20} color={NIGHT_CARD} />
+                  <Text style={styles.primaryBtnText}>
+                    {selectedMode === 'deep' ? 'Kapsamlı I Ching Raporunu Al (20 Coin)' : 'Heksagramı Yorumla (15 Coin)'}
+                  </Text>
+                </Pressable>
+              </View>
+            )}
+
+            {loading && (
+              <View style={styles.loadingBox}>
+                <MaterialCommunityIcons name="yin-yang" size={36} color={GOLD} />
+                <Text style={styles.loadingText}>Kadim Taoist heksagram açılımı yorumlanıyor...</Text>
+              </View>
+            )}
+
+            {coinFallback && (
+              <CoinFallbackBox
+                cost={coinFallback.cost}
+                coins={coinFallback.coins}
+                onContinue={() => handleInterpret(selectedMode)}
+                onBuyCoins={() => navigation.navigate('CoinShop')}
+                onDismiss={() => setCoinFallback(null)}
+              />
+            )}
+
+            {result && (
+              <View style={styles.resultCard}>
+                <View style={styles.badgeRow}>
+                  <MaterialCommunityIcons name="crown" size={16} color={GOLD} />
+                  <Text style={styles.badgeText}>I Ching Değişimler Kitabı Raporu</Text>
+                </View>
+                <Text style={styles.resultText}>{result}</Text>
+                <ShareButton text={`Mistik Rehber - I Ching Kehanetim\n\n${result}`} />
+              </View>
+            )}
+
+            <Pressable onPress={handleReset} style={styles.resetBtn}>
+              <Ionicons name="refresh" size={16} color={GOLD_SOFT} />
+              <Text style={styles.resetBtnText}>Yeniden Sikke At</Text>
+            </Pressable>
+          </View>
+        )}
+      </ScrollView>
+    </MysticTableBackground>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 20,
+    paddingTop: 28,
+    paddingBottom: 48,
+    alignItems: 'center',
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 20,
+    gap: 6,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: GOLD,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 12.5,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+    maxWidth: 320,
+    lineHeight: 18,
+  },
+  tossCard: {
+    width: '100%',
+    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderRadius: 18,
+    padding: 20,
+    gap: 16,
+  },
+  tossTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: GOLD_SOFT,
+    textAlign: 'center',
+  },
+  tossDesc: {
+    fontSize: 12.5,
+    color: TEXT_MUTED,
+    lineHeight: 18,
+    textAlign: 'center',
+  },
+  linesStack: {
+    gap: 8,
+    backgroundColor: 'rgba(15, 8, 35, 0.75)',
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.2)',
+  },
+  lineRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  lineIndex: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+    width: 60,
+  },
+  lineVisual: {
+    flex: 1,
+    height: 10,
+    justifyContent: 'center',
+  },
+  yangSolid: {
+    height: 6,
+    backgroundColor: GOLD,
+    borderRadius: 3,
+  },
+  yinBrokenRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 6,
+  },
+  yinHalf: {
+    flex: 1,
+    height: 6,
+    backgroundColor: '#9E9D24',
+    borderRadius: 3,
+  },
+  yinGap: {
+    width: 14,
+  },
+  lineType: {
+    fontSize: 11,
+    color: GOLD_SOFT,
+    width: 70,
+    textAlign: 'right',
+  },
+  primaryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: GOLD,
+    borderRadius: 14,
+    paddingVertical: 14,
+    marginTop: 6,
+  },
+  btnDeep: {
+    backgroundColor: '#F5C862',
+  },
+  btnPressed: {
+    opacity: 0.85,
+  },
+  primaryBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: NIGHT_CARD,
+  },
+  hexagramWrap: {
+    width: '100%',
+    gap: 16,
+  },
+  hexCard: {
+    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    borderWidth: 1.2,
+    borderColor: GOLD,
+    borderRadius: 18,
+    padding: 18,
+    gap: 8,
+  },
+  hexNumber: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: GOLD_SOFT,
+  },
+  hexName: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: TEXT_PRIMARY,
+  },
+  hexTrigrams: {
+    fontSize: 12,
+    color: TEXT_MUTED,
+  },
+  hexDivider: {
+    height: 1,
+    backgroundColor: 'rgba(242, 200, 121, 0.2)',
+    marginVertical: 4,
+  },
+  hexJudgment: {
+    fontSize: 13,
+    color: TEXT_PRIMARY,
+    lineHeight: 19,
+  },
+  hexWisdom: {
+    fontSize: 12.5,
+    color: GOLD_SOFT,
+    lineHeight: 18,
+  },
+  modeSection: {
+    gap: 10,
+    marginTop: 6,
+  },
+  modeTitle: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: GOLD_SOFT,
+  },
+  modeCardsRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  modeCard: {
+    flex: 1,
+    backgroundColor: 'rgba(26, 16, 52, 0.75)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderRadius: 14,
+    padding: 12,
+    gap: 4,
+  },
+  modeCardActive: {
+    borderColor: GOLD,
+    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+  },
+  modeCardDeep: {
+    backgroundColor: 'rgba(35, 20, 70, 0.85)',
+  },
+  modeCardDeepActive: {
+    borderColor: '#F5C862',
+    backgroundColor: 'rgba(245, 200, 98, 0.16)',
+  },
+  modeCardTitle: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+  },
+  modeCardDesc: {
+    fontSize: 10.5,
+    color: TEXT_MUTED,
+    lineHeight: 14,
+  },
+  loadingBox: {
+    alignItems: 'center',
+    paddingVertical: 24,
+    gap: 12,
+  },
+  loadingText: {
+    fontSize: 13,
+    color: GOLD_SOFT,
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+  resultCard: {
+    backgroundColor: NIGHT_CARD,
+    borderWidth: 1.2,
+    borderColor: GOLD_SOFT,
+    borderRadius: 18,
+    padding: 18,
+    gap: 14,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  badgeText: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: GOLD,
+  },
+  resultText: {
+    fontSize: 14,
+    lineHeight: 23,
+    color: TEXT_PRIMARY,
+  },
+  resetBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 12,
+  },
+  resetBtnText: {
+    fontSize: 12.5,
+    color: GOLD_SOFT,
+  },
+});

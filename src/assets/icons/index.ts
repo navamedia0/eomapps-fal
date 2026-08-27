@@ -5,6 +5,7 @@ import type { ImageSourcePropType } from 'react-native';
 // `key`/`iconKey` used on the corresponding HomeScreen/KesfetScreen/
 // MagazaScreen/ProfilScreen item.
 export const FEATURE_ICONS: Partial<Record<string, ImageSourcePropType>> = {
+  face: require('./yuz_fali.webp'),
   palm: require('./el_fali.webp'),
   moonCalendar: require('./ay_takvimi.webp'),
   notificationSettings: require('./bildirim_ayarlari.webp'),

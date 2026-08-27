@@ -1,0 +1,17 @@
+{
+  "trees": [
+    { "key": "birch", "name": "Beth / Huş Ağacı", "dates": "24 Aralık - 20 Ocak", "ruler": "Güneş", "element": "Toprak", "essence": "Yeniden Başlangıç, Saflık, Liderlik", "desc": "Zorlu kış koşullarında ilk filizlenen, karanlığı yırtan öncü ruh." },
+    { "key": "rowan", "name": "Luis / Üvez Ağacı", "dates": "21 Ocak - 17 Şubat", "ruler": "Uranüs", "element": "Ateş", "essence": "Vizyon, Koruma, Yüksek Sezgi", "desc": "İleriyi gören, toplumun önünde giden bağımsız ve koruyucu enerji." },
+    { "key": "ash", "name": "Nion / Dişbudak Ağacı", "dates": "18 Şubat - 17 Mart", "ruler": "Neptün", "element": "Su", "essence": "Büyü, İlham, Derin Merhamet", "desc": "Dünya ile maneviyat arasında köprü kuran sanatçı ve şair ruh." },
+    { "key": "alder", "name": "Fearn / Kızılağaç", "dates": "18 Mart - 14 Nisan", "ruler": "Mars", "element": "Ateş", "essence": "Cesaret, Tutku, Macera", "desc": "Ateşten ve sudan korkmayan, engelleri cesaretle aşan yılmaz savaşçı." },
+    { "key": "willow", "name": "Saille / Söğüt Ağacı", "dates": "15 Nisan - 12 Mayıs", "ruler": "Ay", "element": "Su", "essence": "Duygusal Zeka, Rüyalar, Esneklik", "desc": "Fırtınada kırılmayıp eğilen, bilinçaltının derin sularında yüzen bilge." },
+    { "key": "hawthorn", "name": "Uath / Alıç Ağacı", "dates": "13 Mayıs - 9 Haziran", "ruler": "Merkür", "element": "Hava", "essence": "İkili Doğa, Zeka, Sır Muhafızı", "desc": "Dışarıdan sakin ama içeride fırtınalar kopan, parlak ve esprili zihin." },
+    { "key": "oak", "name": "Duir / Meşe Ağacı", "dates": "10 Haziran - 7 Temmuz", "ruler": "Jüpiter", "element": "Toprak", "essence": "Sarsılmaz Güç, Onur, Cömertlik", "desc": "Ormanın kralı; zayıfları koruyan, kökleri en derine inen sarsılmaz kaya." },
+    { "key": "holly", "name": "Tinne / Çobanpüskülü", "dates": "8 Temmuz - 4 Ağustos", "ruler": "Dünya", "element": "Ateş", "essence": "Asalet, Liderlik, Dayanıklılık", "desc": "Kışın yaprak dökmeyen, zor zamanlarda liderliği üstlenen asil koruyucu." },
+    { "key": "hazel", "name": "Coll / Fındık Ağacı", "dates": "5 Ağustos - 1 Eylül", "ruler": "Merkür", "element": "Hava", "essence": "Bilgelik, Keskin Hafıza, Analiz", "desc": "Kadim bilgiyi fındık kabuğunda saklayan, olayların perde arkasını çözen dedektif." },
+    { "key": "vine", "name": "Muin / Asma Ağacı", "dates": "2 Eylül - 29 Eylül", "ruler": "Venüs", "element": "Hava", "essence": "Uyum, Estetik, Zarafet", "desc": "Zıtlıkları birleştiren, estetik zevkleri yüksek, denge ve huzur arayıcısı." },
+    { "key": "ivy", "name": "Gort / Sarmaşık Ağacı", "dates": "30 Eylül - 27 Ekim", "ruler": "Plüton", "element": "Su", "essence": "Sadakat, Azim, Engelleri Aşma", "desc": "En dik duvarlara bile tırmanabilen, asla vazgeçmeyen sadık ve tutkulu dost." },
+    { "key": "reed", "name": "Ngetal / Kamış Ağacı", "dates": "28 Ekim - 24 Kasım", "ruler": "Plüton", "element": "Su", "essence": "Gizli Güç, Sır Çözme, Dönüşüm", "desc": "Kökleri gizli sularda olan, insanların gerçek yüzünü anında sezen simyacı." },
+    { "key": "elder", "name": "Ruis / Mürver Ağacı", "dates": "25 Kasım - 23 Aralık", "ruler": "Satürn", "element": "Toprak", "essence": "Ruhsal Olgunluk, Şifa, Evrim", "desc": "Döngünün sonu ve bilgeliğin doruğu; eskiyi uğurlayıp yeniyi kutsayan mürşit." }
+  ]
+}

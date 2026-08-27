@@ -8,6 +8,7 @@ export const READING_COIN_COST = 15;
 export const VOICE_READING_COIN_COST = 20;
 export const DETAILED_BIRTH_CHART_COIN_COST = 25;
 export const DEEP_DREAM_COIN_COST = 20;
+export const DEEP_IMAGE_READING_COIN_COST = 20;
 export const DREAM_MESSAGE_COIN_COST = 5;
 
 

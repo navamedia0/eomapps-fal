@@ -9,6 +9,7 @@ export type ReadingCategory =
   | 'katina'
   | 'solitaire'
   | 'el'
+  | 'yuz'
   | 'sesli'
   | 'dream';
 

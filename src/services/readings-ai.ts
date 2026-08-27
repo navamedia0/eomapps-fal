@@ -13,6 +13,12 @@ import { getKatinaMeaning } from '@/services/katinaMeanings';
 import { findDreamMatches } from '@/services/dreamMeanings';
 import { getCoffeeSymbolGlossary } from '@/services/coffeeSymbols';
 import { getPalmistryGlossary } from '@/services/palmistry';
+import {
+  buildRichCoffeeContext,
+  buildRichDreamContext,
+  buildRichFaceContext,
+  buildRichMysticContext,
+} from '@/services/mysticKnowledgeEngine';
 import { getProfileSummary } from '@/services/profile';
 import { turkishUpperCase } from '@/utils/turkishCase';
 import type { PersonInfo } from '@/types/personInfo';
@@ -62,7 +68,8 @@ export async function interpretTarotSpread(cards: TarotCard[], positions: string
   const headerList = [...positions.map((position) => `"${turkishUpperCase(position)}:"`), '"GENEL YORUM:"'].join(', ');
   const formatInstruction = `Yanıtını ${positions.length + 1} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" satırını doğrudan kopyalama; onu yalnızca ilham kaynağı olarak kullanıp kendi akıcı ve edebi üslubunla yeniden anlat. Son bölüm olan "GENEL YORUM:", kartları tek tek tekrar etmeden hepsinin birlikte anlattığı hikayeyi, aralarındaki uyumu ya da çelişkiyi ve genel bir sonucu 3-4 cümlede özetlemeli — bu, ayrı kart yorumlarından bağımsız, açılımın bütününe dair kapanış niteliğinde olmalı.`;
   const profileBlock = await buildProfileBlock();
-  const prompt = `${prompts.tarotSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${profileBlock}`;
+  const mysticBlock = buildRichMysticContext('tarot');
+  const prompt = `${prompts.tarotSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${mysticBlock}${profileBlock}`;
   const readingType = tarotReadingType(cards.length);
   await guardReadingCooldown(readingType);
   return withFallbackChain([
@@ -103,7 +110,8 @@ export async function interpretKatinaSpread(cards: KatinaCard[], positions: stri
   const headerList = allPositions.map((position) => `"${turkishUpperCase(position)}:"`).join(', ');
   const formatInstruction = `Yanıtını ${allPositions.length} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" satırını doğrudan kopyalama; onu yalnızca ilham kaynağı olarak kullanıp kendi akıcı ve edebi üslubunla yeniden anlat. Son bölüm olan "GENEL YORUM:", Geçmiş, Şimdi ve Gelecek kartlarının birbiriyle uyumunu, oluşturdukları ortak hikayeyi ve kullanıcının hayatına/aşkına dair nihai çıkarımı derin, bilgece ve bütünsel bir sentezle özetlemeli.`;
   const profileBlock = await buildProfileBlock();
-  const prompt = `${prompts.katinaSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${profileBlock}`;
+  const mysticBlock = buildRichMysticContext('katina');
+  const prompt = `${prompts.katinaSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${mysticBlock}${profileBlock}`;
   await guardReadingCooldown('katina');
   return withFallbackChain([
     () => askGemini(prompt, undefined, 'katina'),
@@ -123,9 +131,10 @@ export async function interpretDreamChat(history: ChatTurn[], mode: 'limited' | 
         .join('\n')}`
     : '';
 
+  const deepDreamBlock = buildRichDreamContext();
   const profileBlock = await buildProfileBlock();
   const basePrompt = mode === 'deep' ? prompts.deepDreamAnalysis : prompts.dreamChat;
-  const systemPrompt = `${basePrompt}${referenceBlock}${profileBlock}`;
+  const systemPrompt = `${basePrompt}${referenceBlock}\n${deepDreamBlock}${profileBlock}`;
   return withFallbackChain([
     () => askGeminiChat(systemPrompt, history),
     () => askCloudflareChat(systemPrompt, history),
@@ -255,13 +264,33 @@ export async function interpretVoiceReading(audioBase64: string, mimeType: strin
 }
 
 export async function interpretImages(
-  kind: 'coffee' | 'palm',
+  kind: 'coffee' | 'palm' | 'face' | 'tea',
   images: Array<{ mimeType: string; data: string }>,
   personInfo?: PersonInfo | null,
+  mode: 'standard' | 'deep' = 'standard',
 ): Promise<string> {
   if (images.length === 0) throw new Error('En az bir görsel gerekli.');
-  const glossary = kind === 'coffee' ? getCoffeeSymbolGlossary() : getPalmistryGlossary();
-  let prompt = kind === 'coffee' ? prompts.coffee(glossary) : prompts.palm(glossary);
+  let prompt: string;
+  if (kind === 'coffee') {
+    const glossary = getCoffeeSymbolGlossary();
+    prompt =
+      mode === 'deep'
+        ? prompts.coffeeDetailed(`${glossary}\n${buildRichCoffeeContext()}`)
+        : prompts.coffeeStandard(glossary);
+  } else if (kind === 'palm') {
+    const glossary = getPalmistryGlossary();
+    prompt =
+      mode === 'deep'
+        ? prompts.palmDetailed(`${glossary}\n${buildRichMysticContext('palm')}`)
+        : prompts.palmStandard(glossary);
+  } else if (kind === 'face') {
+    const richBlock = buildRichFaceContext();
+    prompt = mode === 'deep' ? prompts.faceDetailed(richBlock) : prompts.faceStandard(richBlock);
+  } else {
+    // Tea
+    const glossary = getCoffeeSymbolGlossary();
+    prompt = mode === 'deep' ? prompts.teaLeafDetailed(glossary) : prompts.teaLeafStandard(glossary);
+  }
 
   if (personInfo) {
     const details: string[] = [];
@@ -272,26 +301,31 @@ export async function interpretImages(
     if (personInfo.occupationStatus) details.push(`Çalışma/Meslek: ${personInfo.occupationStatus}`);
     if (personInfo.focusArea) details.push(`Falda Odaklanılan Konu: ${personInfo.focusArea}`);
     if (details.length > 0) {
-      prompt += `\n\nFal Sahibi Bilgileri:\n${details.join('\n')}\nÖnemli Talimat: Bu kişisel bilgileri fincandaki/eldeki sembollerle ustaca ve sezgisel olarak harmanla. Yorumu doğrudan bu kişinin hayatına, yaşına, ilişkisine ve niyetine hitap eden sıcak, samimi ve kişiselleştirilmiş bir dille sun; ancak "verdiğin bilgilere göre" gibi mekanik ifadeler kullanma, doğal bir falcı sezgisi gibi yorumuna akıt.`;
+      prompt += `\n\nFal Sahibi Bilgileri:\n${details.join('\n')}\nÖnemli Talimat: Bu kişisel bilgileri fincandaki/eldeki/yüzdeki sembol ve hatlarla ustaca ve sezgisel olarak harmanla. Yorumu doğrudan bu kişinin hayatına, yaşına, ilişkisine ve niyetine hitap eden sıcak, samimi ve kişiselleştirilmiş bir dille sun; ancak "verdiğin bilgilere göre" gibi mekanik ifadeler kullanma, doğal bir falcı sezgisi gibi yorumuna akıt.`;
     }
   }
   const profileBlock = await buildProfileBlock();
   prompt += profileBlock;
 
-  const readingType = kind === 'coffee' ? 'kahve' : 'el';
+  const readingType = kind === 'coffee' ? 'kahve' : kind === 'palm' ? 'el' : kind === 'face' ? 'yuz' : 'kahve';
   await guardReadingCooldown(readingType);
   return withFallbackChain([
     () => askGeminiVision(prompt, images, readingType),
-    // Cloudflare's vision model only takes one image per call — the first
-    // photo is enough context for a fallback pass when Gemini is down.
     () => askCloudflareVision(prompt, images[0].data),
     () => askOpenRouterVision(prompt, images),
     () => askHuggingFaceVision(prompt, images),
   ]);
 }
 
-export async function validateImage(kind: 'coffee' | 'palm', image: { mimeType: string; data: string }): Promise<boolean> {
-  const prompt = kind === 'coffee' ? prompts.coffeeValidation : prompts.palmValidation;
+export async function validateImage(kind: 'coffee' | 'palm' | 'face' | 'tea', image: { mimeType: string; data: string }): Promise<boolean> {
+  const prompt =
+    kind === 'coffee'
+      ? prompts.coffeeValidation
+      : kind === 'palm'
+      ? prompts.palmValidation
+      : kind === 'face'
+      ? prompts.faceValidation
+      : prompts.teaValidation;
   const response = await withFallbackChain([
     () => askGeminiVision(prompt, [image]),
     () => askOpenRouterVision(prompt, [image]),
@@ -299,3 +333,205 @@ export async function validateImage(kind: 'coffee' | 'palm', image: { mimeType: 
   ]);
   return response.trim().toLocaleUpperCase('tr').startsWith('EVET');
 }
+
+export async function interpretDestinyMatrix(
+  matrix: import('@/services/destinyMatrixEngine').DestinyMatrix,
+  mode: 'standard' | 'deep' = 'standard',
+): Promise<string> {
+  const summary = [
+    `- Doğum Tarihi: ${matrix.birthDate.day}.${matrix.birthDate.month}.${matrix.birthDate.year}`,
+    `- 1. Kişilik & Ruh Kartı (Doğum Günü): ${matrix.dayArcana.id} - ${matrix.dayArcana.name} (${matrix.dayArcana.keyword})`,
+    `- 2. Yetenekler & Sezgi Kartı (Doğum Ayı): ${matrix.monthArcana.id} - ${matrix.monthArcana.name} (${matrix.monthArcana.keyword})`,
+    `- 3. Maddiyat & Dünya Görevi (Doğum Yılı): ${matrix.yearArcana.id} - ${matrix.yearArcana.name} (${matrix.yearArcana.keyword})`,
+    `- 4. Karmik Kuyruk (Geçmiş Yaşam Borcu): ${matrix.bottomArcana.id} - ${matrix.bottomArcana.name} (${matrix.bottomArcana.keyword})`,
+    `- 5. Kalp & Konfor Merkezi: ${matrix.centerArcana.id} - ${matrix.centerArcana.name}`,
+    `- 6. Aşk & Ruh Eşi Kapısı: ${matrix.loveArcana.id} - ${matrix.loveArcana.name} (${matrix.loveArcana.love})`,
+    `- 7. Zenginlik & Para Kanalı: ${matrix.moneyArcana.id} - ${matrix.moneyArcana.name} (${matrix.moneyArcana.money})`,
+    `- 8. Yaşam Amacı & Bütünlük: ${matrix.purposeArcana.id} - ${matrix.purposeArcana.name}`,
+  ].join('\n');
+
+  const profileBlock = await buildProfileBlock();
+  const basePrompt = mode === 'deep' ? prompts.destinyMatrixDetailed(summary) : prompts.destinyMatrixStandard(summary);
+  const prompt = `${basePrompt}${profileBlock}`;
+
+  return withFallbackChain([
+    () => askGemini(prompt),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+}
+
+export async function interpretLeadReading(
+  shapes: Array<{ name: string; meaning: string }>,
+  mode: 'standard' | 'deep' = 'standard',
+): Promise<string> {
+  const summary = shapes.map((s) => `- ${s.name}: ${s.meaning}`).join('\n');
+  const profileBlock = await buildProfileBlock();
+  const basePrompt = mode === 'deep' ? prompts.leadReadingDetailed(summary) : prompts.leadReadingStandard(summary);
+  const prompt = `${basePrompt}${profileBlock}`;
+
+  return withFallbackChain([
+    () => askGemini(prompt),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+}
+
+export async function interpretRuneReading(
+  runes: import('@/services/runeEngine').Rune[],
+  spreadType: 'single' | 'norn' = 'norn',
+  mode: 'standard' | 'deep' = 'standard',
+): Promise<string> {
+  const positions = spreadType === 'norn' ? ['1. Urd (Geçmiş / Kökler)', '2. Verdandi (Şimdi / Ateş)', '3. Skuld (Gelecek / Kehanet)'] : ['Günün Rehber Rünü'];
+  const summary = runes
+    .map((r, i) => `${positions[i] || `Rün ${i + 1}`}: ${r.symbol} ${r.name} (${r.isReversed ? 'TERS' : 'DÜZ'}) - Anlam: ${r.isReversed ? r.reversed : r.upright}\nÖğüt: ${r.advice}`)
+    .join('\n\n');
+
+  const profileBlock = await buildProfileBlock();
+  const basePrompt = mode === 'deep' ? prompts.runeReadingDetailed(summary) : prompts.runeReadingStandard(summary);
+  const prompt = `${basePrompt}${profileBlock}`;
+
+  return withFallbackChain([
+    () => askGemini(prompt),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+}
+
+export async function interpretIChingReading(
+  hexagram: import('@/services/ichingEngine').Hexagram,
+  mode: 'standard' | 'deep' = 'standard',
+): Promise<string> {
+  const summary = [
+    `Heksagram No: ${hexagram.number} - ${hexagram.name}`,
+    `Üst Trigram: ${hexagram.upper}, Alt Trigram: ${hexagram.lower}`,
+    `Hüküm: ${hexagram.judgment}`,
+    `Bilgelik: ${hexagram.wisdom}`,
+    `Eylem: ${hexagram.action}`,
+  ].join('\n');
+
+  const profileBlock = await buildProfileBlock();
+  const basePrompt = mode === 'deep' ? prompts.ichingReadingDetailed(summary) : prompts.ichingReadingStandard(summary);
+  const prompt = `${basePrompt}${profileBlock}`;
+
+  return withFallbackChain([
+    () => askGemini(prompt),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+}
+
+export async function interpretBaklaReading(
+  reading: import('@/services/baklaEngine').BaklaReading,
+  mode: 'standard' | 'deep' = 'standard',
+): Promise<string> {
+  const summary = [
+    `Ocak Dağılımları:`,
+    ...reading.ocaklar.map((o) => `- ${o.name}: ${o.count} Bakla (${o.isEven ? 'ÇİFT' : 'TEK'})`),
+    `Beliren Remil Deseni: ${reading.patternName}`,
+    `Yorum: ${reading.meaning}`,
+    `Müjde/Sonuç: ${reading.outcome}`,
+  ].join('\n');
+
+  const profileBlock = await buildProfileBlock();
+  const basePrompt = mode === 'deep' ? prompts.baklaReadingDetailed(summary) : prompts.baklaReadingStandard(summary);
+  const prompt = `${basePrompt}${profileBlock}`;
+
+  return withFallbackChain([
+    () => askGemini(prompt),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+}
+
+export async function interpretWaxReading(
+  flameType: string,
+  shapes: Array<{ name: string; meaning: string }>,
+  mode: 'standard' | 'deep' = 'standard',
+): Promise<string> {
+  const summary = [
+    `Alev Durumu: ${flameType}`,
+    `Suya Düşen Balmumu Şekilleri:`,
+    ...shapes.map((s) => `- ${s.name}: ${s.meaning}`),
+  ].join('\n');
+
+  const profileBlock = await buildProfileBlock();
+  const basePrompt = mode === 'deep' ? prompts.waxReadingDetailed(summary) : prompts.waxReadingStandard(summary);
+  const prompt = `${basePrompt}${profileBlock}`;
+
+  return withFallbackChain([
+    () => askGemini(prompt),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+}
+
+export async function interpretCelticTreeReading(
+  tree: import('@/services/celticTreeEngine').CelticTree,
+  mode: 'standard' | 'deep' = 'standard',
+): Promise<string> {
+  const summary = [
+    `Kutsal Kelt Ağacı: ${tree.name} (${tree.dates})`,
+    `Yönetici Gezegen / Element: ${tree.ruler} / ${tree.element}`,
+    `Öz Değerler: ${tree.essence}`,
+    `Mitolojik Açıklama: ${tree.desc}`,
+  ].join('\n');
+
+  const profileBlock = await buildProfileBlock();
+  const basePrompt = mode === 'deep' ? prompts.celticTreeDetailed(summary) : prompts.celticTreeStandard(summary);
+  const prompt = `${basePrompt}${profileBlock}`;
+
+  return withFallbackChain([
+    () => askGemini(prompt),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+}
+
+export async function interpretAuraReading(
+  aura: import('@/services/auraEngine').AuraAnalysis,
+  mode: 'standard' | 'deep' = 'standard',
+): Promise<string> {
+  const summary = [
+    `Baskın Aura: ${aura.dominantAuraName} (%${aura.dominantChakra.percentage})`,
+    `Titreşim Frekansı: ${aura.vibrationFrequency} Hz`,
+    `Aura Özeti: ${aura.auraDescription}`,
+    `7 Çakra Dağılımı:`,
+    ...aura.chakras.map((c) => `- ${c.name} (${c.color}): %${c.percentage} [Kristal: ${c.crystal}]`),
+  ].join('\n');
+
+  const profileBlock = await buildProfileBlock();
+  const basePrompt = mode === 'deep' ? prompts.auraReadingDetailed(summary) : prompts.auraReadingStandard(summary);
+  const prompt = `${basePrompt}${profileBlock}`;
+
+  return withFallbackChain([
+    () => askGemini(prompt),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+}
+
+export async function interpretScryingReading(
+  visionText: string,
+  mode: 'standard' | 'deep' = 'standard',
+): Promise<string> {
+  const profileBlock = await buildProfileBlock();
+  const basePrompt = mode === 'deep' ? prompts.scryingReadingDetailed(visionText) : prompts.scryingReadingStandard(visionText);
+  const prompt = `${basePrompt}${profileBlock}`;
+
+  return withFallbackChain([
+    () => askGemini(prompt),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+}
+

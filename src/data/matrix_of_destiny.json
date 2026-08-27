@@ -1,0 +1,224 @@
+{
+  "arcana": [
+    {
+      "id": 1,
+      "name": "Büyücü / İrade ve Başlangıç",
+      "keyword": "Liderlik, Yaratım, Bağımsızlık, Özgüven",
+      "general": "Fikirleri gerçeğe dönüştürme gücü yüksek, öncü ve karizmatik bir enerji.",
+      "talent": "İletişim ustalığı, sıfırdan proje yaratma, kitleleri peşinden sürükleme.",
+      "love": "İlişkide bağımsızlığına düşkün, sözleriyle büyüleyen, lider karakterli bir partner.",
+      "money": "Kendi işini kurma, girişimcilik ve zihinsel projelerden gelen yüksek kazanç.",
+      "shadow": "Bencillik, manipülasyon, başladığı işi bitirememe ve aşırı kibir."
+    },
+    {
+      "id": 2,
+      "name": "Azize / Sezgi ve Sırlar",
+      "keyword": "Derin Sezgi, Diplomasi, Gizli Bilgi, Empati",
+      "general": "Görünmeyeni sezen, sır tutan, mistik ve dingin bilge enerji.",
+      "talent": "Psikolojik derinlik, şifacılık, insan ruhunun gizli şifrelerini çözme.",
+      "love": "Ruhsal derinlik arayan, gizemli, sözsüz anlaşılmayı bekleyen bağlar.",
+      "money": "Danışmanlık, psikoloji, araştırma ve gizli ortaklıklardan gelen gelir.",
+      "shadow": "Pasiflik, dedikodu, aşırı kapalılık ve kararsızlık."
+    },
+    {
+      "id": 3,
+      "name": "İmparatoriçe / Bereket ve Dişil Güç",
+      "keyword": "Bolluk, Yaratıcılık, Annelik, Estetik, Zarafet",
+      "general": "Dokunduğu her şeyi yeşerten, güzelleştiren, doğurgan ve bereketli enerji.",
+      "talent": "Tasarım, sanat, konfor alanı yaratma, insanları besleme ve büyütme.",
+      "love": "Koşulsuz sevgi, anaç yaklaşım, sadakat ve tensel uyum.",
+      "money": "Güzellik, moda, gayrimenkul, gıda ve lüks sektörlerinden gelen zenginlik.",
+      "shadow": "Aşırı kontrolcülük, kıskançlık, lükse aşırı düşkünlük ve kibir."
+    },
+    {
+      "id": 4,
+      "name": "İmparator / Eril Güç ve Düzen",
+      "keyword": "Otorite, Disiplin, Sağlamlık, Sorumluluk",
+      "general": "Kurallar koyan, koruyan, imparatorluk inşa eden sarsılmaz liderlik enerjisi.",
+      "talent": "Kriz yönetimi, kurumsallık, stratejik vizyon ve organizasyon kabiliyeti.",
+      "love": "Güvenilir, koruyucu, sadık ama bazen kuralcı ve mesafeli bir eş.",
+      "money": "Yöneticilik, devlet işleri, inşaat, finans ve büyük organizasyonlar.",
+      "shadow": "Tiranlık, katılık, duyguları bastırma ve öfke patlamaları."
+    },
+    {
+      "id": 5,
+      "name": "Aziz / Bilgelik ve Gelenek",
+      "keyword": "Öğretmenlik, Adalet, Kurallar, Ruhsal Rehberlik",
+      "general": "Doğru ile yanlışı ayırt eden, ahlaki değerleri ve kadim bilgiyi öğreten mürşit.",
+      "talent": "Eğitmenlik, mentorluk, felsefi derinlik ve toplumsal saygınlık.",
+      "love": "Geleneksel evlilik, aile değerleri, ruhsal ortaklık ve sadakat.",
+      "money": "Akademi, hukuk, yayıncılık ve danışmanlıktan gelen istikrarlı gelir.",
+      "shadow": "Aşırı dogmatiklik, başkalarını yargılama ve yeniliklere kapalılık."
+    },
+    {
+      "id": 6,
+      "name": "Aşıklar / Kalp Seçimi ve Uyum",
+      "keyword": "Aşk, Çekim, İkilem, Güzellik, Kalp Açılımı",
+      "general": "Her kararında kalp sesini dinleyen, sevgiyi merkezine alan zarif enerji.",
+      "talent": "İlişki kurma sanatı, estetik zevk, arabuluculuk ve insan sarraflığı.",
+      "love": "Ruh eşi çekimi, büyük tutku, romantizm ve koşulsuz paylaşım.",
+      "money": "Halkla ilişkiler, tasarım, sanat, ortaklı işler ve estetik sektörler.",
+      "shadow": "Kararsızlık, dış görünüşe aldanma ve bağımlı ilişkiler."
+    },
+    {
+      "id": 7,
+      "name": "Savaş Arabası / Zafer ve Hedef",
+      "keyword": "Hız, İlerleme, Hedefe Odaklanma, Seyahat",
+      "general": "Engelleri yıkan, zıtlıkları dizginleyip zafere koşan dinamik liderlik.",
+      "talent": "Proje tamamlama hızı, spor, lojistik, sınır ötesi başarılar.",
+      "love": "Birlikte yol alan, ortak hedefleri olan, dinamik ve maceracı ilişki.",
+      "money": "Ulaşım, dış ticaret, teknoloji ve hızlı büyüyen girişimler.",
+      "shadow": "Aşırı hırs, agresyon, empati yoksunluğu ve tükenmişlik."
+    },
+    {
+      "id": 8,
+      "name": "Adalet / Denge ve Sebep-Sonuç",
+      "keyword": "Karmik Denge, Dürüstlük, Mantık, Hakkaniyet",
+      "general": "Ektiğini biçme yasasıyla çalışan, objektif, keskin ve adil zihin.",
+      "talent": "Hukuksal analiz, kriz çözücülük, sistem kurma ve objektif hakemlik.",
+      "love": "Eşitliğe dayalı, açık iletişimli, dürüst ve net ilişkiler.",
+      "money": "Hukuk, muhasebe, denetim ve resmi sözleşmelerden gelen kazanç.",
+      "shadow": "Aşırı kuralcılık, affedememe, vicdan yerine sadece soğuk mantık."
+    },
+    {
+      "id": 9,
+      "name": "Ermiş / İçsel Işık ve Bilgelik",
+      "keyword": "Yalnızlık, Derinleşme, Felsefe, Ruhsal Olgunluk",
+      "general": "Kendi feneriyle karanlığı aydınlatan, kalabalıklardan uzak derin hakikat arayıcısı.",
+      "talent": "Araştırmacılık, yazarlık, derin düşünce ve manevi rehberlik.",
+      "love": "Ruhsal frekansı çok yüksek, entelektüel derinlik ve kişisel alan isteyen bağlar.",
+      "money": "Bilim, yazarlık, yazılım, tıp ve derin uzmanlık gerektiren alanlar.",
+      "shadow": "Toplumdan soyutlanma, kibirli yalnızlık ve cimrilik."
+    },
+    {
+      "id": 10,
+      "name": "Kader Çarkı / Şans ve Döngüler",
+      "keyword": "Talih, Akışta Kalma, Fırsatlar, Esneklik",
+      "general": "Kaderin sürprizleriyle dans eden, şans kapılarını kolayca aralayan akıcı enerji.",
+      "talent": "Fırsatları sezme, vizyonerlik, krizleri kazanca dönüştürme.",
+      "love": "Kaderin cilvesiyle aniden başlayan, sürprizlerle dolu aşklar.",
+      "money": "Borsa, ticaret, medya, şans oyunları ve uluslararası işler.",
+      "shadow": "Tembellik, kadercilik, sorumluluk almaktan kaçınma."
+    },
+    {
+      "id": 11,
+      "name": "Güç / Tutku ve İçsel Dayanıklılık",
+      "keyword": "Cesaret, Şefkatli Otorite, Yüksek Enerji, Çekim",
+      "general": "İçindeki vahşi tutkuyu sevgi ve sabırla ehlileştiren büyüleyici güç.",
+      "talent": "Beden gücü, karizma, kriz anlarında sarsılmama, yüksek dayanıklılık.",
+      "love": "Yoğun tutku, güçlü çekim, sadakat ve koruyucu enerji.",
+      "money": "Liderlik, spor, sağlık, işletmecilik ve büyük projeler.",
+      "shadow": "Öfke patlamaları, tahammülsüzlük ve başkalarına baskı kurma."
+    },
+    {
+      "id": 12,
+      "name": "Asılan Adam / Fedakarlık ve Farklı Bakış",
+      "keyword": "Farklı Perspektif, Şartsız Kabul, Hizmet, Maneviyat",
+      "general": "Dünyaya herkesin baktığı yerin tam tersinden bakan, fedakar ve derin ruh.",
+      "talent": "Sanatsal vizyon, psikolojik terapi, yenilikçi bakış açıları.",
+      "love": "Fedakar, empati dolu, ruhsal derinliği olan ama kurban rolüne açık bağlar.",
+      "money": "Yardım kuruluşları, yaratıcı sanatlar, alternatif tıp ve psikoloji.",
+      "shadow": "Kurban psikolojisi, hayır diyememe ve kendini feda etme."
+    },
+    {
+      "id": 13,
+      "name": "Ölüm / Dönüşüm ve Yeniden Doğuş",
+      "keyword": "Radikal Değişim, Eskiye Veda, Dönüşüm, Cesaret",
+      "general": "Miadı dolanı acımasızca kesip atan, küllerinden anka kuşu gibi doğan enerji.",
+      "talent": "Yıkılanı yeniden inşa etme, krizleri fırsata çevirme, cesur kararlar.",
+      "love": "Dönüştürücü, derin, kişiyi tamamen değiştiren karmik aşklar.",
+      "money": "Kriz yönetimi, cerrahi, yatırım ortaklığı ve yeniden yapılandırma.",
+      "shadow": "Geçmişe takılı kalma, değişimden korkma ve yıkıcılık."
+    },
+    {
+      "id": 14,
+      "name": "Denge / Şifa ve Uyum",
+      "keyword": "Huzur, Simya, Ölçülülük, Sanat, Dinginlik",
+      "general": "Zıt kutupları altın oranda harmanlayan, ruhsal simyacı ve barış elçisi.",
+      "talent": "Diplomasi, sanat, şifacılık, dengeli iletişim ve sabır.",
+      "love": "Sakin, huzurlu, güven veren ve zamanla olgunlaşan gerçek sevgi.",
+      "money": "Kimya, eczacılık, aşçılık, diplomasi ve sanat galerileri.",
+      "shadow": "Aşırı hareketsizlik, uyuşukluk ve duygusal donukluk."
+    },
+    {
+      "id": 15,
+      "name": "Şeytan / Karizma ve Gölge Arzular",
+      "keyword": "Manyetizma, Güç, Maddiyat, Cazibe, Gölgeyle Yüzleşme",
+      "general": "Girdiği her ortamda gözleri üzerine çeken, insan arzularını okuyan yüksek cazibe.",
+      "talent": "İkna kabiliyeti, büyük paraları yönetme, sahne karizması.",
+      "love": "Yoğun tutku, karşı konulamaz çekim, kıskançlık ve tensel bağlar.",
+      "money": "Büyük finans, eğlence sektörü, lüks ticaret ve yatırım fonları.",
+      "shadow": "Manipülasyon, bağımlılıklar, hırs ve gücü kötüye kullanma."
+    },
+    {
+      "id": 16,
+      "name": "Kule / Uyanış ve Ezber Bozma",
+      "keyword": "Aydınlanma, İllüzyonların Yıkılışı, Radikal Uyanış",
+      "general": "Çürük temelleri yıkarak kişiyi gerçek hakikate ve özgürlüğe uyandıran enerji.",
+      "talent": "Eski yapıları modernize etme, tabuları yıkma, kriz anında hızlı toparlanma.",
+      "love": "Fırtınalı başlayan, tüm kalıpları yıkan ezber bozan ilişkiler.",
+      "money": "İnşaat, kriz yönetimi, risk sermayesi ve inovasyon.",
+      "shadow": "Yıkıcı öfke, aşırı kaos yaratma ve ani kopuşlar."
+    },
+    {
+      "id": 17,
+      "name": "Yıldız / Umut ve İlham",
+      "keyword": "Şöhret, Yetenek, İlahi Rehberlik, Parlak Gelecek",
+      "general": "Karanlıkta yol gösteren bir kutup yıldızı gibi ışık saçan, umut dolu ve yetenekli ruh.",
+      "talent": "Sanat, sahne, tasarım, ilham verme, kitleleri aydınlatma.",
+      "love": "Ruhsal rezonans, romantik idealler ve yıldız uyumu.",
+      "money": "Medya, sahne sanatları, internet, moda ve kozmoloji.",
+      "shadow": "Kibir, gerçeklikten kopma ve hayal kırıklığı."
+    },
+    {
+      "id": 18,
+      "name": "Ay / Bilinçaltı ve İllüzyon",
+      "keyword": "Sezgisel Derinlik, Rüyalar, Yaratıcılık, Gizem",
+      "general": "Gecenin ve bilinçaltının derinliklerinde yüzen, rüyaları haberci olan mistik zihin.",
+      "talent": "Roman yazarlığı, sinema, psikoloji, astroloji ve gizli ilimler.",
+      "love": "Derin duygular, telepatik bağlar, bazen belirsizlik ve kıskançlık.",
+      "money": "Fotoğrafçılık, sinema, denizcilik ve yaratıcı sanatlar.",
+      "shadow": "Korkular, vesveseler, gerçekleri saptırma ve yanılsamalar."
+    },
+    {
+      "id": 19,
+      "name": "Güneş / Neşe ve Başarı",
+      "keyword": "Yaşam Sevinci, Zirve, Bolluk, Çocuksu Coşku",
+      "general": "Girdiği her yeri ısıtan, aydınlatan, başarı ve bereketi mıknatıs gibi çeken enerji.",
+      "talent": "Liderlik, sahne, çocuklarla iletişim, büyük kitlelere enerji yayma.",
+      "love": "Neşeli, açık, cömert, gurur duyulan ve mutluluk dolu birliktelik.",
+      "money": "Büyük projeler, eğlence, turizm ve yüksek karlı yatırımlar.",
+      "shadow": "Aşırı gurur, benmerkezcilik ve yakıcı ego."
+    },
+    {
+      "id": 20,
+      "name": "Mahkeme / Karmik Uyanış ve Hane Kökleri",
+      "keyword": "Karmik Çözülüm, Aile Bağları, Yeniden Doğuş, Çağrı",
+      "general": "Geçmişin yüklerinden arınıp ruhun gerçek çağrısına kulak veren olgun bilinç.",
+      "talent": "Aile karmasını iyileştirme, arabuluculuk, adalet ve büyük uyanışlar.",
+      "love": "Kadersel karşılaşmalar, karmik ortaklıklar ve köklü evlilikler.",
+      "money": "Hukuk, restorasyon, aile şirketleri ve tarihi projeler.",
+      "shadow": "Geçmişe saplanma, akrabalarla bitmeyen çatışmalar."
+    },
+    {
+      "id": 21,
+      "name": "Dünya / Kozmik Bütünlük ve Vizyon",
+      "keyword": "Küresel Vizyon, Barış, Tamamlanma, Sınırları Aşma",
+      "general": "Dünya vatandaşı bilincine sahip, farklı kültürleri birleştiren bilge ruh.",
+      "talent": "Yabancı diller, uluslararası projeler, büyük çaplı organizasyonlar.",
+      "love": "Farklı kültürden veya ülkeden ruh eşi, engelleri aşan küresel aşk.",
+      "money": "İhracat, turizm, diplomasi ve uluslararası teknoloji.",
+      "shadow": "Büyüklenme, dünyayı küçümseme ve sınır koyamama."
+    },
+    {
+      "id": 22,
+      "name": "Mecnun / Özgür Ruh ve Sınırsızlık",
+      "keyword": "Cesaret, İçsel Özgürlük, Sıfırdan Başlama, Spontane",
+      "general": "Hiçbir kalıba sığmayan, korkusuzca uçuruma adım atan saf ilahi potansiyel.",
+      "talent": "İnovasyon, mizah, kalıpları kırma, krizlerden sıfır hasarla çıkma.",
+      "love": "Özgürlüğe saygılı, eğlenceli, macera dolu ve sürprizli aşk.",
+      "money": "Start-up'lar, serbest meslek, seyahat ve yaratıcı özgür işler.",
+      "shadow": "Sorumsuzluk, savurganlık ve pervasızlık."
+    }
+  ]
+}
