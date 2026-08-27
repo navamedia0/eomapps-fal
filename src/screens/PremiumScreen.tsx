@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
@@ -119,7 +119,11 @@ export default function PremiumScreen({ navigation }: Props) {
         <View style={styles.plansList}>
           {THEMED_FAL_PACKAGES.map((pack) => (
             <View key={pack.id} style={styles.themedCard}>
-              <Ionicons name={pack.theme === 'kahve' ? 'cafe-outline' : 'sparkles-outline'} size={22} color={GOLD} />
+              {pack.theme === 'kahve' ? (
+                <Ionicons name="cafe-outline" size={22} color={GOLD} />
+              ) : (
+                <MaterialCommunityIcons name="star-crescent" size={22} color={GOLD} />
+              )}
               <Text style={styles.planTitle}>{pack.name}</Text>
               <Text style={styles.planQuota}>{pack.coins} Coin</Text>
               <Pressable onPress={() => buyThemedPack(pack.coins, pack.name)} style={styles.planButton}>

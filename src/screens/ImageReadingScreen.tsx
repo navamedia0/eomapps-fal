@@ -5,18 +5,28 @@ import { View, Text, Pressable, ScrollView, StyleSheet, Image, Animated, Easing 
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import { interpretImages, validateImage } from '@/services/readings-ai';
-import { getCredits, spendCredit } from '@/services/credits';
+import { getCredits } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
 import { saveReadingHistory } from '@/services/readingHistory';
+import {
+  getCategoryStatus,
+  recordVideoWatched,
+  recordCategoryReadingComplete,
+  type ReadingCategory,
+} from '@/services/readingDailyLimits';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
+import RewardedAdModal from '@/components/RewardedAdModal';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
 import FeatureIcon from '@/components/FeatureIcon';
 import { FEATURE_ICONS } from '@/assets/icons';
 import { useReadingCooldown } from '@/hooks/useReadingCooldown';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import PersonInfoModal from '@/components/PersonInfoModal';
+import type { PersonInfo } from '@/types/personInfo';
+import { getSavedPersonInfo, savePersonInfo } from '@/services/personInfo';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ImageReading'>;
 
@@ -49,21 +59,68 @@ const COPY = {
 export default function ImageReadingScreen({ route, navigation }: Props) {
   const { kind } = route.params;
   const copy = COPY[kind];
+  const categoryKey: ReadingCategory = kind === 'coffee' ? 'kahve' : 'el';
 
   const [images, setImages] = useState<PickedImage[]>([]);
-  const [validating, setValidating] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [validating, setValidating] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const [permissionError, setPermissionError] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
+  const [isPersonModalVisible, setIsPersonModalVisible] = useState(false);
+  const [personInfo, setPersonInfo] = useState<PersonInfo | null>(null);
+  const [skipPersonInfo, setSkipPersonInfo] = useState(false);
+  const [queueNotice, setQueueNotice] = useState<string | null>(null);
+
+  // Reklam Modalı State'i
+  const [adModalVisible, setAdModalVisible] = useState(false);
+  const [adVideoIndex, setAdVideoIndex] = useState(1);
+  const [adTotalNeeded, setAdTotalNeeded] = useState(1);
+
   const pulse = useRef(new Animated.Value(0)).current;
   const { remaining: cooldownRemaining, notifyStarted } = useReadingCooldown(kind === 'coffee' ? 'kahve' : 'el');
+
+  useEffect(() => {
+    getSavedPersonInfo().then((saved) => {
+      if (saved && (saved.name || saved.age || saved.relationshipStatus || saved.focusArea)) {
+        setPersonInfo(saved);
+      }
+    });
+  }, []);
+
+  const handleSavePersonInfo = (info: PersonInfo) => {
+    setPersonInfo(info);
+    setSkipPersonInfo(false);
+    savePersonInfo(info);
+  };
+
+  const toggleSkipPersonInfo = () => {
+    setSkipPersonInfo((prev) => {
+      const next = !prev;
+      if (next) {
+        setPersonInfo(null);
+      }
+      return next;
+    });
+  };
+
+  const hasPersonInfo = Boolean(
+    personInfo &&
+      (personInfo.name?.trim() ||
+        personInfo.age ||
+        personInfo.relationshipStatus ||
+        personInfo.focusArea ||
+        personInfo.occupationStatus),
+  );
+  const hasPersonChoice = hasPersonInfo || skipPersonInfo;
+  const canInterpret = images.length >= MIN_IMAGES && hasPersonChoice && cooldownRemaining === 0;
 
   const resetResult = useCallback(() => {
     setResult(null);
     setError(null);
     setCoinFallback(null);
+    setQueueNotice(null);
   }, []);
 
   const addAssets = useCallback((assets: ImagePicker.ImagePickerAsset[]) => {
@@ -110,64 +167,108 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
     setImages((prev) => prev.filter((_, i) => i !== index));
   }, [resetResult]);
 
-  const interpret = useCallback(async (payWithCoins = false) => {
-    if (images.length < MIN_IMAGES || cooldownRemaining > 0) return;
+  const interpret = useCallback(async (payWithCoins = false, forceUnlocked = false) => {
+    if (images.length < MIN_IMAGES || cooldownRemaining > 0 || !hasPersonChoice) return;
     setError(null);
     setCoinFallback(null);
+    setQueueNotice(null);
 
-    if (!payWithCoins) {
-      setValidating(true);
-      try {
-        const validations = await Promise.all(
-          images.map((img) => validateImage(kind, { mimeType: img.mimeType, data: img.base64 })),
-        );
-        const invalidCount = validations.filter((valid) => !valid).length;
-        if (invalidCount > 0) {
-          setError(
-            invalidCount === images.length
-              ? `Yüklediğin fotoğraflar ${copy.invalidSubject} benzemiyor. Lütfen sadece uygun fotoğraflar yükle.`
-              : `${invalidCount} fotoğraf ${copy.invalidSubject} benzemiyor gibi görünüyor. Lütfen sadece uygun fotoğraflar yükle.`,
-          );
-          return;
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Fotoğraflar doğrulanırken bir sorun oluştu.');
+    // Kategori bazlı kota ve video kontrolü
+    if (!payWithCoins && !forceUnlocked) {
+      const catStatus = await getCategoryStatus(categoryKey);
+      if (catStatus.status === 'need_1_video') {
+        setAdVideoIndex(1);
+        setAdTotalNeeded(1);
+        setAdModalVisible(true);
         return;
-      } finally {
-        setValidating(false);
       }
+      if (catStatus.status === 'need_3_videos') {
+        setAdVideoIndex(catStatus.videosWatched + 1);
+        setAdTotalNeeded(3);
+        setAdModalVisible(true);
+        return;
+      }
+      if (catStatus.status === 'coin_only') {
+        setCoinFallback({ coins: await getCoins() });
+        return;
+      }
+    }
+
+    if (payWithCoins) {
+      const spent = await spendCoins(READING_COIN_COST);
+      if (!spent) {
+        setCoinFallback({ coins: await getCoins() });
+        return;
+      }
+    }
+
+    // Doğrulama: Çoklu görsel gönderildiğinde paralel kontrol
+    setValidating(true);
+    try {
+      const checkImages = images.slice(0, 2); // İlk 2 görsel yeterli
+      const validations = await Promise.all(
+        checkImages.map((img) => validateImage(kind, { mimeType: img.mimeType, data: img.base64 })),
+      );
+      const invalidCount = validations.filter((valid) => !valid).length;
+      if (invalidCount === checkImages.length) {
+        setError(`Yüklediğin fotoğraflar ${copy.invalidSubject} benzemiyor. Lütfen sadece uygun fotoğraflar yükle.`);
+        setValidating(false);
+        return;
+      }
+    } catch {
+      // Hata durumunda doğrulamayı es geç, doğrudan yoruma ilerle
+    } finally {
+      setValidating(false);
     }
 
     setLoading(true);
+    notifyStarted();
+
+    // Akıllı Kuyruk Bilgilendirmesi: Yoğunluk anında nazik geri bildirim
+    const queueTimer = setTimeout(() => {
+      setQueueNotice('Sistemdeki yoğunluk nedeniyle falınız inceleniyor; hazır olduğunda sonuç burada ve Geçmiş bölümünde görünecektir...');
+    }, 12000);
+
     try {
-      if (payWithCoins) {
-        const spent = await spendCoins(READING_COIN_COST);
-        if (!spent) {
-          setCoinFallback({ coins: await getCoins() });
-          return;
-        }
-      } else {
-        const remaining = await getCredits();
-        if (remaining < 1) {
-          setCoinFallback({ coins: await getCoins() });
-          return;
-        }
-      }
-      notifyStarted();
-      const interpretation = await interpretImages(kind, images.map((img) => ({ mimeType: img.mimeType, data: img.base64 })));
-      if (!payWithCoins) await spendCredit();
+      // 1 ila 5 fotoğraf tek bir payload paketinde yapay zekaya gönderilir
+      const interpretation = await interpretImages(
+        kind,
+        images.map((img) => ({ mimeType: img.mimeType, data: img.base64 })),
+        skipPersonInfo ? null : personInfo,
+      );
+      clearTimeout(queueTimer);
+      setQueueNotice(null);
+
+      // Kategori kullanımını kaydet
+      await recordCategoryReadingComplete(categoryKey, payWithCoins);
+
       setResult(interpretation);
       await saveReadingHistory({
         type: kind === 'coffee' ? 'kahve' : 'el',
-        title: copy.shareTitle,
+        title: !skipPersonInfo && personInfo?.name?.trim() ? `${copy.shareTitle} (${personInfo.name.trim()})` : copy.shareTitle,
         result: interpretation,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Fal yorumlanırken bir sorun oluştu.');
+      clearTimeout(queueTimer);
+      setError(err instanceof Error ? err.message : 'Sistem yoğunluğu nedeniyle biraz zaman alabilir, lütfen birazdan tekrar deneyin.');
     } finally {
       setLoading(false);
     }
-  }, [images, kind, copy.invalidSubject, cooldownRemaining, notifyStarted]);
+  }, [images, kind, categoryKey, copy.invalidSubject, copy.shareTitle, cooldownRemaining, notifyStarted, hasPersonChoice, skipPersonInfo, personInfo]);
+
+  const handleAdComplete = useCallback(async () => {
+    setAdModalVisible(false);
+    const res = await recordVideoWatched(categoryKey);
+    if (res.unlocked) {
+      // Hak açıldı, doğrudan falı başlat
+      interpret(false, true);
+    } else {
+      // Sıradaki video gerekiyorsa modalı sıradaki adımla tekrar aç
+      setAdVideoIndex(res.watched + 1);
+      setAdTotalNeeded(res.required);
+      setAdModalVisible(true);
+    }
+  }, [categoryKey, interpret]);
 
   const resetAll = useCallback(() => {
     setImages([]);
@@ -245,17 +346,89 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
               <Text style={styles.actionButtonSecondaryText}>Galeriden Seç (Çoklu)</Text>
             </Pressable>
 
+            {/* Kişi Bilgisi Alanı */}
+            <View style={styles.personSection}>
+              <Pressable
+                onPress={() => setIsPersonModalVisible(true)}
+                style={({ pressed }) => [
+                  styles.personButton,
+                  hasPersonInfo && styles.personButtonFilled,
+                  pressed && styles.actionButtonPressed,
+                ]}
+              >
+                <View style={styles.personButtonLeft}>
+                  <View style={[styles.personIconWrap, hasPersonInfo && styles.personIconWrapFilled]}>
+                    <Ionicons
+                      name={hasPersonInfo ? 'person' : 'person-add-outline'}
+                      size={18}
+                      color={hasPersonInfo ? NIGHT_CARD : GOLD}
+                    />
+                  </View>
+                  <View style={styles.personButtonTextWrap}>
+                    <Text style={styles.personButtonTitle}>
+                      {hasPersonInfo ? `Fal Sahibi: ${personInfo?.name || 'Kişi Bilgisi Girildi'}` : 'Kişi Bilgisi Gir'}
+                    </Text>
+                    <Text style={styles.personButtonSubtitle} numberOfLines={1}>
+                      {hasPersonInfo
+                        ? [
+                            personInfo?.age ? `${personInfo.age} yaş` : null,
+                            personInfo?.relationshipStatus,
+                            personInfo?.occupationStatus,
+                            personInfo?.focusArea,
+                          ]
+                            .filter(Boolean)
+                            .join(' • ')
+                        : 'İsim, yaş, ilişki vb. (Özel yorum için)'}
+                    </Text>
+                  </View>
+                </View>
+                <Ionicons
+                  name={hasPersonInfo ? 'create-outline' : 'chevron-forward'}
+                  size={18}
+                  color={GOLD}
+                />
+              </Pressable>
+
+              <Pressable
+                onPress={toggleSkipPersonInfo}
+                style={({ pressed }) => [styles.skipToggleRow, pressed && styles.pressedFade]}
+                hitSlop={8}
+              >
+                <Ionicons
+                  name={skipPersonInfo ? 'checkbox' : 'square-outline'}
+                  size={18}
+                  color={skipPersonInfo ? GOLD : TEXT_MUTED}
+                />
+                <Text style={[styles.skipToggleText, skipPersonInfo && styles.skipToggleTextActive]}>
+                  Kişisel bilgi girmek istemiyorum (Anonim Fal)
+                </Text>
+              </Pressable>
+
+              <View style={styles.infoHintRow}>
+                <MaterialCommunityIcons name="information-outline" size={13} color={GOLD_SOFT} />
+                <Text style={styles.infoHintText}>
+                  Daha isabetli ve sana özel bir fal analizi için kişi bilgilerini girebilirsin.
+                </Text>
+              </View>
+            </View>
+
             <Pressable
               onPress={() => interpret()}
-              disabled={images.length < MIN_IMAGES || cooldownRemaining > 0}
+              disabled={!canInterpret}
               style={({ pressed }) => [
                 styles.actionButton,
-                (images.length < MIN_IMAGES || cooldownRemaining > 0 || pressed) && styles.actionButtonDisabled,
+                (!canInterpret || pressed) && styles.actionButtonDisabled,
               ]}
             >
               <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
               <Text style={styles.actionButtonText}>Yorumla</Text>
             </Pressable>
+
+            {!hasPersonChoice && images.length >= MIN_IMAGES && (
+              <Text style={styles.personChoiceWarning}>
+                Falı yorumlamak için kişi bilgisi girin veya "Bilgi girmek istemiyorum" seçeneğini işaretleyin.
+              </Text>
+            )}
 
             <ReadingCooldownNotice remaining={cooldownRemaining} />
           </View>
@@ -276,6 +449,12 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
               <MaterialCommunityIcons name="star-crescent" size={32} color={GOLD} />
             </Animated.View>
             <Animated.Text style={[styles.loadingText, { opacity: pulseOpacity }]}>{copy.loading}</Animated.Text>
+            {queueNotice && (
+              <View style={styles.queueNoticeCard}>
+                <Ionicons name="hourglass-outline" size={16} color={GOLD} />
+                <Text style={styles.queueNoticeText}>{queueNotice}</Text>
+              </View>
+            )}
           </View>
         )}
 
@@ -305,6 +484,20 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
           </View>
         )}
       </ScrollView>
+      <PersonInfoModal
+        visible={isPersonModalVisible}
+        initialInfo={personInfo}
+        onSave={handleSavePersonInfo}
+        onClose={() => setIsPersonModalVisible(false)}
+      />
+      <RewardedAdModal
+        visible={adModalVisible}
+        readingTitle={copy.shareTitle}
+        videoIndex={adVideoIndex}
+        totalVideosNeeded={adTotalNeeded}
+        onComplete={handleAdComplete}
+        onCancel={() => setAdModalVisible(false)}
+      />
     </MysticTableBackground>
   );
 }
@@ -463,5 +656,114 @@ const styles = StyleSheet.create({
   newReadingButton: {
     flex: 1.6,
     flexBasis: 0,
+  },
+  personSection: {
+    width: '100%',
+    marginVertical: 4,
+    gap: 8,
+  },
+  personButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(30, 17, 64, 0.75)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    gap: 10,
+  },
+  personButtonFilled: {
+    backgroundColor: 'rgba(242, 200, 121, 0.14)',
+    borderColor: GOLD,
+  },
+  personButtonLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  personIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  personIconWrapFilled: {
+    backgroundColor: GOLD,
+  },
+  personButtonTextWrap: {
+    flex: 1,
+  },
+  personButtonTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: GOLD,
+    marginBottom: 2,
+  },
+  personButtonSubtitle: {
+    fontSize: 11.5,
+    color: TEXT_MUTED,
+  },
+  skipToggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+  },
+  skipToggleText: {
+    fontSize: 12,
+    color: TEXT_MUTED,
+  },
+  skipToggleTextActive: {
+    color: GOLD,
+    fontWeight: '600',
+  },
+  personChoiceWarning: {
+    fontSize: 11.5,
+    color: '#F2A65A',
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  pressedFade: {
+    opacity: 0.85,
+  },
+  queueNoticeCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginTop: 16,
+    maxWidth: 340,
+  },
+  queueNoticeText: {
+    fontSize: 11.5,
+    color: GOLD_SOFT,
+    flex: 1,
+    lineHeight: 16,
+  },
+  infoHintRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    marginTop: 6,
+    paddingHorizontal: 8,
+  },
+  infoHintText: {
+    fontSize: 11,
+    color: GOLD_SOFT,
+    textAlign: 'center',
+    lineHeight: 15,
   },
 });

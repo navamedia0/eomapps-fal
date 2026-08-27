@@ -6,11 +6,17 @@ import type { RootStackParamList } from '@/navigation/types';
 import { findTarotCard, type TarotOrientation } from '@/services/tarot';
 import { findSpread } from '@/services/tarotSpreads';
 import { interpretTarotSpread } from '@/services/readings-ai';
-import { getCredits, spendCredit } from '@/services/credits';
+import { getCredits } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
 import { saveReadingHistory } from '@/services/readingHistory';
+import {
+  getCategoryStatus,
+  recordVideoWatched,
+  recordCategoryReadingComplete,
+} from '@/services/readingDailyLimits';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
+import RewardedAdModal from '@/components/RewardedAdModal';
 import { parseSpreadReading } from '@/utils/parseSpreadReading';
 import { turkishUpperCase } from '@/utils/turkishCase';
 import TarotCardFace from '@/components/tarot/TarotCardFace';
@@ -44,18 +50,29 @@ export default function TarotResultScreen({ route, navigation }: Props) {
   const [blocked, setBlocked] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const [storyCard, setStoryCard] = useState<TarotCardDef | null>(null);
+  const [queueNotice, setQueueNotice] = useState<string | null>(null);
+
+  // Reklam Modalı State'i
+  const [adModalVisible, setAdModalVisible] = useState(false);
+  const [adVideoIndex, setAdVideoIndex] = useState(1);
+  const [adTotalNeeded, setAdTotalNeeded] = useState(1);
+
   const pulse = useRef(new Animated.Value(0)).current;
 
-  const fetchReading = useCallback(async (payWithCoins = false) => {
+  const fetchReading = useCallback(async (payWithCoins = false, forceUnlocked = false) => {
     setLoading(true);
     setError(null);
     setBlocked(null);
     setCoinFallback(null);
+    setQueueNotice(null);
+
     try {
+      // 5-7-10 Kartlık Özel Açılımlar (Doğrudan Coin ile limitsiz)
       if (spread.priceCoins > 0) {
         const coins = await getCoins();
         if (coins < spread.priceCoins) {
           setBlocked(`Bu açılım için ${spread.priceCoins} coin gerekiyor. Bakiyen: ${coins} coin.`);
+          setLoading(false);
           return;
         }
         const interpretation = await interpretTarotSpread(cards, spread.positions);
@@ -65,25 +82,51 @@ export default function TarotResultScreen({ route, navigation }: Props) {
         return;
       }
 
+      // Standart 3 Kart Tarot: Kategori Kotası & Video Kontrolü
+      if (!payWithCoins && !forceUnlocked) {
+        const catStatus = await getCategoryStatus('tarot3');
+        if (catStatus.status === 'need_1_video') {
+          setAdVideoIndex(1);
+          setAdTotalNeeded(1);
+          setAdModalVisible(true);
+          setLoading(false);
+          return;
+        }
+        if (catStatus.status === 'need_3_videos') {
+          setAdVideoIndex(catStatus.videosWatched + 1);
+          setAdTotalNeeded(3);
+          setAdModalVisible(true);
+          setLoading(false);
+          return;
+        }
+        if (catStatus.status === 'coin_only') {
+          setCoinFallback({ coins: await getCoins() });
+          setLoading(false);
+          return;
+        }
+      }
+
       if (payWithCoins) {
         const spent = await spendCoins(READING_COIN_COST);
         if (!spent) {
           setCoinFallback({ coins: await getCoins() });
+          setLoading(false);
           return;
         }
-        const interpretation = await interpretTarotSpread(cards, spread.positions);
-        setResult(interpretation);
-        await saveReadingHistory({ type: 'tarot', title: `${spread.id} Kart Açılımı`, result: interpretation });
-        return;
       }
 
-      const remaining = await getCredits();
-      if (remaining < 1) {
-        setCoinFallback({ coins: await getCoins() });
-        return;
-      }
+      // Yoğunluk bildirim zamanlayıcısı
+      const queueTimer = setTimeout(() => {
+        setQueueNotice('Sistemdeki yoğunluk nedeniyle açılımınız inceleniyor; hazır olduğunda burada ve Geçmiş bölümünde görünecektir...');
+      }, 12000);
+
       const interpretation = await interpretTarotSpread(cards, spread.positions);
-      await spendCredit();
+      clearTimeout(queueTimer);
+      setQueueNotice(null);
+
+      // Kategori kullanımını kaydet
+      await recordCategoryReadingComplete('tarot3', payWithCoins);
+
       setResult(interpretation);
       await saveReadingHistory({ type: 'tarot', title: `${spread.id} Kart Açılımı`, result: interpretation });
     } catch (err) {
@@ -91,8 +134,19 @@ export default function TarotResultScreen({ route, navigation }: Props) {
     } finally {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [cards, spread.id, spread.positions, spread.priceCoins]);
+
+  const handleAdComplete = useCallback(async () => {
+    setAdModalVisible(false);
+    const res = await recordVideoWatched('tarot3');
+    if (res.unlocked) {
+      fetchReading(false, true);
+    } else {
+      setAdVideoIndex(res.watched + 1);
+      setAdTotalNeeded(res.required);
+      setAdModalVisible(true);
+    }
+  }, [fetchReading]);
 
   useEffect(() => {
     fetchReading();
@@ -130,6 +184,12 @@ export default function TarotResultScreen({ route, navigation }: Props) {
             <Animated.Text style={[styles.loadingText, { opacity: pulseOpacity }]}>
               Kartlar okunuyor...
             </Animated.Text>
+            {queueNotice && (
+              <View style={styles.queueNoticeCard}>
+                <Ionicons name="hourglass-outline" size={16} color={GOLD} />
+                <Text style={styles.queueNoticeText}>{queueNotice}</Text>
+              </View>
+            )}
           </View>
         )}
 
@@ -235,6 +295,17 @@ export default function TarotResultScreen({ route, navigation }: Props) {
         )}
       </ScrollView>
       <CardStoryModal card={storyCard} onClose={() => setStoryCard(null)} />
+      <RewardedAdModal
+        visible={adModalVisible}
+        readingTitle="Tarot Falı"
+        videoIndex={adVideoIndex}
+        totalVideosNeeded={adTotalNeeded}
+        onComplete={handleAdComplete}
+        onCancel={() => {
+          setAdModalVisible(false);
+          navigation.goBack();
+        }}
+      />
     </MysticTableBackground>
   );
 }
@@ -248,14 +319,33 @@ const styles = StyleSheet.create({
   },
   loadingWrap: {
     alignItems: 'center',
-    marginTop: 60,
+    justifyContent: 'center',
     gap: 12,
+    marginTop: 60,
   },
   loadingText: {
     fontSize: 14,
     color: GOLD,
-    letterSpacing: 0.8,
-    fontStyle: 'italic',
+    fontWeight: '600',
+  },
+  queueNoticeCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginTop: 16,
+    maxWidth: 340,
+  },
+  queueNoticeText: {
+    fontSize: 11.5,
+    color: GOLD_SOFT,
+    flex: 1,
+    lineHeight: 16,
   },
   errorBox: {
     alignItems: 'center',

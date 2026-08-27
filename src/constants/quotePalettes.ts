@@ -15,7 +15,7 @@ export const QUOTE_PALETTES: QuotePalette[] = [
   { id: 'okyanus', colors: ['#023047', '#127a8c', '#4fc3a1'], icon: 'water' },
   { id: 'orman', colors: ['#0f2818', '#1f5c3a', '#4f8f52'], icon: 'leaf' },
   { id: 'col', colors: ['#4a1e0e', '#a85c2a', '#e8a45c'], icon: 'sunny-outline' },
-  { id: 'aurora', colors: ['#1a0e3a', '#3d1e6b', '#2fae7a'], icon: 'sparkles' },
+  { id: 'aurora', colors: ['#1a0e3a', '#3d1e6b', '#2fae7a'], icon: 'moon' },
   { id: 'dag-safagi', colors: ['#2c1440', '#6b3a6b', '#e88fa8'], icon: 'triangle-outline' },
   { id: 'lavanta', colors: ['#241a4a', '#5b3d8c', '#a875c4'], icon: 'flower-outline' },
   { id: 'sisli-sabah', colors: ['#1c2333', '#3e4a63', '#7c8ba3'], icon: 'partly-sunny-outline' },

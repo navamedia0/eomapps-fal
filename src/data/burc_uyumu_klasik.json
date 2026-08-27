@@ -1,0 +1,704 @@
+{
+  "Koc_Koc": {
+    "score": 82,
+    "elementDynamic": "Ateş & Ateş: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "Koç ile Koç birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  },
+  "Koc_Boga": {
+    "score": 68,
+    "elementDynamic": "Ateş & Toprak: Ateşin hız ve risk arzusu, toprağın güvence ve sabır ihtiyacıyla çatışabilir. Ateş vizyonu çizerken toprak bunu somutlaştırırsa muazzam bir güç birliği olur.",
+    "loveOverview": "Koç (Ateş) ve Boğa (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Mars ile Venüs etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Koç'ın öncü doğası ile Boğa'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Koç bazen Boğa'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Koc_Ikizler": {
+    "score": 88,
+    "elementDynamic": "Ateş & Hava: Hava ateşi besler, alevlendirir; ateş ise havayı ısıtır. Birbirinize ilham veren, sosyal, vizyoner ve son derece dinamik bir element kombinasyonudur.",
+    "loveOverview": "Koç (Ateş) ve İkizler (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Mars ile Merkür etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Koç'ın öncü doğası ile İkizler'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Koç bazen İkizler'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Koc_Yengec": {
+    "score": 72,
+    "elementDynamic": "Ateş & Su: Buharlaşma ya da söndürme riski! Ateşin coşkusu suyun hassas dünyasında dalgalar yaratabilir. Ancak doğru dengelendiğinde eşsiz bir tutku ve şefkat bağı doğar.",
+    "loveOverview": "Koç (Ateş) ve Yengeç (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Mars ile Ay etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Koç'ın öncü doğası ile Yengeç'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Koç bazen Yengeç'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Koc_Aslan": {
+    "score": 92,
+    "elementDynamic": "Ateş Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "Koç (Ateş) ve Aslan (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Mars ile Güneş etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Koç'ın öncü doğası ile Aslan'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Koç bazen Aslan'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Koc_Basak": {
+    "score": 68,
+    "elementDynamic": "Ateş & Toprak: Ateşin hız ve risk arzusu, toprağın güvence ve sabır ihtiyacıyla çatışabilir. Ateş vizyonu çizerken toprak bunu somutlaştırırsa muazzam bir güç birliği olur.",
+    "loveOverview": "Koç (Ateş) ve Başak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Mars ile Merkür etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Koç'ın öncü doğası ile Başak'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Koç bazen Başak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Koc_Terazi": {
+    "score": 88,
+    "elementDynamic": "Ateş & Hava: Hava ateşi besler, alevlendirir; ateş ise havayı ısıtır. Birbirinize ilham veren, sosyal, vizyoner ve son derece dinamik bir element kombinasyonudur.",
+    "loveOverview": "Koç (Ateş) ve Terazi (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Mars ile Venüs etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Koç'ın öncü doğası ile Terazi'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Koç bazen Terazi'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Koc_Akrep": {
+    "score": 72,
+    "elementDynamic": "Ateş & Su: Buharlaşma ya da söndürme riski! Ateşin coşkusu suyun hassas dünyasında dalgalar yaratabilir. Ancak doğru dengelendiğinde eşsiz bir tutku ve şefkat bağı doğar.",
+    "loveOverview": "Koç (Ateş) ve Akrep (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Mars ile Plüton / Mars etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Koç'ın öncü doğası ile Akrep'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Koç bazen Akrep'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Koc_Yay": {
+    "score": 92,
+    "elementDynamic": "Ateş Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "Koç (Ateş) ve Yay (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Mars ile Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Koç'ın öncü doğası ile Yay'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Koç bazen Yay'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Koc_Oglak": {
+    "score": 68,
+    "elementDynamic": "Ateş & Toprak: Ateşin hız ve risk arzusu, toprağın güvence ve sabır ihtiyacıyla çatışabilir. Ateş vizyonu çizerken toprak bunu somutlaştırırsa muazzam bir güç birliği olur.",
+    "loveOverview": "Koç (Ateş) ve Oğlak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Mars ile Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Koç'ın öncü doğası ile Oğlak'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Koç bazen Oğlak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Koc_Kova": {
+    "score": 88,
+    "elementDynamic": "Ateş & Hava: Hava ateşi besler, alevlendirir; ateş ise havayı ısıtır. Birbirinize ilham veren, sosyal, vizyoner ve son derece dinamik bir element kombinasyonudur.",
+    "loveOverview": "Koç (Ateş) ve Kova (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Mars ile Uranüs / Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Koç'ın öncü doğası ile Kova'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Koç bazen Kova'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Koc_Balik": {
+    "score": 72,
+    "elementDynamic": "Ateş & Su: Buharlaşma ya da söndürme riski! Ateşin coşkusu suyun hassas dünyasında dalgalar yaratabilir. Ancak doğru dengelendiğinde eşsiz bir tutku ve şefkat bağı doğar.",
+    "loveOverview": "Koç (Ateş) ve Balık (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Mars ile Neptün / Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Koç'ın öncü doğası ile Balık'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Koç bazen Balık'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Boga_Boga": {
+    "score": 82,
+    "elementDynamic": "Toprak & Toprak: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "Boğa ile Boğa birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  },
+  "Boga_Ikizler": {
+    "score": 74,
+    "elementDynamic": "Hava & Toprak: Fikirlerin pratik dünya ile buluşması. Havanın zihinsel projeleri, toprağın sağlam temelleriyle hayat bulur.",
+    "loveOverview": "Boğa (Toprak) ve İkizler (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Merkür etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Boğa'ın sabit doğası ile İkizler'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Boğa bazen İkizler'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Boga_Yengec": {
+    "score": 90,
+    "elementDynamic": "Toprak & Su: Su toprağı besler ve canlandırır; toprak ise suya güvenli bir yatak oluşturur. Son derece verimli, sadık ve duygusal olarak doyurucu bir kimyadır.",
+    "loveOverview": "Boğa (Toprak) ve Yengeç (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Ay etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Boğa'ın sabit doğası ile Yengeç'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Boğa bazen Yengeç'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Boga_Aslan": {
+    "score": 68,
+    "elementDynamic": "Ateş & Toprak: Ateşin hız ve risk arzusu, toprağın güvence ve sabır ihtiyacıyla çatışabilir. Ateş vizyonu çizerken toprak bunu somutlaştırırsa muazzam bir güç birliği olur.",
+    "loveOverview": "Boğa (Toprak) ve Aslan (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Güneş etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Boğa'ın sabit doğası ile Aslan'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Boğa bazen Aslan'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Boga_Basak": {
+    "score": 92,
+    "elementDynamic": "Toprak Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "Boğa (Toprak) ve Başak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Merkür etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Boğa'ın sabit doğası ile Başak'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Boğa bazen Başak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Boga_Terazi": {
+    "score": 74,
+    "elementDynamic": "Hava & Toprak: Fikirlerin pratik dünya ile buluşması. Havanın zihinsel projeleri, toprağın sağlam temelleriyle hayat bulur.",
+    "loveOverview": "Boğa (Toprak) ve Terazi (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Venüs etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Boğa'ın sabit doğası ile Terazi'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Boğa bazen Terazi'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Boga_Akrep": {
+    "score": 90,
+    "elementDynamic": "Toprak & Su: Su toprağı besler ve canlandırır; toprak ise suya güvenli bir yatak oluşturur. Son derece verimli, sadık ve duygusal olarak doyurucu bir kimyadır.",
+    "loveOverview": "Boğa (Toprak) ve Akrep (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Plüton / Mars etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Boğa'ın sabit doğası ile Akrep'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Boğa bazen Akrep'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Boga_Yay": {
+    "score": 68,
+    "elementDynamic": "Ateş & Toprak: Ateşin hız ve risk arzusu, toprağın güvence ve sabır ihtiyacıyla çatışabilir. Ateş vizyonu çizerken toprak bunu somutlaştırırsa muazzam bir güç birliği olur.",
+    "loveOverview": "Boğa (Toprak) ve Yay (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Boğa'ın sabit doğası ile Yay'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Boğa bazen Yay'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Boga_Oglak": {
+    "score": 92,
+    "elementDynamic": "Toprak Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "Boğa (Toprak) ve Oğlak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Boğa'ın sabit doğası ile Oğlak'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Boğa bazen Oğlak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Boga_Kova": {
+    "score": 74,
+    "elementDynamic": "Hava & Toprak: Fikirlerin pratik dünya ile buluşması. Havanın zihinsel projeleri, toprağın sağlam temelleriyle hayat bulur.",
+    "loveOverview": "Boğa (Toprak) ve Kova (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Uranüs / Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Boğa'ın sabit doğası ile Kova'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Boğa bazen Kova'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Boga_Balik": {
+    "score": 90,
+    "elementDynamic": "Toprak & Su: Su toprağı besler ve canlandırır; toprak ise suya güvenli bir yatak oluşturur. Son derece verimli, sadık ve duygusal olarak doyurucu bir kimyadır.",
+    "loveOverview": "Boğa (Toprak) ve Balık (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Neptün / Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Boğa'ın sabit doğası ile Balık'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Boğa bazen Balık'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Ikizler_Ikizler": {
+    "score": 82,
+    "elementDynamic": "Hava & Hava: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "İkizler ile İkizler birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  },
+  "Ikizler_Yengec": {
+    "score": 70,
+    "elementDynamic": "Hava & Su: Mantık ve sezgilerin karşılaşması. Hava meseleleri rasyonel tartışmak isterken, Su hisleriyle hisseder. Birbirinizin eksik kalan yarısını tamamlayabilirsiniz.",
+    "loveOverview": "İkizler (Hava) ve Yengeç (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Ay etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "İkizler'ın değişken doğası ile Yengeç'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "İkizler bazen Yengeç'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Ikizler_Aslan": {
+    "score": 88,
+    "elementDynamic": "Ateş & Hava: Hava ateşi besler, alevlendirir; ateş ise havayı ısıtır. Birbirinize ilham veren, sosyal, vizyoner ve son derece dinamik bir element kombinasyonudur.",
+    "loveOverview": "İkizler (Hava) ve Aslan (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Güneş etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "İkizler'ın değişken doğası ile Aslan'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "İkizler bazen Aslan'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Ikizler_Basak": {
+    "score": 74,
+    "elementDynamic": "Hava & Toprak: Fikirlerin pratik dünya ile buluşması. Havanın zihinsel projeleri, toprağın sağlam temelleriyle hayat bulur.",
+    "loveOverview": "İkizler (Hava) ve Başak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Merkür etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "İkizler'ın değişken doğası ile Başak'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "İkizler bazen Başak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Ikizler_Terazi": {
+    "score": 92,
+    "elementDynamic": "Hava Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "İkizler (Hava) ve Terazi (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Venüs etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "İkizler'ın değişken doğası ile Terazi'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "İkizler bazen Terazi'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Ikizler_Akrep": {
+    "score": 70,
+    "elementDynamic": "Hava & Su: Mantık ve sezgilerin karşılaşması. Hava meseleleri rasyonel tartışmak isterken, Su hisleriyle hisseder. Birbirinizin eksik kalan yarısını tamamlayabilirsiniz.",
+    "loveOverview": "İkizler (Hava) ve Akrep (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Plüton / Mars etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "İkizler'ın değişken doğası ile Akrep'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "İkizler bazen Akrep'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Ikizler_Yay": {
+    "score": 88,
+    "elementDynamic": "Ateş & Hava: Hava ateşi besler, alevlendirir; ateş ise havayı ısıtır. Birbirinize ilham veren, sosyal, vizyoner ve son derece dinamik bir element kombinasyonudur.",
+    "loveOverview": "İkizler (Hava) ve Yay (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "İkizler'ın değişken doğası ile Yay'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "İkizler bazen Yay'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Ikizler_Oglak": {
+    "score": 74,
+    "elementDynamic": "Hava & Toprak: Fikirlerin pratik dünya ile buluşması. Havanın zihinsel projeleri, toprağın sağlam temelleriyle hayat bulur.",
+    "loveOverview": "İkizler (Hava) ve Oğlak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "İkizler'ın değişken doğası ile Oğlak'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "İkizler bazen Oğlak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Ikizler_Kova": {
+    "score": 92,
+    "elementDynamic": "Hava Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "İkizler (Hava) ve Kova (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Uranüs / Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "İkizler'ın değişken doğası ile Kova'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "İkizler bazen Kova'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Ikizler_Balik": {
+    "score": 70,
+    "elementDynamic": "Hava & Su: Mantık ve sezgilerin karşılaşması. Hava meseleleri rasyonel tartışmak isterken, Su hisleriyle hisseder. Birbirinizin eksik kalan yarısını tamamlayabilirsiniz.",
+    "loveOverview": "İkizler (Hava) ve Balık (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Neptün / Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "İkizler'ın değişken doğası ile Balık'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "İkizler bazen Balık'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Yengec_Yengec": {
+    "score": 82,
+    "elementDynamic": "Su & Su: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "Yengeç ile Yengeç birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  },
+  "Yengec_Aslan": {
+    "score": 72,
+    "elementDynamic": "Ateş & Su: Buharlaşma ya da söndürme riski! Ateşin coşkusu suyun hassas dünyasında dalgalar yaratabilir. Ancak doğru dengelendiğinde eşsiz bir tutku ve şefkat bağı doğar.",
+    "loveOverview": "Yengeç (Su) ve Aslan (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Ay ile Güneş etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Yengeç'ın öncü doğası ile Aslan'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Yengeç bazen Aslan'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Yengec_Basak": {
+    "score": 90,
+    "elementDynamic": "Toprak & Su: Su toprağı besler ve canlandırır; toprak ise suya güvenli bir yatak oluşturur. Son derece verimli, sadık ve duygusal olarak doyurucu bir kimyadır.",
+    "loveOverview": "Yengeç (Su) ve Başak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Ay ile Merkür etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Yengeç'ın öncü doğası ile Başak'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Yengeç bazen Başak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Yengec_Terazi": {
+    "score": 70,
+    "elementDynamic": "Hava & Su: Mantık ve sezgilerin karşılaşması. Hava meseleleri rasyonel tartışmak isterken, Su hisleriyle hisseder. Birbirinizin eksik kalan yarısını tamamlayabilirsiniz.",
+    "loveOverview": "Yengeç (Su) ve Terazi (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Ay ile Venüs etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Yengeç'ın öncü doğası ile Terazi'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Yengeç bazen Terazi'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Yengec_Akrep": {
+    "score": 92,
+    "elementDynamic": "Su Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "Yengeç (Su) ve Akrep (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Ay ile Plüton / Mars etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Yengeç'ın öncü doğası ile Akrep'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Yengeç bazen Akrep'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Yengec_Yay": {
+    "score": 72,
+    "elementDynamic": "Ateş & Su: Buharlaşma ya da söndürme riski! Ateşin coşkusu suyun hassas dünyasında dalgalar yaratabilir. Ancak doğru dengelendiğinde eşsiz bir tutku ve şefkat bağı doğar.",
+    "loveOverview": "Yengeç (Su) ve Yay (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Ay ile Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Yengeç'ın öncü doğası ile Yay'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Yengeç bazen Yay'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Yengec_Oglak": {
+    "score": 90,
+    "elementDynamic": "Toprak & Su: Su toprağı besler ve canlandırır; toprak ise suya güvenli bir yatak oluşturur. Son derece verimli, sadık ve duygusal olarak doyurucu bir kimyadır.",
+    "loveOverview": "Yengeç (Su) ve Oğlak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Ay ile Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Yengeç'ın öncü doğası ile Oğlak'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Yengeç bazen Oğlak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Yengec_Kova": {
+    "score": 70,
+    "elementDynamic": "Hava & Su: Mantık ve sezgilerin karşılaşması. Hava meseleleri rasyonel tartışmak isterken, Su hisleriyle hisseder. Birbirinizin eksik kalan yarısını tamamlayabilirsiniz.",
+    "loveOverview": "Yengeç (Su) ve Kova (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Ay ile Uranüs / Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Yengeç'ın öncü doğası ile Kova'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Yengeç bazen Kova'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Yengec_Balik": {
+    "score": 92,
+    "elementDynamic": "Su Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "Yengeç (Su) ve Balık (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Ay ile Neptün / Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Yengeç'ın öncü doğası ile Balık'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Yengeç bazen Balık'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Aslan_Aslan": {
+    "score": 82,
+    "elementDynamic": "Ateş & Ateş: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "Aslan ile Aslan birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  },
+  "Aslan_Basak": {
+    "score": 68,
+    "elementDynamic": "Ateş & Toprak: Ateşin hız ve risk arzusu, toprağın güvence ve sabır ihtiyacıyla çatışabilir. Ateş vizyonu çizerken toprak bunu somutlaştırırsa muazzam bir güç birliği olur.",
+    "loveOverview": "Aslan (Ateş) ve Başak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Güneş ile Merkür etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Aslan'ın sabit doğası ile Başak'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Aslan bazen Başak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Aslan_Terazi": {
+    "score": 88,
+    "elementDynamic": "Ateş & Hava: Hava ateşi besler, alevlendirir; ateş ise havayı ısıtır. Birbirinize ilham veren, sosyal, vizyoner ve son derece dinamik bir element kombinasyonudur.",
+    "loveOverview": "Aslan (Ateş) ve Terazi (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Güneş ile Venüs etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Aslan'ın sabit doğası ile Terazi'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Aslan bazen Terazi'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Aslan_Akrep": {
+    "score": 72,
+    "elementDynamic": "Ateş & Su: Buharlaşma ya da söndürme riski! Ateşin coşkusu suyun hassas dünyasında dalgalar yaratabilir. Ancak doğru dengelendiğinde eşsiz bir tutku ve şefkat bağı doğar.",
+    "loveOverview": "Aslan (Ateş) ve Akrep (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Güneş ile Plüton / Mars etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Aslan'ın sabit doğası ile Akrep'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Aslan bazen Akrep'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Aslan_Yay": {
+    "score": 92,
+    "elementDynamic": "Ateş Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "Aslan (Ateş) ve Yay (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Güneş ile Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Aslan'ın sabit doğası ile Yay'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Aslan bazen Yay'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Aslan_Oglak": {
+    "score": 68,
+    "elementDynamic": "Ateş & Toprak: Ateşin hız ve risk arzusu, toprağın güvence ve sabır ihtiyacıyla çatışabilir. Ateş vizyonu çizerken toprak bunu somutlaştırırsa muazzam bir güç birliği olur.",
+    "loveOverview": "Aslan (Ateş) ve Oğlak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Güneş ile Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Aslan'ın sabit doğası ile Oğlak'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Aslan bazen Oğlak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Aslan_Kova": {
+    "score": 88,
+    "elementDynamic": "Ateş & Hava: Hava ateşi besler, alevlendirir; ateş ise havayı ısıtır. Birbirinize ilham veren, sosyal, vizyoner ve son derece dinamik bir element kombinasyonudur.",
+    "loveOverview": "Aslan (Ateş) ve Kova (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Güneş ile Uranüs / Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Aslan'ın sabit doğası ile Kova'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Aslan bazen Kova'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Aslan_Balik": {
+    "score": 72,
+    "elementDynamic": "Ateş & Su: Buharlaşma ya da söndürme riski! Ateşin coşkusu suyun hassas dünyasında dalgalar yaratabilir. Ancak doğru dengelendiğinde eşsiz bir tutku ve şefkat bağı doğar.",
+    "loveOverview": "Aslan (Ateş) ve Balık (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Güneş ile Neptün / Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Aslan'ın sabit doğası ile Balık'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Aslan bazen Balık'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Basak_Basak": {
+    "score": 82,
+    "elementDynamic": "Toprak & Toprak: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "Başak ile Başak birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  },
+  "Basak_Terazi": {
+    "score": 74,
+    "elementDynamic": "Hava & Toprak: Fikirlerin pratik dünya ile buluşması. Havanın zihinsel projeleri, toprağın sağlam temelleriyle hayat bulur.",
+    "loveOverview": "Başak (Toprak) ve Terazi (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Venüs etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Başak'ın değişken doğası ile Terazi'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Başak bazen Terazi'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Basak_Akrep": {
+    "score": 90,
+    "elementDynamic": "Toprak & Su: Su toprağı besler ve canlandırır; toprak ise suya güvenli bir yatak oluşturur. Son derece verimli, sadık ve duygusal olarak doyurucu bir kimyadır.",
+    "loveOverview": "Başak (Toprak) ve Akrep (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Plüton / Mars etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Başak'ın değişken doğası ile Akrep'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Başak bazen Akrep'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Basak_Yay": {
+    "score": 68,
+    "elementDynamic": "Ateş & Toprak: Ateşin hız ve risk arzusu, toprağın güvence ve sabır ihtiyacıyla çatışabilir. Ateş vizyonu çizerken toprak bunu somutlaştırırsa muazzam bir güç birliği olur.",
+    "loveOverview": "Başak (Toprak) ve Yay (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Başak'ın değişken doğası ile Yay'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Başak bazen Yay'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Basak_Oglak": {
+    "score": 92,
+    "elementDynamic": "Toprak Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "Başak (Toprak) ve Oğlak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Başak'ın değişken doğası ile Oğlak'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Başak bazen Oğlak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Basak_Kova": {
+    "score": 74,
+    "elementDynamic": "Hava & Toprak: Fikirlerin pratik dünya ile buluşması. Havanın zihinsel projeleri, toprağın sağlam temelleriyle hayat bulur.",
+    "loveOverview": "Başak (Toprak) ve Kova (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Uranüs / Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Başak'ın değişken doğası ile Kova'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Başak bazen Kova'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Basak_Balik": {
+    "score": 90,
+    "elementDynamic": "Toprak & Su: Su toprağı besler ve canlandırır; toprak ise suya güvenli bir yatak oluşturur. Son derece verimli, sadık ve duygusal olarak doyurucu bir kimyadır.",
+    "loveOverview": "Başak (Toprak) ve Balık (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Merkür ile Neptün / Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Başak'ın değişken doğası ile Balık'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Başak bazen Balık'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Terazi_Terazi": {
+    "score": 82,
+    "elementDynamic": "Hava & Hava: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "Terazi ile Terazi birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  },
+  "Terazi_Akrep": {
+    "score": 70,
+    "elementDynamic": "Hava & Su: Mantık ve sezgilerin karşılaşması. Hava meseleleri rasyonel tartışmak isterken, Su hisleriyle hisseder. Birbirinizin eksik kalan yarısını tamamlayabilirsiniz.",
+    "loveOverview": "Terazi (Hava) ve Akrep (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Plüton / Mars etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Terazi'ın öncü doğası ile Akrep'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Terazi bazen Akrep'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Terazi_Yay": {
+    "score": 88,
+    "elementDynamic": "Ateş & Hava: Hava ateşi besler, alevlendirir; ateş ise havayı ısıtır. Birbirinize ilham veren, sosyal, vizyoner ve son derece dinamik bir element kombinasyonudur.",
+    "loveOverview": "Terazi (Hava) ve Yay (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Terazi'ın öncü doğası ile Yay'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Terazi bazen Yay'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Terazi_Oglak": {
+    "score": 74,
+    "elementDynamic": "Hava & Toprak: Fikirlerin pratik dünya ile buluşması. Havanın zihinsel projeleri, toprağın sağlam temelleriyle hayat bulur.",
+    "loveOverview": "Terazi (Hava) ve Oğlak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Terazi'ın öncü doğası ile Oğlak'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Terazi bazen Oğlak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Terazi_Kova": {
+    "score": 92,
+    "elementDynamic": "Hava Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "Terazi (Hava) ve Kova (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Uranüs / Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Terazi'ın öncü doğası ile Kova'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Terazi bazen Kova'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Terazi_Balik": {
+    "score": 70,
+    "elementDynamic": "Hava & Su: Mantık ve sezgilerin karşılaşması. Hava meseleleri rasyonel tartışmak isterken, Su hisleriyle hisseder. Birbirinizin eksik kalan yarısını tamamlayabilirsiniz.",
+    "loveOverview": "Terazi (Hava) ve Balık (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Venüs ile Neptün / Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Terazi'ın öncü doğası ile Balık'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Terazi bazen Balık'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Akrep_Akrep": {
+    "score": 82,
+    "elementDynamic": "Su & Su: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "Akrep ile Akrep birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  },
+  "Akrep_Yay": {
+    "score": 72,
+    "elementDynamic": "Ateş & Su: Buharlaşma ya da söndürme riski! Ateşin coşkusu suyun hassas dünyasında dalgalar yaratabilir. Ancak doğru dengelendiğinde eşsiz bir tutku ve şefkat bağı doğar.",
+    "loveOverview": "Akrep (Su) ve Yay (Ateş) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Plüton / Mars ile Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Akrep'ın sabit doğası ile Yay'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Akrep bazen Yay'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Ateş elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Akrep_Oglak": {
+    "score": 90,
+    "elementDynamic": "Toprak & Su: Su toprağı besler ve canlandırır; toprak ise suya güvenli bir yatak oluşturur. Son derece verimli, sadık ve duygusal olarak doyurucu bir kimyadır.",
+    "loveOverview": "Akrep (Su) ve Oğlak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Plüton / Mars ile Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Akrep'ın sabit doğası ile Oğlak'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Akrep bazen Oğlak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Akrep_Kova": {
+    "score": 70,
+    "elementDynamic": "Hava & Su: Mantık ve sezgilerin karşılaşması. Hava meseleleri rasyonel tartışmak isterken, Su hisleriyle hisseder. Birbirinizin eksik kalan yarısını tamamlayabilirsiniz.",
+    "loveOverview": "Akrep (Su) ve Kova (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Plüton / Mars ile Uranüs / Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Akrep'ın sabit doğası ile Kova'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Akrep bazen Kova'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Akrep_Balik": {
+    "score": 92,
+    "elementDynamic": "Su Üçlüsü: Aynı elementin çocukları olarak birbirinizin iç dünyasını kelimelere dökmeden anlayabilme yeteneğine sahipsiniz. Doğal bir uyum ve akış hakimdir.",
+    "loveOverview": "Akrep (Su) ve Balık (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Plüton / Mars ile Neptün / Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Akrep'ın sabit doğası ile Balık'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Akrep bazen Balık'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Su ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Yay_Yay": {
+    "score": 82,
+    "elementDynamic": "Ateş & Ateş: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "Yay ile Yay birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  },
+  "Yay_Oglak": {
+    "score": 68,
+    "elementDynamic": "Ateş & Toprak: Ateşin hız ve risk arzusu, toprağın güvence ve sabır ihtiyacıyla çatışabilir. Ateş vizyonu çizerken toprak bunu somutlaştırırsa muazzam bir güç birliği olur.",
+    "loveOverview": "Yay (Ateş) ve Oğlak (Toprak) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Jüpiter ile Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Yay'ın değişken doğası ile Oğlak'ın öncü yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Yay bazen Oğlak'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Toprak elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Yay_Kova": {
+    "score": 88,
+    "elementDynamic": "Ateş & Hava: Hava ateşi besler, alevlendirir; ateş ise havayı ısıtır. Birbirinize ilham veren, sosyal, vizyoner ve son derece dinamik bir element kombinasyonudur.",
+    "loveOverview": "Yay (Ateş) ve Kova (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Jüpiter ile Uranüs / Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Yay'ın değişken doğası ile Kova'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Yay bazen Kova'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Yay_Balik": {
+    "score": 72,
+    "elementDynamic": "Ateş & Su: Buharlaşma ya da söndürme riski! Ateşin coşkusu suyun hassas dünyasında dalgalar yaratabilir. Ancak doğru dengelendiğinde eşsiz bir tutku ve şefkat bağı doğar.",
+    "loveOverview": "Yay (Ateş) ve Balık (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Jüpiter ile Neptün / Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Yay'ın değişken doğası ile Balık'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Yay bazen Balık'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Ateş ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Oglak_Oglak": {
+    "score": 82,
+    "elementDynamic": "Toprak & Toprak: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "Oğlak ile Oğlak birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  },
+  "Oglak_Kova": {
+    "score": 74,
+    "elementDynamic": "Hava & Toprak: Fikirlerin pratik dünya ile buluşması. Havanın zihinsel projeleri, toprağın sağlam temelleriyle hayat bulur.",
+    "loveOverview": "Oğlak (Toprak) ve Kova (Hava) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Satürn ile Uranüs / Satürn etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Oğlak'ın öncü doğası ile Kova'ın sabit yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Oğlak bazen Kova'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Hava elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Oglak_Balik": {
+    "score": 90,
+    "elementDynamic": "Toprak & Su: Su toprağı besler ve canlandırır; toprak ise suya güvenli bir yatak oluşturur. Son derece verimli, sadık ve duygusal olarak doyurucu bir kimyadır.",
+    "loveOverview": "Oğlak (Toprak) ve Balık (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Satürn ile Neptün / Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Oğlak'ın öncü doğası ile Balık'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Oğlak bazen Balık'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Toprak ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Kova_Kova": {
+    "score": 82,
+    "elementDynamic": "Hava & Hava: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "Kova ile Kova birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  },
+  "Kova_Balik": {
+    "score": 70,
+    "elementDynamic": "Hava & Su: Mantık ve sezgilerin karşılaşması. Hava meseleleri rasyonel tartışmak isterken, Su hisleriyle hisseder. Birbirinizin eksik kalan yarısını tamamlayabilirsiniz.",
+    "loveOverview": "Kova (Hava) ve Balık (Su) ilişkisi, iki farklı kozmik enerjinin birbirini dönüştürme potansiyelini taşır. Uranüs / Satürn ile Neptün / Jüpiter etkileşimi ilişkide belirleyici rol oynar.",
+    "communication": "Kova'ın sabit doğası ile Balık'ın değişken yaklaşımı sohbetleri zenginleştirir. Fikir alışverişinde tarafsız kalındığında derin bir entelektüel bağ kurulur.",
+    "passion": "Zıtlıkların çekimi veya benzerliklerin harmonisi sayesinde aranızdaki romantik kıvılcım uzun süre canlı kalabilir. Birbirinizin merakını daima uyanık tutarsınız.",
+    "challenges": "Kova bazen Balık'ın tepkilerini öngörmekte zorlanabilir. Özellikle stres anlarında Hava ve Su elementlerinin zıt refleksleri ortaya çıkabilir.",
+    "advice": "Farklılıkları kusur değil, birbirinizi tamamlayan büyülü bir armağan olarak görün. Dinlemeyi ve koşulsuz kabulü ilişkinin temeline koyun."
+  },
+  "Balik_Balik": {
+    "score": 82,
+    "elementDynamic": "Su & Su: İki aynı burcun buluşması yüksek ayna etkisi yaratır. Güçlü taraflarınız katlanırken, zayıf noktalarınız da birbirinize yansır.",
+    "loveOverview": "Balık ile Balık birlikteliği, bir ruhun kendi yansımasıyla karşılaşması gibidir. Birbirinizin isteklerini, kırgınlıklarını ve hedeflerini sezgisel olarak hemen anlarsınız.",
+    "communication": "İletişiminiz çok hızlı ve dolaysızdır. Ancak her iki tarafın da aynı anda inatlaşması veya duygusal kapanması iletişimi bir anda kilitleyebilir.",
+    "passion": "Benzer arzulardan beslenen yüksek bir çekim vardır. Birlikteyken kendinizi özgür ve tam anlamıyla olduğunuz gibi hissedebilirsiniz.",
+    "challenges": "Aynı zayıf yönlere sahip olmanız en büyük handikaptır. İki tarafın da liderliği veya duygusal geri çekilmeyi aynı anda yaşaması gerilim yaratabilir.",
+    "advice": "Birbirinize rakip değil, aynı takımın iki oyuncusu olduğunuzu unutmayın. Güç gösterisinden kaçınıp birbirinize alan tanıyın."
+  }
+}

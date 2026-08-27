@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Animated, View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import type { TabScreenProps } from '@/navigation/types';
-import { recordDailyOpen, type DailyOpenResult } from '@/services/streak';
+import { getCheckinStatus, type CheckinStatus } from '@/services/streak';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import FeatureIcon from '@/components/FeatureIcon';
 import { FEATURE_ICONS } from '@/assets/icons';
@@ -22,7 +22,7 @@ type Props = TabScreenProps;
 type GridItem = {
   key: string;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   icon: React.ReactNode;
   onPress?: () => void;
 };
@@ -33,33 +33,37 @@ type Category = {
   items: GridItem[];
 };
 
+function chunkPairs<T>(items: T[]): T[][] {
+  const pairs: T[][] = [];
+  for (let i = 0; i < items.length; i += 2) {
+    pairs.push(items.slice(i, i + 2));
+  }
+  return pairs;
+}
+
 function GridButton({ item }: { item: GridItem }) {
   return (
     <Pressable
       onPress={item.onPress}
       style={({ pressed }) => [styles.gridButton, pressed && styles.gridButtonPressed]}
     >
-      <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={62} />
+      <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={56} />
       <View style={styles.gridTextWrap}>
-        <Text style={styles.gridTitle} numberOfLines={1}>
+        <Text style={styles.gridTitle} numberOfLines={2}>
           {item.title}
         </Text>
-        <Text style={styles.gridSubtitle} numberOfLines={2}>
-          {item.subtitle}
-        </Text>
       </View>
+      <Ionicons name="chevron-forward" size={14} color={GOLD} style={styles.gridChevron} />
     </Pressable>
   );
 }
 
 export default function HomeScreen({ navigation }: Props) {
-  const [rewardBanner, setRewardBanner] = useState<DailyOpenResult | null>(null);
+  const [checkinInfo, setCheckinInfo] = useState<CheckinStatus | null>(null);
   const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    recordDailyOpen().then((info) => {
-      if (info.isNewDay) setRewardBanner(info);
-    });
+    getCheckinStatus().then(setCheckinInfo);
   }, []);
 
   const goToTasks = () => navigation.navigate('Tasks');
@@ -72,7 +76,7 @@ export default function HomeScreen({ navigation }: Props) {
         {
           key: 'coffee',
           title: 'Kahve Falı',
-          subtitle: 'Fincanındaki sırları çöz',
+          subtitle: 'Fincanındaki sırları çözelim',
           icon: <MaterialCommunityIcons name="coffee" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('ImageReading', { kind: 'coffee' }),
         },
@@ -100,7 +104,7 @@ export default function HomeScreen({ navigation }: Props) {
         {
           key: 'voiceReading',
           title: 'Sesli Fal',
-          subtitle: 'Anlat, yapay zeka yorumlasın',
+          subtitle: 'Anlat, biz yorumlayalım',
           icon: <Ionicons name="mic-outline" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('VoiceReading'),
         },
@@ -282,21 +286,25 @@ export default function HomeScreen({ navigation }: Props) {
         <View style={styles.headerDivider} />
         <Text style={styles.headerCaption}>Kaderin kapılarını aralayın</Text>
 
-        {rewardBanner?.isNewDay && rewardBanner.rewardCoins > 0 && (
-          <Text style={styles.rewardToast}>+{rewardBanner.rewardCoins} coin kazandın! ({rewardBanner.dayInWeek}. gün) ✨</Text>
+        {checkinInfo && !checkinInfo.isClaimedToday && (
+          <Pressable onPress={goToTasks}>
+            <Text style={styles.rewardToast}>
+              Bugünkü yoklamanı yap, +{checkinInfo.todayRewardCoins} coin kazan! ({checkinInfo.dayInWeek}. gün) 📅
+            </Text>
+          </Pressable>
         )}
 
         <View style={styles.freeRow}>
           <Pressable onPress={goToTasks} style={({ pressed }) => [styles.freeButton, pressed && styles.pressedFade]}>
-            <FeatureIcon source={FEATURE_ICONS.freeCoins} fallback={<Ionicons name="gift-outline" size={18} color={GOLD} />} size={44} />
+            <FeatureIcon source={FEATURE_ICONS.freeCoins} fallback={<Ionicons name="gift-outline" size={22} color={GOLD} />} size={54} />
             <Text style={styles.freeButtonText} numberOfLines={2}>Ücretsiz Coin Kazan</Text>
           </Pressable>
           <Pressable
             onPress={() => navigation.navigate('MiniGames')}
             style={({ pressed }) => [styles.freeButton, pressed && styles.pressedFade]}
           >
-            <FeatureIcon source={FEATURE_ICONS.miniGames} fallback={<Ionicons name="game-controller-outline" size={18} color={GOLD} />} size={44} />
-            <Text style={styles.freeButtonText}>Mini Oyunlar</Text>
+            <FeatureIcon source={FEATURE_ICONS.miniGames} fallback={<Ionicons name="game-controller-outline" size={22} color={GOLD} />} size={54} />
+            <Text style={styles.freeButtonText} numberOfLines={2}>Mini Oyunlar</Text>
           </Pressable>
         </View>
 
@@ -305,8 +313,15 @@ export default function HomeScreen({ navigation }: Props) {
             <View key={category.key} style={styles.categorySection}>
               <Text style={styles.categoryTitle}>{category.title}</Text>
               <View style={styles.grid}>
-                {category.items.map((item) => (
-                  <GridButton key={item.key} item={item} />
+                {chunkPairs(category.items).map((pair, idx) => (
+                  <View key={`${category.key}-${idx}`} style={styles.gridRow}>
+                    <GridButton item={pair[0]} />
+                    {pair[1] ? (
+                      <GridButton item={pair[1]} />
+                    ) : (
+                      <View style={styles.gridPlaceholder} />
+                    )}
+                  </View>
                 ))}
               </View>
             </View>
@@ -323,7 +338,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 48,
     paddingBottom: 40,
-    paddingHorizontal: 24,
+    paddingHorizontal: 12,
   },
   banner: {
     width: '100%',
@@ -382,20 +397,22 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
+    gap: 8,
     backgroundColor: 'rgba(242, 200, 121, 0.16)',
-    borderWidth: 1,
+    borderWidth: 1.2,
     borderColor: GOLD_SOFT,
-    borderRadius: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 6,
+    borderRadius: 18,
+    paddingVertical: 7,
+    paddingLeft: 8,
+    paddingRight: 10,
+    minHeight: 68,
   },
   freeButtonText: {
-    fontSize: 12,
+    flex: 1,
+    fontSize: 12.5,
     fontWeight: '700',
     color: GOLD,
-    textAlign: 'center',
+    lineHeight: 16,
   },
   categoryList: {
     width: '100%',
@@ -413,37 +430,48 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    width: '100%',
     gap: 8,
   },
+  gridRow: {
+    flexDirection: 'row',
+    gap: 8,
+    width: '100%',
+  },
   gridButton: {
-    width: '49.5%',
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 9,
     backgroundColor: NIGHT_CARD,
     borderRadius: 18,
-    borderWidth: 1,
+    borderWidth: 1.2,
     borderColor: GOLD_SOFT,
-    padding: 8,
+    paddingVertical: 10,
+    paddingLeft: 8,
+    paddingRight: 6,
+    minHeight: 74,
   },
   gridButtonPressed: {
     opacity: 0.85,
-    transform: [{ scale: 0.97 }],
+    transform: [{ scale: 0.98 }],
+  },
+  gridPlaceholder: {
+    flex: 1,
   },
   gridTextWrap: {
     flex: 1,
+    justifyContent: 'center',
   },
   gridTitle: {
-    fontSize: 12.5,
+    fontSize: 14.5,
     fontWeight: '700',
     color: TEXT_PRIMARY,
-    marginBottom: 2,
+    lineHeight: 19,
+    letterSpacing: 0.2,
   },
-  gridSubtitle: {
-    fontSize: 10.5,
-    lineHeight: 13,
-    color: TEXT_MUTED,
+  gridChevron: {
+    opacity: 0.75,
+    marginRight: 2,
   },
 });

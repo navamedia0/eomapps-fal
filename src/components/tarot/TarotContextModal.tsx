@@ -9,7 +9,7 @@ const QUESTIONS = [
   'Hayatında yolunda gitmeyen bir şey var mı?',
   'Olmasını çok istediğin bir şey var mı?',
   'Şu anda en çok neyi merak ediyorsun?',
-  'Kalbinde taşıdığın, içine atamadığın bir duygu var mı?',
+  'İçinden atamadığın bir duygu var mı?',
   'Hayatında değişmesini istediğin bir şey var mı?',
 ];
 
@@ -64,6 +64,13 @@ export default function TarotContextModal({ visible, onClose }: Props) {
             İstersen birkaç soruya cevap ver — falın, senin şu anki halini sessizce göz önünde bulundurarak yorumlanır.
             Tamamen isteğe bağlı, boş bırakabilirsin.
           </Text>
+
+          <View style={styles.storageNotice}>
+            <Ionicons name="information-circle-outline" size={15} color={GOLD} />
+            <Text style={styles.storageNoticeText}>
+              Buradaki bilgiler Profil &gt; Kendinden Bahsetmek İster misin bölümünde saklanır, dilediğin zaman silebilirsin.
+            </Text>
+          </View>
 
           <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
             <View style={styles.freeformBlock}>
@@ -152,7 +159,25 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     lineHeight: 16,
     color: TEXT_MUTED,
+    marginBottom: 10,
+  },
+  storageNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderRadius: 10,
+    paddingVertical: 7,
+    paddingHorizontal: 10,
     marginBottom: 14,
+  },
+  storageNoticeText: {
+    flex: 1,
+    fontSize: 11,
+    color: GOLD,
+    lineHeight: 15,
   },
   body: {
     maxHeight: 340,

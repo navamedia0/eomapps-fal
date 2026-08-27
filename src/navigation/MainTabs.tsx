@@ -30,56 +30,57 @@ export default function MainTabs({ navigation }: Props) {
   const [index, setIndex] = useState(0);
   const insets = useSafeAreaInsets();
 
+  const bottomPadding = Math.max(insets.bottom + 6, 14);
+
   return (
     <View style={styles.flex}>
-      {/* Floating coin badge — sits above every tab's scroll content (not
-          inside it) so the coin count stays visible no matter how far down
-          the user scrolls, on every tab, not just Home. */}
+      {/* Floating coin badge */}
       <View style={[styles.floatingCoinWrap, { top: insets.top + 8 }]} pointerEvents="box-none">
         <CoinBadge navigation={navigation} />
       </View>
       <TabView<TabRoute>
-      navigationState={{ index, routes: ROUTES }}
-      onIndexChange={setIndex}
-      tabBarPosition="bottom"
-      lazy
-      renderScene={({ route }) => {
-        switch (route.key) {
-          case 'AnaSayfa':
-            return <HomeScreen navigation={navigation} />;
-          case 'Kesfet':
-            return <KesfetScreen navigation={navigation} />;
-          case 'BilgiKosesi':
-            return <BilgiKosesiScreen navigation={navigation} />;
-          case 'Magaza':
-            return <MagazaScreen navigation={navigation} />;
-          case 'Profil':
-            return <ProfilScreen navigation={navigation} />;
-          default:
-            return null;
-        }
-      }}
-      renderTabBar={({ navigationState, jumpTo }: SceneRendererProps & { navigationState: NavigationState<TabRoute> }) => (
-        <View style={styles.tabBar}>
-          {navigationState.routes.map((route, routeIndex) => {
-            const focused = navigationState.index === routeIndex;
-            return (
-              <Pressable key={route.key} onPress={() => jumpTo(route.key)} style={styles.tabItem} hitSlop={4}>
-                <View style={[styles.iconChip, focused && styles.iconChipActive]}>
-                  <Image
-                    source={NAV_ICONS[route.key]}
-                    style={[styles.tabIcon, { opacity: focused ? 1 : 0.6 }]}
-                    resizeMode="contain"
-                  />
-                </View>
-                <Text style={[styles.tabLabel, { color: focused ? GOLD : TEXT_MUTED }]} numberOfLines={1}>
-                  {route.title}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      )}
+        navigationState={{ index, routes: ROUTES }}
+        onIndexChange={setIndex}
+        tabBarPosition="bottom"
+        lazy
+        renderScene={({ route }) => {
+          switch (route.key) {
+            case 'AnaSayfa':
+              return <HomeScreen navigation={navigation} />;
+            case 'Kesfet':
+              return <KesfetScreen navigation={navigation} />;
+            case 'BilgiKosesi':
+              return <BilgiKosesiScreen navigation={navigation} />;
+            case 'Magaza':
+              return <MagazaScreen navigation={navigation} />;
+            case 'Profil':
+              return <ProfilScreen navigation={navigation} />;
+            default:
+              return null;
+          }
+        }}
+        renderTabBar={({ navigationState, jumpTo }: SceneRendererProps & { navigationState: NavigationState<TabRoute> }) => (
+          <View style={[styles.tabBar, { paddingBottom: bottomPadding }]}>
+            {navigationState.routes.map((route, routeIndex) => {
+              const focused = navigationState.index === routeIndex;
+              return (
+                <Pressable key={route.key} onPress={() => jumpTo(route.key)} style={styles.tabItem} hitSlop={4}>
+                  {/* Dış siyah kareleri kırparak sadece mor yuvarlak çerçeveyi ve büyütülmüş simgeyi gösterir */}
+                  <View style={[styles.tabIconClip, focused && styles.tabIconClipActive]}>
+                    <Image
+                      source={NAV_ICONS[route.key]}
+                      style={[styles.tabIcon, { opacity: focused ? 1 : 0.65 }]}
+                      resizeMode="cover"
+                    />
+                  </View>
+                  <Text style={[styles.tabLabel, { color: focused ? GOLD : TEXT_MUTED }]} numberOfLines={1}>
+                    {route.title}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
       />
     </View>
   );
@@ -100,36 +101,42 @@ const styles = StyleSheet.create({
     backgroundColor: NIGHT_MID,
     borderTopWidth: 1,
     borderTopColor: GOLD_SOFT,
-    height: 82,
+    minHeight: 88,
     paddingTop: 8,
-    paddingBottom: 10,
     paddingHorizontal: 4,
+    alignItems: 'center',
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 3,
   },
-  iconChip: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconChipActive: {
-    backgroundColor: 'rgba(242, 200, 121, 0.18)',
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-  },
-  tabIcon: {
+  tabIconClip: {
     width: 44,
     height: 44,
+    borderRadius: 12,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 5,
+  },
+  tabIconClipActive: {
+    borderWidth: 1.5,
+    borderColor: GOLD,
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  tabIcon: {
+    width: 56,
+    height: 56,
   },
   tabLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-    lineHeight: 12,
+    fontSize: 11,
+    fontWeight: '700',
+    lineHeight: 14,
+    textAlign: 'center',
   },
 });

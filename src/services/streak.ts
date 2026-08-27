@@ -3,12 +3,20 @@ import { addCoins } from '@/services/coins';
 
 const STORAGE_KEY = '@mistik-rehber/streak';
 
-type StreakState = { lastOpenDate: string; streak: number; longestStreak: number };
+type StreakState = {
+  lastClaimDate: string; // En son yoklama yapılan tarih
+  streak: number; // Güncel seri (gün sayısı)
+  longestStreak: number;
+};
 
-export type DailyOpenResult = { streak: number; isNewDay: boolean; rewardCoins: number; dayInWeek: number };
+export type CheckinStatus = {
+  streak: number;
+  dayInWeek: number;
+  isClaimedToday: boolean;
+  todayRewardCoins: number;
+};
 
-// 7-day cycling login reward schedule, in coins — resets after day 7 or after
-// a missed day (streak breaking starts the cycle over at day 1).
+// 7 günlük haftalık yoklama ödül tablosu
 export const WEEKLY_LOGIN_SCHEDULE: number[] = [5, 5, 10, 10, 15, 15, 30];
 
 const dateKey = (date: Date) => date.toISOString().slice(0, 10);
@@ -20,8 +28,12 @@ const yesterday = () => {
 };
 
 async function readState(): Promise<StreakState> {
-  const raw = await AsyncStorage.getItem(STORAGE_KEY);
-  return raw ? JSON.parse(raw) : { lastOpenDate: '', streak: 0, longestStreak: 0 };
+  try {
+    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : { lastClaimDate: '', streak: 0, longestStreak: 0 };
+  } catch {
+    return { lastClaimDate: '', streak: 0, longestStreak: 0 };
+  }
 }
 
 async function writeState(state: StreakState): Promise<void> {
@@ -29,32 +41,70 @@ async function writeState(state: StreakState): Promise<void> {
 }
 
 function dayInWeekFor(streak: number): number {
+  if (streak <= 0) return 1;
   return ((streak - 1) % WEEKLY_LOGIN_SCHEDULE.length) + 1;
 }
 
-export async function recordDailyOpen(): Promise<DailyOpenResult> {
+/**
+ * Güncel yoklama durumunu döner (otomatik coin vermez).
+ */
+export async function getCheckinStatus(): Promise<CheckinStatus> {
   const state = await readState();
-  if (state.lastOpenDate === today()) {
-    return { streak: state.streak, isNewDay: false, rewardCoins: 0, dayInWeek: dayInWeekFor(state.streak || 1) };
+  const isClaimedToday = state.lastClaimDate === today();
+
+  let activeStreak = state.streak;
+  if (!isClaimedToday && state.lastClaimDate !== yesterday()) {
+    // Seri bozulmuş, 1. günden başlar
+    activeStreak = 0;
   }
 
-  const newStreak = state.lastOpenDate === yesterday() ? state.streak + 1 : 1;
+  const nextDayNumber = isClaimedToday
+    ? dayInWeekFor(activeStreak)
+    : dayInWeekFor(activeStreak + 1);
+
+  const todayRewardCoins = WEEKLY_LOGIN_SCHEDULE[nextDayNumber - 1];
+
+  return {
+    streak: isClaimedToday ? activeStreak : activeStreak + 1,
+    dayInWeek: nextDayNumber,
+    isClaimedToday,
+    todayRewardCoins,
+  };
+}
+
+/**
+ * Kullanıcı "Yoklamayı Yap / Ödülü Topla" butonuna bastığında çağrılır.
+ */
+export async function claimDailyCheckin(): Promise<{ success: boolean; coinsAwarded: number; dayNumber: number }> {
+  const state = await readState();
+  if (state.lastClaimDate === today()) {
+    return { success: false, coinsAwarded: 0, dayNumber: dayInWeekFor(state.streak) };
+  }
+
+  const newStreak = state.lastClaimDate === yesterday() ? state.streak + 1 : 1;
   const longestStreak = Math.max(state.longestStreak, newStreak);
-  await writeState({ lastOpenDate: today(), streak: newStreak, longestStreak });
+  const dayNumber = dayInWeekFor(newStreak);
+  const coins = WEEKLY_LOGIN_SCHEDULE[dayNumber - 1];
 
-  const dayInWeek = dayInWeekFor(newStreak);
-  const rewardCoins = WEEKLY_LOGIN_SCHEDULE[dayInWeek - 1];
-  if (rewardCoins > 0) await addCoins(rewardCoins);
+  await writeState({
+    lastClaimDate: today(),
+    streak: newStreak,
+    longestStreak,
+  });
 
-  return { streak: newStreak, isNewDay: true, rewardCoins, dayInWeek };
+  if (coins > 0) {
+    await addCoins(coins);
+  }
+
+  return { success: true, coinsAwarded: coins, dayNumber };
 }
 
 export async function getCurrentStreak(): Promise<number> {
   const state = await readState();
-  return state.lastOpenDate === today() || state.lastOpenDate === yesterday() ? state.streak : 0;
+  return state.lastClaimDate === today() || state.lastClaimDate === yesterday() ? state.streak : 0;
 }
 
 export async function getCurrentDayInWeek(): Promise<number> {
-  const streak = await getCurrentStreak();
-  return dayInWeekFor(streak || 1);
+  const status = await getCheckinStatus();
+  return status.dayInWeek;
 }

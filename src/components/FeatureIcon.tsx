@@ -7,11 +7,9 @@ type Props = {
   size?: number;
 };
 
-// Renders a custom Cosmic Indigo feature image when one is available for
-// this key, falling back to the existing Ionicons-in-circle look otherwise.
-// The custom art already bakes in its own rounded frame + glow border, so it
-// is rendered edge-to-edge with no extra chrome layered on top — doubling up
-// a border/background here would just shrink the visible artwork.
+// Dış siyah/karanlık kare çerçeveyi kırparak yalnızca mor yuvarlatılmış neon çerçeveyi
+// ve içindeki simgeyi gösterir. Simgeler küçültülmez, aksine gereksiz dış siyahlıklar
+// atıldığı için görsel çok daha büyük, dolgun ve canlı görünür.
 export default function FeatureIcon({ source, fallback, size = 44 }: Props) {
   if (!source) {
     return (
@@ -19,9 +17,15 @@ export default function FeatureIcon({ source, fallback, size = 44 }: Props) {
     );
   }
 
+  const innerSize = Math.round(size * 1.26);
+
   return (
-    <View style={[styles.imageWrap, { width: size, height: size, borderRadius: size * 0.22 }]}>
-      <Image source={source} style={styles.image} resizeMode="cover" />
+    <View style={[styles.imageWrap, { width: size, height: size, borderRadius: Math.round(size * 0.27) }]}>
+      <Image
+        source={source}
+        style={[styles.image, { width: innerSize, height: innerSize }]}
+        resizeMode="cover"
+      />
     </View>
   );
 }
@@ -34,9 +38,10 @@ const styles = StyleSheet.create({
   },
   imageWrap: {
     overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   image: {
-    width: '100%',
-    height: '100%',
+    // Resim tam merkezlenir; dıştaki siyah kenarlıklar imageWrap'in yuvarlak sınırında kırpılır
   },
 });

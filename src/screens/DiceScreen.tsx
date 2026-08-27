@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, StyleSheet, Animated, Easing } from 'react-native';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import FeatureIcon from '@/components/FeatureIcon';
+import CornerTicks from '@/components/CornerTicks';
+import { getFunFortuneUsage, recordFunFortuneAttempt } from '@/services/funFortunesLimit';
 import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
@@ -61,8 +63,8 @@ function Die({ rolling, finalValue, delay }: { rolling: boolean; finalValue: num
         Animated.timing(rotateX, { toValue: spinsX, duration, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
         Animated.timing(rotateY, { toValue: spinsY, duration, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
         Animated.sequence([
-          Animated.timing(bounce, { toValue: 1, duration: duration * 0.5, easing: Easing.out(Easing.quad), useNativeDriver: true }),
-          Animated.spring(bounce, { toValue: 0, friction: 4, tension: 70, useNativeDriver: true }),
+          Animated.timing(bounce, { toValue: 1, duration: duration * 0.6, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+          Animated.timing(bounce, { toValue: 0, duration: duration * 0.4, easing: Easing.bounce, useNativeDriver: true }),
         ]),
       ]).start();
     }, delay);
@@ -110,9 +112,21 @@ function Die({ rolling, finalValue, delay }: { rolling: boolean; finalValue: num
 export default function DiceScreen() {
   const [values, setValues] = useState<[number, number] | null>(null);
   const [rolling, setRolling] = useState(false);
+  const [limitReached, setLimitReached] = useState(false);
 
-  const roll = useCallback(() => {
+  useEffect(() => {
+    getFunFortuneUsage('zar').then(({ reachedLimit }) => {
+      setLimitReached(reachedLimit);
+    });
+  }, []);
+
+  const roll = useCallback(async () => {
     if (rolling) return;
+    const res = await recordFunFortuneAttempt('zar');
+    if (!res.allowed) {
+      setLimitReached(true);
+      return;
+    }
     setValues(null);
     setRolling(true);
     const next: [number, number] = [randomFace(), randomFace()];
@@ -142,14 +156,22 @@ export default function DiceScreen() {
           </View>
         )}
 
-        <Pressable
-          onPress={roll}
-          disabled={rolling}
-          style={({ pressed }) => [styles.rollButton, (pressed || rolling) && styles.rollButtonPressed]}
-        >
-          <FeatureIcon source={FEATURE_ICONS.dice} fallback={<Ionicons name="dice-outline" size={18} color={NIGHT_CARD} />} size={32} />
-          <Text style={styles.rollButtonText}>{rolling ? 'Zarlar dönüyor...' : values ? 'Yeniden At' : 'Zarları At'}</Text>
-        </Pressable>
+        {limitReached ? (
+          <View style={styles.limitCard}>
+            <CornerTicks />
+            <MaterialCommunityIcons name="moon-waning-crescent" size={24} color={GOLD} />
+            <Text style={styles.limitText}>Bugünlük bu kadar yeter, enerjini dinlendir. Yarın tekrar gel.</Text>
+          </View>
+        ) : (
+          <Pressable
+            onPress={roll}
+            disabled={rolling}
+            style={({ pressed }) => [styles.rollButton, (pressed || rolling) && styles.rollButtonPressed]}
+          >
+            <FeatureIcon source={FEATURE_ICONS.dice} fallback={<Ionicons name="dice-outline" size={18} color={NIGHT_CARD} />} size={32} />
+            <Text style={styles.rollButtonText}>{rolling ? 'Zarlar dönüyor...' : values ? 'Yeniden At' : 'Zarları At'}</Text>
+          </Pressable>
+        )}
       </View>
     </MysticTableBackground>
   );
@@ -244,5 +266,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: NIGHT_CARD,
+  },
+  limitCard: {
+    position: 'relative',
+    backgroundColor: 'rgba(26, 16, 52, 0.92)',
+    borderRadius: 16,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    padding: 16,
+    alignItems: 'center',
+    gap: 8,
+    marginVertical: 10,
+    width: '100%',
+    maxWidth: 300,
+  },
+  limitText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: GOLD,
+    textAlign: 'center',
+    lineHeight: 19,
   },
 });

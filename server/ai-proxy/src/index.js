@@ -56,7 +56,7 @@ const BURST_LIMITS = {
 
 const BILGI_KOSESI_POOL_KEY = 'bilgi_kosesi_pool';
 const BILGI_KOSESI_DAILY_COUNT = 20;
-const BILGI_KOSESI_POOL_CAP = 600; // ~a month of stock at 20/day
+const BILGI_KOSESI_POOL_CAP = 8000; // ~1 year of stock at 20/day (365 days = 7300 cards)
 
 const POPULAR_FAVORITES_LIMIT = 10;
 const POPULAR_FAVORITES_TTL = 21 * 86400; // counters outlive the week they're read in, just in case
@@ -255,12 +255,23 @@ function isoWeekKey(date = new Date()) {
 // aggregate everyone's taps. Counting is add-only (no decrement on unfavorite)
 // to keep it simple; content metadata is upserted separately so the reader
 // doesn't need every client to keep resending full text.
-async function handleFavoriteCount(env, body) {
+async function handleFavoriteCount(env, body, request) {
   if (!env.RATE_LIMIT_KV) return jsonResponse({ ok: false });
-  const { id, kind, title, body: text, category } = body;
+  const { id, kind, title, body: text, category, deviceId } = body;
   if (!id || !text) return jsonResponse({ error: 'id ve body alanları gerekli.' }, 400);
 
   const weekKey = isoWeekKey();
+  const userId = deviceId || (request ? getClientIp(request) : 'anonymous');
+  const voteKey = `fav_vote:${weekKey}:${id}:${userId}`;
+
+  // If this user/device already voted for this quote this week, do not increment again
+  const alreadyVoted = await env.RATE_LIMIT_KV.get(voteKey);
+  if (alreadyVoted) {
+    return jsonResponse({ ok: true, duplicate: true });
+  }
+
+  await env.RATE_LIMIT_KV.put(voteKey, '1', { expirationTtl: POPULAR_FAVORITES_TTL });
+
   const countKey = `fav_count:${weekKey}:${id}`;
   const metaKey = `fav_meta:${id}`;
 
@@ -368,6 +379,101 @@ async function generateBilgiKosesiBatch(env) {
   return { added: newCards.length, poolSize: merged.length };
 }
 
+// 12 burcun tamamı için sabah 05:00 UTC'de günlük yorumları önceden üretir ve KV'ye yazar.
+// Böylece gün içinde hiçbir kullanıcı isteği Gemini'ye gitmez — hepsi anında KV'den döner.
+const ALL_SIGN_NAMES = [
+  'Koç', 'Boğa', 'İkizler', 'Yengeç', 'Aslan', 'Başak',
+  'Terazi', 'Akrep', 'Yay', 'Oğlak', 'Kova', 'Balık',
+];
+
+async function pregenerateDailyZodiacs(env) {
+  if (!env.GEMINI_API_KEY || !env.RATE_LIMIT_KV) return { generated: 0 };
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const dateLabel = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  let generated = 0;
+  const errors = [];
+
+  for (const signName of ALL_SIGN_NAMES) {
+    const cacheKey = `daily_zodiac_${todayStr}_${signName}`;
+
+    // Zaten varsa atla
+    const existing = await env.RATE_LIMIT_KV.get(cacheKey);
+    if (existing) continue;
+
+    const prompt = `Sen deneyimli bir astrologsun. ${dateLabel} tarihi için ${signName} burcuna özel, Türkçe, mistik ve edebi bir günlük burç yorumu yaz. Kesinlikle bir uzman gibi konuş. Yorumu aşk, kariyer ve genel enerji temalarını doğal bir akışla dokuyarak, tek bir bütün metin halinde yaz. 3-4 cümlelik akıcı bir paragraf yeterli.`;
+
+    try {
+      const resp = await fetch(`${GEMINI_URL(GEMINI_TEXT_MODEL)}?key=${env.GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+      });
+      if (!resp.ok) {
+        errors.push(`${signName}: HTTP ${resp.status}`);
+        continue;
+      }
+      const data = await resp.json();
+      const reading = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
+      if (reading) {
+        await env.RATE_LIMIT_KV.put(cacheKey, reading, { expirationTtl: 172800 }); // 48 saat
+        generated++;
+      }
+      // Rate limit koruması — her burç isteği arasında 500ms bekle
+      await new Promise((res) => setTimeout(res, 500));
+    } catch (err) {
+      errors.push(`${signName}: ${err.message}`);
+    }
+  }
+
+  return { generated, errors };
+}
+
+async function handleDailyZodiac(env, url) {
+  const sign = url.searchParams.get('sign');
+  if (!sign) return jsonResponse({ error: 'Burc parametresi eksik.' }, 400);
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const cacheKey = `daily_zodiac_${todayStr}_${sign}`;
+
+  if (env.RATE_LIMIT_KV) {
+    const cached = await env.RATE_LIMIT_KV.get(cacheKey);
+    if (cached) {
+      return jsonResponse({ date: todayStr, sign, reading: cached, source: 'cache' });
+    }
+  }
+
+  const dateLabel = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const prompt = `Sen deneyimli bir astrologsun. ${dateLabel} tarihi için ${sign} burcuna özel, Türkçe, mistik ve edebi bir günlük burç yorumu yaz. Kesinlikle bir yapay zeka olduğunu belli etme. Yorumu aşk, kariyer ve genel enerji temalarını doğal bir akışla dokuyarak, tek bir bütün metin halinde yaz. 3-4 cümlelik akıcı bir paragraf yeterli.`;
+
+  let reading = '';
+  if (env.GEMINI_API_KEY) {
+    try {
+      const resp = await fetch(`${GEMINI_URL(GEMINI_TEXT_MODEL)}?key=${env.GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        reading = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
+      }
+    } catch {}
+  }
+
+  if (reading && env.RATE_LIMIT_KV) {
+    await env.RATE_LIMIT_KV.put(cacheKey, reading, { expirationTtl: 172800 });
+  }
+
+  return jsonResponse({
+    date: todayStr,
+    sign,
+    reading: reading || `${sign} burcu için bugün gökyüzü yeni fırsatlar ve sezgisel uyanışlar vadediyor.`,
+    source: 'generated',
+  });
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
@@ -376,10 +482,14 @@ export default {
 
     const url = new URL(request.url);
 
-    if (request.method === 'GET' && (url.pathname === '/bilgi-kosesi' || url.pathname === '/popular-favorites')) {
+    if (
+      request.method === 'GET' &&
+      (url.pathname === '/bilgi-kosesi' || url.pathname === '/popular-favorites' || url.pathname === '/daily-zodiac')
+    ) {
       if (env.APP_SECRET && request.headers.get('X-App-Secret') !== env.APP_SECRET) {
         return jsonResponse({ error: 'Yetkisiz istek.' }, 401);
       }
+      if (url.pathname === '/daily-zodiac') return handleDailyZodiac(env, url);
       return url.pathname === '/bilgi-kosesi' ? handleGetBilgiKosesi(env) : handlePopularFavorites(env);
     }
 
@@ -396,6 +506,24 @@ export default {
       return jsonResponse(result);
     }
 
+    // Toplu içerik yükleme: yerel üretim scriptinden önceden üretilmiş kartları KV'ye yazar
+    if (url.pathname === '/bulk-import') {
+      let importBody;
+      try { importBody = await request.json(); } catch { return jsonResponse({ error: 'Gecersiz JSON.' }, 400); }
+      if (!Array.isArray(importBody?.cards)) return jsonResponse({ error: 'cards dizisi gerekli.' }, 400);
+      if (!env.RATE_LIMIT_KV) return jsonResponse({ error: 'KV bağlantısı yok.' }, 500);
+      const validCategories = new Set(['burc', 'kart', 'astroloji', 'tarot']);
+      const stamp = Date.now();
+      const newCards = importBody.cards
+        .filter((item) => item && validCategories.has(item.category) && item.title && item.body)
+        .map((item, i) => ({ id: `bulk-${stamp}-${i}`, category: item.category, title: String(item.title).slice(0, 80), body: String(item.body).slice(0, 240) }));
+      const raw = await env.RATE_LIMIT_KV.get(BILGI_KOSESI_POOL_KEY);
+      const pool = raw ? JSON.parse(raw) : [];
+      const merged = [...pool, ...newCards].slice(-BILGI_KOSESI_POOL_CAP);
+      await env.RATE_LIMIT_KV.put(BILGI_KOSESI_POOL_KEY, JSON.stringify(merged));
+      return jsonResponse({ imported: newCards.length, poolSize: merged.length });
+    }
+
     let body;
     try {
       body = await request.json();
@@ -404,7 +532,7 @@ export default {
     }
 
     if (url.pathname === '/favorite-count') {
-      return handleFavoriteCount(env, body);
+      return handleFavoriteCount(env, body, request);
     }
 
     const burstBlock = await enforceRateLimits(env, request, body.payload);
@@ -417,6 +545,17 @@ export default {
   },
 
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(generateBilgiKosesiBatch(env));
+    // Her gün 05:00 UTC (08:00 TR) — 12 burç günlük yorumlarını önceden üret
+    if (event.cron === '0 5 * * *') {
+      ctx.waitUntil(pregenerateDailyZodiacs(env));
+    }
+    // Her 48 saatte bir 05:00 UTC — Keşfet / Bilgi Köşesi içerik havuzuna 20 yeni kart ekle
+    if (event.cron === '0 5 */2 * *') {
+      ctx.waitUntil(generateBilgiKosesiBatch(env));
+    }
+    // Her Pazartesi 05:00 UTC — Bilgi Köşesi haftalık büyük toplu yenileme (40 kart = 2 kat)
+    if (event.cron === '0 5 * * 1') {
+      ctx.waitUntil(generateBilgiKosesiBatch(env).then(() => generateBilgiKosesiBatch(env)));
+    }
   },
 };

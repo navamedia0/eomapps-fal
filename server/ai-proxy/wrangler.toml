@@ -6,9 +6,12 @@ compatibility_date = "2026-08-25"
 binding = "RATE_LIMIT_KV"
 id = "3194c9e7a47f49b5a62a88c1a9aa0ebf"
 
-# Refreshes the Bilgi Köşesi content pool weekly (Monday 03:00 UTC).
+# Cron Takvimi (tüm saatler UTC = Türkiye saati - 3):
+#   0 5 * * *     → Her gün 05:00 UTC (08:00 TR)  — 12 burç günlük yorumları önceden üretilir
+#   0 5 */2 * *   → Her 48 saatte bir 05:00 UTC   — Keşfet/Bilgi Köşesi içerik havuzu yenilenir (20 yeni kart)
+#   0 5 * * 1     → Her Pazartesi 05:00 UTC        — Bilgi Köşesi haftalık büyük toplu yenileme (40 kart)
 [triggers]
-crons = ["0 3 * * 1"]
+crons = ["0 5 * * *", "0 5 */2 * *", "0 5 * * 1"]
 
 # Workers AI fallback (llama-3.2-11b-vision-instruct) — used when Gemini is
 # unavailable or its daily quota is exhausted. No account id/token needed at

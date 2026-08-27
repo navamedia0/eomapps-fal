@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
@@ -23,6 +24,9 @@ import { findSpread } from '@/services/tarotSpreads';
 import { getSelectedDesignImage } from '@/services/cardDesigns';
 import TarotCardBack from '@/components/tarot/TarotCardBack';
 import TarotContextModal from '@/components/tarot/TarotContextModal';
+import PersonInfoModal from '@/components/PersonInfoModal';
+import type { PersonInfo } from '@/types/personInfo';
+import { getSavedPersonInfo, savePersonInfo } from '@/services/personInfo';
 import TarotFanLayout from '@/components/tarot/TarotFanLayout';
 import TarotRadialLayout from '@/components/tarot/TarotRadialLayout';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -55,7 +59,35 @@ export default function TarotScreen({ navigation, route }: Props) {
   const [gridWidth, setGridWidth] = useState(0);
   const [customBack, setCustomBack] = useState<ImageSourcePropType | null>(null);
   const [contextModalVisible, setContextModalVisible] = useState(false);
+  const [personInfo, setPersonInfo] = useState<PersonInfo | null>(null);
+  const [personModalVisible, setPersonModalVisible] = useState(false);
   const { remaining: cooldownRemaining } = useReadingCooldown(tarotReadingType(spread.id));
+
+  useFocusEffect(
+    useCallback(() => {
+      getSavedPersonInfo().then((saved) => {
+        if (saved && (saved.name || saved.age || saved.relationshipStatus || saved.focusArea || saved.occupationStatus)) {
+          setPersonInfo(saved);
+        } else {
+          setPersonInfo(null);
+        }
+      });
+    }, []),
+  );
+
+  const handleSavePersonInfo = (info: PersonInfo) => {
+    setPersonInfo(info);
+    savePersonInfo(info);
+  };
+
+  const hasPersonInfo = Boolean(
+    personInfo &&
+      (personInfo.name?.trim() ||
+        personInfo.age ||
+        personInfo.relationshipStatus ||
+        personInfo.focusArea ||
+        personInfo.occupationStatus),
+  );
 
   useEffect(() => {
     getSelectedDesignImage().then(setCustomBack);
@@ -108,7 +140,7 @@ export default function TarotScreen({ navigation, route }: Props) {
         </View>
         <Text style={styles.progressText}>
           {selected.length >= spread.id
-            ? 'Tüm kartlar seçildi ✨'
+            ? 'Tüm kartlar seçildi 🌙'
             : `Sıradaki: ${nextPositionLabel} (${selected.length}/${spread.id})`}
         </Text>
 
@@ -144,16 +176,61 @@ export default function TarotScreen({ navigation, route }: Props) {
 
         <ReadingCooldownNotice remaining={cooldownRemaining} />
 
-        <Pressable
-          onPress={() => setContextModalVisible(true)}
-          style={({ pressed }) => [styles.contextButton, pressed && styles.buttonPressed]}
-        >
-          <Ionicons name="chatbubble-ellipses-outline" size={16} color={GOLD} />
-          <View style={styles.contextButtonTextWrap}>
-            <Text style={styles.contextButtonText}>Kendinden bahsetmek ister misin?</Text>
-            <Text style={styles.contextButtonCaption}>Daha iyi sonuç alabilmek için</Text>
-          </View>
-        </Pressable>
+        <View style={styles.dualButtonsRow}>
+          {/* Sol Buton: Kişi Bilgisi Gir */}
+          <Pressable
+            onPress={() => setPersonModalVisible(true)}
+            style={({ pressed }) => [
+              styles.dualButton,
+              hasPersonInfo && styles.dualButtonFilled,
+              pressed && styles.buttonPressed,
+            ]}
+          >
+            <View style={[styles.dualIconWrap, hasPersonInfo && styles.dualIconWrapFilled]}>
+              <Ionicons
+                name={hasPersonInfo ? 'person' : 'person-add-outline'}
+                size={16}
+                color={hasPersonInfo ? NIGHT_CARD : GOLD}
+              />
+            </View>
+            <View style={styles.dualButtonTextWrap}>
+              <Text style={styles.dualButtonTitle} numberOfLines={1}>
+                {hasPersonInfo ? (personInfo?.name ? personInfo.name : 'Kişi Bilgisi') : 'Kişi Bilgisi Gir'}
+              </Text>
+              <Text style={styles.dualButtonCaption} numberOfLines={1}>
+                {hasPersonInfo
+                  ? [personInfo?.age ? `${personInfo.age} yaş` : null, personInfo?.relationshipStatus].filter(Boolean).join(', ') || 'Kaydedildi'
+                  : 'İsim, yaş, ilişki'}
+              </Text>
+            </View>
+          </Pressable>
+
+          {/* Sağ Buton: Kendinden bahsetmek ister misin? */}
+          <Pressable
+            onPress={() => setContextModalVisible(true)}
+            style={({ pressed }) => [styles.dualButton, pressed && styles.buttonPressed]}
+          >
+            <View style={styles.dualIconWrap}>
+              <Ionicons name="chatbubble-ellipses-outline" size={16} color={GOLD} />
+            </View>
+            <View style={styles.dualButtonTextWrap}>
+              <Text style={styles.dualButtonTitle} numberOfLines={1}>
+                Kendinden bahset
+              </Text>
+              <Text style={styles.dualButtonCaption} numberOfLines={1}>
+                Ruh halin & niyetin
+              </Text>
+            </View>
+          </Pressable>
+        </View>
+
+        {/* Bilgilendirici İpucu Metni */}
+        <View style={styles.infoHintRow}>
+          <MaterialCommunityIcons name="information-outline" size={13} color={GOLD_SOFT} />
+          <Text style={styles.infoHintText}>
+            Daha isabetli ve sana özel bir fal analizi için kişi bilgilerini ve niyetini ekleyebilirsin.
+          </Text>
+        </View>
 
         {selected.length > 0 && (
           <Pressable onPress={clearSelection} style={styles.clearButton}>
@@ -163,6 +240,12 @@ export default function TarotScreen({ navigation, route }: Props) {
       </View>
 
       <TarotContextModal visible={contextModalVisible} onClose={() => setContextModalVisible(false)} />
+      <PersonInfoModal
+        visible={personModalVisible}
+        initialInfo={personInfo}
+        onSave={handleSavePersonInfo}
+        onClose={() => setPersonModalVisible(false)}
+      />
 
       {route.params.layout === 'fan' && (
         <TarotFanLayout deck={deck} selected={selected} isFull={isFull} customBack={customBack} onToggle={toggleCard} />
@@ -300,30 +383,53 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     transform: [{ scale: 0.98 }],
   },
-  contextButton: {
+  dualButtonsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     gap: 8,
     marginTop: 12,
     width: '100%',
+  },
+  dualButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
     borderRadius: 14,
-    paddingVertical: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    backgroundColor: 'rgba(30, 17, 64, 0.65)',
+    minHeight: 54,
   },
-  contextButtonTextWrap: {
+  dualButtonFilled: {
+    borderColor: GOLD,
+    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+  },
+  dualIconWrap: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'rgba(242, 200, 121, 0.14)',
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  contextButtonText: {
-    fontSize: 13.5,
-    color: GOLD,
+  dualIconWrapFilled: {
+    backgroundColor: GOLD,
+  },
+  dualButtonTextWrap: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  dualButtonTitle: {
+    fontSize: 12,
     fontWeight: '700',
+    color: GOLD,
+    marginBottom: 1,
   },
-  contextButtonCaption: {
-    fontSize: 10.5,
+  dualButtonCaption: {
+    fontSize: 10,
     color: TEXT_MUTED,
-    marginTop: 2,
   },
   clearButton: {
     alignSelf: 'center',
@@ -333,6 +439,21 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     color: TEXT_MUTED,
     textDecorationLine: 'underline',
+  },
+  infoHintRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    marginTop: 8,
+    marginBottom: 4,
+    paddingHorizontal: 8,
+  },
+  infoHintText: {
+    fontSize: 10.5,
+    color: GOLD_SOFT,
+    textAlign: 'center',
+    lineHeight: 14,
   },
   gridContent: {
     paddingTop: 22,

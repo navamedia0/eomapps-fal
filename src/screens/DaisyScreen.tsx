@@ -1,7 +1,9 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, TextInput, Pressable, StyleSheet, Animated, Easing, KeyboardAvoidingView, Platform } from 'react-native';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import CornerTicks from '@/components/CornerTicks';
+import { getFunFortuneUsage, recordFunFortuneAttempt } from '@/services/funFortunesLimit';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 const MIN_PETALS = 13;
@@ -42,14 +44,26 @@ export default function DaisyScreen() {
   const [started, setStarted] = useState(false);
   const [totalPetals, setTotalPetals] = useState(randomPetalCount());
   const [plucked, setPlucked] = useState(0);
+  const [limitReached, setLimitReached] = useState(false);
   const pop = useRef(new Animated.Value(1)).current;
   const petalAnimsRef = useRef<Animated.Value[]>([]);
+
+  useEffect(() => {
+    getFunFortuneUsage('papatya').then(({ reachedLimit }) => {
+      setLimitReached(reachedLimit);
+    });
+  }, []);
 
   const remaining = totalPetals - plucked;
   const finished = started && remaining === 0;
   const currentLabel = plucked % 2 === 0 ? 'Seviyor' : 'Sevmiyor';
 
-  const begin = useCallback(() => {
+  const begin = useCallback(async () => {
+    const res = await recordFunFortuneAttempt('papatya');
+    if (!res.allowed) {
+      setLimitReached(true);
+      return;
+    }
     const count = randomPetalCount();
     petalAnimsRef.current = Array.from({ length: count }, () => new Animated.Value(1));
     setTotalPetals(count);
@@ -94,10 +108,18 @@ export default function DaisyScreen() {
                 placeholderTextColor={TEXT_MUTED}
                 style={styles.input}
               />
-              <Pressable onPress={begin} style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
-                <Ionicons name="flower-outline" size={18} color={NIGHT_CARD} />
-                <Text style={styles.actionButtonText}>Papatyayı Kopar</Text>
-              </Pressable>
+              {limitReached ? (
+                <View style={styles.limitCard}>
+                  <CornerTicks />
+                  <MaterialCommunityIcons name="moon-waning-crescent" size={24} color={GOLD} />
+                  <Text style={styles.limitText}>Bugünlük bu kadar yeter, enerjini dinlendir. Yarın tekrar gel.</Text>
+                </View>
+              ) : (
+                <Pressable onPress={begin} style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}>
+                  <Ionicons name="flower-outline" size={18} color={NIGHT_CARD} />
+                  <Text style={styles.actionButtonText}>Papatyayı Kopar</Text>
+                </Pressable>
+              )}
             </>
           )}
 
@@ -295,5 +317,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: GOLD,
+  },
+  limitCard: {
+    position: 'relative',
+    backgroundColor: 'rgba(26, 16, 52, 0.92)',
+    borderRadius: 16,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    padding: 16,
+    alignItems: 'center',
+    gap: 8,
+    marginVertical: 10,
+    width: '100%',
+  },
+  limitText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: GOLD,
+    textAlign: 'center',
+    lineHeight: 19,
   },
 });

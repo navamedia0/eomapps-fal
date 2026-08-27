@@ -6,3 +6,8 @@
 // of this same baseline: 2x / 3.3x / 5.3x.
 export const READING_COIN_COST = 15;
 export const VOICE_READING_COIN_COST = 20;
+export const DETAILED_BIRTH_CHART_COIN_COST = 25;
+export const DEEP_DREAM_COIN_COST = 20;
+export const DREAM_MESSAGE_COIN_COST = 5;
+
+

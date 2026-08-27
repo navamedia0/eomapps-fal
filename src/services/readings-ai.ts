@@ -15,11 +15,34 @@ import { getCoffeeSymbolGlossary } from '@/services/coffeeSymbols';
 import { getPalmistryGlossary } from '@/services/palmistry';
 import { getProfileSummary } from '@/services/profile';
 import { turkishUpperCase } from '@/utils/turkishCase';
+import type { PersonInfo } from '@/types/personInfo';
+import { getSavedPersonInfo } from '@/services/personInfo';
+import { env } from '@/config/env';
 
 async function buildProfileBlock(): Promise<string> {
   const summary = await getProfileSummary();
-  if (!summary) return '';
-  return `\n\nKullanıcı hakkında (yalnızca senin özümsemen için — asla doğrudan alıntılama veya "bana anlattığına göre" gibi ifadelerle atıfta bulunma; yorumuna sessizce sızdır):\n${summary}`;
+  const person = await getSavedPersonInfo();
+  const parts: string[] = [];
+
+  if (person) {
+    const details: string[] = [];
+    if (person.name) details.push(`İsim/Rumuz: ${person.name}`);
+    if (person.age) details.push(`Yaş: ${person.age}`);
+    if (person.gender) details.push(`Cinsiyet: ${person.gender}`);
+    if (person.relationshipStatus) details.push(`İlişki Durumu: ${person.relationshipStatus}`);
+    if (person.occupationStatus) details.push(`Çalışma/Meslek: ${person.occupationStatus}`);
+    if (person.focusArea) details.push(`Falda Odaklanılan Konu: ${person.focusArea}`);
+    if (details.length > 0) {
+      parts.push(`Fal Sahibi Kişisel Bilgileri:\n${details.join('\n')}`);
+    }
+  }
+
+  if (summary) {
+    parts.push(`Kullanıcı Ruh Hali ve Notları:\n${summary}`);
+  }
+
+  if (parts.length === 0) return '';
+  return `\n\nDanışan / Fal Sahibi hakkında arka plan bilgileri (yalnızca senin özümsemen ve kartları kişiye özel hissettirerek yorumlaman için — asla "verdiğin bilgilere göre" gibi mekanik ifadeler kullanma; sezgisel bir falcı gibi yorumuna sızdır):\n${parts.join('\n\n')}`;
 }
 
 export async function interpretTarotSpread(cards: TarotCard[], positions: string[]): Promise<string> {
@@ -76,8 +99,9 @@ export async function interpretKatinaSpread(cards: KatinaCard[], positions: stri
       return `${positions[index]}: ${card.name}${referenceLine}`;
     })
     .join('\n');
-  const headerList = positions.map((position) => `"${turkishUpperCase(position)}:"`).join(', ');
-  const formatInstruction = `Yanıtını ${positions.length} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" satırını doğrudan kopyalama; onu yalnızca ilham kaynağı olarak kullanıp kendi akıcı ve edebi üslubunla yeniden anlat.`;
+  const allPositions = [...positions, 'Genel Yorum'];
+  const headerList = allPositions.map((position) => `"${turkishUpperCase(position)}:"`).join(', ');
+  const formatInstruction = `Yanıtını ${allPositions.length} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" satırını doğrudan kopyalama; onu yalnızca ilham kaynağı olarak kullanıp kendi akıcı ve edebi üslubunla yeniden anlat. Son bölüm olan "GENEL YORUM:", Geçmiş, Şimdi ve Gelecek kartlarının birbiriyle uyumunu, oluşturdukları ortak hikayeyi ve kullanıcının hayatına/aşkına dair nihai çıkarımı derin, bilgece ve bütünsel bir sentezle özetlemeli.`;
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.katinaSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${profileBlock}`;
   await guardReadingCooldown('katina');
@@ -89,18 +113,19 @@ export async function interpretKatinaSpread(cards: KatinaCard[], positions: stri
   ]);
 }
 
-export async function interpretDreamChat(history: ChatTurn[]): Promise<string> {
+export async function interpretDreamChat(history: ChatTurn[], mode: 'limited' | 'deep' = 'limited'): Promise<string> {
   const lastUserTurn = [...history].reverse().find((turn) => turn.role === 'user');
   const matches = lastUserTurn ? findDreamMatches(lastUserTurn.text) : [];
 
   const referenceBlock = matches.length
-    ? `\n\nArka plan bilgisi (yalnızca senin özümsemen için — kaynak etiketlerini ya da bu listeyi kullanıcıya asla gösterme, tek bir bütünsel yoruma karıştır):\n${matches
+    ? `\n\nArka plan sembol bilgisi (yalnızca senin özümsemen için — kaynak etiketlerini ya da bu listeyi kullanıcıya asla gösterme, tek bir bütünsel yoruma karıştır):\n${matches
         .map((match) => `- (${match.source === 'folk' ? 'halk' : 'psikanaliz'}) ${match.word}: ${match.meaning}`)
         .join('\n')}`
     : '';
 
   const profileBlock = await buildProfileBlock();
-  const systemPrompt = `${prompts.dreamChat}${referenceBlock}${profileBlock}`;
+  const basePrompt = mode === 'deep' ? prompts.deepDreamAnalysis : prompts.dreamChat;
+  const systemPrompt = `${basePrompt}${referenceBlock}${profileBlock}`;
   return withFallbackChain([
     () => askGeminiChat(systemPrompt, history),
     () => askCloudflareChat(systemPrompt, history),
@@ -110,9 +135,47 @@ export async function interpretDreamChat(history: ChatTurn[]): Promise<string> {
 }
 
 export async function interpretDailyZodiac(signName: string): Promise<string> {
+  // 1. Önce sunucu KV önbelleğini dene (tüm kullanıcılara aynı gün için aynı içerik, sıfır ek AI maliyeti)
+  try {
+    const proxyUrl = env.aiProxyUrl();
+    const appSecret = env.appSecret();
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (appSecret) headers['X-App-Secret'] = appSecret;
+
+    const response = await fetch(`${proxyUrl}/daily-zodiac?sign=${encodeURIComponent(signName)}`, { headers });
+    if (response.ok) {
+      const data = await response.json();
+      if (data?.reading) return String(data.reading);
+    }
+  } catch {
+    // Sunucu erişilemezse doğrudan AI'ya düş
+  }
+
+  // 2. Yerel önbellek (cihaz cache – aynı gün için bir kez çekilen yorum)
+  const { getCachedZodiacReading, setCachedZodiacReading } = await import('@/services/dailyZodiacCache');
+  const zodiac = signName as import('@/services/zodiac').Zodiac;
+  const cached = await getCachedZodiacReading(zodiac);
+  if (cached) return cached;
+
+  // 3. Son çare: Yapay Zekaya doğrudan sor
   const dateLabel = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.dailyZodiac(signName, dateLabel)}${profileBlock}`;
+  const reading = await withFallbackChain([
+    () => askGemini(prompt),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+
+  // Cihaz önbelleğine kaydet (aynı gün için bir daha AI isteği gitmesin)
+  await setCachedZodiacReading(zodiac, reading);
+  return reading;
+}
+
+export async function interpretBirthChart(sunSign: string, moonSign: string, risingSign: string): Promise<string> {
+  const profileBlock = await buildProfileBlock();
+  const prompt = `${prompts.birthChart(sunSign, moonSign, risingSign)}${profileBlock}`;
   return withFallbackChain([
     () => askGemini(prompt),
     () => askCloudflare(prompt),
@@ -121,9 +184,35 @@ export async function interpretDailyZodiac(signName: string): Promise<string> {
   ]);
 }
 
-export async function interpretBirthChart(sunSign: string, moonSign: string, risingSign: string): Promise<string> {
+export async function interpretDetailedBirthChart(chart: import('@/services/astrology').DetailedBirthChart): Promise<string> {
+  const planetsSummary = chart.planets
+    .map(
+      (p) =>
+        `- ${p.symbol} ${p.name}: ${p.signName} burcunda (${p.formattedDegree}), ${p.house}. Evde${
+          p.isRetrograde ? ' [RETRO]' : ''
+        }`,
+    )
+    .join('\n');
+
+  const aspectsSummary = chart.aspects
+    .slice(0, 10)
+    .map((a) => `- ${a.body1Name} ${a.symbol} ${a.body2Name} (${a.aspectName}, orb: ${a.orb}°): ${a.interpretation}`)
+    .join('\n');
+
+  const elementsSummary = `Elementler: Ateş: %${chart.elements.fire.percentage}, Toprak: %${chart.elements.earth.percentage}, Hava: %${chart.elements.air.percentage}, Su: %${chart.elements.water.percentage} (Baskın: ${chart.elements.dominant})\nNitelikler: Öncü: %${chart.modalities.cardinal.percentage}, Sabit: %${chart.modalities.fixed.percentage}, Değişken: %${chart.modalities.mutable.percentage} (Baskın: ${chart.modalities.dominant})`;
+
+  const adv = chart.advanced;
+  const advancedSummary = [
+    `- 7. Ev (DSC - Alçalan / Evlilik Burcu): ${adv.love.dscSignName}. Ruh Eşi Adayları: ${adv.love.soulmateSigns.map((s) => `${s.signName} (%${s.score})`).join(', ')}. Tutku Burcu: ${adv.love.passionSign.signName}. Zorlu Karmik Sınav: ${adv.love.challengingSign.signName}.`,
+    `- Harita Yöneticisi: ${adv.chartRuler.rulerName} (${adv.chartRuler.house}. Evde, ${adv.chartRuler.signName}).`,
+    `- Baskın Gezegen: ${adv.dominantPlanet.name} (${adv.dominantPlanet.house}. Evde, ${adv.dominantPlanet.signName}).`,
+    `- Şans Noktası (Pars Fortunae): ${adv.fortunePoint.formatted} (${adv.fortunePoint.house}. Evde).`,
+    `- Karmik Ay Düğümleri: Kuzey Ay Düğümü ${adv.lunarNodes.northNode.signName} (${adv.lunarNodes.northNode.house}. Ev). Güney Ay Düğümü ${adv.lunarNodes.southNode.signName} (${adv.lunarNodes.southNode.house}. Ev).`,
+    `- MC Tepe Noktası (Kariyer): ${adv.career.mcSignName}. İdeal Alanlar: ${adv.career.careerFields.join(', ')}.`,
+  ].join('\n');
+
   const profileBlock = await buildProfileBlock();
-  const prompt = `${prompts.birthChart(sunSign, moonSign, risingSign)}${profileBlock}`;
+  const prompt = `${prompts.detailedBirthChart(planetsSummary, aspectsSummary, elementsSummary, advancedSummary)}${profileBlock}`;
   return withFallbackChain([
     () => askGemini(prompt),
     () => askCloudflare(prompt),
@@ -168,10 +257,27 @@ export async function interpretVoiceReading(audioBase64: string, mimeType: strin
 export async function interpretImages(
   kind: 'coffee' | 'palm',
   images: Array<{ mimeType: string; data: string }>,
+  personInfo?: PersonInfo | null,
 ): Promise<string> {
   if (images.length === 0) throw new Error('En az bir görsel gerekli.');
   const glossary = kind === 'coffee' ? getCoffeeSymbolGlossary() : getPalmistryGlossary();
-  const prompt = kind === 'coffee' ? prompts.coffee(glossary) : prompts.palm(glossary);
+  let prompt = kind === 'coffee' ? prompts.coffee(glossary) : prompts.palm(glossary);
+
+  if (personInfo) {
+    const details: string[] = [];
+    if (personInfo.name) details.push(`İsim/Rumuz: ${personInfo.name}`);
+    if (personInfo.age) details.push(`Yaş: ${personInfo.age}`);
+    if (personInfo.gender) details.push(`Cinsiyet: ${personInfo.gender}`);
+    if (personInfo.relationshipStatus) details.push(`İlişki Durumu: ${personInfo.relationshipStatus}`);
+    if (personInfo.occupationStatus) details.push(`Çalışma/Meslek: ${personInfo.occupationStatus}`);
+    if (personInfo.focusArea) details.push(`Falda Odaklanılan Konu: ${personInfo.focusArea}`);
+    if (details.length > 0) {
+      prompt += `\n\nFal Sahibi Bilgileri:\n${details.join('\n')}\nÖnemli Talimat: Bu kişisel bilgileri fincandaki/eldeki sembollerle ustaca ve sezgisel olarak harmanla. Yorumu doğrudan bu kişinin hayatına, yaşına, ilişkisine ve niyetine hitap eden sıcak, samimi ve kişiselleştirilmiş bir dille sun; ancak "verdiğin bilgilere göre" gibi mekanik ifadeler kullanma, doğal bir falcı sezgisi gibi yorumuna akıt.`;
+    }
+  }
+  const profileBlock = await buildProfileBlock();
+  prompt += profileBlock;
+
   const readingType = kind === 'coffee' ? 'kahve' : 'el';
   await guardReadingCooldown(readingType);
   return withFallbackChain([

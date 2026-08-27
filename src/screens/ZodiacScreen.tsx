@@ -101,6 +101,7 @@ export default function ZodiacScreen({ navigation }: Props) {
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <Text style={styles.dateLabel}>{todayLabel}</Text>
           <Text style={styles.instruction}>Burcunu seç, yıldızların bugün sana ne söylediğini keşfet.</Text>
+          <Text style={styles.refreshNote}>Her gün saat 08:00'de yenilenir</Text>
           <View style={styles.grid}>
             {ZODIACS.map((sign) => {
               const info = ZODIAC_INFO[sign];
@@ -436,5 +437,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: GOLD,
+  },
+  refreshNote: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+    marginTop: 4,
+    marginBottom: 12,
   },
 });

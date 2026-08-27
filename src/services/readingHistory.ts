@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type ReadingHistoryType = 'kahve' | 'el' | 'tarot' | 'katina' | 'sesli' | 'solitaire';
+export type ReadingHistoryType = 'kahve' | 'el' | 'tarot' | 'katina' | 'sesli' | 'solitaire' | 'dogumHaritasi';
 
 export type ReadingHistoryEntry = {
   id: string;
@@ -8,6 +8,7 @@ export type ReadingHistoryEntry = {
   title: string;
   result: string;
   createdAt: number;
+  metadata?: any;
 };
 
 const STORAGE_KEY = '@mistik-rehber/reading-history';

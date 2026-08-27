@@ -11,6 +11,7 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import quotes from '@/data/kesfet_sozleri.json';
 import { FEATURE_ICONS } from '@/assets/icons';
 import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
+import PopularDetailModal from '@/components/PopularDetailModal';
 import { GOLD, GOLD_SOFT, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 const QUOTE_CARD_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
@@ -72,29 +73,33 @@ const FEATURES: Array<{
 
 type FeedItem = { type: 'quote'; text: string } | { type: 'feature'; feature: (typeof FEATURES)[number] };
 
-function todayKey(): string {
-  return new Date().toISOString().slice(0, 10);
-}
+const KESFET_PER_PERIOD_COUNT = 30;
 
-// Day-of-year seeded rotation so the quote order (and which quotes lead)
-// changes daily instead of always starting from index 0 — the same 150-item
-// pool cycles through fully every ~150 days, and every user sees the same
-// "today's" set (no per-device randomness to reconcile).
-function dayIndex(): number {
+// 48 saatlik dönem hesabı — Sabah 08:00 Türkiye saatine göre senkronize
+function get48hPeriodIndex(): number {
   const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  return Math.floor((now.getTime() - start.getTime()) / 86400000);
+  // UTC+3 (Türkiye) ve sabah 08:00 ofseti
+  const epochMs = now.getTime() + 3 * 3600 * 1000 - 8 * 3600 * 1000;
+  const periodMs = 48 * 3600 * 1000;
+  return Math.floor(epochMs / periodMs);
 }
 
 function buildFeed(): FeedItem[] {
-  const offset = dayIndex() % QUOTES.length;
-  const rotatedQuotes = [...QUOTES.slice(offset), ...QUOTES.slice(0, offset)];
+  if (QUOTES.length === 0) return [];
+  const period = get48hPeriodIndex();
+  const offset = (period * KESFET_PER_PERIOD_COUNT) % QUOTES.length;
+  const rotatedQuotes = [...QUOTES.slice(offset), ...QUOTES.slice(0, offset)].slice(
+    0,
+    Math.min(KESFET_PER_PERIOD_COUNT, QUOTES.length),
+  );
+
   const feed: FeedItem[] = [];
   let featureCount = 0;
   for (let i = 0; i < rotatedQuotes.length; i += 1) {
     feed.push({ type: 'quote', text: rotatedQuotes[i] });
-    if ((i + 1) % 3 === 0) {
-      feed.push({ type: 'feature', feature: FEATURES[(featureCount + dayIndex()) % FEATURES.length] });
+    // Her 6 sözde bir mistik araç kartı ekle
+    if ((i + 1) % 6 === 0 && featureCount < FEATURES.length) {
+      feed.push({ type: 'feature', feature: FEATURES[(featureCount + period) % FEATURES.length] });
       featureCount += 1;
     }
   }
@@ -102,12 +107,17 @@ function buildFeed(): FeedItem[] {
 }
 
 export default function KesfetScreen({ navigation }: Props) {
+  const periodKey = useMemo(() => get48hPeriodIndex(), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const feed = useMemo(buildFeed, [todayKey()]);
+  const feed = useMemo(buildFeed, [periodKey]);
   const [popular, setPopular] = useState<PopularFavorite[]>([]);
+  const [selectedPopular, setSelectedPopular] = useState<PopularFavorite | null>(null);
 
   useEffect(() => {
-    getPopularFavorites().then(setPopular);
+    getPopularFavorites().then((items) => {
+      // Sadece sözler (quote) Keşfet ekranında listelenir, bilgi köşesi yazıları filtrelenir
+      setPopular(items.filter((item) => item.kind !== 'info' && !item.id.startsWith('info:')));
+    });
   }, []);
 
   return (
@@ -117,7 +127,7 @@ export default function KesfetScreen({ navigation }: Props) {
           <Ionicons name="compass-outline" size={26} color={GOLD} />
           <Text style={styles.headerTitle}>Keşfet</Text>
         </View>
-        <Text style={styles.refreshNote}>Her gün 00:00'da yenilenir</Text>
+        <Text style={styles.refreshNote}>Her 48 saatte bir saat 08:00'de güncellenir</Text>
 
         {popular.length > 0 && (
           <View style={styles.popularSection}>
@@ -127,7 +137,11 @@ export default function KesfetScreen({ navigation }: Props) {
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.popularRow}>
               {popular.map((item) => (
-                <View key={item.id} style={styles.popularCard}>
+                <Pressable
+                  key={item.id}
+                  onPress={() => setSelectedPopular(item)}
+                  style={({ pressed }) => [styles.popularCard, pressed && styles.popularCardPressed]}
+                >
                   {item.title && <Text style={styles.popularCardTitle}>{item.title}</Text>}
                   <Text style={styles.popularCardBody} numberOfLines={4}>
                     {item.body}
@@ -136,7 +150,7 @@ export default function KesfetScreen({ navigation }: Props) {
                     <Ionicons name="star" size={11} color={GOLD} />
                     <Text style={styles.popularCount}>{item.count}</Text>
                   </View>
-                </View>
+                </Pressable>
               ))}
             </ScrollView>
           </View>
@@ -189,6 +203,7 @@ export default function KesfetScreen({ navigation }: Props) {
           })}
         </View>
       </ScrollView>
+      <PopularDetailModal item={selectedPopular} onClose={() => setSelectedPopular(null)} />
     </MysticTableBackground>
   );
 }
@@ -243,6 +258,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: GOLD_SOFT,
     padding: 14,
+  },
+  popularCardPressed: {
+    opacity: 0.82,
+    transform: [{ scale: 0.98 }],
   },
   popularCardTitle: {
     fontSize: 12.5,

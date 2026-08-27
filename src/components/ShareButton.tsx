@@ -11,7 +11,8 @@ export default function ShareButton({ text, label = 'Paylaş' }: Props) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const press = useCallback(async () => {
-    const outcome = await shareText(text);
+    const formatted = text.includes('Mistik Rehber') ? text : `"${text}"\n\n— Mistik Rehber —`;
+    const outcome = await shareText(formatted);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (outcome === 'copied') {
       setFeedback('Panoya kopyalandı!');

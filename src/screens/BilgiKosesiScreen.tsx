@@ -6,9 +6,11 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CornerTicks from '@/components/CornerTicks';
 import FavoriteStarButton from '@/components/FavoriteStarButton';
 import FeatureIcon from '@/components/FeatureIcon';
+import PopularDetailModal from '@/components/PopularDetailModal';
 import { FEATURE_ICONS } from '@/assets/icons';
 import { getDailyInfoCards, type InfoCard, type InfoCategory } from '@/services/bilgiKosesiFeed';
-import { GOLD, INFO_PURPLE, INFO_PURPLE_SOFT, INFO_CREAM, INFO_MUTED } from '@/theme/colors';
+import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
+import { GOLD, GOLD_SOFT, INFO_PURPLE, INFO_PURPLE_SOFT, INFO_CREAM, INFO_MUTED, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = TabScreenProps;
 
@@ -32,6 +34,7 @@ const ITEMS: Array<{
     key: 'tarot',
     title: 'Tarot Kartları ve Anlamları',
     subtitle: '78 kartlık Rider-Waite destesinin tam rehberi',
+    iconKey: 'tarot',
     icon: <MaterialCommunityIcons name="cards-outline" size={24} color={INFO_CREAM} />,
     onPress: (navigation) => navigation.navigate('KartAnlamlari', { deck: 'tarot' }),
   },
@@ -39,6 +42,7 @@ const ITEMS: Array<{
     key: 'kahve',
     title: 'Kahve Falı Ne Zaman Bulundu?',
     subtitle: 'Osmanlı\'dan günümüze kahve falının hikayesi',
+    iconKey: 'coffee',
     icon: <MaterialCommunityIcons name="coffee-outline" size={24} color={INFO_CREAM} />,
     onPress: (navigation) => navigation.navigate('BilgiMakale', { topic: 'kahve_tarihi' }),
   },
@@ -46,6 +50,7 @@ const ITEMS: Array<{
     key: 'katina',
     title: 'Katina Falı Nedir?',
     subtitle: 'İskambil kartlarıyla fal bakma geleneği',
+    iconKey: 'katina',
     icon: <MaterialCommunityIcons name="cards-club-outline" size={24} color={INFO_CREAM} />,
     onPress: (navigation) => navigation.navigate('BilgiMakale', { topic: 'katina_nedir' }),
   },
@@ -77,14 +82,17 @@ type FeedItem = { type: 'topic'; item: (typeof ITEMS)[number] } | { type: 'fact'
 
 export default function BilgiKosesiScreen({ navigation }: Props) {
   const [facts, setFacts] = useState<InfoCard[]>([]);
+  const [popular, setPopular] = useState<PopularFavorite[]>([]);
+  const [selectedPopular, setSelectedPopular] = useState<PopularFavorite | null>(null);
 
   useEffect(() => {
     getDailyInfoCards().then(setFacts);
+    getPopularFavorites().then((items) => {
+      // Sadece Bilgi Köşesi (info) favorileri bu ekranda listelenir
+      setPopular(items.filter((item) => item.kind === 'info' || item.id.startsWith('info:')));
+    });
   }, []);
 
-  // Interleave the 5 fixed topic links among the daily-rotating fact feed —
-  // same "keşfet mantığı" scroll pattern as KesfetScreen, but for every
-  // knowledge domain the app covers instead of just quotes.
   const feed: FeedItem[] = [];
   let topicCount = 0;
   facts.forEach((card, index) => {
@@ -106,8 +114,40 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
           <MaterialCommunityIcons name="star-crescent" size={26} color={GOLD} />
           <Text style={styles.headerTitle}>Bilgi Köşesi</Text>
           <Text style={styles.headerSubtitle}>Bunları biliyor muydunuz?</Text>
-          <Text style={styles.refreshNote}>Her gün 00:00'da yenilenir</Text>
+          <Text style={styles.refreshNote}>Her Pazartesi saat 08:00'de yenilenir</Text>
         </View>
+
+        {/* Bilgi Köşesi - Haftanın En Sevilenleri */}
+        {popular.length > 0 && (
+          <View style={styles.popularSection}>
+            <View style={styles.popularHeader}>
+              <Ionicons name="flame-outline" size={16} color={GOLD} />
+              <Text style={styles.popularTitle}>Haftanın En Sevilenleri</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.popularRow}>
+              {popular.map((item) => (
+                <Pressable
+                  key={item.id}
+                  onPress={() => setSelectedPopular(item)}
+                  style={({ pressed }) => [styles.popularCard, pressed && styles.popularCardPressed]}
+                >
+                  {item.title ? (
+                    <Text style={styles.popularCardTitle} numberOfLines={2}>
+                      {item.title}
+                    </Text>
+                  ) : null}
+                  <Text style={styles.popularCardBody} numberOfLines={4}>
+                    {item.body}
+                  </Text>
+                  <View style={styles.popularCountRow}>
+                    <Ionicons name="star" size={11} color={GOLD} />
+                    <Text style={styles.popularCount}>{item.count}</Text>
+                  </View>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
         <View style={styles.list}>
           {feed.map((entry, index) => {
@@ -151,6 +191,7 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
           })}
         </View>
       </ScrollView>
+      <PopularDetailModal item={selectedPopular} onClose={() => setSelectedPopular(null)} />
     </MysticTableBackground>
   );
 }
@@ -165,7 +206,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     gap: 4,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   headerTitle: {
     fontSize: 22,
@@ -182,6 +223,60 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: INFO_MUTED,
     marginTop: 4,
+  },
+  popularSection: {
+    marginBottom: 22,
+  },
+  popularHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 10,
+  },
+  popularTitle: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  popularRow: {
+    gap: 12,
+  },
+  popularCard: {
+    width: 190,
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    padding: 14,
+  },
+  popularCardPressed: {
+    opacity: 0.82,
+    transform: [{ scale: 0.98 }],
+  },
+  popularCardTitle: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: INFO_CREAM,
+    marginBottom: 4,
+  },
+  popularCardBody: {
+    fontSize: 11.5,
+    lineHeight: 16,
+    color: INFO_MUTED,
+    fontStyle: 'italic',
+  },
+  popularCountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 8,
+  },
+  popularCount: {
+    fontSize: 11,
+    color: GOLD,
+    fontWeight: '600',
   },
   list: {
     gap: 14,

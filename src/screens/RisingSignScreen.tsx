@@ -7,9 +7,14 @@ import { calculateBirthChart, type BirthChart } from '@/services/astrology';
 import { resolveBirthDate } from '@/utils/resolveBirthDate';
 import { ZODIAC_INFO } from '@/constants/zodiacInfo';
 import { TURKISH_CITIES } from '@/constants/turkishCities';
+import { interpretBirthChart } from '@/services/readings-ai';
+import { getCoins, spendCoins } from '@/services/coins';
 import BirthDataForm, { EMPTY_BIRTH_FORM, type BirthFormValue } from '@/components/BirthDataForm';
 import NatalChartWheel from '@/components/NatalChartWheel';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import CoinFallbackBox from '@/components/CoinFallbackBox';
+import ShareButton from '@/components/ShareButton';
+import CornerTicks from '@/components/CornerTicks';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RisingSign'>;
@@ -18,9 +23,16 @@ export default function RisingSignScreen({ navigation }: Props) {
   const [form, setForm] = useState<BirthFormValue>(EMPTY_BIRTH_FORM);
   const [formError, setFormError] = useState<string | null>(null);
   const [chart, setChart] = useState<BirthChart | null>(null);
+  const [aiReading, setAiReading] = useState<string | null>(null);
+  const [loadingAi, setLoadingAi] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
 
   const calculate = useCallback(() => {
     setFormError(null);
+    setAiReading(null);
+    setAiError(null);
+    setCoinFallback(null);
     const resolved = resolveBirthDate(form);
     if (!resolved.date) {
       setFormError(resolved.error);
@@ -30,7 +42,38 @@ export default function RisingSignScreen({ navigation }: Props) {
     setChart(calculateBirthChart({ date: resolved.date, latitude: city.latitude, longitude: city.longitude }));
   }, [form]);
 
-  const reset = useCallback(() => setChart(null), []);
+  const reset = useCallback(() => {
+    setChart(null);
+    setAiReading(null);
+    setAiError(null);
+    setCoinFallback(null);
+  }, []);
+
+  const handleGetDetailedReading = useCallback(async () => {
+    if (!chart || loadingAi) return;
+    setAiError(null);
+    setCoinFallback(null);
+
+    const spent = await spendCoins(15);
+    if (!spent) {
+      setCoinFallback({ coins: await getCoins() });
+      return;
+    }
+
+    setLoadingAi(true);
+    try {
+      const reading = await interpretBirthChart(
+        ZODIAC_INFO[chart.sunSign].name,
+        ZODIAC_INFO[chart.moonSign].name,
+        ZODIAC_INFO[chart.risingSign].name,
+      );
+      setAiReading(reading);
+    } catch (err) {
+      setAiError(err instanceof Error ? err.message : 'Analiz alınırken bir sorun oluştu. Lütfen tekrar deneyin.');
+    } finally {
+      setLoadingAi(false);
+    }
+  }, [chart, loadingAi]);
 
   return (
     <MysticTableBackground>
@@ -87,17 +130,66 @@ export default function RisingSignScreen({ navigation }: Props) {
                 </View>
               </View>
 
+              {/* YETERSİZ COIN KUTUSU */}
+              {coinFallback && (
+                <CoinFallbackBox
+                  cost={15}
+                  coins={coinFallback.coins}
+                  onContinue={handleGetDetailedReading}
+                  onBuyCoins={() => navigation.navigate('CoinShop')}
+                  onDismiss={() => setCoinFallback(null)}
+                  dismissLabel="Kapat"
+                />
+              )}
+
+              {/* HATA MESAJI */}
+              {aiError && <Text style={styles.formErrorText}>{aiError}</Text>}
+
+              {/* YAPAY ZEKA RAPORU */}
+              {aiReading ? (
+                <View style={styles.readingCard}>
+                  <CornerTicks />
+                  <View style={styles.readingCardHeader}>
+                    <MaterialCommunityIcons name="star-crescent" size={22} color={GOLD} />
+                    <Text style={styles.readingCardTitle}>BÜYÜK ÜÇLÜ DETAYLI ANALİZİ</Text>
+                  </View>
+
+                  <Text style={styles.readingCardText}>{aiReading}</Text>
+
+                  <View style={styles.readingCardActions}>
+                    <ShareButton text={aiReading} label="Yorumu Paylaş" />
+                  </View>
+                </View>
+              ) : (
+                /* DETAYLI YORUM BUTONU (15 COIN) */
+                <Pressable
+                  onPress={handleGetDetailedReading}
+                  disabled={loadingAi}
+                  style={({ pressed }) => [
+                    styles.actionButton,
+                    loadingAi && { opacity: 0.7 },
+                    pressed && styles.actionButtonPressed,
+                  ]}
+                >
+                  <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
+                  <Text style={styles.actionButtonText}>
+                    {loadingAi ? 'Detaylı Analiz Yapılıyor...' : 'Detaylı Yorum Al (15 Coin)'}
+                  </Text>
+                </Pressable>
+              )}
+
+              {/* DOĞUM HARİTASINA GEÇİŞ VE YENİ HESAPLAMA */}
               <Pressable
                 onPress={() => navigation.navigate('BirthChart')}
-                style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}
+                style={({ pressed }) => [styles.actionButtonSecondary, pressed && styles.actionButtonPressed]}
               >
-                <MaterialCommunityIcons name="star-crescent" size={18} color={NIGHT_CARD} />
-                <Text style={styles.actionButtonText}>Detaylı Yorum Al</Text>
+                <MaterialCommunityIcons name="compass-rose" size={16} color={GOLD} />
+                <Text style={styles.actionButtonSecondaryText}>Tam Doğum Haritasına Git</Text>
               </Pressable>
 
               <Pressable onPress={reset} style={({ pressed }) => [styles.actionButtonSecondary, pressed && styles.actionButtonPressed]}>
-                <Ionicons name="refresh" size={16} color={GOLD} />
-                <Text style={styles.actionButtonSecondaryText}>Yeni Hesaplama</Text>
+                <Ionicons name="refresh" size={16} color={GOLD_SOFT} />
+                <Text style={[styles.actionButtonSecondaryText, { color: GOLD_SOFT }]}>Yeni Hesaplama</Text>
               </Pressable>
             </View>
           )}
@@ -215,5 +307,39 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: TEXT_PRIMARY,
     textAlign: 'center',
+  },
+  readingCard: {
+    position: 'relative',
+    backgroundColor: 'rgba(26, 16, 52, 0.92)',
+    borderRadius: 20,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.35)',
+    padding: 18,
+    gap: 12,
+    marginTop: 6,
+  },
+  readingCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(242, 200, 121, 0.2)',
+    paddingBottom: 10,
+  },
+  readingCardTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: GOLD,
+    letterSpacing: 0.5,
+  },
+  readingCardText: {
+    fontSize: 13.5,
+    lineHeight: 21,
+    color: TEXT_PRIMARY,
+  },
+  readingCardActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 6,
   },
 });
