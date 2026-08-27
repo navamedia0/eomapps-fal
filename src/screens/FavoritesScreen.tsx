@@ -55,7 +55,7 @@ export default function FavoritesScreen() {
               <View style={styles.cardHeader}>
                 {entry.kind === 'info' ? (
                   <>
-                    <MaterialCommunityIcons name="star-four-points-outline" size={14} color={GOLD} />
+                    <MaterialCommunityIcons name="star-crescent" size={14} color={GOLD} />
                     <Text style={styles.cardCategory}>
                       {entry.category ? CATEGORY_LABEL[entry.category] ?? entry.category.toUpperCase() : 'BİLGİ'}
                     </Text>

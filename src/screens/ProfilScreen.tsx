@@ -35,7 +35,7 @@ export default function ProfilScreen({ navigation }: Props) {
             <FeatureIcon
               source={FEATURE_ICONS.profileChat}
               fallback={<Ionicons name="chatbubble-ellipses-outline" size={22} color={GOLD} />}
-              size={64}
+              size={74}
             />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Kendinden Bahset</Text>
@@ -48,7 +48,7 @@ export default function ProfilScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('Tasks')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <FeatureIcon source={FEATURE_ICONS.tasks} fallback={<Ionicons name="ribbon-outline" size={22} color={GOLD} />} size={64} />
+            <FeatureIcon source={FEATURE_ICONS.tasks} fallback={<Ionicons name="ribbon-outline" size={22} color={GOLD} />} size={74} />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Görevler</Text>
               <Text style={styles.cardSubtitle}>Video izleyerek bonus kredi kazan</Text>
@@ -60,7 +60,7 @@ export default function ProfilScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('Favorites')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <FeatureIcon source={FEATURE_ICONS.favorites} fallback={<Ionicons name="star-outline" size={22} color={GOLD} />} size={64} />
+            <FeatureIcon source={FEATURE_ICONS.favorites} fallback={<Ionicons name="star-outline" size={22} color={GOLD} />} size={74} />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Favorilerim</Text>
               <Text style={styles.cardSubtitle}>Kaydettiğin sözler ve bilgi kartları</Text>
@@ -72,7 +72,7 @@ export default function ProfilScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('History')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <FeatureIcon source={FEATURE_ICONS.history} fallback={<Ionicons name="time-outline" size={22} color={GOLD} />} size={64} />
+            <FeatureIcon source={FEATURE_ICONS.history} fallback={<Ionicons name="time-outline" size={22} color={GOLD} />} size={74} />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Geçmiş</Text>
               <Text style={styles.cardSubtitle}>Baktırdığın falların geçmişi (cihazında saklanır)</Text>
@@ -87,7 +87,7 @@ export default function ProfilScreen({ navigation }: Props) {
             <FeatureIcon
               source={FEATURE_ICONS.notificationSettings}
               fallback={<Ionicons name="notifications-outline" size={22} color={GOLD} />}
-              size={64}
+              size={74}
             />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Bildirim Ayarları</Text>
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: 'rgba(212, 175, 55, 0.12)',
+    backgroundColor: 'rgba(242, 200, 121, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },

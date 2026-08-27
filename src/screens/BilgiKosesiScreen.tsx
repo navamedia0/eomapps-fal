@@ -120,7 +120,7 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
                   style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
                 >
                   <CornerTicks />
-                  <FeatureIcon source={item.iconKey ? FEATURE_ICONS[item.iconKey] : undefined} fallback={item.icon} size={60} />
+                  <FeatureIcon source={item.iconKey ? FEATURE_ICONS[item.iconKey] : undefined} fallback={item.icon} size={70} />
                   <View style={styles.cardTextWrap}>
                     <Text style={styles.cardTitle}>{item.title}</Text>
                     <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   },
   factCard: {
     position: 'relative',
-    backgroundColor: 'rgba(240, 234, 214, 0.05)',
+    backgroundColor: 'rgba(245, 240, 255, 0.05)',
     borderRadius: 18,
     borderWidth: 1,
     borderColor: INFO_PURPLE_SOFT,

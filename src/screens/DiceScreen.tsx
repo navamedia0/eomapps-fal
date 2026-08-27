@@ -1,7 +1,9 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, Pressable, StyleSheet, Animated, Easing } from 'react-native';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import FeatureIcon from '@/components/FeatureIcon';
+import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 const DICE_DOTS: Record<number, boolean[]> = {
@@ -27,44 +29,99 @@ const FLAVOR_BY_TOTAL: Record<number, string> = {
   12: 'Zarların en yükseği! Bugün şanslı gününde olabilirsin.',
 };
 
-function DiceFace({ value }: { value: number }) {
-  const dots = DICE_DOTS[value] ?? DICE_DOTS[1];
+const ROLL_DURATION = 950;
+
+function randomFace(): number {
+  return 1 + Math.floor(Math.random() * 6);
+}
+
+// A single tumbling die — spins on two axes with a bit of pseudo-3D
+// perspective and a bounce on landing, and while it's mid-air the pip
+// pattern flickers through random faces (like a real die tumbling too fast
+// to read) before settling on the real result the parent already rolled.
+function Die({ rolling, finalValue, delay }: { rolling: boolean; finalValue: number | null; delay: number }) {
+  const [face, setFace] = useState(1);
+  const rotateX = useRef(new Animated.Value(0)).current;
+  const rotateY = useRef(new Animated.Value(0)).current;
+  const bounce = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!rolling) return;
+    let cancelled = false;
+    rotateX.setValue(0);
+    rotateY.setValue(0);
+    bounce.setValue(0);
+
+    const spinsX = 2 + Math.floor(Math.random() * 2);
+    const spinsY = 2 + Math.floor(Math.random() * 2);
+    const duration = ROLL_DURATION - delay;
+
+    const startTimer = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(rotateX, { toValue: spinsX, duration, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+        Animated.timing(rotateY, { toValue: spinsY, duration, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+        Animated.sequence([
+          Animated.timing(bounce, { toValue: 1, duration: duration * 0.5, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+          Animated.spring(bounce, { toValue: 0, friction: 4, tension: 70, useNativeDriver: true }),
+        ]),
+      ]).start();
+    }, delay);
+
+    const shuffle = setInterval(() => {
+      if (!cancelled) setFace(randomFace());
+    }, 90);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(startTimer);
+      clearInterval(shuffle);
+    };
+  }, [rolling, delay, rotateX, rotateY, bounce]);
+
+  useEffect(() => {
+    if (!rolling && finalValue) setFace(finalValue);
+  }, [rolling, finalValue]);
+
+  const rx = rotateX.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  const ry = rotateY.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  const lift = bounce.interpolate({ inputRange: [0, 1], outputRange: [0, -22] });
+
+  const dots = DICE_DOTS[face] ?? DICE_DOTS[1];
+
   return (
-    <View style={styles.die}>
-      <View style={styles.dotGrid}>
-        {dots.map((active, index) => (
-          <View key={index} style={styles.dotCell}>
-            {active && <View style={styles.dot} />}
-          </View>
-        ))}
+    <Animated.View
+      style={{
+        transform: [{ perspective: 500 }, { translateY: lift }, { rotateX: rx }, { rotateY: ry }],
+      }}
+    >
+      <View style={styles.die}>
+        <View style={styles.dotGrid}>
+          {dots.map((active, index) => (
+            <View key={index} style={styles.dotCell}>
+              {active && <View style={styles.dot} />}
+            </View>
+          ))}
+        </View>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
 export default function DiceScreen() {
   const [values, setValues] = useState<[number, number] | null>(null);
   const [rolling, setRolling] = useState(false);
-  const rotate = useRef(new Animated.Value(0)).current;
 
   const roll = useCallback(() => {
     if (rolling) return;
-    setRolling(true);
     setValues(null);
-    rotate.setValue(0);
-
-    Animated.timing(rotate, {
-      toValue: 1,
-      duration: 700,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start(() => {
-      setValues([1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6)]);
+    setRolling(true);
+    const next: [number, number] = [randomFace(), randomFace()];
+    setTimeout(() => {
+      setValues(next);
       setRolling(false);
-    });
-  }, [rolling, rotate]);
+    }, ROLL_DURATION);
+  }, [rolling]);
 
-  const spin = rotate.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '540deg'] });
   const total = values ? values[0] + values[1] : null;
 
   return (
@@ -73,10 +130,10 @@ export default function DiceScreen() {
         <Text style={styles.title}>Zar Falı</Text>
         <Text style={styles.subtitle}>Zarları at, şansına bak.</Text>
 
-        <Animated.View style={[styles.diceRow, { transform: [{ rotate: spin }] }]}>
-          <DiceFace value={values ? values[0] : 1} />
-          <DiceFace value={values ? values[1] : 1} />
-        </Animated.View>
+        <View style={styles.diceRow}>
+          <Die rolling={rolling} finalValue={values ? values[0] : null} delay={0} />
+          <Die rolling={rolling} finalValue={values ? values[1] : null} delay={90} />
+        </View>
 
         {total !== null && (
           <View style={styles.resultBox}>
@@ -85,9 +142,13 @@ export default function DiceScreen() {
           </View>
         )}
 
-        <Pressable onPress={roll} disabled={rolling} style={({ pressed }) => [styles.rollButton, pressed && styles.rollButtonPressed]}>
-          <Ionicons name="dice-outline" size={18} color={NIGHT_CARD} />
-          <Text style={styles.rollButtonText}>{values ? 'Yeniden At' : 'Zarları At'}</Text>
+        <Pressable
+          onPress={roll}
+          disabled={rolling}
+          style={({ pressed }) => [styles.rollButton, (pressed || rolling) && styles.rollButtonPressed]}
+        >
+          <FeatureIcon source={FEATURE_ICONS.dice} fallback={<Ionicons name="dice-outline" size={18} color={NIGHT_CARD} />} size={32} />
+          <Text style={styles.rollButtonText}>{rolling ? 'Zarlar dönüyor...' : values ? 'Yeniden At' : 'Zarları At'}</Text>
         </Pressable>
       </View>
     </MysticTableBackground>
@@ -173,8 +234,8 @@ const styles = StyleSheet.create({
     gap: 8,
     backgroundColor: GOLD,
     borderRadius: 14,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+    paddingVertical: 10,
+    paddingHorizontal: 28,
   },
   rollButtonPressed: {
     opacity: 0.85,

@@ -1,10 +1,9 @@
 import { useCallback, useRef, useState } from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, TextInput, Pressable, StyleSheet, Animated, Easing, KeyboardAvoidingView, Platform } from 'react-native';
+import { Image, View, Text, TextInput, Pressable, StyleSheet, Animated, Easing, KeyboardAvoidingView, Platform } from 'react-native';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import magicBallAnswers from '@/data/magic_ball_answers.json';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, NIGHT_MID, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { FEATURE_ICONS } from '@/assets/icons';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 const ANSWERS: string[] = magicBallAnswers;
 
@@ -54,16 +53,13 @@ export default function MagicBallScreen() {
 
           <Pressable onPress={ask} disabled={spinning} style={styles.orbWrap}>
             <Animated.View style={{ transform: [{ rotate: spinRotation }, { scale }] }}>
-              <LinearGradient colors={[NIGHT_MID, NIGHT_DEEP]} style={styles.orb}>
-                <View style={styles.orbInnerRing}>
-                  {answer ? (
-                    <Text style={styles.orbAnswerText}>{answer}</Text>
-                  ) : (
-                    <MaterialCommunityIcons name="star-crescent" size={30} color={GOLD} />
-                  )}
-                </View>
-              </LinearGradient>
+              <Image source={FEATURE_ICONS.magicBall} style={styles.orb} resizeMode="contain" />
             </Animated.View>
+            {answer && (
+              <View style={styles.orbAnswerWrap} pointerEvents="none">
+                <Text style={styles.orbAnswerText}>{answer}</Text>
+              </View>
+            )}
           </Pressable>
 
           <Text style={styles.hint}>
@@ -113,28 +109,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   orb: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
+    width: 220,
+    height: 220,
     shadowColor: GOLD,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.35,
     shadowRadius: 24,
     elevation: 10,
   },
-  orbInnerRing: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.25)',
+  orbAnswerWrap: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 220,
+    height: 220,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 18,
+    paddingHorizontal: 44,
   },
   orbAnswerText: {
     fontSize: 14.5,
@@ -142,6 +133,9 @@ const styles = StyleSheet.create({
     color: TEXT_PRIMARY,
     textAlign: 'center',
     fontWeight: '600',
+    textShadowColor: 'rgba(11, 10, 31, 0.9)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 6,
   },
   hint: {
     fontSize: 12,

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, StyleSheet } from 'react-native';
+import { Image, Pressable, Text, StyleSheet } from 'react-native';
 import { getCoins, subscribeCoins } from '@/services/coins';
+import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT } from '@/theme/colors';
 
 type Navigation = { navigate: (screen: 'CoinShop') => void };
@@ -23,7 +24,7 @@ export default function CoinBadge({ navigation }: { navigation: Navigation }) {
 
   return (
     <Pressable onPress={() => navigation.navigate('CoinShop')} style={styles.badge} hitSlop={8}>
-      <Ionicons name="disc" size={20} color={GOLD} />
+      <Image source={FEATURE_ICONS.coinIcon} style={styles.coinImage} resizeMode="contain" />
       <Text style={styles.text}>{coins}</Text>
       <Ionicons name="add-circle" size={18} color={GOLD} />
     </Pressable>
@@ -39,9 +40,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: GOLD_SOFT,
     borderRadius: 18,
-    paddingVertical: 7,
-    paddingHorizontal: 13,
-    marginRight: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  coinImage: {
+    width: 24,
+    height: 24,
   },
   text: {
     fontSize: 16,

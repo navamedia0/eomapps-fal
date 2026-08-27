@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   slotClaimed: {
-    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+    backgroundColor: 'rgba(242, 200, 121, 0.1)',
   },
   slotNext: {
     backgroundColor: GOLD,

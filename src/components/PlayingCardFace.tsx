@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: PARCHMENT_BG,
     borderWidth: 1,
-    borderColor: 'rgba(59, 42, 32, 0.15)',
+    borderColor: 'rgba(42, 27, 84, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',

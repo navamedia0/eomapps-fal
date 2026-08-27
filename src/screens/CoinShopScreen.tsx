@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
 import { View, Text, Pressable, Image, ImageBackground, ScrollView, StyleSheet } from 'react-native';
 import { COIN_PACKAGES } from '@/constants/coinPackages';
 import { getCoins, addCoins, subscribeCoins } from '@/services/coins';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import { GOLD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
-const COIN_PAKETI = require('@/assets/icons/coin_paketi.png');
+const COIN_PAKETI = require('@/assets/icons/coin_paketi.webp');
 const COIN_IKONU = require('@/assets/icons/coin_ikonu.png');
 
 export default function CoinShopScreen() {
@@ -36,7 +35,7 @@ export default function CoinShopScreen() {
     <MysticTableBackground>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Ionicons name="disc-outline" size={30} color={GOLD} />
+          <Image source={COIN_IKONU} style={styles.headerIcon} resizeMode="contain" />
           <Text style={styles.headerTitle}>Coin Mağazası</Text>
           <Text style={styles.headerSubtitle}>Bakiyen: {coins} Coin</Text>
         </View>
@@ -82,6 +81,11 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 20,
   },
+  headerIcon: {
+    width: 56,
+    height: 56,
+    marginBottom: 4,
+  },
   headerTitle: {
     fontSize: 19,
     fontWeight: '700',
@@ -116,18 +120,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   packCardBgImage: {
+    width: '100%',
+    height: '100%',
     borderRadius: 20,
   },
   packCardPressed: {
     opacity: 0.85,
   },
   packCoinIcon: {
-    width: 44,
-    height: 44,
+    width: 58,
+    height: 58,
   },
   badge: {
     position: 'absolute',
-    top: 10,
+    top: 8,
+    right: 8,
+    zIndex: 1,
     backgroundColor: GOLD,
     borderRadius: 8,
     paddingVertical: 3,

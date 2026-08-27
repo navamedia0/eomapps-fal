@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View, StyleSheet } from 'react-native';
+import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TabView, type NavigationState, type SceneRendererProps } from 'react-native-tab-view';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
@@ -9,6 +9,8 @@ import KesfetScreen from '@/screens/KesfetScreen';
 import BilgiKosesiScreen from '@/screens/BilgiKosesiScreen';
 import MagazaScreen from '@/screens/MagazaScreen';
 import ProfilScreen from '@/screens/ProfilScreen';
+import CoinBadge from '@/components/CoinBadge';
+import { NAV_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_MID, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -24,19 +26,19 @@ const ROUTES: TabRoute[] = [
   { key: 'Profil', title: 'Profil' },
 ];
 
-const ICONS: Record<TabKey, { active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }> = {
-  AnaSayfa: { active: 'home', inactive: 'home-outline' },
-  Kesfet: { active: 'compass', inactive: 'compass-outline' },
-  BilgiKosesi: { active: 'bulb', inactive: 'bulb-outline' },
-  Magaza: { active: 'storefront', inactive: 'storefront-outline' },
-  Profil: { active: 'person-circle', inactive: 'person-circle-outline' },
-};
-
 export default function MainTabs({ navigation }: Props) {
   const [index, setIndex] = useState(0);
+  const insets = useSafeAreaInsets();
 
   return (
-    <TabView<TabRoute>
+    <View style={styles.flex}>
+      {/* Floating coin badge — sits above every tab's scroll content (not
+          inside it) so the coin count stays visible no matter how far down
+          the user scrolls, on every tab, not just Home. */}
+      <View style={[styles.floatingCoinWrap, { top: insets.top + 8 }]} pointerEvents="box-none">
+        <CoinBadge navigation={navigation} />
+      </View>
+      <TabView<TabRoute>
       navigationState={{ index, routes: ROUTES }}
       onIndexChange={setIndex}
       tabBarPosition="bottom"
@@ -61,11 +63,14 @@ export default function MainTabs({ navigation }: Props) {
         <View style={styles.tabBar}>
           {navigationState.routes.map((route, routeIndex) => {
             const focused = navigationState.index === routeIndex;
-            const icon = ICONS[route.key];
             return (
               <Pressable key={route.key} onPress={() => jumpTo(route.key)} style={styles.tabItem} hitSlop={4}>
                 <View style={[styles.iconChip, focused && styles.iconChipActive]}>
-                  <Ionicons name={focused ? icon.active : icon.inactive} size={24} color={focused ? GOLD : TEXT_MUTED} />
+                  <Image
+                    source={NAV_ICONS[route.key]}
+                    style={[styles.tabIcon, { opacity: focused ? 1 : 0.6 }]}
+                    resizeMode="contain"
+                  />
                 </View>
                 <Text style={[styles.tabLabel, { color: focused ? GOLD : TEXT_MUTED }]} numberOfLines={1}>
                   {route.title}
@@ -75,19 +80,30 @@ export default function MainTabs({ navigation }: Props) {
           })}
         </View>
       )}
-    />
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  floatingCoinWrap: {
+    position: 'absolute',
+    right: 16,
+    zIndex: 20,
+    elevation: 20,
+  },
   tabBar: {
     flexDirection: 'row',
     backgroundColor: NIGHT_MID,
     borderTopWidth: 1,
     borderTopColor: GOLD_SOFT,
-    height: 76,
+    height: 82,
     paddingTop: 8,
     paddingBottom: 10,
+    paddingHorizontal: 4,
   },
   tabItem: {
     flex: 1,
@@ -96,9 +112,9 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   iconChip: {
-    width: 40,
-    height: 40,
-    borderRadius: 14,
+    width: 52,
+    height: 52,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -106,6 +122,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(242, 200, 121, 0.18)',
     borderWidth: 1,
     borderColor: GOLD_SOFT,
+  },
+  tabIcon: {
+    width: 44,
+    height: 44,
   },
   tabLabel: {
     fontSize: 10,

@@ -37,7 +37,7 @@ export default function MagazaScreen({ navigation }: Props) {
           onPress={() => navigation.navigate('Premium')}
           style={({ pressed }) => [styles.premiumCard, pressed && styles.cardPressed]}
         >
-          <FeatureIcon source={FEATURE_ICONS.premium} fallback={<Ionicons name="star" size={28} color={GOLD} />} size={68} />
+          <FeatureIcon source={FEATURE_ICONS.premium} fallback={<Ionicons name="star" size={28} color={GOLD} />} size={78} />
           <View style={styles.premiumTextWrap}>
             <Text style={styles.premiumTitle}>{premium ? 'Premium Aktif' : 'Mistik Rehber Premium'}</Text>
             <Text style={styles.premiumSubtitle}>
@@ -52,7 +52,7 @@ export default function MagazaScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('CoinShop')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <FeatureIcon source={FEATURE_ICONS.coinShop} fallback={<Ionicons name="disc-outline" size={22} color={GOLD} />} size={64} />
+            <FeatureIcon source={FEATURE_ICONS.coinShop} fallback={<Ionicons name="disc-outline" size={22} color={GOLD} />} size={74} />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Coin Mağazası</Text>
               <Text style={styles.cardSubtitle}>Bakiyen: {coins} Coin</Text>
@@ -67,7 +67,7 @@ export default function MagazaScreen({ navigation }: Props) {
             <FeatureIcon
               source={FEATURE_ICONS.cardDesigns}
               fallback={<Ionicons name="color-palette-outline" size={22} color={GOLD} />}
-              size={64}
+              size={74}
             />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Kart Tasarımları</Text>
@@ -83,7 +83,7 @@ export default function MagazaScreen({ navigation }: Props) {
             <FeatureIcon
               source={FEATURE_ICONS.tarotSpread}
               fallback={<MaterialCommunityIcons name="cards-outline" size={22} color={GOLD} />}
-              size={64}
+              size={74}
             />
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Detaylı Tarot Açılımları</Text>
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+    backgroundColor: 'rgba(242, 200, 121, 0.1)',
     borderRadius: 18,
     borderWidth: 1,
     borderColor: GOLD_SOFT,

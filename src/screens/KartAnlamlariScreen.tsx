@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { View, Text, ScrollView, ImageBackground, StyleSheet } from 'react-native';
+import { View, Text, ImageBackground, ScrollView, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import { KATINA_DECK } from '@/services/katina';
@@ -9,9 +9,9 @@ import { getTarotMeaning } from '@/services/tarotMeanings';
 import PlayingCardFace from '@/components/PlayingCardFace';
 import TarotCardFace from '@/components/tarot/TarotCardFace';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import { TEXT_CAPTION, PARCHMENT_BORDER, PARCHMENT_TEXT, PARCHMENT_MUTED } from '@/theme/colors';
+import { TEXT_CAPTION, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
-const PARCHMENT_TEXTURE = require('../assets/textures/parchment_card.jpg');
+const CARD_FRAME = require('@/assets/textures/bilgi_karti_cercevesi.webp');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'KartAnlamlari'>;
 
@@ -51,12 +51,7 @@ export default function KartAnlamlariScreen({ route }: Props) {
 
         <View style={styles.list}>
           {entries.map((entry) => (
-            <ImageBackground
-              key={entry.id}
-              source={PARCHMENT_TEXTURE}
-              style={styles.row}
-              imageStyle={styles.rowImage}
-            >
+            <ImageBackground key={entry.id} source={CARD_FRAME} style={styles.row} imageStyle={styles.rowImage} resizeMode="stretch">
               <View style={styles.faceWrap}>{entry.face}</View>
               <View style={styles.textWrap}>
                 <Text style={styles.name}>{entry.name}</Text>
@@ -91,11 +86,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 14,
     borderRadius: 18,
-    borderWidth: 1,
-    borderColor: PARCHMENT_BORDER,
+    overflow: 'hidden',
     padding: 14,
     alignItems: 'center',
-    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
@@ -103,6 +96,8 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   rowImage: {
+    width: '100%',
+    height: '100%',
     borderRadius: 18,
   },
   faceWrap: {
@@ -114,12 +109,12 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 14,
     fontWeight: '700',
-    color: PARCHMENT_TEXT,
+    color: TEXT_PRIMARY,
     marginBottom: 4,
   },
   meaning: {
     fontSize: 12,
     lineHeight: 18,
-    color: PARCHMENT_MUTED,
+    color: TEXT_MUTED,
   },
 });

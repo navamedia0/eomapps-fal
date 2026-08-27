@@ -5,49 +5,59 @@ import type { ImageSourcePropType } from 'react-native';
 // `key`/`iconKey` used on the corresponding HomeScreen/KesfetScreen/
 // MagazaScreen/ProfilScreen item.
 export const FEATURE_ICONS: Partial<Record<string, ImageSourcePropType>> = {
-  palm: require('./el_fali.png'),
-  moonCalendar: require('./ay_takvimi.png'),
-  notificationSettings: require('./bildirim_ayarlari.png'),
-  biorhythm: require('./biyoritim.png'),
-  zodiacTraits: require('./burc_ozellikleri.png'),
-  compatibility: require('./burc_uyumu.png'),
-  coinShop: require('./coin_magazasi.png'),
-  tarotSpread: require('./detayli_tarot_acilimlari.png'),
-  birthChart: require('./dogum_haritasi.png'),
-  moodJournal: require('./duygu_gunlugu.png'),
-  tasks: require('./gorevler.png'),
-  horoscope: require('./gunluk_burc.png'),
-  affirmation: require('./gunluk_olumlama.png'),
-  angelCard: require('./gunun_ilham_karti.png'),
-  coffee: require('./kahve_fali.png'),
-  cardDesigns: require('./kart_tasarimlari.png'),
-  katina: require('./katina_fali.png'),
-  profileChat: require('./kendinden_bahset.png'),
-  breathing: require('./nefes_egzersizi.png'),
-  numerology: require('./numeroloji.png'),
-  daisy: require('./papatya_fali.png'),
-  premium: require('./premium.png'),
-  dream: require('./ruya_yorumlama.png'),
-  voiceReading: require('./sesli_fal.png'),
-  magicBall: require('./sihirli_kure.png'),
-  solitaire: require('./solitaire_fali.png'),
-  tarot: require('./tarot_fali.png'),
-  risingSign: require('./yukselen_burcum.png'),
-  dice: require('./zar_fali.png'),
-  dreamLibrary: require('./ruya_kitapligi.png'),
+  palm: require('./el_fali.webp'),
+  moonCalendar: require('./ay_takvimi.webp'),
+  notificationSettings: require('./bildirim_ayarlari.webp'),
+  biorhythm: require('./biyoritim.webp'),
+  zodiacTraits: require('./burc_ozellikleri.webp'),
+  compatibility: require('./burc_uyumu.webp'),
+  coinShop: require('./coin_magazasi.webp'),
+  tarotSpread: require('./detayli_tarot_acilimlari.webp'),
+  birthChart: require('./dogum_haritasi.webp'),
+  moodJournal: require('./duygu_gunlugu.webp'),
+  tasks: require('./gorevler.webp'),
+  horoscope: require('./gunluk_burc.webp'),
+  affirmation: require('./gunluk_olumlama.webp'),
+  angelCard: require('./gunun_ilham_karti.webp'),
+  coffee: require('./kahve_fali.webp'),
+  cardDesigns: require('./kart_tasarimlari.webp'),
+  katina: require('./katina_fali.webp'),
+  profileChat: require('./kendinden_bahset.webp'),
+  breathing: require('./nefes_egzersizi.webp'),
+  numerology: require('./numeroloji.webp'),
+  daisy: require('./papatya_fali.webp'),
+  premium: require('./premium.webp'),
+  dream: require('./ruya_yorumlama.webp'),
+  voiceReading: require('./sesli_fal.webp'),
+  magicBall: require('./sihirli_kure.webp'),
+  solitaire: require('./solitaire_fali.webp'),
+  tarot: require('./tarot_fali.webp'),
+  risingSign: require('./yukselen_burcum.webp'),
+  dice: require('./zar_fali.webp'),
+  dreamLibrary: require('./ruya_kitapligi.webp'),
 
   // Profil / Mağaza / Coin — previously plain Ionicons, now custom art.
-  favorites: require('./favorilerim.png'),
-  history: require('./gecmis.png'),
+  favorites: require('./favorilerim.webp'),
+  history: require('./gecmis.webp'),
   coinIcon: require('./coin_ikonu.png'),
-  freeCoins: require('./ucretsiz_coin_kazan.png'),
-  miniGames: require('./mini_oyunlar.png'),
+  freeCoins: require('./ucretsiz_coin_kazan.webp'),
+  miniGames: require('./mini_oyunlar.webp'),
+  suFal: require('./su_fali.webp'),
 
   // Bilgi Köşesi rozetleri — sadece burç ve iskambil/kart konuları için
   // özel rozet var; diğer konular (tarot/kahve/katina/astroloji) fallback
   // Ionicons ile kalıyor.
-  burclarBadge: require('./burclar_rozeti.png'),
-  kartlarBadge: require('./kartlar_rozeti.png'),
-
-  // suFal: bu özellik için yeni tema ikonu tasarlanmadı, fallback Ionicons kalıyor.
+  burclarBadge: require('./burclar_rozeti.webp'),
+  kartlarBadge: require('./kartlar_rozeti.webp'),
 };
+
+// Alt navigasyon barı ikonları — "mistik gold mor" setinden, solid gold
+// doldurma sayesinde küçük boyutta da önceki ince-çizgi versiyondan çok
+// daha net okunuyor.
+export const NAV_ICONS = {
+  AnaSayfa: require('./ana_sayfa.webp'),
+  Kesfet: require('./kesfet.webp'),
+  BilgiKosesi: require('./bilgi_kosesi.webp'),
+  Magaza: require('./magaza.webp'),
+  Profil: require('./profil.webp'),
+} as const satisfies Record<string, ImageSourcePropType>;

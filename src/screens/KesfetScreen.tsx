@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ImageBackground, ScrollView, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import type { RootStackParamList, TabScreenProps } from '@/navigation/types';
 import ShareButton from '@/components/ShareButton';
 import ShareImageButton from '@/components/ShareImageButton';
 import FeatureIcon from '@/components/FeatureIcon';
-import CornerTicks from '@/components/CornerTicks';
 import FavoriteStarButton from '@/components/FavoriteStarButton';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import quotes from '@/data/kesfet_sozleri.json';
 import { FEATURE_ICONS } from '@/assets/icons';
 import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+
+const QUOTE_CARD_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
 
 type Props = TabScreenProps;
 
@@ -144,8 +146,21 @@ export default function KesfetScreen({ navigation }: Props) {
           {feed.map((item, index) => {
             if (item.type === 'quote') {
               return (
-                <View key={index} style={styles.quoteCard}>
-                  <CornerTicks />
+                <ImageBackground
+                  key={index}
+                  source={QUOTE_CARD_BG}
+                  style={styles.quoteCard}
+                  imageStyle={styles.quoteCardImage}
+                  resizeMode="cover"
+                >
+                  {/* Dims whichever part of the mist background lands under the
+                      text — the source image has both dark and bright (bokeh
+                      flare) regions, and text needs to stay readable either way. */}
+                  <LinearGradient
+                    colors={['rgba(11, 10, 31, 0.55)', 'rgba(11, 10, 31, 0.72)']}
+                    style={styles.quoteScrim}
+                    pointerEvents="none"
+                  />
                   <FavoriteStarButton id={`quote:${item.text}`} kind="quote" body={item.text} />
                   <MaterialCommunityIcons name="star-crescent" size={16} color={GOLD} style={styles.quoteIcon} />
                   <Text style={styles.quoteText}>{item.text}</Text>
@@ -153,7 +168,7 @@ export default function KesfetScreen({ navigation }: Props) {
                     <ShareButton text={`Mistik Rehber\n\n"${item.text}"`} label="Paylaş" />
                     <ShareImageButton text={item.text} label="Görsel Paylaş" />
                   </View>
-                </View>
+                </ImageBackground>
               );
             }
             const { feature } = item;
@@ -163,7 +178,7 @@ export default function KesfetScreen({ navigation }: Props) {
                 onPress={() => navigation.navigate(feature.key as any)}
                 style={({ pressed }) => [styles.featureCard, pressed && styles.featureCardPressed]}
               >
-                <FeatureIcon source={FEATURE_ICONS[feature.iconKey]} fallback={feature.icon} size={64} />
+                <FeatureIcon source={FEATURE_ICONS[feature.iconKey]} fallback={feature.icon} size={78} />
                 <View style={styles.featureTextWrap}>
                   <Text style={styles.featureTitle}>{feature.title}</Text>
                   <Text style={styles.featureSubtitle}>{feature.subtitle}</Text>
@@ -223,7 +238,7 @@ const styles = StyleSheet.create({
   },
   popularCard: {
     width: 180,
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
     borderRadius: 16,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
@@ -257,12 +272,26 @@ const styles = StyleSheet.create({
   },
   quoteCard: {
     position: 'relative',
-    backgroundColor: NIGHT_CARD,
     borderRadius: 24,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    padding: 20,
+    overflow: 'hidden',
+    paddingVertical: 36,
+    paddingHorizontal: 28,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 190,
+  },
+  quoteCardImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 24,
+  },
+  quoteScrim: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 24,
   },
   quoteIcon: {
     marginBottom: 10,
@@ -284,7 +313,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
     borderRadius: 16,
     borderWidth: 1,
     borderColor: GOLD_SOFT,

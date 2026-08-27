@@ -13,6 +13,8 @@ import CoinFallbackBox from '@/components/CoinFallbackBox';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
+import FeatureIcon from '@/components/FeatureIcon';
+import { FEATURE_ICONS } from '@/assets/icons';
 import { useReadingCooldown } from '@/hooks/useReadingCooldown';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
@@ -25,6 +27,7 @@ const MAX_IMAGES = 5;
 
 const COPY = {
   coffee: {
+    iconKey: 'coffee',
     icon: 'coffee' as const,
     instruction: `Fincanının telve kalıntılarını net gösteren ${MIN_IMAGES}-${MAX_IMAGES} arası fotoğraf ekle. Sadece kahve fincanı görüntüleri kabul edilir.`,
     loading: 'Fincandaki şekiller okunuyor...',
@@ -33,6 +36,7 @@ const COPY = {
     invalidSubject: 'kahve fincanına',
   },
   palm: {
+    iconKey: 'palm',
     icon: 'hand-back-right-outline' as const,
     instruction: `Avuç içini iyi ışıkta gösteren ${MIN_IMAGES}-${MAX_IMAGES} arası fotoğraf ekle. Sadece avuç içi görüntüleri kabul edilir.`,
     loading: 'Avuç çizgilerin okunuyor...',
@@ -194,9 +198,11 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {showPicker && (
           <View style={styles.pickWrap}>
-            <View style={styles.iconCircle}>
-              <MaterialCommunityIcons name={copy.icon} size={40} color={GOLD} />
-            </View>
+            <FeatureIcon
+              source={FEATURE_ICONS[copy.iconKey]}
+              fallback={<MaterialCommunityIcons name={copy.icon} size={40} color={GOLD} />}
+              size={96}
+            />
             <Text style={styles.instruction}>{copy.instruction}</Text>
 
             {permissionError && <Text style={styles.permissionError}>{permissionError}</Text>}
@@ -313,15 +319,6 @@ const styles = StyleSheet.create({
   pickWrap: {
     alignItems: 'center',
     gap: 14,
-  },
-  iconCircle: {
-    width: 84,
-    height: 84,
-    borderRadius: 42,
-    backgroundColor: 'rgba(212, 175, 55, 0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
   },
   instruction: {
     fontSize: 14,

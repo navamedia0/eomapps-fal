@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     width: PETAL_WIDTH,
     height: PETAL_HEIGHT,
     borderRadius: PETAL_WIDTH,
-    backgroundColor: '#F5EED8',
+    backgroundColor: '#F5F0FF',
     borderWidth: 1,
     borderColor: GOLD_SOFT,
   },
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#8A6A1A',
+    backgroundColor: '#B8862E',
     opacity: 0.4,
   },
   label: {

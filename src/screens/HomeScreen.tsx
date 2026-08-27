@@ -4,13 +4,14 @@ import { Animated, View, Text, Pressable, Image, StyleSheet } from 'react-native
 import type { TabScreenProps } from '@/navigation/types';
 import { recordDailyOpen, type DailyOpenResult } from '@/services/streak';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import CoinBadge from '@/components/CoinBadge';
 import FeatureIcon from '@/components/FeatureIcon';
 import { FEATURE_ICONS } from '@/assets/icons';
 import {
   GOLD,
   GOLD_SOFT,
+  NIGHT_CARD,
   TEXT_PRIMARY,
+  TEXT_MUTED,
   TEXT_CAPTION,
 } from '@/theme/colors';
 
@@ -21,6 +22,7 @@ type Props = TabScreenProps;
 type GridItem = {
   key: string;
   title: string;
+  subtitle: string;
   icon: React.ReactNode;
   onPress?: () => void;
 };
@@ -37,10 +39,15 @@ function GridButton({ item }: { item: GridItem }) {
       onPress={item.onPress}
       style={({ pressed }) => [styles.gridButton, pressed && styles.gridButtonPressed]}
     >
-      <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={80} />
-      <Text style={styles.gridTitle} numberOfLines={2}>
-        {item.title}
-      </Text>
+      <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={62} />
+      <View style={styles.gridTextWrap}>
+        <Text style={styles.gridTitle} numberOfLines={1}>
+          {item.title}
+        </Text>
+        <Text style={styles.gridSubtitle} numberOfLines={2}>
+          {item.subtitle}
+        </Text>
+      </View>
     </Pressable>
   );
 }
@@ -65,48 +72,56 @@ export default function HomeScreen({ navigation }: Props) {
         {
           key: 'coffee',
           title: 'Kahve Falı',
+          subtitle: 'Fincanındaki sırları çöz',
           icon: <MaterialCommunityIcons name="coffee" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('ImageReading', { kind: 'coffee' }),
         },
         {
           key: 'tarot',
           title: 'Tarot Falı',
+          subtitle: 'Kartlar bugününü aydınlatsın',
           icon: <MaterialCommunityIcons name="cards" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('TarotSpread'),
         },
         {
           key: 'palm',
           title: 'El Falı',
+          subtitle: 'Avucundaki çizgileri oku',
           icon: <MaterialCommunityIcons name="hand-back-right-outline" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('ImageReading', { kind: 'palm' }),
         },
         {
           key: 'katina',
           title: 'Katina Falı',
+          subtitle: 'İskambille geleceğe bak',
           icon: <MaterialCommunityIcons name="cards-playing-outline" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('Katina'),
         },
         {
           key: 'voiceReading',
           title: 'Sesli Fal',
+          subtitle: 'Anlat, yapay zeka yorumlasın',
           icon: <Ionicons name="mic-outline" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('VoiceReading'),
         },
         {
           key: 'solitaire',
           title: 'Solitaire Falı',
+          subtitle: 'Kartları aç, cevabını bul',
           icon: <MaterialCommunityIcons name="cards-club-outline" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('Solitaire'),
         },
         {
           key: 'daisy',
           title: 'Papatya Falı',
+          subtitle: 'Seviyor mu, sevmiyor mu?',
           icon: <Ionicons name="flower-outline" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('Daisy'),
         },
         {
           key: 'dice',
           title: 'Zar Falı',
+          subtitle: 'Zarları at, şansına bak',
           icon: <MaterialCommunityIcons name="dice-multiple-outline" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('Dice'),
         },
@@ -119,12 +134,14 @@ export default function HomeScreen({ navigation }: Props) {
         {
           key: 'dream',
           title: 'Rüya Yorumlama',
+          subtitle: 'Rüyanın sembollerini birlikte çöz',
           icon: <Ionicons name="moon" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('DreamChat'),
         },
         {
           key: 'dreamLibrary',
           title: 'Rüya Kitaplığı',
+          subtitle: 'Geçmiş rüyalarını sakla, ara',
           icon: <Ionicons name="library-outline" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('RuyaKitapligi'),
         },
@@ -137,30 +154,35 @@ export default function HomeScreen({ navigation }: Props) {
         {
           key: 'horoscope',
           title: 'Günlük Burç',
+          subtitle: 'Bugün burcunu neler bekliyor?',
           icon: <MaterialCommunityIcons name="zodiac-leo" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('Zodiac'),
         },
         {
           key: 'zodiacTraits',
           title: 'Burç Özellikleri',
+          subtitle: 'Burcunun tüm özelliklerini keşfet',
           icon: <MaterialCommunityIcons name="star-circle-outline" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('ZodiacTraits'),
         },
         {
           key: 'compatibility',
           title: 'Burç Uyumu',
+          subtitle: 'İki burcun uyumuna bak',
           icon: <Ionicons name="heart-outline" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('Compatibility'),
         },
         {
           key: 'birthChart',
           title: 'Doğum Haritası',
+          subtitle: 'Gök haritanı çıkar',
           icon: <MaterialCommunityIcons name="chart-donut" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('BirthChart'),
         },
         {
           key: 'risingSign',
           title: 'Yükselen Burcum',
+          subtitle: 'Yükselen burcunu hesapla',
           icon: <Ionicons name="flash-outline" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('RisingSign'),
         },
@@ -173,18 +195,21 @@ export default function HomeScreen({ navigation }: Props) {
         {
           key: 'numerology',
           title: 'Numeroloji',
+          subtitle: 'Sayıların gizli anlamını öğren',
           icon: <MaterialCommunityIcons name="numeric" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('Numerology'),
         },
         {
           key: 'biorhythm',
           title: 'Biyoritim',
+          subtitle: 'Bugünkü enerji seviyeni gör',
           icon: <MaterialCommunityIcons name="waveform" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('Biorhythm'),
         },
         {
           key: 'moonCalendar',
           title: 'Ay Takvimi',
+          subtitle: 'Ayın evresini takip et',
           icon: <MaterialCommunityIcons name="moon-waning-crescent" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('MoonCalendar'),
         },
@@ -197,6 +222,7 @@ export default function HomeScreen({ navigation }: Props) {
         {
           key: 'magicBall',
           title: 'Sihirli Küre',
+          subtitle: 'Evet ya da hayır? Sor',
           icon: <MaterialCommunityIcons name="crystal-ball" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('MagicBall'),
         },
@@ -209,24 +235,28 @@ export default function HomeScreen({ navigation }: Props) {
         {
           key: 'angelCard',
           title: 'Günün İlham Kartı',
+          subtitle: 'Bugüne küçük bir mesaj',
           icon: <Ionicons name="rose-outline" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('AngelCard'),
         },
         {
           key: 'affirmation',
           title: 'Günlük Olumlama',
+          subtitle: 'Gününe iyi bir söz',
           icon: <Ionicons name="sunny-outline" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('Affirmation'),
         },
         {
           key: 'breathing',
           title: 'Nefes Egzersizi',
+          subtitle: 'Sakinleş, nefesine odaklan',
           icon: <MaterialCommunityIcons name="meditation" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('BreathingExercise'),
         },
         {
           key: 'moodJournal',
           title: 'Duygu Günlüğü',
+          subtitle: 'Bugünkü ruh halini kaydet',
           icon: <Ionicons name="book-outline" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('MoodJournal'),
         },
@@ -242,10 +272,6 @@ export default function HomeScreen({ navigation }: Props) {
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
         scrollEventThrottle={16}
       >
-        <View style={styles.topRow}>
-          <CoinBadge navigation={navigation} />
-        </View>
-
         <Image source={UST_BANNER} style={styles.banner} resizeMode="cover" />
 
         <View style={styles.header}>
@@ -262,14 +288,14 @@ export default function HomeScreen({ navigation }: Props) {
 
         <View style={styles.freeRow}>
           <Pressable onPress={goToTasks} style={({ pressed }) => [styles.freeButton, pressed && styles.pressedFade]}>
-            <FeatureIcon source={FEATURE_ICONS.freeCoins} fallback={<Ionicons name="gift-outline" size={18} color={GOLD} />} size={30} />
-            <Text style={styles.freeButtonText}>Ücretsiz Coin Kazan</Text>
+            <FeatureIcon source={FEATURE_ICONS.freeCoins} fallback={<Ionicons name="gift-outline" size={18} color={GOLD} />} size={44} />
+            <Text style={styles.freeButtonText} numberOfLines={2}>Ücretsiz Coin Kazan</Text>
           </Pressable>
           <Pressable
             onPress={() => navigation.navigate('MiniGames')}
             style={({ pressed }) => [styles.freeButton, pressed && styles.pressedFade]}
           >
-            <FeatureIcon source={FEATURE_ICONS.miniGames} fallback={<Ionicons name="game-controller-outline" size={18} color={GOLD} />} size={30} />
+            <FeatureIcon source={FEATURE_ICONS.miniGames} fallback={<Ionicons name="game-controller-outline" size={18} color={GOLD} />} size={44} />
             <Text style={styles.freeButtonText}>Mini Oyunlar</Text>
           </Pressable>
         </View>
@@ -298,12 +324,6 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 40,
     paddingHorizontal: 24,
-  },
-  topRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    width: '100%',
-    marginBottom: 8,
   },
   banner: {
     width: '100%',
@@ -354,7 +374,7 @@ const styles = StyleSheet.create({
   },
   freeRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
     width: '100%',
     marginBottom: 26,
   },
@@ -363,12 +383,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 6,
     backgroundColor: 'rgba(242, 200, 121, 0.16)',
     borderWidth: 1,
     borderColor: GOLD_SOFT,
     borderRadius: 16,
-    paddingVertical: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
   },
   freeButtonText: {
     fontSize: 12,
@@ -394,24 +415,35 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 8,
   },
   gridButton: {
-    width: '31%',
+    width: '49.5%',
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
     gap: 8,
-    paddingHorizontal: 4,
+    backgroundColor: NIGHT_CARD,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    padding: 8,
   },
   gridButtonPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.97 }],
   },
+  gridTextWrap: {
+    flex: 1,
+  },
   gridTitle: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 12.5,
+    fontWeight: '700',
     color: TEXT_PRIMARY,
-    textAlign: 'center',
-    lineHeight: 14,
+    marginBottom: 2,
+  },
+  gridSubtitle: {
+    fontSize: 10.5,
+    lineHeight: 13,
+    color: TEXT_MUTED,
   },
 });

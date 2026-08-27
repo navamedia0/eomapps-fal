@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+    backgroundColor: 'rgba(242, 200, 121, 0.1)',
     borderRadius: 16,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   },
   planCardActive: {
     borderColor: GOLD,
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
   },
   planBadge: {
     position: 'absolute',

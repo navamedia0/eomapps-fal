@@ -2,6 +2,25 @@ const GEMINI_URL = (model) => `https://generativelanguage.googleapis.com/v1beta/
 const GEMINI_TEXT_MODEL = 'gemini-3.1-flash-lite';
 const CLOUDFLARE_MODEL = '@cf/meta/llama-3.2-11b-vision-instruct';
 
+// 3rd fallback layer. Free OpenRouter vision models get hit hard and 429
+// often on their shared upstream pool, so we hand OpenRouter a short list
+// (its own server-side `models` routing tries each in order for us in one
+// call) instead of a single model name — verified working 2026-08-26.
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+// OpenRouter caps the `models` fallback array at 3 entries, so we pick 3
+// free vision models spread across different upstream providers (Google AI
+// Studio, GMICloud, AtlasCloud) to avoid all three being congested together.
+const OPENROUTER_MODELS = [
+  'google/gemma-4-26b-a4b-it:free',
+  'minimax/minimax-m3:free',
+  'dots-studio/dots-3-note-preview:free',
+];
+
+// 4th and last fallback layer, via Hugging Face's router (the old
+// api-inference.huggingface.co host is retired) — verified working 2026-08-26.
+const HUGGINGFACE_URL = 'https://router.huggingface.co/v1/chat/completions';
+const HUGGINGFACE_MODEL = 'Qwen/Qwen2.5-VL-72B-Instruct';
+
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -58,7 +77,9 @@ function jsonResponse(body, status = 200, extraHeaders = {}) {
 
 function isHeavyPayload(payload) {
   const json = JSON.stringify(payload ?? {});
-  return json.includes('inline_data') || json.includes('inlineData');
+  // Gemini/Cloudflare embed images as inline_data/imageBase64; OpenRouter and
+  // Hugging Face (OpenAI-style messages) use image_url content parts instead.
+  return json.includes('inline_data') || json.includes('inlineData') || json.includes('image_url');
 }
 
 function getClientIp(request) {
@@ -171,7 +192,45 @@ async function relayProvider(env, body) {
     }
   }
 
-  return jsonResponse({ error: 'Bilinmeyen provider. "gemini" veya "cloudflare" kullanin.' }, 400);
+  if (provider === 'openrouter') {
+    if (!env.OPENROUTER_API_KEY) {
+      return jsonResponse({ error: 'OpenRouter API anahtari tanimli degil.' }, 500);
+    }
+    const upstream = await fetch(OPENROUTER_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
+      },
+      body: JSON.stringify({ models: OPENROUTER_MODELS, messages: payload.messages }),
+    });
+    const text = await upstream.text();
+    return new Response(text, {
+      status: upstream.status,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  }
+
+  if (provider === 'huggingface') {
+    if (!env.HUGGINGFACE_API_KEY) {
+      return jsonResponse({ error: 'Hugging Face API anahtari tanimli degil.' }, 500);
+    }
+    const upstream = await fetch(HUGGINGFACE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${env.HUGGINGFACE_API_KEY}`,
+      },
+      body: JSON.stringify({ model: HUGGINGFACE_MODEL, messages: payload.messages }),
+    });
+    const text = await upstream.text();
+    return new Response(text, {
+      status: upstream.status,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  }
+
+  return jsonResponse({ error: 'Bilinmeyen provider. "gemini", "cloudflare", "openrouter" veya "huggingface" kullanin.' }, 400);
 }
 
 function dayIndex() {

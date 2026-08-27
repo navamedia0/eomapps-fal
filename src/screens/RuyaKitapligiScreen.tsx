@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 10,
     paddingHorizontal: 14,
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
   },
   popularChipText: {
     fontSize: 12.5,

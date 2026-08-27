@@ -16,6 +16,8 @@ import BirthDataForm, { EMPTY_BIRTH_FORM, type BirthFormValue } from '@/componen
 import NatalChartWheel from '@/components/NatalChartWheel';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import FeatureIcon from '@/components/FeatureIcon';
+import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BirthChart'>;
@@ -106,9 +108,11 @@ export default function BirthChartScreen({ navigation }: Props) {
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {showForm && (
             <View style={styles.formWrap}>
-              <View style={styles.iconCircle}>
-                <MaterialCommunityIcons name="chart-donut" size={36} color={GOLD} />
-              </View>
+              <FeatureIcon
+                source={FEATURE_ICONS.birthChart}
+                fallback={<MaterialCommunityIcons name="chart-donut" size={36} color={GOLD} />}
+                size={96}
+              />
               <Text style={styles.instruction}>
                 Doğum tarihini, saatini ve yerini gir; Güneş, Ay ve Yükselen burcunu keşfet.
               </Text>
@@ -213,16 +217,7 @@ const styles = StyleSheet.create({
   },
   formWrap: {
     alignItems: 'center',
-    gap: 4,
-  },
-  iconCircle: {
-    width: 84,
-    height: 84,
-    borderRadius: 42,
-    backgroundColor: 'rgba(212, 175, 55, 0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
+    gap: 10,
   },
   instruction: {
     fontSize: 14,

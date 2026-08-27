@@ -82,6 +82,6 @@ export default function Starfield({ count = 16 }: Props) {
 const styles = StyleSheet.create({
   star: {
     position: 'absolute',
-    backgroundColor: '#F5EED8',
+    backgroundColor: '#F5F0FF',
   },
 });

@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   },
   dim: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(14, 10, 8, 0.16)',
+    backgroundColor: 'rgba(11, 10, 31, 0.16)',
   },
   watermarkIcon: {
     position: 'absolute',

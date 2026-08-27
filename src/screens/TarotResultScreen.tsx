@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 40,
     width: '100%',
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
     borderColor: GOLD_SOFT,
     borderWidth: 1,
     borderRadius: 14,
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
   },
   summaryBlock: {
     position: 'relative',
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
     borderRadius: 26,
     borderWidth: 1,
     borderColor: GOLD_SOFT,

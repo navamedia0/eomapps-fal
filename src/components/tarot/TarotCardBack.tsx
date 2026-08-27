@@ -46,7 +46,7 @@ export default function TarotCardBack({ selected, positionLabel, disabled, onPre
               <Image source={VELVET_TEXTURE} style={styles.customImage} resizeMode="cover" />
               <View style={styles.velvetTint} />
               <MaterialCommunityIcons
-                name="star-four-points-outline"
+                name="star-crescent"
                 size={20}
                 color={selected ? GOLD : GOLD_SOFT}
               />

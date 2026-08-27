@@ -131,7 +131,7 @@ export default function TarotScreen({ navigation, route }: Props) {
             ]}
           >
             <LinearGradient
-              colors={['#3A2E0F', NIGHT_CARD]}
+              colors={['#2A1B54', NIGHT_CARD]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.primaryButton}
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: GRID_PADDING,
     paddingTop: 16,
     paddingBottom: 14,
-    backgroundColor: 'rgba(26, 20, 15, 0.55)',
+    backgroundColor: 'rgba(21, 15, 48, 0.55)',
     borderBottomWidth: 1,
     borderBottomColor: GOLD_SOFT,
   },

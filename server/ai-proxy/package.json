@@ -6,7 +6,9 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "secret:gemini": "wrangler secret put GEMINI_API_KEY",
-    "secret:app": "wrangler secret put APP_SECRET"
+    "secret:app": "wrangler secret put APP_SECRET",
+    "secret:openrouter": "wrangler secret put OPENROUTER_API_KEY",
+    "secret:huggingface": "wrangler secret put HUGGINGFACE_API_KEY"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"

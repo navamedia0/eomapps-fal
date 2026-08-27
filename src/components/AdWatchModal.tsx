@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 6,
     borderRadius: 3,
-    backgroundColor: 'rgba(212, 175, 55, 0.15)',
+    backgroundColor: 'rgba(242, 200, 121, 0.15)',
     overflow: 'hidden',
   },
   barFill: {

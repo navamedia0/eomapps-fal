@@ -68,7 +68,7 @@ export default function SuFalScreen() {
             </Animated.View>
             <Animated.View style={[styles.swirlLayer, { transform: [{ rotate: swirlRotateReverse }] }]}>
               <LinearGradient
-                colors={['rgba(212, 175, 55, 0.22)', 'rgba(212, 175, 55, 0)']}
+                colors={['rgba(242, 200, 121, 0.22)', 'rgba(242, 200, 121, 0)']}
                 style={styles.swirlBlobB}
               />
             </Animated.View>
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   },
   flash: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#F5EED8',
+    backgroundColor: '#F5F0FF',
   },
   glassHighlight: {
     position: 'absolute',
