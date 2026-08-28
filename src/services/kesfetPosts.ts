@@ -1,163 +1,117 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { STORAGE_KEYS } from '@/constants/storage';
+import { env } from '@/config/env';
+import { getStoredSession } from '@/services/auth';
+import { getJson, postForm, postJson, deleteRequest } from '@/services/http';
 
-export type KesfetPost = {
+export type KesfetFeedPost = {
   id: string;
+  authorId: string;
   authorName: string;
   authorTag: string;
   isMe: boolean;
   text: string;
   imageUri?: string;
   createdAt: string;
-  baseLikeCount: number;
+  liked: boolean;
+  likeCount: number;
   commentCount: number;
 };
 
-export type KesfetFeedPost = KesfetPost & { liked: boolean; likeCount: number };
-
-// Gerçek backend (Faz 0/1) devreye girene kadar Keşfet'i canlı hissettiren
-// sabit topluluk gönderileri — uygulamanın kendi fal türlerinden (tarot,
-// kahve, katina, I Ching, rüya) birer örnek veriyor.
-const SEED_POSTS: KesfetPost[] = [
-  {
-    id: 'seed-1',
-    authorName: 'Kadim Ruh',
-    authorTag: '@kadimruh',
-    isMe: false,
-    text: 'Bu akşam dolunay enerjisiyle küçük bir niyet ritüeli yaptım 🌕✨ Siz de deniyor musunuz?',
-    createdAt: '2026-08-27T21:10:00.000Z',
-    baseLikeCount: 34,
-    commentCount: 6,
-  },
-  {
-    id: 'seed-2',
-    authorName: 'Yıldız Tozu',
-    authorTag: '@yildiztozu',
-    isMe: false,
-    text: 'Kahve fincanımda bugün bir kuş figürü çıktı 🕊️ Yorumu olan var mı?',
-    createdAt: '2026-08-27T18:42:00.000Z',
-    baseLikeCount: 12,
-    commentCount: 9,
-  },
-  {
-    id: 'seed-3',
-    authorName: 'Gece Yarısı Kâhini',
-    authorTag: '@gecekahini',
-    isMe: false,
-    text: 'Merkür retrosu bitti sanıyordum ama telefonum yine suya düştü 😅 Evrenin bir planı var galiba.',
-    createdAt: '2026-08-27T15:05:00.000Z',
-    baseLikeCount: 58,
-    commentCount: 14,
-  },
-  {
-    id: 'seed-4',
-    authorName: 'Ay Çocuğu',
-    authorTag: '@aycocugu',
-    isMe: false,
-    text: 'Bugünkü tarot çekilişim: Yıldız kartı 🌟 Umut dolu bir gün diliyorum herkese.',
-    createdAt: '2026-08-27T11:30:00.000Z',
-    baseLikeCount: 21,
-    commentCount: 3,
-  },
-  {
-    id: 'seed-5',
-    authorName: 'Kristal Bahçe',
-    authorTag: '@kristalbahce',
-    isMe: false,
-    text: 'Ametist taşımı pencere kenarına koydum, enerjisi tüm odayı sarmış gibi hissediyorum.',
-    createdAt: '2026-08-26T20:15:00.000Z',
-    baseLikeCount: 17,
-    commentCount: 2,
-  },
-  {
-    id: 'seed-6',
-    authorName: 'Rüzgârın Sesi',
-    authorTag: '@ruzgarinsesi',
-    isMe: false,
-    text: 'Katina falımda art arda iki kez Kupa Ası çıktı — bu bir işaret olmalı 💛',
-    createdAt: '2026-08-26T16:50:00.000Z',
-    baseLikeCount: 9,
-    commentCount: 5,
-  },
-  {
-    id: 'seed-7',
-    authorName: 'Gölgeler Ustası',
-    authorTag: '@golgelerustasi',
-    isMe: false,
-    text: "I Ching'de Kien heksagramını çektim bugün — büyük bir gücün eşiğinde hissediyorum kendimi.",
-    createdAt: '2026-08-26T09:20:00.000Z',
-    baseLikeCount: 27,
-    commentCount: 4,
-  },
-  {
-    id: 'seed-8',
-    authorName: 'Tılsımlı Kalem',
-    authorTag: '@tilsimlikalem',
-    isMe: false,
-    text: 'Rüyamda uçtuğumu gördüm, kitaplığa bakınca özgürlük ve yeni başlangıçlar deniyor 🕊️',
-    createdAt: '2026-08-25T22:05:00.000Z',
-    baseLikeCount: 15,
-    commentCount: 7,
-  },
-];
-
-async function readOwnPosts(): Promise<KesfetPost[]> {
-  const raw = await AsyncStorage.getItem(STORAGE_KEYS.kesfetPosts);
-  return raw ? (JSON.parse(raw) as KesfetPost[]) : [];
+function appHeaders(): Record<string, string> {
+  const appSecret = env.appSecret();
+  return appSecret ? { 'X-App-Secret': appSecret } : {};
 }
 
-async function writeOwnPosts(posts: KesfetPost[]): Promise<void> {
-  await AsyncStorage.setItem(STORAGE_KEYS.kesfetPosts, JSON.stringify(posts));
+// Feed görüntüleme girişsiz de çalışır — token varsa "beğendim mi / kendi
+// gönderim mi" bilgisini de sunucudan almak için ekleniyor.
+async function optionalAuthHeaders(): Promise<Record<string, string>> {
+  const session = await getStoredSession();
+  return session ? { Authorization: `Bearer ${session.token}`, ...appHeaders() } : appHeaders();
 }
 
-async function readLikedIds(): Promise<Set<string>> {
-  const raw = await AsyncStorage.getItem(STORAGE_KEYS.kesfetLikes);
-  return new Set<string>(raw ? (JSON.parse(raw) as string[]) : []);
-}
-
-async function writeLikedIds(ids: Set<string>): Promise<void> {
-  await AsyncStorage.setItem(STORAGE_KEYS.kesfetLikes, JSON.stringify([...ids]));
+async function requireAuthHeaders(): Promise<Record<string, string>> {
+  const session = await getStoredSession();
+  if (!session) {
+    throw new Error('Bu işlem için giriş yapmalısın. Profil sekmesinden Google ile giriş yapabilirsin.');
+  }
+  return { Authorization: `Bearer ${session.token}`, ...appHeaders() };
 }
 
 export async function getFeed(): Promise<KesfetFeedPost[]> {
-  const [ownPosts, likedIds] = await Promise.all([readOwnPosts(), readLikedIds()]);
-  const all = [...ownPosts, ...SEED_POSTS].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-  return all.map((post) => {
-    const liked = likedIds.has(post.id);
-    return { ...post, liked, likeCount: post.baseLikeCount + (liked ? 1 : 0) };
-  });
+  const headers = await optionalAuthHeaders();
+  const { posts } = await getJson<{ posts: KesfetFeedPost[] }>(`${env.socialApiUrl()}/posts`, headers);
+  return posts;
 }
 
 export async function addPost(text: string, imageUri?: string): Promise<void> {
   const trimmed = text.trim();
   if (!trimmed && !imageUri) throw new Error('Boş bir gönderi paylaşılamaz.');
-  const ownPosts = await readOwnPosts();
-  const post: KesfetPost = {
-    id: `me-${Date.now()}`,
-    authorName: 'Sen',
-    authorTag: '@sen',
-    isMe: true,
-    text: trimmed,
-    imageUri,
-    createdAt: new Date().toISOString(),
-    baseLikeCount: 0,
-    commentCount: 0,
-  };
-  await writeOwnPosts([post, ...ownPosts]);
+  const headers = await requireAuthHeaders();
+  const form = new FormData();
+  form.append('text', trimmed);
+  if (imageUri) {
+    const filename = imageUri.split('/').pop() || 'photo.jpg';
+    const ext = filename.split('.').pop()?.toLowerCase();
+    const type = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+    // React Native'in FormData polyfill'i dosya eklerken bu { uri, name, type }
+    // biçimini bekliyor — DOM'daki Blob tipiyle örtüşmediği için cast gerekiyor.
+    form.append('image', { uri: imageUri, name: filename, type } as unknown as Blob);
+  }
+  await postForm(`${env.socialApiUrl()}/posts`, form, headers);
 }
 
 export async function deletePost(id: string): Promise<void> {
-  const ownPosts = await readOwnPosts();
-  await writeOwnPosts(ownPosts.filter((post) => post.id !== id));
+  const headers = await requireAuthHeaders();
+  await deleteRequest(`${env.socialApiUrl()}/posts/${id}`, headers);
 }
 
 export async function toggleLike(id: string): Promise<boolean> {
-  const likedIds = await readLikedIds();
-  const nowLiked = !likedIds.has(id);
-  if (nowLiked) likedIds.add(id);
-  else likedIds.delete(id);
-  await writeLikedIds(likedIds);
-  return nowLiked;
+  const headers = await requireAuthHeaders();
+  const { liked } = await postJson<{ liked: boolean; likeCount: number }>(
+    `${env.socialApiUrl()}/posts/${id}/like`,
+    {},
+    headers,
+  );
+  return liked;
+}
+
+export type KesfetComment = {
+  id: string;
+  postId: string;
+  authorId: string;
+  authorName: string;
+  authorTag: string;
+  isMe: boolean;
+  text: string;
+  createdAt: string;
+};
+
+export async function getComments(postId: string): Promise<KesfetComment[]> {
+  const headers = await optionalAuthHeaders();
+  const { comments } = await getJson<{ comments: KesfetComment[] }>(
+    `${env.socialApiUrl()}/posts/${postId}/comments`,
+    headers,
+  );
+  return comments;
+}
+
+export async function addComment(postId: string, text: string): Promise<KesfetComment> {
+  const trimmed = text.trim();
+  if (!trimmed) throw new Error('Boş bir yorum gönderilemez.');
+  const headers = await requireAuthHeaders();
+  const { comment } = await postJson<{ comment: KesfetComment }>(
+    `${env.socialApiUrl()}/posts/${postId}/comments`,
+    { text: trimmed },
+    headers,
+  );
+  return comment;
+}
+
+export async function deleteComment(id: string): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await deleteRequest(`${env.socialApiUrl()}/comments/${id}`, headers);
+}
+
+export async function reportContent(targetType: 'post' | 'comment', targetId: string, reason: string): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await postJson(`${env.socialApiUrl()}/reports`, { targetType, targetId, reason }, headers);
 }

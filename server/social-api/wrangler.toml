@@ -8,3 +8,12 @@ compatibility_date = "2026-08-25"
 binding = "DB"
 database_name = "mistik-rehber-social"
 database_id = "38d7418a-4a06-4110-b9e1-909da2fb3ad3"
+
+# `wrangler r2 bucket create mistik-rehber-social-images` çalıştırdıktan sonra aktif olur.
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "mistik-rehber-social-images"
+
+# Her gün 03:00 UTC'de süresi dolan (7 günden eski) gönderileri temizler.
+[triggers]
+crons = ["0 3 * * *"]

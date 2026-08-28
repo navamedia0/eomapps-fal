@@ -1,8 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { STORAGE_KEYS } from '@/constants/storage';
 import { env } from '@/config/env';
 import { postJson, ApiRequestError } from '@/services/http';
+import { registerPushToken, registerPushTokenOnce, unregisterPushToken } from '@/services/pushNotifications';
 
 export type AuthUser = {
   id: string;
@@ -53,10 +55,37 @@ export async function signInWithGoogle(): Promise<AuthUser> {
     authHeaders(),
   );
   await saveSession(token, user);
+  registerPushToken(token);
+  return user;
+}
+
+export async function signInWithApple(): Promise<AuthUser> {
+  const credential = await AppleAuthentication.signInAsync({
+    requestedScopes: [
+      AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+      AppleAuthentication.AppleAuthenticationScope.EMAIL,
+    ],
+  });
+  const { identityToken, email, fullName } = credential;
+  if (!identityToken) throw new Error('Apple girişten kimlik jetonu alınamadı.');
+  // Apple isim/e-posta bilgisini yalnızca ilk yetkilendirmede gönderiyor —
+  // sonraki girişlerde fullName/email null gelir, backend bunu bekliyor
+  // (COALESCE ile kayıtlı değeri korur).
+  const name = [fullName?.givenName, fullName?.familyName].filter(Boolean).join(' ').trim() || undefined;
+
+  const { token, user } = await postJson<{ token: string; user: AuthUser }>(
+    `${env.socialApiUrl()}/auth/apple`,
+    { identityToken, email: email ?? undefined, fullName: name },
+    authHeaders(),
+  );
+  await saveSession(token, user);
+  registerPushToken(token);
   return user;
 }
 
 export async function signOut(): Promise<void> {
+  const session = await getStoredSession();
+  if (session) await unregisterPushToken(session.token);
   await Promise.allSettled([
     AsyncStorage.removeItem(STORAGE_KEYS.authToken),
     AsyncStorage.removeItem(STORAGE_KEYS.authUser),
@@ -79,6 +108,7 @@ export async function refreshSession(): Promise<AuthUser | null> {
     }
     const { user } = (await response.json()) as { user: AuthUser };
     await AsyncStorage.setItem(STORAGE_KEYS.authUser, JSON.stringify(user));
+    registerPushTokenOnce(session.token);
     return user;
   } catch (err) {
     // Ağ hatasında oturumu silmiyoruz — cihazda bilinen son kullanıcıyla devam.

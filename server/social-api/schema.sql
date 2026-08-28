@@ -1,5 +1,5 @@
 -- Mistik Rehber Social API — D1 şeması
--- Faz 0: hesap sistemi + Faz 1: takip/engelle ilişkileri
+-- Faz 0: hesap sistemi + Faz 1: takip/engelle ilişkileri + Keşfet gönderileri
 
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
@@ -35,3 +35,212 @@ CREATE TABLE IF NOT EXISTS blocks (
   created_at TEXT NOT NULL,
   PRIMARY KEY (blocker_id, blocked_id)
 );
+
+CREATE TABLE IF NOT EXISTS posts (
+  id TEXT PRIMARY KEY,
+  author_id TEXT NOT NULL REFERENCES users(id),
+  text TEXT NOT NULL DEFAULT '',
+  image_key TEXT,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at);
+CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author_id);
+
+CREATE TABLE IF NOT EXISTS post_likes (
+  post_id TEXT NOT NULL REFERENCES posts(id),
+  user_id TEXT NOT NULL REFERENCES users(id),
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (post_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_post_likes_post ON post_likes(post_id);
+
+-- Sosyal özellikler (hediye, popülerlik puanı, mağaza) için merkezi işlem
+-- defteri. Uygulamanın mevcut fal kredisi/coin sistemi (cihaz-yerel, girişsiz)
+-- bilerek bunun dışında tutuluyor — bu ledger sadece hesaba bağlı yeni sosyal
+-- ekonomi özellikleri için. İki para birimi var: coin (aktiviteyle kazanılan)
+-- ve crystal (gerçek parayla alınan premium birim) — roadmap'in "ikili ekonomi"
+-- maddesi. Henüz hiçbir özellik kazanç işlemi yazmıyor (kazanma/IAP akışları
+-- ayrı bir sonraki adım), bu yüzden bakiyeler bugün için hep 0.
+CREATE TABLE IF NOT EXISTS wallets (
+  user_id TEXT NOT NULL REFERENCES users(id),
+  currency TEXT NOT NULL,      -- 'coin' | 'crystal'
+  balance INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL,
+  PRIMARY KEY (user_id, currency)
+);
+
+CREATE TABLE IF NOT EXISTS ledger_entries (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id),
+  currency TEXT NOT NULL,       -- 'coin' | 'crystal'
+  amount INTEGER NOT NULL,      -- pozitif: kazanç, negatif: harcama
+  reason TEXT NOT NULL,         -- örn. 'gift_sent', 'shop_purchase', 'vip_subscribe'
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_ledger_user ON ledger_entries(user_id);
+
+-- Mağaza (Faz 4) — sadece altyapı: şema + satın alma/envanter mekaniği.
+-- Gerçek çerçeve/rozet/efekt kataloğu (isim, görsel, fiyat) ayrı bir
+-- araştırma belgesini bekliyor; aşağıdaki [Örnek] önekli satırlar sadece
+-- akışı test etmek için — gerçek içerik değil.
+CREATE TABLE IF NOT EXISTS shop_items (
+  id TEXT PRIMARY KEY,
+  category TEXT NOT NULL,        -- 'frame' | 'badge' | 'entrance_effect'
+  name TEXT NOT NULL,
+  description TEXT,
+  currency TEXT NOT NULL,        -- 'coin' | 'crystal'
+  price INTEGER NOT NULL,
+  active INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS shop_purchases (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id),
+  item_id TEXT NOT NULL REFERENCES shop_items(id),
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_shop_purchases_user ON shop_purchases(user_id);
+
+CREATE TABLE IF NOT EXISTS vip_tiers (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  monthly_price_crystal INTEGER NOT NULL,
+  perks TEXT,                    -- JSON dizi: kısa ayrıcalık açıklamaları
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  active INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS vip_subscriptions (
+  user_id TEXT PRIMARY KEY REFERENCES users(id),
+  tier_id TEXT NOT NULL REFERENCES vip_tiers(id),
+  started_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL
+);
+
+INSERT OR IGNORE INTO shop_items (id, category, name, description, currency, price, active, created_at) VALUES
+  ('seed-frame-basic', 'frame', '[Örnek] Basit Çerçeve', 'Gerçek katalog gelene kadar akışı test etmek için yer tutucu.', 'coin', 500, 1, '2026-01-01T00:00:00.000Z'),
+  ('seed-frame-gold', 'frame', '[Örnek] Altın Çerçeve', 'Gerçek katalog gelene kadar akışı test etmek için yer tutucu.', 'crystal', 200, 1, '2026-01-01T00:00:00.000Z'),
+  ('seed-badge-star', 'badge', '[Örnek] Yıldız Rozeti', 'Gerçek katalog gelene kadar akışı test etmek için yer tutucu.', 'coin', 300, 1, '2026-01-01T00:00:00.000Z'),
+  ('seed-badge-diamond', 'badge', '[Örnek] Elmas Rozeti', 'Gerçek katalog gelene kadar akışı test etmek için yer tutucu.', 'crystal', 150, 1, '2026-01-01T00:00:00.000Z'),
+  ('seed-entrance-sparkle', 'entrance_effect', '[Örnek] Parıltı Girişi', 'Gerçek katalog gelene kadar akışı test etmek için yer tutucu.', 'crystal', 250, 1, '2026-01-01T00:00:00.000Z');
+
+INSERT OR IGNORE INTO vip_tiers (id, name, monthly_price_crystal, perks, sort_order, active, created_at) VALUES
+  ('seed-vip-silver', '[Örnek] Gümüş', 300, '["Örnek ayrıcalık 1","Örnek ayrıcalık 2"]', 1, 1, '2026-01-01T00:00:00.000Z'),
+  ('seed-vip-gold', '[Örnek] Altın', 600, '["Örnek ayrıcalık 1","Örnek ayrıcalık 2","Örnek ayrıcalık 3"]', 2, 1, '2026-01-01T00:00:00.000Z'),
+  ('seed-vip-diamond', '[Örnek] Elmas', 1200, '["Örnek ayrıcalık 1","Örnek ayrıcalık 2","Örnek ayrıcalık 3","Örnek ayrıcalık 4"]', 3, 1, '2026-01-01T00:00:00.000Z');
+
+-- Şikayet/moderasyon: kullanıcılar gönderi/yorum/profil şikayet edebilir.
+-- Yeterli şikayeti biriken içerik otomatik olarak akıştan gizlenir (aşağıdaki
+-- REPORT_HIDE_THRESHOLD); manuel inceleme şimdilik doğrudan D1 sorgusuyla
+-- yapılıyor — ayrı bir admin panosu henüz yok.
+CREATE TABLE IF NOT EXISTS reports (
+  id TEXT PRIMARY KEY,
+  reporter_id TEXT NOT NULL REFERENCES users(id),
+  target_type TEXT NOT NULL,   -- 'post' | 'comment' | 'user'
+  target_id TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_reports_target ON reports(target_type, target_id);
+
+CREATE TABLE IF NOT EXISTS push_tokens (
+  user_id TEXT NOT NULL REFERENCES users(id),
+  token TEXT NOT NULL,
+  platform TEXT,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (user_id, token)
+);
+
+-- Sesli/yazılı odalar (Faz 2). Bir odanın 10 koltuğu var; koltuktaki
+-- katılımcılar hem LiveKit ses akışına hem oda yazılı sohbetine dahil.
+-- Sınırsız "sadece dinleyici" modeli bilinçli olarak bu sürümde yok.
+CREATE TABLE IF NOT EXISTS rooms (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  host_id TEXT NOT NULL REFERENCES users(id),
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS room_seats (
+  room_id TEXT NOT NULL REFERENCES rooms(id),
+  seat_index INTEGER NOT NULL,
+  user_id TEXT NOT NULL REFERENCES users(id),
+  joined_at TEXT NOT NULL,
+  PRIMARY KEY (room_id, seat_index)
+);
+CREATE INDEX IF NOT EXISTS idx_room_seats_user ON room_seats(user_id);
+
+CREATE TABLE IF NOT EXISTS room_messages (
+  id TEXT PRIMARY KEY,
+  room_id TEXT NOT NULL REFERENCES rooms(id),
+  sender_id TEXT NOT NULL REFERENCES users(id),
+  text TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_room_messages_room ON room_messages(room_id, created_at);
+
+CREATE TABLE IF NOT EXISTS messages (
+  id TEXT PRIMARY KEY,
+  sender_id TEXT NOT NULL REFERENCES users(id),
+  recipient_id TEXT NOT NULL REFERENCES users(id),
+  text TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  read_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id, recipient_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_messages_recipient ON messages(recipient_id, sender_id, created_at);
+
+-- Rehber olma: kullanıcı başvurur, onay şimdilik doğrudan D1 sorgusuyla
+-- yapılıyor (ayrı bir admin panosu yok — bkz. README "Rehber başvuruları").
+-- En son başvurusunun durumu kullanıcının güncel rehber durumu sayılır.
+CREATE TABLE IF NOT EXISTS guide_applications (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id),
+  message TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at TEXT NOT NULL,
+  decided_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_guide_applications_user ON guide_applications(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_guide_applications_status ON guide_applications(status);
+
+-- Başarımlar (Faz 6). Her tanım kademeli eşiklerle geliyor (tiers JSON);
+-- kullanıcı bir eşiği geçince user_achievements'a satır düşer. Şu an sadece
+-- sunucu tarafında hesaplanabilen "Sosyallik" kategorisi dolu — Fal/Oyun/
+-- Popülerlik kategorileri ilgili sistemler (yerel fal geçmişi, oyunlar,
+-- popülerlik listesi) bağlanınca eklenecek.
+CREATE TABLE IF NOT EXISTS achievement_definitions (
+  id TEXT PRIMARY KEY,
+  category TEXT NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  tiers TEXT NOT NULL,     -- JSON: [{"tier":1,"threshold":10,"label":"10"}, ...]
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_achievements (
+  user_id TEXT NOT NULL REFERENCES users(id),
+  achievement_id TEXT NOT NULL REFERENCES achievement_definitions(id),
+  tier INTEGER NOT NULL,
+  unlocked_at TEXT NOT NULL,
+  PRIMARY KEY (user_id, achievement_id, tier)
+);
+CREATE INDEX IF NOT EXISTS idx_user_achievements_user ON user_achievements(user_id);
+
+INSERT OR IGNORE INTO achievement_definitions (id, category, name, description, tiers, created_at) VALUES
+  ('social_first_follow', 'social', 'İlk Arkadaş', 'İlk kez birini takip et.', '[{"tier":1,"threshold":1,"label":"İlk takip"}]', '2026-01-01T00:00:00.000Z'),
+  ('social_first_post', 'social', 'İlk Gönderi', 'Keşfet''te ilk gönderini paylaş.', '[{"tier":1,"threshold":1,"label":"İlk gönderi"}]', '2026-01-01T00:00:00.000Z'),
+  ('social_followers', 'social', 'Popüler Profil', 'Takipçi sayın arttıkça yeni kademeler açılır.', '[{"tier":1,"threshold":10,"label":"10"},{"tier":2,"threshold":50,"label":"50"},{"tier":3,"threshold":100,"label":"100"},{"tier":4,"threshold":500,"label":"500"},{"tier":5,"threshold":1000,"label":"1000"},{"tier":6,"threshold":5000,"label":"5000"}]', '2026-01-01T00:00:00.000Z'),
+  ('popularity_weekly_star', 'popularity', 'Haftalık Yıldız', 'Hafta sonunda harcama liderliğinde ilk 10''a girdin.', '[{"tier":1,"threshold":1,"label":"İlk 10"}]', '2026-01-01T00:00:00.000Z'),
+  ('popularity_legend', 'popularity', 'Efsane', 'Toplamda 1 milyon popülerlik puanına ulaştın.', '[{"tier":1,"threshold":1000000,"label":"1M"}]', '2026-01-01T00:00:00.000Z');
+
+CREATE TABLE IF NOT EXISTS comments (
+  id TEXT PRIMARY KEY,
+  post_id TEXT NOT NULL REFERENCES posts(id),
+  author_id TEXT NOT NULL REFERENCES users(id),
+  text TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id);

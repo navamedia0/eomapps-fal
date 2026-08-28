@@ -50,7 +50,10 @@
         }
       ],
       "expo-asset",
-      "@react-native-google-signin/google-signin"
+      "expo-apple-authentication",
+      "@react-native-google-signin/google-signin",
+      "@livekit/react-native-expo-plugin",
+      "@config-plugins/react-native-webrtc"
     ],
     "extra": {
       "eas": {

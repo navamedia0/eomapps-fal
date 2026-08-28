@@ -92,6 +92,33 @@ export default function MagazaScreen({ navigation }: Props) {
             <Ionicons name="chevron-forward" size={20} color={GOLD} />
           </Pressable>
         </View>
+
+        <Text style={styles.sectionLabel}>Sosyal Mağaza</Text>
+        <View style={styles.list}>
+          <Pressable
+            onPress={() => navigation.navigate('Shop')}
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+          >
+            <FeatureIcon fallback={<Ionicons name="ribbon-outline" size={22} color={GOLD} />} size={74} />
+            <View style={styles.cardTextWrap}>
+              <Text style={styles.cardTitle}>Çerçeve, Rozet & Efektler</Text>
+              <Text style={styles.cardSubtitle}>Profilini kişiselleştir</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+          </Pressable>
+
+          <Pressable
+            onPress={() => navigation.navigate('VipTiers')}
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+          >
+            <FeatureIcon fallback={<Ionicons name="diamond-outline" size={22} color={GOLD} />} size={74} />
+            <View style={styles.cardTextWrap}>
+              <Text style={styles.cardTitle}>VIP Kademeleri</Text>
+              <Text style={styles.cardSubtitle}>Aylık ayrıcalıklı üyelik</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+          </Pressable>
+        </View>
       </ScrollView>
     </MysticTableBackground>
   );
@@ -144,6 +171,15 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: 14,
+  },
+  sectionLabel: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    marginTop: 24,
+    marginBottom: 14,
   },
   card: {
     flexDirection: 'row',

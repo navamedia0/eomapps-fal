@@ -1,5 +1,10 @@
 import 'react-native-reanimated';
+import { registerGlobals } from '@livekit/react-native';
 import { useEffect } from 'react';
+
+// LiveKit'in WebRTC bağımlılıkları için gerekli global polyfilleri kurar —
+// diğer her şeyden önce, en tepede çalışmalı.
+registerGlobals();
 import { StatusBar } from 'expo-status-bar';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Platform, StyleSheet, View, Pressable } from 'react-native';
@@ -55,6 +60,14 @@ import CelticTreeScreen from '@/screens/CelticTreeScreen';
 import AuraEnergyScreen from '@/screens/AuraEnergyScreen';
 import ScryingScreen from '@/screens/ScryingScreen';
 import BilgiKosesiScreen from '@/screens/BilgiKosesiScreen';
+import UserProfileScreen from '@/screens/UserProfileScreen';
+import BlockedUsersScreen from '@/screens/BlockedUsersScreen';
+import DMThreadScreen from '@/screens/DMThreadScreen';
+import RoomScreen from '@/screens/RoomScreen';
+import ShopScreen from '@/screens/ShopScreen';
+import VipTiersScreen from '@/screens/VipTiersScreen';
+import AchievementsScreen from '@/screens/AchievementsScreen';
+import PopularityScreen from '@/screens/PopularityScreen';
 import bilgiMakaleleri from '@/data/bilgi_makaleleri.json';
 import { GOLD, NIGHT_DEEP, NIGHT_MID, TEXT_PRIMARY } from '@/theme/colors';
 
@@ -183,6 +196,22 @@ export default function App() {
               options={({ route }) => ({ title: bilgiMakaleleri[route.params.topic].title })}
             />
             <Stack.Screen name="BilgiKosesi" component={BilgiKosesiScreen} options={{ title: 'Bilgi Köşesi' }} />
+            <Stack.Screen name="UserProfile" component={UserProfileScreen} options={{ title: 'Profil' }} />
+            <Stack.Screen name="BlockedUsers" component={BlockedUsersScreen} options={{ title: 'Engellenen Kullanıcılar' }} />
+            <Stack.Screen
+              name="DMThread"
+              component={DMThreadScreen}
+              options={({ route }) => ({ title: route.params.displayName || 'Sohbet' })}
+            />
+            <Stack.Screen
+              name="Room"
+              component={RoomScreen}
+              options={({ route }) => ({ title: route.params.roomName || 'Oda' })}
+            />
+            <Stack.Screen name="Shop" component={ShopScreen} options={{ title: 'Sosyal Mağaza' }} />
+            <Stack.Screen name="VipTiers" component={VipTiersScreen} options={{ title: 'VIP Kademeleri' }} />
+            <Stack.Screen name="Achievements" component={AchievementsScreen} options={{ title: 'Başarımlar' }} />
+            <Stack.Screen name="Popularity" component={PopularityScreen} options={{ title: 'Haftalık Popülerlik' }} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>

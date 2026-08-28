@@ -7,6 +7,8 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import FeatureIcon from '@/components/FeatureIcon';
 import { FEATURE_ICONS, NAV_ICONS } from '@/assets/icons';
 import { getStoredSession, refreshSession, signInWithGoogle, signOut, type AuthUser } from '@/services/auth';
+import { getUserProfile } from '@/services/socialProfile';
+import AppleSignInButton from '@/components/AppleSignInButton';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = TabScreenProps;
@@ -20,6 +22,7 @@ const SOCIAL_ACCOUNTS = [
 function AuthSection() {
   const [user, setUser] = useState<AuthUser | null | undefined>(undefined); // undefined = henüz yüklenmedi
   const [signingIn, setSigningIn] = useState(false);
+  const [stats, setStats] = useState<{ followerCount: number; followingCount: number } | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -29,6 +32,13 @@ function AuthSection() {
       });
       refreshSession().then((freshUser) => {
         if (active) setUser(freshUser);
+        if (active && freshUser) {
+          getUserProfile(freshUser.id)
+            .then((profile) => {
+              if (active) setStats({ followerCount: profile.followerCount, followingCount: profile.followingCount });
+            })
+            .catch(() => {});
+        }
       });
       return () => {
         active = false;
@@ -57,6 +67,7 @@ function AuthSection() {
         onPress: async () => {
           await signOut();
           setUser(null);
+          setStats(null);
         },
       },
     ]);
@@ -82,7 +93,13 @@ function AuthSection() {
         )}
         <View style={styles.authTextWrap}>
           <Text style={styles.authName}>{user.displayName || 'Mistik Rehber Kullanıcısı'}</Text>
-          <Text style={styles.authSubtitle}>Google ile giriş yapıldı</Text>
+          {stats ? (
+            <Text style={styles.authSubtitle}>
+              {stats.followerCount} takipçi · {stats.followingCount} takip
+            </Text>
+          ) : (
+            <Text style={styles.authSubtitle}>Google ile giriş yapıldı</Text>
+          )}
         </View>
         <Pressable onPress={handleSignOut} hitSlop={10}>
           <Ionicons name="log-out-outline" size={22} color={TEXT_MUTED} />
@@ -92,15 +109,21 @@ function AuthSection() {
   }
 
   return (
-    <Pressable
-      onPress={handleSignIn}
-      disabled={signingIn}
-      style={({ pressed }) => [styles.authCard, styles.authSignInButton, pressed && styles.cardPressed]}
-    >
-      <FontAwesome name="google" size={20} color={GOLD} />
-      <Text style={styles.authSignInText}>{signingIn ? 'Giriş yapılıyor...' : 'Google ile Giriş Yap'}</Text>
-      {signingIn && <ActivityIndicator color={GOLD} style={{ marginLeft: 6 }} />}
-    </Pressable>
+    <View style={{ marginBottom: 20 }}>
+      <Pressable
+        onPress={handleSignIn}
+        disabled={signingIn}
+        style={({ pressed }) => [styles.authCard, styles.authSignInButton, { marginBottom: 0 }, pressed && styles.cardPressed]}
+      >
+        <FontAwesome name="google" size={20} color={GOLD} />
+        <Text style={styles.authSignInText}>{signingIn ? 'Giriş yapılıyor...' : 'Google ile Giriş Yap'}</Text>
+        {signingIn && <ActivityIndicator color={GOLD} style={{ marginLeft: 6 }} />}
+      </Pressable>
+      <AppleSignInButton
+        onSuccess={() => getStoredSession().then((session) => setUser(session?.user ?? null))}
+        onError={(message) => Alert.alert('Giriş yapılamadı', message)}
+      />
+    </View>
   );
 }
 
@@ -198,6 +221,42 @@ export default function ProfilScreen({ navigation }: Props) {
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Bildirim Ayarları</Text>
               <Text style={styles.cardSubtitle}>Günlük hatırlatmaları yönet</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+          </Pressable>
+
+          <Pressable
+            onPress={() => navigation.navigate('Achievements')}
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+          >
+            <FeatureIcon fallback={<Ionicons name="trophy-outline" size={22} color={GOLD} />} size={74} />
+            <View style={styles.cardTextWrap}>
+              <Text style={styles.cardTitle}>Başarımlar</Text>
+              <Text style={styles.cardSubtitle}>Kademeli rozetler ve ilerlemeni gör</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+          </Pressable>
+
+          <Pressable
+            onPress={() => navigation.navigate('Popularity')}
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+          >
+            <FeatureIcon fallback={<Ionicons name="flame-outline" size={22} color={GOLD} />} size={74} />
+            <View style={styles.cardTextWrap}>
+              <Text style={styles.cardTitle}>Haftalık Popülerlik</Text>
+              <Text style={styles.cardSubtitle}>Bu haftanın liderlik tablosu</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+          </Pressable>
+
+          <Pressable
+            onPress={() => navigation.navigate('BlockedUsers')}
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+          >
+            <FeatureIcon fallback={<Ionicons name="ban-outline" size={22} color={GOLD} />} size={74} />
+            <View style={styles.cardTextWrap}>
+              <Text style={styles.cardTitle}>Engellenen Kullanıcılar</Text>
+              <Text style={styles.cardSubtitle}>Engellediklerini gör, istersen engeli kaldır</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color={GOLD} />
           </Pressable>

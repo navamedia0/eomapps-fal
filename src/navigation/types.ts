@@ -53,6 +53,14 @@ export type RootStackParamList = {
   KartAnlamlari: { deck: 'iskambil' | 'tarot' };
   BilgiMakale: { topic: 'kahve_tarihi' | 'katina_nedir' | 'burc_kokeni' };
   BilgiKosesi: undefined;
+  UserProfile: { userId: string };
+  BlockedUsers: undefined;
+  DMThread: { userId: string; displayName?: string | null; avatarUrl?: string | null };
+  Room: { roomId: string; roomName?: string };
+  Shop: undefined;
+  VipTiers: undefined;
+  Achievements: undefined;
+  Popularity: undefined;
 };
 
 export type MainTabParamList = {

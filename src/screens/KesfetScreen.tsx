@@ -23,8 +23,12 @@ import ShareImageButton from '@/components/ShareImageButton';
 import PopularDetailModal from '@/components/PopularDetailModal';
 import quotes from '@/data/kesfet_sozleri.json';
 import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
-import { getFeed, addPost, deletePost, toggleLike, type KesfetFeedPost } from '@/services/kesfetPosts';
+import { getFeed, addPost, deletePost, toggleLike, reportContent, type KesfetFeedPost } from '@/services/kesfetPosts';
+import CommentsModal from '@/components/CommentsModal';
 import { shareText } from '@/utils/share';
+import { relativeTime } from '@/utils/relativeTime';
+import { avatarColor } from '@/utils/avatarColor';
+import { promptReport } from '@/utils/reportPrompt';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 const QUOTE_CARD_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
@@ -45,22 +49,6 @@ function quotePool(): string[] {
   const period = Math.floor(epochMs / (48 * 3600 * 1000));
   const offset = (period * 11) % QUOTES.length;
   return [...QUOTES.slice(offset), ...QUOTES.slice(0, offset)];
-}
-
-function relativeTime(iso: string): string {
-  const diffMin = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
-  if (diffMin < 1) return 'az önce';
-  if (diffMin < 60) return `${diffMin} dk`;
-  const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr} sa`;
-  return `${Math.floor(diffHr / 24)} gün`;
-}
-
-const AVATAR_PALETTE = ['#8B5CF6', '#B4232A', '#B8862E', '#2F8F5B', '#6D3FD4', '#C1750E'];
-function avatarColor(seed: string): string {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-  return AVATAR_PALETTE[hash % AVATAR_PALETTE.length];
 }
 
 function buildRows(feed: KesfetFeedPost[]): FeedRow[] {
@@ -167,26 +155,38 @@ function PostCard({
   post,
   onToggleLike,
   onDelete,
+  onOpenComments,
+  onReport,
+  onPressAuthor,
 }: {
   post: KesfetFeedPost;
   onToggleLike: (id: string) => void;
   onDelete: (id: string) => void;
+  onOpenComments: (id: string) => void;
+  onReport: (id: string) => void;
+  onPressAuthor: (userId: string) => void;
 }) {
   return (
     <View style={styles.postCard}>
       <View style={styles.postHeader}>
-        <View style={[styles.avatar, { backgroundColor: avatarColor(post.authorTag) }]}>
-          <Text style={styles.avatarText}>{post.authorName.charAt(0).toUpperCase()}</Text>
-        </View>
-        <View style={styles.postAuthorWrap}>
-          <Text style={styles.postAuthorName}>{post.authorName}</Text>
-          <Text style={styles.postMeta}>
-            {post.authorTag} · {relativeTime(post.createdAt)}
-          </Text>
-        </View>
-        {post.isMe && (
+        <Pressable onPress={() => onPressAuthor(post.authorId)} style={styles.postAuthorPressable} hitSlop={4}>
+          <View style={[styles.avatar, { backgroundColor: avatarColor(post.authorTag) }]}>
+            <Text style={styles.avatarText}>{post.authorName.charAt(0).toUpperCase()}</Text>
+          </View>
+          <View style={styles.postAuthorWrap}>
+            <Text style={styles.postAuthorName}>{post.authorName}</Text>
+            <Text style={styles.postMeta}>
+              {post.authorTag} · {relativeTime(post.createdAt)}
+            </Text>
+          </View>
+        </Pressable>
+        {post.isMe ? (
           <Pressable onPress={() => onDelete(post.id)} hitSlop={10}>
             <Ionicons name="trash-outline" size={18} color={TEXT_MUTED} />
+          </Pressable>
+        ) : (
+          <Pressable onPress={() => onReport(post.id)} hitSlop={10}>
+            <Ionicons name="flag-outline" size={17} color={TEXT_MUTED} />
           </Pressable>
         )}
       </View>
@@ -199,11 +199,7 @@ function PostCard({
           <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={18} color={post.liked ? '#E0708A' : TEXT_MUTED} />
           <Text style={[styles.actionCount, post.liked && styles.actionCountLiked]}>{post.likeCount}</Text>
         </Pressable>
-        <Pressable
-          onPress={() => Alert.alert('Yorumlar', 'Yorum yapma özelliği çok yakında aktif olacak.')}
-          style={styles.actionButton}
-          hitSlop={6}
-        >
+        <Pressable onPress={() => onOpenComments(post.id)} style={styles.actionButton} hitSlop={6}>
           <Ionicons name="chatbubble-outline" size={17} color={TEXT_MUTED} />
           <Text style={styles.actionCount}>{post.commentCount}</Text>
         </Pressable>
@@ -223,14 +219,22 @@ function PostCard({
 export default function KesfetScreen({ navigation }: Props) {
   const [feed, setFeed] = useState<KesfetFeedPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [feedError, setFeedError] = useState(false);
   const [popular, setPopular] = useState<PopularFavorite[]>([]);
   const [selectedPopular, setSelectedPopular] = useState<PopularFavorite | null>(null);
+  const [commentsPostId, setCommentsPostId] = useState<string | null>(null);
 
   const refreshFeed = useCallback(() => {
-    getFeed().then((items) => {
-      setFeed(items);
-      setLoading(false);
-    });
+    getFeed()
+      .then((items) => {
+        setFeed(items);
+        setFeedError(false);
+        setLoading(false);
+      })
+      .catch(() => {
+        setFeedError(true);
+        setLoading(false);
+      });
   }, []);
 
   useFocusEffect(
@@ -247,8 +251,12 @@ export default function KesfetScreen({ navigation }: Props) {
 
   const handleToggleLike = useCallback(
     async (id: string) => {
-      await toggleLike(id);
-      refreshFeed();
+      try {
+        await toggleLike(id);
+        refreshFeed();
+      } catch (err) {
+        Alert.alert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+      }
     },
     [refreshFeed],
   );
@@ -261,13 +269,45 @@ export default function KesfetScreen({ navigation }: Props) {
           text: 'Sil',
           style: 'destructive',
           onPress: async () => {
-            await deletePost(id);
-            refreshFeed();
+            try {
+              await deletePost(id);
+              refreshFeed();
+            } catch (err) {
+              Alert.alert('Silinemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+            }
           },
         },
       ]);
     },
     [refreshFeed],
+  );
+
+  const handlePressAuthor = useCallback(
+    (userId: string) => {
+      navigation.navigate('UserProfile', { userId });
+    },
+    [navigation],
+  );
+
+  const handleReport = useCallback((id: string) => {
+    promptReport((reason) => {
+      reportContent('post', id, reason)
+        .then(() => Alert.alert('Teşekkürler', 'Şikayetin alındı.'))
+        .catch((err) => Alert.alert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.'));
+    });
+  }, []);
+
+  const handleCloseComments = useCallback(() => {
+    setCommentsPostId(null);
+    refreshFeed();
+  }, [refreshFeed]);
+
+  const handleCommentAuthorPress = useCallback(
+    (userId: string) => {
+      setCommentsPostId(null);
+      navigation.navigate('UserProfile', { userId });
+    },
+    [navigation],
   );
 
   const rows = buildRows(feed);
@@ -308,14 +348,32 @@ export default function KesfetScreen({ navigation }: Props) {
         )}
 
         <Composer onPosted={refreshFeed} />
+        <Text style={styles.retentionHint}>Gönderiler 3 gün sonra akıştan otomatik kalkar.</Text>
 
         {loading ? (
           <ActivityIndicator color={GOLD} style={{ marginTop: 30 }} />
+        ) : feedError ? (
+          <View style={styles.feedErrorWrap}>
+            <Text style={styles.feedErrorText}>Akış yüklenemedi. İnternet bağlantını kontrol et.</Text>
+            <Pressable onPress={refreshFeed} style={styles.feedRetryButton}>
+              <Text style={styles.feedRetryText}>Tekrar dene</Text>
+            </Pressable>
+          </View>
         ) : (
           <View style={styles.feed}>
             {rows.map((row, index) => {
               if (row.type === 'post') {
-                return <PostCard key={row.post.id} post={row.post} onToggleLike={handleToggleLike} onDelete={handleDelete} />;
+                return (
+                  <PostCard
+                    key={row.post.id}
+                    post={row.post}
+                    onToggleLike={handleToggleLike}
+                    onDelete={handleDelete}
+                    onOpenComments={setCommentsPostId}
+                    onReport={handleReport}
+                    onPressAuthor={handlePressAuthor}
+                  />
+                );
               }
               return (
                 <ImageBackground
@@ -344,6 +402,7 @@ export default function KesfetScreen({ navigation }: Props) {
         )}
       </ScrollView>
       <PopularDetailModal item={selectedPopular} onClose={() => setSelectedPopular(null)} />
+      <CommentsModal postId={commentsPostId} onClose={handleCloseComments} onPressAuthor={handleCommentAuthorPress} />
     </MysticTableBackground>
   );
 }
@@ -520,8 +579,37 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#1a0d33',
   },
+  retentionHint: {
+    fontSize: 10.5,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+    marginTop: -10,
+    marginBottom: 22,
+  },
   feed: {
     gap: 14,
+  },
+  feedErrorWrap: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    gap: 12,
+  },
+  feedErrorText: {
+    fontSize: 13,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+  },
+  feedRetryButton: {
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 18,
+  },
+  feedRetryText: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: GOLD,
   },
   postCard: {
     backgroundColor: NIGHT_CARD,
@@ -535,6 +623,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     marginBottom: 10,
+  },
+  postAuthorPressable: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   postAuthorWrap: {
     flex: 1,
