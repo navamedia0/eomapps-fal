@@ -1,20 +1,108 @@
-import { useState } from 'react';
-import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { View, Text, Pressable, ScrollView, StyleSheet, Image, ActivityIndicator, Alert } from 'react-native';
 import type { TabScreenProps } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import FeatureIcon from '@/components/FeatureIcon';
-import { FEATURE_ICONS } from '@/assets/icons';
+import { FEATURE_ICONS, NAV_ICONS } from '@/assets/icons';
+import { getStoredSession, refreshSession, signInWithGoogle, signOut, type AuthUser } from '@/services/auth';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = TabScreenProps;
 
 const SOCIAL_ACCOUNTS = [
-  { key: 'google', name: 'Google', icon: <MaterialCommunityIcons name="google" size={20} color={GOLD} /> },
   { key: 'facebook', name: 'Facebook', icon: <FontAwesome name="facebook" size={18} color={GOLD} /> },
   { key: 'instagram', name: 'Instagram', icon: <FontAwesome name="instagram" size={18} color={GOLD} /> },
   { key: 'whatsapp', name: 'WhatsApp', icon: <FontAwesome name="whatsapp" size={18} color={GOLD} /> },
 ];
+
+function AuthSection() {
+  const [user, setUser] = useState<AuthUser | null | undefined>(undefined); // undefined = henüz yüklenmedi
+  const [signingIn, setSigningIn] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      getStoredSession().then((session) => {
+        if (active) setUser(session?.user ?? null);
+      });
+      refreshSession().then((freshUser) => {
+        if (active) setUser(freshUser);
+      });
+      return () => {
+        active = false;
+      };
+    }, []),
+  );
+
+  const handleSignIn = useCallback(async () => {
+    setSigningIn(true);
+    try {
+      const signedInUser = await signInWithGoogle();
+      setUser(signedInUser);
+    } catch (err) {
+      Alert.alert('Giriş yapılamadı', err instanceof Error ? err.message : 'Bilinmeyen bir hata oluştu.');
+    } finally {
+      setSigningIn(false);
+    }
+  }, []);
+
+  const handleSignOut = useCallback(() => {
+    Alert.alert('Çıkış yap', 'Hesabından çıkış yapmak istediğine emin misin?', [
+      { text: 'Vazgeç', style: 'cancel' },
+      {
+        text: 'Çıkış Yap',
+        style: 'destructive',
+        onPress: async () => {
+          await signOut();
+          setUser(null);
+        },
+      },
+    ]);
+  }, []);
+
+  if (user === undefined) {
+    return (
+      <View style={[styles.authCard, styles.authCardLoading]}>
+        <ActivityIndicator color={GOLD} />
+      </View>
+    );
+  }
+
+  if (user) {
+    return (
+      <View style={styles.authCard}>
+        {user.avatarUrl ? (
+          <Image source={{ uri: user.avatarUrl }} style={styles.authAvatar} />
+        ) : (
+          <View style={[styles.authAvatar, styles.authAvatarFallback]}>
+            <Ionicons name="person" size={22} color={GOLD} />
+          </View>
+        )}
+        <View style={styles.authTextWrap}>
+          <Text style={styles.authName}>{user.displayName || 'Mistik Rehber Kullanıcısı'}</Text>
+          <Text style={styles.authSubtitle}>Google ile giriş yapıldı</Text>
+        </View>
+        <Pressable onPress={handleSignOut} hitSlop={10}>
+          <Ionicons name="log-out-outline" size={22} color={TEXT_MUTED} />
+        </Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <Pressable
+      onPress={handleSignIn}
+      disabled={signingIn}
+      style={({ pressed }) => [styles.authCard, styles.authSignInButton, pressed && styles.cardPressed]}
+    >
+      <FontAwesome name="google" size={20} color={GOLD} />
+      <Text style={styles.authSignInText}>{signingIn ? 'Giriş yapılıyor...' : 'Google ile Giriş Yap'}</Text>
+      {signingIn && <ActivityIndicator color={GOLD} style={{ marginLeft: 6 }} />}
+    </Pressable>
+  );
+}
 
 export default function ProfilScreen({ navigation }: Props) {
   const [notice, setNotice] = useState<string | null>(null);
@@ -26,6 +114,8 @@ export default function ProfilScreen({ navigation }: Props) {
           <Ionicons name="person-circle-outline" size={30} color={GOLD} />
           <Text style={styles.headerTitle}>Profil</Text>
         </View>
+
+        <AuthSection />
 
         <View style={styles.list}>
           <Pressable
@@ -76,6 +166,22 @@ export default function ProfilScreen({ navigation }: Props) {
             <View style={styles.cardTextWrap}>
               <Text style={styles.cardTitle}>Geçmiş</Text>
               <Text style={styles.cardSubtitle}>Baktırdığın falların geçmişi (cihazında saklanır)</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+          </Pressable>
+
+          <Pressable
+            onPress={() => navigation.navigate('BilgiKosesi')}
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+          >
+            <FeatureIcon
+              source={NAV_ICONS.BilgiKosesi}
+              fallback={<Ionicons name="library-outline" size={22} color={GOLD} />}
+              size={74}
+            />
+            <View style={styles.cardTextWrap}>
+              <Text style={styles.cardTitle}>Bilgi Köşesi</Text>
+              <Text style={styles.cardSubtitle}>Kart anlamları, mistik makaleler ve daha fazlası</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color={GOLD} />
           </Pressable>
@@ -136,6 +242,52 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 22,
+    fontWeight: '700',
+    color: GOLD,
+  },
+  authCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: NIGHT_CARD,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    padding: 16,
+    marginBottom: 20,
+  },
+  authCardLoading: {
+    justifyContent: 'center',
+  },
+  authAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+  },
+  authAvatarFallback: {
+    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  authTextWrap: {
+    flex: 1,
+  },
+  authName: {
+    fontSize: 14.5,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+    marginBottom: 2,
+  },
+  authSubtitle: {
+    fontSize: 11.5,
+    color: TEXT_MUTED,
+  },
+  authSignInButton: {
+    justifyContent: 'center',
+    borderColor: GOLD,
+  },
+  authSignInText: {
+    fontSize: 14,
     fontWeight: '700',
     color: GOLD,
   },

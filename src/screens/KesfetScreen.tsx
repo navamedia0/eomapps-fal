@@ -1,124 +1,276 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, Pressable, ImageBackground, ScrollView, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  Image,
+  ImageBackground,
+  ScrollView,
+  TextInput,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import type { RootStackParamList, TabScreenProps } from '@/navigation/types';
+import * as ImagePicker from 'expo-image-picker';
+import type { TabScreenProps } from '@/navigation/types';
+import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import FavoriteStarButton from '@/components/FavoriteStarButton';
 import ShareButton from '@/components/ShareButton';
 import ShareImageButton from '@/components/ShareImageButton';
-import FeatureIcon from '@/components/FeatureIcon';
-import FavoriteStarButton from '@/components/FavoriteStarButton';
-import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import quotes from '@/data/kesfet_sozleri.json';
-import { FEATURE_ICONS } from '@/assets/icons';
-import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
 import PopularDetailModal from '@/components/PopularDetailModal';
-import { GOLD, GOLD_SOFT, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import quotes from '@/data/kesfet_sozleri.json';
+import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
+import { getFeed, addPost, deletePost, toggleLike, type KesfetFeedPost } from '@/services/kesfetPosts';
+import { shareText } from '@/utils/share';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 const QUOTE_CARD_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
 
 type Props = TabScreenProps;
+type FeedRow = { type: 'post'; post: KesfetFeedPost } | { type: 'quote'; text: string };
 
 const QUOTES: string[] = quotes;
+const QUOTE_EVERY = 5;
+const MAX_POST_LENGTH = 280;
 
-const FEATURES: Array<{
-  key: keyof RootStackParamList;
-  iconKey: string;
-  title: string;
-  subtitle: string;
-  icon: React.ReactNode;
-}> = [
-  {
-    key: 'Dice',
-    iconKey: 'dice',
-    title: 'Zar Falı',
-    subtitle: 'Zarları at, şansına bak',
-    icon: <MaterialCommunityIcons name="dice-multiple-outline" size={24} color={GOLD} />,
-  },
-  {
-    key: 'Daisy',
-    iconKey: 'daisy',
-    title: 'Papatya Falı',
-    subtitle: 'Seviyor mu, sevmiyor mu?',
-    icon: <Ionicons name="flower-outline" size={22} color={GOLD} />,
-  },
-  {
-    key: 'MagicBall',
-    iconKey: 'magicBall',
-    title: 'Sihirli Küre',
-    subtitle: 'Evet ya da hayır? Küreye sor',
-    icon: <MaterialCommunityIcons name="crystal-ball" size={24} color={GOLD} />,
-  },
-  {
-    key: 'SuFal',
-    iconKey: 'suFal',
-    title: 'Su Falı',
-    subtitle: 'Suya dokun, cevabını al',
-    icon: <Ionicons name="water-outline" size={22} color={GOLD} />,
-  },
-  {
-    key: 'AngelCard',
-    iconKey: 'angelCard',
-    title: 'Günün İlham Kartı',
-    subtitle: 'Bugüne küçük bir mesaj',
-    icon: <Ionicons name="rose-outline" size={22} color={GOLD} />,
-  },
-  {
-    key: 'MoonCalendar',
-    iconKey: 'moonCalendar',
-    title: 'Ay Takvimi',
-    subtitle: 'Bugün ayın hangi evresindeyiz?',
-    icon: <MaterialCommunityIcons name="moon-waning-crescent" size={24} color={GOLD} />,
-  },
-];
-
-type FeedItem = { type: 'quote'; text: string } | { type: 'feature'; feature: (typeof FEATURES)[number] };
-
-const KESFET_PER_PERIOD_COUNT = 30;
-
-// 48 saatlik dönem hesabı — Sabah 08:00 Türkiye saatine göre senkronize
-function get48hPeriodIndex(): number {
+// 48 saatlik dönem mantığı, eski Keşfet akışıyla aynı — aynı gün herkese
+// aynı sözler gösterilsin diye sunucu olmadan da senkron kalıyor.
+function quotePool(): string[] {
+  if (QUOTES.length === 0) return [];
   const now = new Date();
-  // UTC+3 (Türkiye) ve sabah 08:00 ofseti
   const epochMs = now.getTime() + 3 * 3600 * 1000 - 8 * 3600 * 1000;
-  const periodMs = 48 * 3600 * 1000;
-  return Math.floor(epochMs / periodMs);
+  const period = Math.floor(epochMs / (48 * 3600 * 1000));
+  const offset = (period * 11) % QUOTES.length;
+  return [...QUOTES.slice(offset), ...QUOTES.slice(0, offset)];
 }
 
-function buildFeed(): FeedItem[] {
-  if (QUOTES.length === 0) return [];
-  const period = get48hPeriodIndex();
-  const offset = (period * KESFET_PER_PERIOD_COUNT) % QUOTES.length;
-  const rotatedQuotes = [...QUOTES.slice(offset), ...QUOTES.slice(0, offset)].slice(
-    0,
-    Math.min(KESFET_PER_PERIOD_COUNT, QUOTES.length),
-  );
+function relativeTime(iso: string): string {
+  const diffMin = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (diffMin < 1) return 'az önce';
+  if (diffMin < 60) return `${diffMin} dk`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr} sa`;
+  return `${Math.floor(diffHr / 24)} gün`;
+}
 
-  const feed: FeedItem[] = [];
-  let featureCount = 0;
-  for (let i = 0; i < rotatedQuotes.length; i += 1) {
-    feed.push({ type: 'quote', text: rotatedQuotes[i] });
-    // Her 6 sözde bir mistik araç kartı ekle
-    if ((i + 1) % 6 === 0 && featureCount < FEATURES.length) {
-      feed.push({ type: 'feature', feature: FEATURES[(featureCount + period) % FEATURES.length] });
-      featureCount += 1;
+const AVATAR_PALETTE = ['#8B5CF6', '#B4232A', '#B8862E', '#2F8F5B', '#6D3FD4', '#C1750E'];
+function avatarColor(seed: string): string {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  return AVATAR_PALETTE[hash % AVATAR_PALETTE.length];
+}
+
+function buildRows(feed: KesfetFeedPost[]): FeedRow[] {
+  const pool = quotePool();
+  const rows: FeedRow[] = [];
+  feed.forEach((post, index) => {
+    rows.push({ type: 'post', post });
+    if ((index + 1) % QUOTE_EVERY === 0 && pool.length > 0) {
+      rows.push({ type: 'quote', text: pool[Math.floor(index / QUOTE_EVERY) % pool.length] });
     }
+  });
+  return rows;
+}
+
+function Composer({ onPosted }: { onPosted: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState('');
+  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [posting, setPosting] = useState(false);
+
+  const reset = () => {
+    setOpen(false);
+    setText('');
+    setImageUri(null);
+  };
+
+  const pickImage = useCallback(async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('İzin gerekli', 'Fotoğraf eklemek için galeri erişimine izin vermelisin.');
+      return;
+    }
+    const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.7 });
+    if (!res.canceled && res.assets[0]) setImageUri(res.assets[0].uri);
+  }, []);
+
+  const submit = useCallback(async () => {
+    if (!text.trim() && !imageUri) return;
+    setPosting(true);
+    try {
+      await addPost(text, imageUri ?? undefined);
+      reset();
+      onPosted();
+    } catch (err) {
+      Alert.alert('Paylaşılamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+    } finally {
+      setPosting(false);
+    }
+  }, [text, imageUri, onPosted]);
+
+  if (!open) {
+    return (
+      <Pressable onPress={() => setOpen(true)} style={styles.composerCollapsed}>
+        <View style={[styles.avatar, { backgroundColor: avatarColor('@sen') }]}>
+          <Text style={styles.avatarText}>S</Text>
+        </View>
+        <Text style={styles.composerPlaceholder}>Bugün neler oluyor?</Text>
+        <Ionicons name="image-outline" size={20} color={GOLD} />
+      </Pressable>
+    );
   }
-  return feed;
+
+  return (
+    <View style={styles.composerOpen}>
+      <TextInput
+        value={text}
+        onChangeText={(t) => setText(t.slice(0, MAX_POST_LENGTH))}
+        placeholder="Aklından geçeni, bir kart yorumunu ya da bugün yaşadığın bir işareti paylaş..."
+        placeholderTextColor={TEXT_MUTED}
+        multiline
+        autoFocus
+        style={styles.composerInput}
+      />
+      {imageUri && (
+        <View style={styles.composerImageWrap}>
+          <Image source={{ uri: imageUri }} style={styles.composerImage} resizeMode="cover" />
+          <Pressable onPress={() => setImageUri(null)} style={styles.composerImageRemove} hitSlop={8}>
+            <Ionicons name="close" size={16} color="#fff" />
+          </Pressable>
+        </View>
+      )}
+      <View style={styles.composerFooter}>
+        <Pressable onPress={pickImage} style={styles.composerIconButton} hitSlop={8}>
+          <Ionicons name="image-outline" size={20} color={GOLD} />
+        </Pressable>
+        <Text style={styles.composerCounter}>{text.length}/{MAX_POST_LENGTH}</Text>
+        <View style={{ flex: 1 }} />
+        <Pressable onPress={reset} style={styles.composerCancelButton}>
+          <Text style={styles.composerCancelText}>Vazgeç</Text>
+        </Pressable>
+        <Pressable
+          onPress={submit}
+          disabled={posting || (!text.trim() && !imageUri)}
+          style={[styles.composerSubmitButton, (posting || (!text.trim() && !imageUri)) && styles.composerSubmitDisabled]}
+        >
+          {posting ? <ActivityIndicator size="small" color="#1a0d33" /> : <Text style={styles.composerSubmitText}>Paylaş</Text>}
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+function PostCard({
+  post,
+  onToggleLike,
+  onDelete,
+}: {
+  post: KesfetFeedPost;
+  onToggleLike: (id: string) => void;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <View style={styles.postCard}>
+      <View style={styles.postHeader}>
+        <View style={[styles.avatar, { backgroundColor: avatarColor(post.authorTag) }]}>
+          <Text style={styles.avatarText}>{post.authorName.charAt(0).toUpperCase()}</Text>
+        </View>
+        <View style={styles.postAuthorWrap}>
+          <Text style={styles.postAuthorName}>{post.authorName}</Text>
+          <Text style={styles.postMeta}>
+            {post.authorTag} · {relativeTime(post.createdAt)}
+          </Text>
+        </View>
+        {post.isMe && (
+          <Pressable onPress={() => onDelete(post.id)} hitSlop={10}>
+            <Ionicons name="trash-outline" size={18} color={TEXT_MUTED} />
+          </Pressable>
+        )}
+      </View>
+
+      {!!post.text && <Text style={styles.postText}>{post.text}</Text>}
+      {post.imageUri && <Image source={{ uri: post.imageUri }} style={styles.postImage} resizeMode="cover" />}
+
+      <View style={styles.postActions}>
+        <Pressable onPress={() => onToggleLike(post.id)} style={styles.actionButton} hitSlop={6}>
+          <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={18} color={post.liked ? '#E0708A' : TEXT_MUTED} />
+          <Text style={[styles.actionCount, post.liked && styles.actionCountLiked]}>{post.likeCount}</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => Alert.alert('Yorumlar', 'Yorum yapma özelliği çok yakında aktif olacak.')}
+          style={styles.actionButton}
+          hitSlop={6}
+        >
+          <Ionicons name="chatbubble-outline" size={17} color={TEXT_MUTED} />
+          <Text style={styles.actionCount}>{post.commentCount}</Text>
+        </Pressable>
+        <View style={{ flex: 1 }} />
+        <Pressable
+          onPress={() => shareText(`${post.authorName}: ${post.text}\n\n— Mistik Rehber Keşfet —`)}
+          style={styles.actionButton}
+          hitSlop={6}
+        >
+          <Ionicons name="share-social-outline" size={17} color={TEXT_MUTED} />
+        </Pressable>
+      </View>
+    </View>
+  );
 }
 
 export default function KesfetScreen({ navigation }: Props) {
-  const periodKey = useMemo(() => get48hPeriodIndex(), []);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const feed = useMemo(buildFeed, [periodKey]);
+  const [feed, setFeed] = useState<KesfetFeedPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const [popular, setPopular] = useState<PopularFavorite[]>([]);
   const [selectedPopular, setSelectedPopular] = useState<PopularFavorite | null>(null);
 
+  const refreshFeed = useCallback(() => {
+    getFeed().then((items) => {
+      setFeed(items);
+      setLoading(false);
+    });
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshFeed();
+    }, [refreshFeed]),
+  );
+
   useEffect(() => {
     getPopularFavorites().then((items) => {
-      // Sadece sözler (quote) Keşfet ekranında listelenir, bilgi köşesi yazıları filtrelenir
       setPopular(items.filter((item) => item.kind !== 'info' && !item.id.startsWith('info:')));
     });
   }, []);
+
+  const handleToggleLike = useCallback(
+    async (id: string) => {
+      await toggleLike(id);
+      refreshFeed();
+    },
+    [refreshFeed],
+  );
+
+  const handleDelete = useCallback(
+    (id: string) => {
+      Alert.alert('Gönderiyi sil', 'Bu gönderiyi silmek istediğine emin misin?', [
+        { text: 'Vazgeç', style: 'cancel' },
+        {
+          text: 'Sil',
+          style: 'destructive',
+          onPress: async () => {
+            await deletePost(id);
+            refreshFeed();
+          },
+        },
+      ]);
+    },
+    [refreshFeed],
+  );
+
+  const rows = buildRows(feed);
 
   return (
     <MysticTableBackground>
@@ -127,7 +279,6 @@ export default function KesfetScreen({ navigation }: Props) {
           <Ionicons name="compass-outline" size={26} color={GOLD} />
           <Text style={styles.headerTitle}>Keşfet</Text>
         </View>
-        <Text style={styles.refreshNote}>Her 48 saatte bir saat 08:00'de güncellenir</Text>
 
         {popular.length > 0 && (
           <View style={styles.popularSection}>
@@ -156,52 +307,41 @@ export default function KesfetScreen({ navigation }: Props) {
           </View>
         )}
 
-        <View style={styles.feed}>
-          {feed.map((item, index) => {
-            if (item.type === 'quote') {
+        <Composer onPosted={refreshFeed} />
+
+        {loading ? (
+          <ActivityIndicator color={GOLD} style={{ marginTop: 30 }} />
+        ) : (
+          <View style={styles.feed}>
+            {rows.map((row, index) => {
+              if (row.type === 'post') {
+                return <PostCard key={row.post.id} post={row.post} onToggleLike={handleToggleLike} onDelete={handleDelete} />;
+              }
               return (
                 <ImageBackground
-                  key={index}
+                  key={`quote-${index}`}
                   source={QUOTE_CARD_BG}
                   style={styles.quoteCard}
                   imageStyle={styles.quoteCardImage}
                   resizeMode="cover"
                 >
-                  {/* Dims whichever part of the mist background lands under the
-                      text — the source image has both dark and bright (bokeh
-                      flare) regions, and text needs to stay readable either way. */}
                   <LinearGradient
                     colors={['rgba(11, 10, 31, 0.55)', 'rgba(11, 10, 31, 0.72)']}
                     style={styles.quoteScrim}
                     pointerEvents="none"
                   />
-                  <FavoriteStarButton id={`quote:${item.text}`} kind="quote" body={item.text} />
+                  <FavoriteStarButton id={`quote:${row.text}`} kind="quote" body={row.text} />
                   <MaterialCommunityIcons name="star-crescent" size={16} color={GOLD} style={styles.quoteIcon} />
-                  <Text style={styles.quoteText}>{item.text}</Text>
+                  <Text style={styles.quoteText}>{row.text}</Text>
                   <View style={styles.quoteShareRow}>
-                    <ShareButton text={`Mistik Rehber\n\n"${item.text}"`} label="Paylaş" />
-                    <ShareImageButton text={item.text} label="Görsel Paylaş" />
+                    <ShareButton text={`Mistik Rehber\n\n"${row.text}"`} label="Paylaş" />
+                    <ShareImageButton text={row.text} label="Görsel Paylaş" />
                   </View>
                 </ImageBackground>
               );
-            }
-            const { feature } = item;
-            return (
-              <Pressable
-                key={index}
-                onPress={() => navigation.navigate(feature.key as any)}
-                style={({ pressed }) => [styles.featureCard, pressed && styles.featureCardPressed]}
-              >
-                <FeatureIcon source={FEATURE_ICONS[feature.iconKey]} fallback={feature.icon} size={78} />
-                <View style={styles.featureTextWrap}>
-                  <Text style={styles.featureTitle}>{feature.title}</Text>
-                  <Text style={styles.featureSubtitle}>{feature.subtitle}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={GOLD} />
-              </Pressable>
-            );
-          })}
-        </View>
+            })}
+          </View>
+        )}
       </ScrollView>
       <PopularDetailModal item={selectedPopular} onClose={() => setSelectedPopular(null)} />
     </MysticTableBackground>
@@ -219,18 +359,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: 6,
+    marginBottom: 18,
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: '700',
     color: GOLD,
-  },
-  refreshNote: {
-    fontSize: 11,
-    color: TEXT_MUTED,
-    fontStyle: 'italic',
-    marginBottom: 20,
   },
   popularSection: {
     marginBottom: 22,
@@ -286,8 +420,163 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: GOLD,
   },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#fff',
+  },
+  composerCollapsed: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: NIGHT_CARD,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    padding: 14,
+    marginBottom: 20,
+  },
+  composerPlaceholder: {
+    flex: 1,
+    fontSize: 13.5,
+    color: TEXT_MUTED,
+  },
+  composerOpen: {
+    backgroundColor: NIGHT_CARD,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: GOLD,
+    padding: 14,
+    marginBottom: 20,
+  },
+  composerInput: {
+    fontSize: 14,
+    color: TEXT_PRIMARY,
+    minHeight: 70,
+    textAlignVertical: 'top',
+  },
+  composerImageWrap: {
+    position: 'relative',
+    marginTop: 10,
+  },
+  composerImage: {
+    width: '100%',
+    height: 160,
+    borderRadius: 12,
+  },
+  composerImageRemove: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: 'rgba(11, 10, 31, 0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  composerFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 10,
+  },
+  composerIconButton: {
+    padding: 4,
+  },
+  composerCounter: {
+    fontSize: 10.5,
+    color: TEXT_MUTED,
+  },
+  composerCancelButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  composerCancelText: {
+    fontSize: 12.5,
+    color: TEXT_MUTED,
+    fontWeight: '600',
+  },
+  composerSubmitButton: {
+    backgroundColor: GOLD,
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    minWidth: 72,
+    alignItems: 'center',
+  },
+  composerSubmitDisabled: {
+    opacity: 0.45,
+  },
+  composerSubmitText: {
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: '#1a0d33',
+  },
   feed: {
     gap: 14,
+  },
+  postCard: {
+    backgroundColor: NIGHT_CARD,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    padding: 14,
+  },
+  postHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  postAuthorWrap: {
+    flex: 1,
+  },
+  postAuthorName: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+  },
+  postMeta: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+  },
+  postText: {
+    fontSize: 13.5,
+    lineHeight: 20,
+    color: TEXT_PRIMARY,
+    marginBottom: 10,
+  },
+  postImage: {
+    width: '100%',
+    height: 220,
+    borderRadius: 12,
+    marginBottom: 10,
+  },
+  postActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  actionCount: {
+    fontSize: 12,
+    color: TEXT_MUTED,
+    fontWeight: '600',
+  },
+  actionCountLiked: {
+    color: '#E0708A',
   },
   quoteCard: {
     position: 'relative',
@@ -300,10 +589,6 @@ const styles = StyleSheet.create({
     minHeight: 190,
   },
   quoteCardImage: {
-    // Percentage width/height on this Image can end up stale on native when
-    // the card's own height only settles after the quote text finishes
-    // wrapping (minHeight-based container) — pinning all four edges instead
-    // keeps the background locked to the card's actual final bounds.
     ...StyleSheet.absoluteFillObject,
     borderRadius: 24,
   },
@@ -330,31 +615,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     width: '100%',
-  },
-  featureCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    padding: 16,
-  },
-  featureCardPressed: {
-    opacity: 0.85,
-  },
-  featureTextWrap: {
-    flex: 1,
-  },
-  featureTitle: {
-    fontSize: 14.5,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
-    marginBottom: 2,
-  },
-  featureSubtitle: {
-    fontSize: 11.5,
-    color: TEXT_MUTED,
   },
 });

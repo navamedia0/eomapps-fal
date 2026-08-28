@@ -3,7 +3,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet, Animated, Easing } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
-import { pickRandomKatinaCards, type KatinaCard } from '@/services/katina';
+import { shuffleKatinaDeck, type KatinaCard } from '@/services/katina';
 import { interpretKatinaSpread } from '@/services/readings-ai';
 import { ApiRequestError } from '@/services/http';
 import { getCredits, spendCredit } from '@/services/credits';
@@ -15,19 +15,61 @@ import { turkishUpperCase } from '@/utils/turkishCase';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import PlayingCardFace from '@/components/PlayingCardFace';
-import PlayingCardBack from '@/components/PlayingCardBack';
+import PlayingCardBack, { type PlayingCardBackVariant } from '@/components/PlayingCardBack';
 import CornerTicks from '@/components/CornerTicks';
 import FeatureIcon from '@/components/FeatureIcon';
 import { FEATURE_ICONS } from '@/assets/icons';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
 import { useReadingCooldown } from '@/hooks/useReadingCooldown';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Katina'>;
+type ReadingPhase = 'deck' | 'draw' | 'element' | 'loading' | 'result' | 'error' | 'blocked';
+type DeckStyle = { id: string; label: string; desc: string; variant: PlayingCardBackVariant; toneHint?: string };
+type ElementCard = { id: string; label: string; icon: keyof typeof MaterialCommunityIcons.glyphMap };
 
 const POSITIONS = ['Geçmiş', 'Şimdi', 'Gelecek'];
 const DISPLAY_POSITIONS = ['Geçmiş', 'Şimdi', 'Gelecek', 'Genel Yorum'];
+
+// Deste Kartları — deste seçimi sadece görünüm/ton içindir, açılımın
+// rastgeleliğini etkilemez; ilişkiye dair yorumun vurgusunu hafifçe kaydırır.
+const DECK_STYLES: DeckStyle[] = [
+  { id: 'klasik', label: 'Klasik Deste', desc: 'Dengeli, nötr enerji', variant: 'gold' },
+  {
+    id: 'ask',
+    label: 'Aşk Destesi',
+    desc: 'Tutku ve ilişki enerjisi',
+    variant: 'ruby',
+    toneHint: 'Bu okumada özellikle aşk, tutku ve ilişki dinamiklerine daha fazla vurgu yap.',
+  },
+  {
+    id: 'kader',
+    label: 'Kader Destesi',
+    desc: 'Kader ve yaşam yolu enerjisi',
+    variant: 'amethyst',
+    toneHint: 'Bu okumada özellikle kader, hayat yolu ve ruhsal büyüme temalarına daha fazla vurgu yap.',
+  },
+];
+
+// Elementlerin Ruhu — dekoratif bir ritüel katmanı, seçilen kart yorum
+// metnine dahil edilmez.
+const ELEMENT_CARDS: ElementCard[] = [
+  { id: 'ates', label: 'Ateş', icon: 'fire' },
+  { id: 'su', label: 'Su', icon: 'water' },
+  { id: 'toprak', label: 'Toprak', icon: 'terrain' },
+  { id: 'hava', label: 'Hava', icon: 'weather-windy' },
+  { id: 'ruh', label: 'Ruh', icon: 'star-four-points-outline' },
+];
+
+function shuffleArray<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
 
 function CardFace({ card, position }: { card: KatinaCard; position: string }) {
   const rankSlug = card.id.slice(card.suit.length + 1);
@@ -41,8 +83,12 @@ function CardFace({ card, position }: { card: KatinaCard; position: string }) {
 }
 
 export default function KatinaScreen({ navigation }: Props) {
-  const [phase, setPhase] = useState<'ready' | 'loading' | 'result' | 'error' | 'blocked'>('ready');
+  const [phase, setPhase] = useState<ReadingPhase>('deck');
+  const [deckStyleId, setDeckStyleId] = useState<string>(DECK_STYLES[0].id);
+  const [shuffledDrawDeck, setShuffledDrawDeck] = useState<KatinaCard[]>([]);
   const [cards, setCards] = useState<KatinaCard[]>([]);
+  const [elementOrder, setElementOrder] = useState<ElementCard[]>([]);
+  const [revealedElementIndex, setRevealedElementIndex] = useState<number | null>(null);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [blocked, setBlocked] = useState<string | null>(null);
@@ -51,9 +97,39 @@ export default function KatinaScreen({ navigation }: Props) {
   const pulse = useRef(new Animated.Value(0)).current;
   const { remaining: cooldownRemaining, checked: cooldownChecked, notifyCongested } = useReadingCooldown('katina');
 
+  const selectedDeckStyle = useMemo(
+    () => DECK_STYLES.find((style) => style.id === deckStyleId) ?? DECK_STYLES[0],
+    [deckStyleId],
+  );
+
+  const handleProceedToDraw = useCallback(() => {
+    setShuffledDrawDeck(shuffleKatinaDeck());
+    setCards([]);
+    setPhase('draw');
+  }, []);
+
+  const handleCardTap = useCallback((card: KatinaCard) => {
+    setCards((prev) => {
+      if (prev.length >= 3 || prev.some((c) => c.id === card.id)) return prev;
+      const next = [...prev, card];
+      if (next.length === 3) {
+        setTimeout(() => {
+          setElementOrder(shuffleArray(ELEMENT_CARDS));
+          setRevealedElementIndex(null);
+          setPhase('element');
+        }, 550);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleElementTap = useCallback((idx: number) => {
+    setRevealedElementIndex((prev) => (prev === null ? idx : prev));
+  }, []);
+
   const startReading = useCallback(
     async (payWithCoins = false) => {
-      if (cooldownRemaining > 0) return;
+      if (cooldownRemaining > 0 || cards.length < 3) return;
 
       setPhase('loading');
       setError(null);
@@ -77,10 +153,7 @@ export default function KatinaScreen({ navigation }: Props) {
           }
         }
 
-        const drawn = pickRandomKatinaCards(3);
-        setCards(drawn);
-
-        const interpretation = await interpretKatinaSpread(drawn, POSITIONS, payWithCoins);
+        const interpretation = await interpretKatinaSpread(cards, POSITIONS, payWithCoins, selectedDeckStyle.toneHint);
 
         if (!payWithCoins) {
           await spendCredit();
@@ -97,12 +170,16 @@ export default function KatinaScreen({ navigation }: Props) {
         setPhase('error');
       }
     },
-    [cooldownRemaining, notifyCongested],
+    [cooldownRemaining, notifyCongested, cards, selectedDeckStyle],
   );
 
   const resetToReady = useCallback(() => {
-    setPhase('ready');
+    setPhase('deck');
+    setDeckStyleId(DECK_STYLES[0].id);
+    setShuffledDrawDeck([]);
     setCards([]);
+    setElementOrder([]);
+    setRevealedElementIndex(null);
     setResult(null);
     setError(null);
     setBlocked(null);
@@ -124,6 +201,7 @@ export default function KatinaScreen({ navigation }: Props) {
   const sections = useMemo(() => (result ? parseSpreadReading(result, DISPLAY_POSITIONS) : null), [result]);
   const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] });
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.15] });
+  const nextPositionLabel = cards.length < 3 ? POSITIONS[cards.length] : null;
 
   return (
     <MysticTableBackground>
@@ -139,10 +217,9 @@ export default function KatinaScreen({ navigation }: Props) {
           <Text style={styles.headerSubtitle}>İzmir Deste Falı & Aşk Kehaneti</Text>
         </View>
 
-        {/* 1. FAZ: HAZIRLIK VE "FALIMA BAK" EKRANI */}
-        {phase === 'ready' && (
+        {/* 1. AŞAMA: DESTE KARTLARI */}
+        {phase === 'deck' && (
           <View style={styles.readyContainer}>
-            {/* Açıklama Kutusu */}
             <View style={styles.introCard}>
               <CornerTicks />
               <View style={styles.introHeader}>
@@ -151,21 +228,10 @@ export default function KatinaScreen({ navigation }: Props) {
               </View>
               <Text style={styles.introText}>
                 Katina falı; özellikle aşk, tutku, sırlar ve ikili ilişkilerin kadim kehanet aynasıdır. Zihnini niyetine
-                veya merak ettiğin kişiye odakla, ardından 'Falıma Bak' butonuna basarak 3 kartlık kader açılımını başlat.
+                veya merak ettiğin kişiye odakla, ardından sana uygun desteyi seç ve ritüele başla.
               </Text>
             </View>
 
-            {/* Kapalı 3 Kart Önizlemesi */}
-            <View style={styles.closedCardsRow}>
-              {POSITIONS.map((pos) => (
-                <View key={pos} style={styles.closedCardWrap}>
-                  <Text style={styles.closedCardLabel}>{turkishUpperCase(pos)}</Text>
-                  <PlayingCardBack width={92} />
-                </View>
-              ))}
-            </View>
-
-            {/* Bekleme Süresi Varsa Bildir */}
             {cooldownChecked && cooldownRemaining > 0 ? (
               <View style={styles.cooldownWrap}>
                 <Ionicons name="hourglass-outline" size={24} color={GOLD} />
@@ -173,19 +239,157 @@ export default function KatinaScreen({ navigation }: Props) {
                 <ReadingCooldownNotice remaining={cooldownRemaining} />
               </View>
             ) : (
-              /* "FALIMA BAK" BUTONU */
-              <Pressable
-                onPress={() => startReading()}
-                style={({ pressed }) => [styles.startButton, pressed && styles.startButtonPressed]}
-              >
-                <MaterialCommunityIcons name="star-crescent" size={20} color="#1a0d33" />
-                <Text style={styles.startButtonText}>Falıma Bak</Text>
-              </Pressable>
+              <>
+                <Text style={styles.stageTitle}>Deste Kartları</Text>
+                <Text style={styles.stageSubtitle}>Sana en çok hitap eden enerjiyi taşıyan desteyi seç.</Text>
+
+                <View style={styles.deckChoiceRow}>
+                  {DECK_STYLES.map((style) => {
+                    const selected = style.id === deckStyleId;
+                    return (
+                      <Pressable
+                        key={style.id}
+                        onPress={() => setDeckStyleId(style.id)}
+                        style={[styles.deckChoiceCard, selected && styles.deckChoiceCardActive]}
+                      >
+                        {selected && (
+                          <View style={styles.deckChoiceCheck}>
+                            <Ionicons name="checkmark-circle" size={18} color={GOLD} />
+                          </View>
+                        )}
+                        <PlayingCardBack width={56} variant={style.variant} />
+                        <Text style={styles.deckChoiceLabel}>{style.label}</Text>
+                        <Text style={styles.deckChoiceDesc}>{style.desc}</Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+
+                <View style={styles.deckPreviewRow}>
+                  <Ionicons name="arrow-forward" size={18} color={GOLD_SOFT} />
+                  <PlayingCardBack width={72} variant={selectedDeckStyle.variant} />
+                </View>
+
+                <Pressable
+                  onPress={handleProceedToDraw}
+                  style={({ pressed }) => [styles.startButton, pressed && styles.startButtonPressed]}
+                >
+                  <MaterialCommunityIcons name="star-crescent" size={20} color="#1a0d33" />
+                  <Text style={styles.startButtonText}>Devam Et</Text>
+                </Pressable>
+              </>
             )}
           </View>
         )}
 
-        {/* 2. FAZ: YÜKLENİYOR */}
+        {/* 2. AŞAMA: KART AÇILIMI (ELLE SEÇİM) */}
+        {phase === 'draw' && (
+          <View style={styles.readyContainer}>
+            <View style={styles.spreadHeaderRow}>
+              <Text style={styles.stageTitle}>3 Kart Açılımı</Text>
+              <Ionicons name="chevron-down" size={16} color={GOLD_SOFT} />
+            </View>
+            <Text style={styles.stageSubtitle}>
+              {nextPositionLabel ? `Sırada: ${turkishUpperCase(nextPositionLabel)} kartını seç` : 'Kartların açılıyor...'}
+            </Text>
+
+            <View style={styles.progressRow}>
+              {POSITIONS.map((pos, idx) => {
+                const picked = cards[idx];
+                const isActiveSlot = idx === cards.length;
+                return (
+                  <View key={pos} style={styles.progressSlot}>
+                    <Text style={styles.closedCardLabel}>{turkishUpperCase(pos)}</Text>
+                    {picked ? (
+                      <View style={styles.progressSlotFilled}>
+                        <PlayingCardBack width={50} variant={selectedDeckStyle.variant} />
+                        <View style={styles.progressCheck}>
+                          <Ionicons name="checkmark-circle" size={16} color={GOLD} />
+                        </View>
+                      </View>
+                    ) : (
+                      <View style={[styles.progressSlotEmpty, isActiveSlot && styles.progressSlotEmptyActive]} />
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+
+            <View style={styles.drawGrid}>
+              {shuffledDrawDeck.map((card) => {
+                const pickedIndex = cards.findIndex((c) => c.id === card.id);
+                const isPicked = pickedIndex !== -1;
+                return (
+                  <Pressable
+                    key={card.id}
+                    onPress={() => handleCardTap(card)}
+                    disabled={isPicked || cards.length >= 3}
+                    style={styles.drawGridItem}
+                  >
+                    <View style={isPicked ? styles.drawGridItemPicked : undefined}>
+                      <PlayingCardBack width={32} variant={selectedDeckStyle.variant} />
+                    </View>
+                    {isPicked && (
+                      <View style={styles.drawGridBadge}>
+                        <Text style={styles.drawGridBadgeText}>{pickedIndex + 1}</Text>
+                      </View>
+                    )}
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
+        {/* 3. AŞAMA: ELEMENTLERİN RUHU (DEKORATİF RİTÜEL) */}
+        {phase === 'element' && (
+          <View style={styles.readyContainer}>
+            <Text style={styles.stageTitle}>Elementlerin Ruhu</Text>
+            <Text style={styles.stageSubtitle}>Sezgine güven ve seni çağıran kartı seç.</Text>
+
+            <View style={styles.elementRow}>
+              {elementOrder.map((el, idx) => {
+                const isRevealed = revealedElementIndex === idx;
+                return (
+                  <Pressable
+                    key={el.id}
+                    onPress={() => handleElementTap(idx)}
+                    disabled={revealedElementIndex !== null}
+                    style={styles.elementCardWrap}
+                  >
+                    {isRevealed ? (
+                      <View style={styles.elementCardFace}>
+                        <MaterialCommunityIcons name={el.icon} size={22} color={GOLD} />
+                      </View>
+                    ) : (
+                      <PlayingCardBack width={44} variant="amethyst" />
+                    )}
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            {revealedElementIndex !== null && (
+              <View style={styles.elementRevealWrap}>
+                <Ionicons name="arrow-down" size={18} color={GOLD_SOFT} />
+                <View style={styles.elementRevealBig}>
+                  <MaterialCommunityIcons name={elementOrder[revealedElementIndex].icon} size={38} color={GOLD} />
+                  <Text style={styles.elementRevealLabel}>{elementOrder[revealedElementIndex].label} Ruhu</Text>
+                </View>
+
+                <Pressable
+                  onPress={() => startReading()}
+                  style={({ pressed }) => [styles.startButton, pressed && styles.startButtonPressed]}
+                >
+                  <MaterialCommunityIcons name="star-crescent" size={20} color="#1a0d33" />
+                  <Text style={styles.startButtonText}>Falımı Yorumla</Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* YÜKLENİYOR */}
         {phase === 'loading' && (
           <View style={styles.loadingWrap}>
             <Animated.View style={{ opacity: pulseOpacity, transform: [{ scale: pulseScale }] }}>
@@ -230,7 +434,7 @@ export default function KatinaScreen({ navigation }: Props) {
           />
         )}
 
-        {/* 3. FAZ: SONUÇ GÖSTERİMİ */}
+        {/* SONUÇ GÖSTERİMİ */}
         {phase === 'result' && result && (
           <View style={styles.resultContainer}>
             {/* Açılan 3 Kartın Sıralanması */}
@@ -330,14 +534,21 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: TEXT_PRIMARY,
   },
-  closedCardsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
-    marginBottom: 28,
+  stageTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: GOLD,
+    letterSpacing: 0.3,
   },
-  closedCardWrap: {
-    width: 92,
+  stageSubtitle: {
+    fontSize: 12.5,
+    color: TEXT_MUTED,
+    marginTop: 4,
+    marginBottom: 18,
+    textAlign: 'center',
+  },
+  spreadHeaderRow: {
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
@@ -380,6 +591,155 @@ const styles = StyleSheet.create({
   cooldownText: {
     fontSize: 13,
     color: GOLD_SOFT,
+  },
+  deckChoiceRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 10,
+    width: '100%',
+    marginBottom: 18,
+  },
+  deckChoiceCard: {
+    position: 'relative',
+    flex: 1,
+    alignItems: 'center',
+    gap: 6,
+    borderRadius: 16,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.2)',
+    backgroundColor: 'rgba(26, 16, 52, 0.6)',
+    paddingVertical: 12,
+    paddingHorizontal: 6,
+  },
+  deckChoiceCardActive: {
+    borderColor: GOLD,
+    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+  },
+  deckChoiceCheck: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+  },
+  deckChoiceLabel: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  deckChoiceDesc: {
+    fontSize: 9.5,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+  },
+  deckPreviewRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 22,
+  },
+  progressRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 14,
+    marginBottom: 20,
+  },
+  progressSlot: {
+    alignItems: 'center',
+    gap: 6,
+  },
+  progressSlotFilled: {
+    position: 'relative',
+  },
+  progressCheck: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    backgroundColor: NIGHT_DEEP,
+    borderRadius: 10,
+  },
+  progressSlotEmpty: {
+    width: 50,
+    height: 50 / 0.6,
+    borderRadius: 6,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderStyle: 'dashed',
+  },
+  progressSlotEmptyActive: {
+    borderColor: GOLD,
+  },
+  drawGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 6,
+    width: '100%',
+  },
+  drawGridItem: {
+    position: 'relative',
+    padding: 2,
+  },
+  drawGridItemPicked: {
+    opacity: 0.35,
+  },
+  drawGridBadge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: GOLD,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  drawGridBadgeText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#1a0d33',
+  },
+  elementRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  elementCardWrap: {
+    alignItems: 'center',
+  },
+  elementCardFace: {
+    width: 44,
+    height: 44 / 0.6,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: GOLD,
+    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  elementRevealWrap: {
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 18,
+    width: '100%',
+  },
+  elementRevealBig: {
+    alignItems: 'center',
+    gap: 6,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderColor: 'rgba(242, 200, 121, 0.45)',
+    backgroundColor: 'rgba(38, 22, 70, 0.94)',
+    paddingVertical: 16,
+    paddingHorizontal: 28,
+    marginBottom: 8,
+  },
+  elementRevealLabel: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: GOLD,
+    letterSpacing: 0.5,
   },
   resultContainer: {
     width: '100%',

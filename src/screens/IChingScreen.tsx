@@ -58,8 +58,15 @@ function CoinTossReveal({ line, onDone }: { line: IChingLine; onDone: () => void
                     colors={isSettled ? [GOLD, GOLD_DEEP] : ['rgba(184, 134, 46, 0.5)', 'rgba(120, 88, 30, 0.5)']}
                     style={StyleSheet.absoluteFillObject}
                   />
-                  {/* Kare delikli klasik Çin bronz sikkesi (方孔錢) motifi */}
-                  <View style={styles.coinHole} />
+                  {symbol === 'Tura' ? (
+                    // Tura (ön yüz): kare delikli klasik Çin bronz sikkesi (方孔錢) motifi
+                    <View style={styles.coinHole} />
+                  ) : (
+                    // Yazı (arka yüz): dairesel halka + yuvarlak delik motifi
+                    <View style={styles.coinHoleRing}>
+                      <View style={styles.coinHoleRound} />
+                    </View>
+                  )}
                 </View>
                 <Text style={styles.coinText}>{symbol}</Text>
               </View>
@@ -396,6 +403,21 @@ const styles = StyleSheet.create({
     height: 15,
     backgroundColor: NIGHT_DEEP,
     transform: [{ rotate: '45deg' }],
+  },
+  coinHoleRing: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    borderWidth: 1.5,
+    borderColor: NIGHT_DEEP,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coinHoleRound: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: NIGHT_DEEP,
   },
   coinText: {
     fontSize: 11,

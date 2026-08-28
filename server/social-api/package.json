@@ -1,0 +1,21 @@
+{
+  "name": "mistik-rehber-social-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create mistik-rehber-social",
+    "db:migrate": "wrangler d1 execute mistik-rehber-social --file=./schema.sql",
+    "db:migrate:remote": "wrangler d1 execute mistik-rehber-social --remote --file=./schema.sql",
+    "secret:app": "wrangler secret put APP_SECRET",
+    "secret:google": "wrangler secret put GOOGLE_CLIENT_ID",
+    "secret:apple": "wrangler secret put APPLE_CLIENT_ID"
+  },
+  "dependencies": {
+    "jose": "^5.9.6"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

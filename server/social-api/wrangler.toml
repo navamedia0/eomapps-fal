@@ -1,0 +1,10 @@
+name = "mistik-rehber-social-api"
+main = "src/index.js"
+compatibility_date = "2026-08-25"
+
+# `wrangler d1 create mistik-rehber-social` çalıştırdıktan sonra çıkan
+# database_id'yi buraya yapıştırın.
+[[d1_databases]]
+binding = "DB"
+database_name = "mistik-rehber-social"
+database_id = "38d7418a-4a06-4110-b9e1-909da2fb3ad3"

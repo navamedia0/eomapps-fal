@@ -97,7 +97,12 @@ export async function interpretSolitaireSpread(cards: KatinaCard[], isPaid = fal
   ]);
 }
 
-export async function interpretKatinaSpread(cards: KatinaCard[], positions: string[], isPaid = false): Promise<string> {
+export async function interpretKatinaSpread(
+  cards: KatinaCard[],
+  positions: string[],
+  isPaid = false,
+  toneHint?: string,
+): Promise<string> {
   const cardText = cards
     .map((card, index) => {
       const meaning = getKatinaMeaning(card.id);
@@ -110,7 +115,7 @@ export async function interpretKatinaSpread(cards: KatinaCard[], positions: stri
   const formatInstruction = `Yanıtını ${allPositions.length} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" satırını doğrudan kopyalama; onu yalnızca ilham kaynağı olarak kullanıp kendi akıcı ve edebi üslubunla yeniden anlat. Son bölüm olan "GENEL YORUM:", Geçmiş, Şimdi ve Gelecek kartlarının birbiriyle uyumunu, oluşturdukları ortak hikayeyi ve kullanıcının hayatına/aşkına dair nihai çıkarımı derin, bilgece ve bütünsel bir sentezle özetlemeli.`;
   const profileBlock = await buildProfileBlock();
   const mysticBlock = buildRichMysticContext('katina');
-  const prompt = `${prompts.katinaSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${mysticBlock}${profileBlock}`;
+  const prompt = `${prompts.katinaSpread(positions, toneHint)}\n${formatInstruction}\n\nKartlar:\n${cardText}${mysticBlock}${profileBlock}`;
   return withFallbackChain([
     () => askGemini(prompt, undefined, 'katina', isPaid),
     () => askCloudflare(prompt),

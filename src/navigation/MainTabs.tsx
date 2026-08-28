@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TabView, type NavigationState, type SceneRendererProps } from 'react-native-tab-view';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
 import HomeScreen from '@/screens/HomeScreen';
 import KesfetScreen from '@/screens/KesfetScreen';
-import BilgiKosesiScreen from '@/screens/BilgiKosesiScreen';
+import SohbetScreen from '@/screens/SohbetScreen';
+import RehberlerScreen from '@/screens/RehberlerScreen';
 import MagazaScreen from '@/screens/MagazaScreen';
 import ProfilScreen from '@/screens/ProfilScreen';
 import CoinBadge from '@/components/CoinBadge';
@@ -21,10 +23,19 @@ type TabRoute = { key: TabKey; title: string };
 const ROUTES: TabRoute[] = [
   { key: 'AnaSayfa', title: 'Ana Sayfa' },
   { key: 'Kesfet', title: 'Keşfet' },
-  { key: 'BilgiKosesi', title: 'Bilgi Köşesi' },
+  { key: 'Sohbet', title: 'Sohbet' },
+  { key: 'Rehberler', title: 'Rehberler' },
   { key: 'Magaza', title: 'Mağaza' },
   { key: 'Profil', title: 'Profil' },
 ];
+
+// Sohbet ve Rehberler için henüz özel sanat üretilmedi (Kader Atölyesi
+// belgesindeki görsel üretim hattını bekliyor) — o güne kadar Ionicons
+// üzerinden tutarlı bir geçici simge gösteriyoruz.
+const FALLBACK_TAB_ICONS: Partial<Record<TabKey, keyof typeof Ionicons.glyphMap>> = {
+  Sohbet: 'chatbubbles-outline',
+  Rehberler: 'sparkles-outline',
+};
 
 export default function MainTabs({ navigation }: Props) {
   const [index, setIndex] = useState(0);
@@ -49,8 +60,10 @@ export default function MainTabs({ navigation }: Props) {
               return <HomeScreen navigation={navigation} />;
             case 'Kesfet':
               return <KesfetScreen navigation={navigation} />;
-            case 'BilgiKosesi':
-              return <BilgiKosesiScreen navigation={navigation} />;
+            case 'Sohbet':
+              return <SohbetScreen navigation={navigation} />;
+            case 'Rehberler':
+              return <RehberlerScreen navigation={navigation} />;
             case 'Magaza':
               return <MagazaScreen navigation={navigation} />;
             case 'Profil':
@@ -67,11 +80,19 @@ export default function MainTabs({ navigation }: Props) {
                 <Pressable key={route.key} onPress={() => jumpTo(route.key)} style={styles.tabItem} hitSlop={4}>
                   {/* Dış siyah kareleri kırparak sadece mor yuvarlak çerçeveyi ve büyütülmüş simgeyi gösterir */}
                   <View style={[styles.tabIconClip, focused && styles.tabIconClipActive]}>
-                    <Image
-                      source={NAV_ICONS[route.key]}
-                      style={[styles.tabIcon, { opacity: focused ? 1 : 0.65 }]}
-                      resizeMode="cover"
-                    />
+                    {NAV_ICONS[route.key as keyof typeof NAV_ICONS] ? (
+                      <Image
+                        source={NAV_ICONS[route.key as keyof typeof NAV_ICONS]}
+                        style={[styles.tabIcon, { opacity: focused ? 1 : 0.65 }]}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <Ionicons
+                        name={FALLBACK_TAB_ICONS[route.key] ?? 'ellipse-outline'}
+                        size={26}
+                        color={focused ? GOLD : TEXT_MUTED}
+                      />
+                    )}
                   </View>
                   <Text style={[styles.tabLabel, { color: focused ? GOLD : TEXT_MUTED }]} numberOfLines={1}>
                     {route.title}

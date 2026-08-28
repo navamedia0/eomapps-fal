@@ -1,8 +1,10 @@
 import 'react-native-reanimated';
+import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import * as NavigationBar from 'expo-navigation-bar';
+import { Platform, StyleSheet, View, Pressable } from 'react-native';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StyleSheet, View, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { RootStackParamList } from '@/navigation/types';
 import CoinBadge from '@/components/CoinBadge';
@@ -52,6 +54,7 @@ import WaxReadingScreen from '@/screens/WaxReadingScreen';
 import CelticTreeScreen from '@/screens/CelticTreeScreen';
 import AuraEnergyScreen from '@/screens/AuraEnergyScreen';
 import ScryingScreen from '@/screens/ScryingScreen';
+import BilgiKosesiScreen from '@/screens/BilgiKosesiScreen';
 import bilgiMakaleleri from '@/data/bilgi_makaleleri.json';
 import { GOLD, NIGHT_DEEP, NIGHT_MID, TEXT_PRIMARY } from '@/theme/colors';
 
@@ -72,6 +75,16 @@ const navigationTheme = {
 };
 
 export default function App() {
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    // Oyunlardaki gibi tam ekran: alt gezinme çubuğu içeriğin üstüne bindirilip
+    // gizlenir, yalnızca alt kenardan yukarı kaydırınca geçici olarak belirir.
+    NavigationBar.setPositionAsync('absolute');
+    NavigationBar.setBackgroundColorAsync('#00000000');
+    NavigationBar.setBehaviorAsync('overlay-swipe');
+    NavigationBar.setVisibilityAsync('hidden');
+  }, []);
+
   return (
     <View style={styles.root}>
       <View style={styles.appShell}>
@@ -169,6 +182,7 @@ export default function App() {
               component={BilgiMakaleScreen}
               options={({ route }) => ({ title: bilgiMakaleleri[route.params.topic].title })}
             />
+            <Stack.Screen name="BilgiKosesi" component={BilgiKosesiScreen} options={{ title: 'Bilgi Köşesi' }} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>

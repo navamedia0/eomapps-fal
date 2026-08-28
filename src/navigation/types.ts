@@ -52,12 +52,14 @@ export type RootStackParamList = {
   RuyaKitapligi: undefined;
   KartAnlamlari: { deck: 'iskambil' | 'tarot' };
   BilgiMakale: { topic: 'kahve_tarihi' | 'katina_nedir' | 'burc_kokeni' };
+  BilgiKosesi: undefined;
 };
 
 export type MainTabParamList = {
   AnaSayfa: undefined;
   Kesfet: undefined;
-  BilgiKosesi: undefined;
+  Sohbet: undefined;
+  Rehberler: undefined;
   Magaza: undefined;
   Profil: undefined;
 };
