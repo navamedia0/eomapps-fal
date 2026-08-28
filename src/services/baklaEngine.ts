@@ -26,12 +26,17 @@ export function cast41Beans(): BaklaReading {
     { key: 'yol', name: '3. Yol ve Rızık Ocağı', count: yol, isEven: yol % 2 === 0 },
   ];
 
-  const randomPattern = baklaData.patterns[Math.floor(Math.random() * baklaData.patterns.length)];
+  // Remil deseni, gerçek falcılık geleneğinde ocaklara düşen bakla
+  // sayılarının tek/çift durumundan OKUNUR — bağımsız bir zar atışı değildir.
+  // Her üçlü tek/çift kombinasyonu (8 ihtimal) kendi özgün desenine eşlenir,
+  // böylece yorum her zaman gerçek dağılımla tutarlı olur.
+  const signature = ocaklar.map((o) => (o.isEven ? 'E' : 'O')).join('');
+  const pattern = baklaData.patterns.find((p) => p.signature === signature) ?? baklaData.patterns[0];
 
   return {
     ocaklar,
-    patternName: randomPattern.name,
-    meaning: randomPattern.meaning,
-    outcome: randomPattern.outcome,
+    patternName: pattern.name,
+    meaning: pattern.meaning,
+    outcome: pattern.outcome,
   };
 }

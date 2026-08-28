@@ -3,7 +3,9 @@
     { "type": "Parlak ve Dik Alev", "meaning": "Niyetin çok temiz, enerjin güçlü; dilediğin şey hızla sana doğru çekiliyor." },
     { "type": "Çıtırtılı ve Dans Eden Alev", "meaning": "Ruhsal bir rehberin veya sevdiğin birinin ruhsal frekansı seninle; yakında bir mesaj alacaksın." },
     { "type": "Mavi / Mor Hareli Alev", "meaning": "Manevi koruma altındasın; sezgilerin zirvede, içine doğan hislere güven." },
-    { "type": "Dumanlı ve Kırpışan Alev", "meaning": "Zihninde fazla vesvese ve şüphe var; niyetini netleştirip sakinleşmelisin." }
+    { "type": "Dumanlı ve Kırpışan Alev", "meaning": "Zihninde fazla vesvese ve şüphe var; niyetini netleştirip sakinleşmelisin." },
+    { "type": "Sessiz ve Sabit Alev", "meaning": "Huzurlu bir bekleyiş içindesin; dilediğin şey zaten yola çıktı, acele etmeden sabırla teslim olman yeterli." },
+    { "type": "Ani Sönüp Yeniden Alevlenen Işık", "meaning": "Kısa bir tereddüt ya da engelin ardından güçlü bir şekilde yeniden başlayan bir umut ve azim dönemi." }
   ],
   "waxShapes": [
     {
@@ -30,6 +32,21 @@
       "name": "Gözyaşı Damlası",
       "meaning": "İçine attığın kederin suya akarak senden uzaklaşması; yerini tatlı bir tebessüme bırakacak arınma.",
       "focus": "Şifa ve Rahatlama"
+    },
+    {
+      "name": "Yıldız / Kıvılcım Deseni",
+      "meaning": "Beklenmedik, güzel bir sürpriz kapıda; tuttuğun dileğin gerçekleşmek üzere olduğunun bir işareti.",
+      "focus": "Şans ve Dilek"
+    },
+    {
+      "name": "Kilit / Zincir Halkası",
+      "meaning": "İki kişi arasındaki bağın kalıcılığı ve sadakati; bazen de aşılması gereken bir kıskançlık ya da engeli simgeler.",
+      "focus": "Bağlılık ve Sadakat"
+    },
+    {
+      "name": "Dalgalı Çizgi / Nehir Akışı",
+      "meaning": "Duygularının değişken bir dönemden geçtiğine işaret eder; akışına bırakıldığında doğru yöne varacak bir süreç.",
+      "focus": "Duygusal Akış ve Değişim"
     }
   ]
 }

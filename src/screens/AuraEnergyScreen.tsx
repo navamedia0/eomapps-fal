@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Animated } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import Svg, { Circle } from 'react-native-svg';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -14,6 +15,65 @@ import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } fro
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AuraEnergy'>;
 
+function DominantAuraReveal({ aura }: { aura: AuraAnalysis }) {
+  const anim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(anim, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const animatedStyle = {
+    opacity: anim,
+    transform: [{ scale: anim.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }) }],
+  };
+
+  return (
+    <Animated.View style={[styles.dominantAuraCard, { borderColor: aura.dominantAuraColor }, animatedStyle]}>
+      <View style={[styles.auraCircle, { backgroundColor: aura.dominantAuraColor }]} />
+      <Text style={styles.dominantAuraTitle}>{aura.dominantAuraName}</Text>
+      <Text style={styles.frequencyBadge}>⚡ Titreşim Frekansı: {aura.vibrationFrequency} Hz</Text>
+      <Text style={styles.auraDesc}>{aura.auraDescription}</Text>
+    </Animated.View>
+  );
+}
+
+function ChakraBarRow({ chakra, delay }: { chakra: AuraAnalysis['chakras'][number]; delay: number }) {
+  const fill = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fill, { toValue: 1, duration: 700, delay, useNativeDriver: false }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <View style={styles.chakraRow}>
+      <View style={styles.chakraLeft}>
+        <Text style={styles.chakraName}>{chakra.name}</Text>
+        <Text style={styles.chakraCrystal}>💎 {chakra.crystal}</Text>
+      </View>
+      <View style={styles.chakraBarContainer}>
+        <Animated.View
+          style={[
+            styles.chakraBarFill,
+            { width: fill.interpolate({ inputRange: [0, 1], outputRange: ['0%', `${chakra.percentage}%`] }), backgroundColor: chakra.colorHex },
+          ]}
+        />
+      </View>
+      <Text style={styles.chakraPercent}>%{chakra.percentage}</Text>
+    </View>
+  );
+}
+
+// Halkanın gerçek çevresine göre dolum oranı — parmağın ekranda kalış
+// süresine göre ilerler, tıpkı gerçek bir parmak izi sensörü gibi.
+const RING_SIZE = 132;
+const RING_STROKE = 7;
+const RING_RADIUS = (RING_SIZE - RING_STROKE) / 2;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+const HOLD_DURATION_MS = 2600;
+const TICK_MS = 40;
+
 export default function AuraEnergyScreen({ navigation }: Props) {
   const [scanning, setScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
@@ -25,31 +85,70 @@ export default function AuraEnergyScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const scanPulse = useRef(new Animated.Value(1)).current;
+  const pulseLoop = useRef<Animated.CompositeAnimation | null>(null);
+  const scanTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const startScan = () => {
+  const clearScanTimer = () => {
+    if (scanTimer.current) {
+      clearInterval(scanTimer.current);
+      scanTimer.current = null;
+    }
+  };
+
+  const stopPulse = () => {
+    pulseLoop.current?.stop();
+    scanPulse.setValue(1);
+  };
+
+  useEffect(() => () => {
+    clearScanTimer();
+    stopPulse();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Parmağın dokunmatik alanda kalış süresi kadar ilerleyen gerçek bir
+  // "basılı tut" etkileşimi — tek dokunuşla anında sonuca geçen eski
+  // davranışın yerini aldı. Erken çekilirse tarama sıfırlanır, tıpkı gerçek
+  // bir parmak izi sensöründe olduğu gibi.
+  const handlePressIn = () => {
+    if (scanTimer.current) return;
     setScanning(true);
-    setScanProgress(0);
     setError(null);
     setResult(null);
 
-    Animated.loop(
+    pulseLoop.current = Animated.loop(
       Animated.sequence([
-        Animated.timing(scanPulse, { toValue: 1.2, duration: 400, useNativeDriver: true }),
-        Animated.timing(scanPulse, { toValue: 1, duration: 400, useNativeDriver: true }),
+        Animated.timing(scanPulse, { toValue: 1.12, duration: 320, useNativeDriver: true }),
+        Animated.timing(scanPulse, { toValue: 1, duration: 320, useNativeDriver: true }),
       ]),
-    ).start();
+    );
+    pulseLoop.current.start();
 
-    let current = 0;
-    const interval = setInterval(() => {
-      current += 20;
-      setScanProgress(current);
-      if (current >= 100) {
-        clearInterval(interval);
-        setScanning(false);
-        const analyzed = analyzeAuraEnergy(Date.now());
-        setAura(analyzed);
-      }
-    }, 400);
+    const step = 100 / (HOLD_DURATION_MS / TICK_MS);
+    scanTimer.current = setInterval(() => {
+      setScanProgress((prev) => {
+        const next = Math.min(100, prev + step);
+        if (next >= 100) {
+          clearScanTimer();
+          stopPulse();
+          setScanning(false);
+          const analyzed = analyzeAuraEnergy(Date.now());
+          setAura(analyzed);
+        }
+        return next;
+      });
+    }, TICK_MS);
+  };
+
+  const handlePressOut = () => {
+    // %100'e ulaşmadan parmak çekilirse temas kesilmiş sayılır ve tarama
+    // baştan başlamak zorunda kalır.
+    if (scanTimer.current) {
+      clearScanTimer();
+      stopPulse();
+      setScanning(false);
+      setScanProgress(0);
+    }
   };
 
   const handleInterpret = async (targetMode: 'standard' | 'deep' = selectedMode) => {
@@ -89,55 +188,62 @@ export default function AuraEnergyScreen({ navigation }: Props) {
           <View style={styles.scanCard}>
             <Text style={styles.cardTitle}>Parmağını Dokunmatik Alana Basılı Tut</Text>
             <Text style={styles.cardDesc}>
-              Biyometrik frekansın taranarak 7 ana çakranın enerji seviyeleri ve auranın baskın rengi hesaplanacaktır.
+              Biyometrik frekansın taranarak 7 ana çakranın enerji seviyeleri ve auranın baskın rengi hesaplanacaktır. Parmağını halka dolana kadar kaldırma; erken çekersen tarama sıfırlanır.
             </Text>
 
-            <Pressable
-              onPress={startScan}
-              disabled={scanning}
-              style={({ pressed }) => [styles.fingerprintBox, pressed && styles.btnPressed]}
-            >
+            <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} style={styles.fingerprintBox}>
+              <Svg width={RING_SIZE} height={RING_SIZE} style={styles.progressRing}>
+                <Circle
+                  cx={RING_SIZE / 2}
+                  cy={RING_SIZE / 2}
+                  r={RING_RADIUS}
+                  stroke="rgba(242, 200, 121, 0.15)"
+                  strokeWidth={RING_STROKE}
+                  fill="none"
+                />
+                <Circle
+                  cx={RING_SIZE / 2}
+                  cy={RING_SIZE / 2}
+                  r={RING_RADIUS}
+                  stroke={scanning ? '#00E676' : GOLD}
+                  strokeWidth={RING_STROKE}
+                  strokeLinecap="round"
+                  fill="none"
+                  strokeDasharray={RING_CIRCUMFERENCE}
+                  strokeDashoffset={RING_CIRCUMFERENCE * (1 - scanProgress / 100)}
+                  rotation={-90}
+                  origin={`${RING_SIZE / 2}, ${RING_SIZE / 2}`}
+                />
+              </Svg>
               <Animated.View style={{ transform: [{ scale: scanning ? scanPulse : 1 }] }}>
                 <MaterialCommunityIcons
                   name="fingerprint"
-                  size={72}
+                  size={64}
                   color={scanning ? '#00E676' : GOLD}
                 />
               </Animated.View>
               <Text style={styles.scanBtnText}>
-                {scanning ? `Enerji Taranıyor... %${scanProgress}` : 'Dokun ve Enerjini Tara'}
+                {scanning ? `Enerji Taranıyor... %${Math.round(scanProgress)}` : 'Basılı Tut ve Enerjini Tara'}
               </Text>
             </Pressable>
           </View>
         ) : (
           <View style={styles.auraWrap}>
             {/* Baskın Aura Kartı */}
-            <View style={[styles.dominantAuraCard, { borderColor: aura.dominantAuraColor }]}>
-              <View style={[styles.auraCircle, { backgroundColor: aura.dominantAuraColor }]} />
-              <Text style={styles.dominantAuraTitle}>{aura.dominantAuraName}</Text>
-              <Text style={styles.frequencyBadge}>⚡ Titreşim Frekansı: {aura.vibrationFrequency} Hz</Text>
-              <Text style={styles.auraDesc}>{aura.auraDescription}</Text>
-            </View>
+            <DominantAuraReveal aura={aura} />
+
+            {/* Sonuca kadar aşağı kaydırmaya gerek kalmadan hemen yeniden
+                taranabilir. */}
+            <Pressable onPress={() => setAura(null)} style={styles.resetBtnTop}>
+              <Ionicons name="refresh" size={15} color={GOLD_SOFT} />
+              <Text style={styles.resetBtnText}>Yeniden Enerji Tara</Text>
+            </Pressable>
 
             {/* 7 Çakra Dağılımı */}
             <View style={styles.chakrasList}>
               <Text style={styles.chakrasTitle}>7 Çakra Denge Spektrumu:</Text>
               {aura.chakras.map((chakra, idx) => (
-                <View key={idx} style={styles.chakraRow}>
-                  <View style={styles.chakraLeft}>
-                    <Text style={styles.chakraName}>{chakra.name}</Text>
-                    <Text style={styles.chakraCrystal}>💎 {chakra.crystal}</Text>
-                  </View>
-                  <View style={styles.chakraBarContainer}>
-                    <View
-                      style={[
-                        styles.chakraBarFill,
-                        { width: `${chakra.percentage}%`, backgroundColor: chakra.colorHex },
-                      ]}
-                    />
-                  </View>
-                  <Text style={styles.chakraPercent}>%{chakra.percentage}</Text>
-                </View>
+                <ChakraBarRow key={idx} chakra={chakra} delay={idx * 90} />
               ))}
             </View>
 
@@ -203,11 +309,6 @@ export default function AuraEnergyScreen({ navigation }: Props) {
                 <ShareButton text={`Mistik Rehber - Aura Raporum: ${aura.dominantAuraName}\n\n${result}`} />
               </View>
             )}
-
-            <Pressable onPress={() => setAura(null)} style={styles.resetBtn}>
-              <Ionicons name="refresh" size={16} color={GOLD_SOFT} />
-              <Text style={styles.resetBtnText}>Yeniden Enerji Tara</Text>
-            </Pressable>
           </View>
         )}
       </ScrollView>
@@ -268,11 +369,17 @@ const styles = StyleSheet.create({
     borderRadius: 70,
     backgroundColor: 'rgba(15, 8, 35, 0.9)',
     borderWidth: 2,
-    borderColor: GOLD,
+    borderColor: GOLD_SOFT,
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 12,
     gap: 6,
+    position: 'relative',
+  },
+  progressRing: {
+    position: 'absolute',
+    top: (140 - RING_SIZE) / 2,
+    left: (140 - RING_SIZE) / 2,
   },
   scanBtnText: {
     fontSize: 10.5,
@@ -466,12 +573,18 @@ const styles = StyleSheet.create({
     lineHeight: 23,
     color: TEXT_PRIMARY,
   },
-  resetBtn: {
+  resetBtnTop: {
     flexDirection: 'row',
+    alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
   },
   resetBtnText: {
     fontSize: 12.5,

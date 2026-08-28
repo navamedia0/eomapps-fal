@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -12,7 +13,7 @@ import { interpretIChingReading } from '@/services/readings-ai';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, GOLD_DEEP, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'IChingReading'>;
 
@@ -51,7 +52,15 @@ function CoinTossReveal({ line, onDone }: { line: IChingLine; onDone: () => void
             glowColor={GOLD}
             onSettled={handleCoinSettled}
             renderSymbol={(symbol, isSettled) => (
-              <View style={[styles.coinCircle, isSettled && styles.coinCircleSettled]}>
+              <View style={styles.coinWrap}>
+                <View style={[styles.coinCircle, isSettled && styles.coinCircleSettled]}>
+                  <LinearGradient
+                    colors={isSettled ? [GOLD, GOLD_DEEP] : ['rgba(184, 134, 46, 0.5)', 'rgba(120, 88, 30, 0.5)']}
+                    style={StyleSheet.absoluteFillObject}
+                  />
+                  {/* Kare delikli klasik Çin bronz sikkesi (方孔錢) motifi */}
+                  <View style={styles.coinHole} />
+                </View>
                 <Text style={styles.coinText}>{symbol}</Text>
               </View>
             )}
@@ -364,11 +373,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 16,
   },
+  coinWrap: {
+    alignItems: 'center',
+    gap: 6,
+  },
   coinCircle: {
     width: 54,
     height: 54,
     borderRadius: 27,
-    backgroundColor: 'rgba(38, 22, 75, 0.95)',
+    overflow: 'hidden',
     borderWidth: 1.5,
     borderColor: 'rgba(242, 200, 121, 0.4)',
     alignItems: 'center',
@@ -376,6 +389,13 @@ const styles = StyleSheet.create({
   },
   coinCircleSettled: {
     borderColor: GOLD,
+    borderWidth: 2,
+  },
+  coinHole: {
+    width: 15,
+    height: 15,
+    backgroundColor: NIGHT_DEEP,
+    transform: [{ rotate: '45deg' }],
   },
   coinText: {
     fontSize: 11,

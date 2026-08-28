@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import ReelRevealFX from '@/components/effects/ReelRevealFX';
+import SparkleBurst from '@/components/effects/SparkleBurst';
 import waxData from '@/data/balmumu_fali_sembolleri.json';
 import { interpretWaxReading } from '@/services/readings-ai';
 import { getCoins, spendCoins } from '@/services/coins';
@@ -13,27 +15,129 @@ import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'WaxReading'>;
+type WaxShape = { name: string; meaning: string; focus: string };
+
+const FLAME_SPIN_POOL = waxData.flameSignals.map((f) => f.type);
+const SHAPE_SPIN_POOL = waxData.waxShapes.map((s) => s.name);
+
+const SHAPE_ICON_RULES: Array<{ match: string; icon: keyof typeof MaterialCommunityIcons.glyphMap; accent: string }> = [
+  { match: 'Aşk', icon: 'heart', accent: '#E08A8A' },
+  { match: 'Evlilik', icon: 'heart', accent: '#E08A8A' },
+  { match: 'Seyahat', icon: 'airplane', accent: '#6FD8E8' },
+  { match: 'Haber', icon: 'email-outline', accent: '#6FD8E8' },
+  { match: 'Şans', icon: 'star-four-points-outline', accent: '#F5C862' },
+  { match: 'Dilek', icon: 'star-four-points-outline', accent: '#F5C862' },
+  { match: 'Şifa', icon: 'flower-outline', accent: '#8BC24A' },
+  { match: 'Rahatlama', icon: 'flower-outline', accent: '#8BC24A' },
+  { match: 'Bağlılık', icon: 'link-variant', accent: GOLD },
+  { match: 'Sadakat', icon: 'link-variant', accent: GOLD },
+  { match: 'Akış', icon: 'waves', accent: '#4FA8E0' },
+  { match: 'Değişim', icon: 'waves', accent: '#4FA8E0' },
+  { match: 'Uzlaşma', icon: 'handshake-outline', accent: '#B9A6F2' },
+  { match: 'İlerleme', icon: 'handshake-outline', accent: '#B9A6F2' },
+];
+
+function shapeVisual(focus: string) {
+  const found = SHAPE_ICON_RULES.find((r) => focus.includes(r.match));
+  return found ?? { icon: 'shimmer' as const, accent: GOLD };
+}
+
+function FlameRevealCard({ delay, onSettled, onResult }: { delay: number; onSettled: () => void; onResult: (signal: { type: string; meaning: string }) => void }) {
+  const [settled, setSettled] = useState(false);
+  const [finalType] = useState(() => waxData.flameSignals[Math.floor(Math.random() * waxData.flameSignals.length)]);
+
+  return (
+    <View style={styles.flameCard}>
+      <Text style={styles.revealLabel}>Alevin İşareti</Text>
+      <View style={styles.reelStage}>
+        <SparkleBurst active={settled} color="#FF9800" count={8} radius={34} />
+        <ReelRevealFX
+          finalSymbol={finalType.type}
+          spinPool={FLAME_SPIN_POOL}
+          delay={delay}
+          glowColor="#FF9800"
+          onSettled={() => {
+            setSettled(true);
+            onSettled();
+            onResult(finalType);
+          }}
+          renderSymbol={(symbol, isSettled) => (
+            <View style={styles.flameVisual}>
+              <MaterialCommunityIcons name="fire" size={22} color={isSettled ? '#FF9800' : GOLD_SOFT} />
+              <Text style={[styles.flameTypeText, isSettled && { color: '#FF9800' }]}>{symbol}</Text>
+            </View>
+          )}
+        />
+      </View>
+      {settled && <Text style={styles.flameMeaningText}>{finalType.meaning}</Text>}
+    </View>
+  );
+}
+
+function WaxShapeRevealCard({ shape, delay, onSettled }: { shape: WaxShape; delay: number; onSettled: () => void }) {
+  const [settled, setSettled] = useState(false);
+  const visual = shapeVisual(shape.focus);
+
+  return (
+    <View style={styles.shapeCard}>
+      <View style={styles.reelStage}>
+        <SparkleBurst active={settled} color={visual.accent} count={8} radius={34} />
+        <ReelRevealFX
+          finalSymbol={shape.name}
+          spinPool={SHAPE_SPIN_POOL}
+          delay={delay}
+          glowColor={visual.accent}
+          onSettled={() => {
+            setSettled(true);
+            onSettled();
+          }}
+          renderSymbol={(symbol, isSettled) => (
+            <View style={styles.shapeHeader}>
+              <MaterialCommunityIcons name={visual.icon} size={18} color={isSettled ? visual.accent : GOLD_SOFT} />
+              <Text style={[styles.shapeName, isSettled && { color: visual.accent }]}>{symbol}</Text>
+            </View>
+          )}
+        />
+      </View>
+      {settled && (
+        <>
+          <Text style={styles.shapeFocus}>[{shape.focus}]</Text>
+          <Text style={styles.shapeMeaning}>{shape.meaning}</Text>
+        </>
+      )}
+    </View>
+  );
+}
+
+function pickTwoShapes(): WaxShape[] {
+  const pool = [...waxData.waxShapes];
+  const picked: WaxShape[] = [];
+  for (let i = 0; i < 2; i++) {
+    const idx = Math.floor(Math.random() * pool.length);
+    picked.push(pool.splice(idx, 1)[0]);
+  }
+  return picked;
+}
 
 export default function WaxReadingScreen({ navigation }: Props) {
+  const [waxShapes, setWaxShapes] = useState<WaxShape[]>([]);
   const [flameSignal, setFlameSignal] = useState<string | null>(null);
-  const [waxShapes, setWaxShapes] = useState<Array<{ name: string; meaning: string; focus: string }>>([]);
+  const [settledCount, setSettledCount] = useState(0);
   const [selectedMode, setSelectedMode] = useState<'standard' | 'deep'>('standard');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const castKey = useRef(0);
+
+  const totalReveals = waxShapes.length > 0 ? waxShapes.length + 1 : 0; // +1 alev
+  const allSettled = totalReveals > 0 && settledCount >= totalReveals;
 
   const handleDripWax = () => {
-    const randomFlame = waxData.flameSignals[Math.floor(Math.random() * waxData.flameSignals.length)];
-    setFlameSignal(`${randomFlame.type} (${randomFlame.meaning})`);
-
-    const pool = [...waxData.waxShapes];
-    const picked: Array<{ name: string; meaning: string; focus: string }> = [];
-    for (let i = 0; i < 2; i++) {
-      const idx = Math.floor(Math.random() * pool.length);
-      picked.push(pool.splice(idx, 1)[0]);
-    }
-    setWaxShapes(picked);
+    castKey.current += 1;
+    setWaxShapes(pickTwoShapes());
+    setFlameSignal(null);
+    setSettledCount(0);
     setResult(null);
     setError(null);
   };
@@ -84,28 +188,32 @@ export default function WaxReadingScreen({ navigation }: Props) {
             </Pressable>
           </View>
         ) : (
-          <View style={styles.waxWrap}>
-            {flameSignal && (
-              <View style={styles.flameBox}>
-                <MaterialCommunityIcons name="fire" size={20} color="#FF9800" />
-                <Text style={styles.flameText}>{flameSignal}</Text>
-              </View>
-            )}
+          <View style={styles.waxWrap} key={castKey.current}>
+            <FlameRevealCard
+              delay={0}
+              onSettled={() => setSettledCount((c) => c + 1)}
+              onResult={(signal) => setFlameSignal(`${signal.type} (${signal.meaning})`)}
+            />
+
+            {/* Sonuca kadar aşağı kaydırmaya gerek kalmadan hemen yeniden
+                damlatılabilir. */}
+            <Pressable onPress={handleDripWax} style={styles.resetBtnTop}>
+              <Ionicons name="refresh" size={15} color={GOLD_SOFT} />
+              <Text style={styles.resetBtnText}>Yeniden Balmumu Damlat</Text>
+            </Pressable>
 
             <View style={styles.shapesList}>
               {waxShapes.map((shape, i) => (
-                <View key={i} style={styles.shapeCard}>
-                  <View style={styles.shapeHeader}>
-                    <MaterialCommunityIcons name="heart-pulse" size={18} color={GOLD} />
-                    <Text style={styles.shapeName}>{shape.name}</Text>
-                    <Text style={styles.shapeFocus}>[{shape.focus}]</Text>
-                  </View>
-                  <Text style={styles.shapeMeaning}>{shape.meaning}</Text>
-                </View>
+                <WaxShapeRevealCard
+                  key={shape.name}
+                  shape={shape}
+                  delay={220 + i * 220}
+                  onSettled={() => setSettledCount((c) => c + 1)}
+                />
               ))}
             </View>
 
-            {!result && !loading && (
+            {allSettled && !result && !loading && (
               <View style={styles.modeSection}>
                 <Text style={styles.modeTitle}>Balmumu Yorum Seviyesi:</Text>
                 <View style={styles.modeCardsRow}>
@@ -167,11 +275,6 @@ export default function WaxReadingScreen({ navigation }: Props) {
                 <ShareButton text={`Mistik Rehber - Balmumu Falım\n\n${result}`} />
               </View>
             )}
-
-            <Pressable onPress={handleDripWax} style={styles.resetBtn}>
-              <Ionicons name="refresh" size={16} color={GOLD_SOFT} />
-              <Text style={styles.resetBtnText}>Yeniden Balmumu Damlat</Text>
-            </Pressable>
           </View>
         )}
       </ScrollView>
@@ -250,21 +353,42 @@ const styles = StyleSheet.create({
     width: '100%',
     gap: 14,
   },
-  flameBox: {
-    flexDirection: 'row',
+  reelStage: {
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(255, 152, 0, 0.12)',
+    justifyContent: 'center',
+    paddingVertical: 4,
+  },
+  revealLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: GOLD_SOFT,
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  flameCard: {
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(255, 152, 0, 0.1)',
     borderWidth: 1,
     borderColor: 'rgba(255, 152, 0, 0.3)',
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: 14,
+    padding: 14,
   },
-  flameText: {
-    fontSize: 12.5,
+  flameVisual: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  flameTypeText: {
+    fontSize: 13,
+    fontWeight: '700',
     color: GOLD_SOFT,
-    fontWeight: '600',
-    flex: 1,
+    textAlign: 'center',
+  },
+  flameMeaningText: {
+    fontSize: 12.5,
+    color: TEXT_PRIMARY,
+    textAlign: 'center',
+    lineHeight: 18,
   },
   shapesList: {
     gap: 10,
@@ -276,6 +400,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 14,
     gap: 6,
+    alignItems: 'center',
   },
   shapeHeader: {
     flexDirection: 'row',
@@ -296,6 +421,7 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
     color: TEXT_MUTED,
     lineHeight: 18,
+    textAlign: 'center',
   },
   modeSection: {
     gap: 10,
@@ -374,15 +500,22 @@ const styles = StyleSheet.create({
     lineHeight: 23,
     color: TEXT_PRIMARY,
   },
-  resetBtn: {
+  resetBtnTop: {
     flexDirection: 'row',
+    alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
   },
   resetBtnText: {
     fontSize: 12.5,
     color: GOLD_SOFT,
+    fontWeight: '600',
   },
 });

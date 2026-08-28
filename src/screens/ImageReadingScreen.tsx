@@ -636,7 +636,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingTop: 32,
-    paddingBottom: 48,
+    paddingBottom: 88,
   },
   pickWrap: {
     alignItems: 'center',

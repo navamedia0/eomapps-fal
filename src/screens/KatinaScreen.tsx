@@ -15,7 +15,7 @@ import { turkishUpperCase } from '@/utils/turkishCase';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import PlayingCardFace from '@/components/PlayingCardFace';
-import TarotCardBack from '@/components/tarot/TarotCardBack';
+import PlayingCardBack from '@/components/PlayingCardBack';
 import CornerTicks from '@/components/CornerTicks';
 import FeatureIcon from '@/components/FeatureIcon';
 import { FEATURE_ICONS } from '@/assets/icons';
@@ -160,7 +160,7 @@ export default function KatinaScreen({ navigation }: Props) {
               {POSITIONS.map((pos) => (
                 <View key={pos} style={styles.closedCardWrap}>
                   <Text style={styles.closedCardLabel}>{turkishUpperCase(pos)}</Text>
-                  <TarotCardBack selected={false} onPress={() => {}} disabled />
+                  <PlayingCardBack width={92} />
                 </View>
               ))}
             </View>
@@ -337,6 +337,7 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   closedCardWrap: {
+    width: 92,
     alignItems: 'center',
     gap: 6,
   },

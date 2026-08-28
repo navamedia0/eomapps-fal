@@ -3,6 +3,7 @@ import { askGemini, askGeminiChat, askGeminiVision, askGeminiAudio, type ChatTur
 import { askCloudflare, askCloudflareChat, askCloudflareVision } from '@/services/cloudflare';
 import { askOpenRouter, askOpenRouterChat, askOpenRouterVision } from '@/services/openrouter';
 import { askHuggingFace, askHuggingFaceChat, askHuggingFaceVision } from '@/services/huggingface';
+import { transcribeAudio } from '@/services/whisper';
 import { withFallbackChain } from '@/services/aiFallback';
 import { tarotReadingType } from '@/constants/aiQueue';
 import type { TarotCard } from '@/services/tarot';
@@ -11,6 +12,7 @@ import type { KatinaCard } from '@/services/katina';
 import { getKatinaMeaning } from '@/services/katinaMeanings';
 import { findDreamMatches } from '@/services/dreamMeanings';
 import { getCoffeeSymbolGlossary } from '@/services/coffeeSymbols';
+import { getTeaLeafSymbolGlossary } from '@/services/teaLeafSymbols';
 import { getPalmistryGlossary } from '@/services/palmistry';
 import {
   buildRichCoffeeContext,
@@ -253,9 +255,25 @@ export async function interpretNumerology(
 }
 
 export async function interpretVoiceReading(audioBase64: string, mimeType: string, isPaid = false): Promise<string> {
-  // No Cloudflare fallback here — llama-3.2-11b-vision-instruct doesn't
-  // accept audio input, only text and a single image.
-  return askGeminiAudio(prompts.voiceReading, audioBase64, mimeType, 'sesli', isPaid);
+  try {
+    return await askGeminiAudio(prompts.voiceReading, audioBase64, mimeType, 'sesli', isPaid);
+  } catch (err) {
+    // Gemini is the only provider that understands raw audio directly, so it
+    // has no like-for-like fallback (Cloudflare's llama-3.2-11b-vision-instruct
+    // doesn't accept audio input, only text and a single image). Instead of
+    // failing outright when Gemini's audio quota is tight, transcribe the
+    // same recording with Whisper and interpret the transcript through the
+    // normal text fallback chain — loses tone/pacing awareness, but the
+    // reading still goes through.
+    const transcript = await transcribeAudio(audioBase64, 'sesli');
+    const prompt = prompts.voiceReadingFallback(transcript);
+    return withFallbackChain([
+      () => askGemini(prompt, undefined, 'sesli', isPaid),
+      () => askCloudflare(prompt),
+      () => askOpenRouter(prompt),
+      () => askHuggingFace(prompt),
+    ]);
+  }
 }
 
 export async function interpretImages(
@@ -283,8 +301,9 @@ export async function interpretImages(
     const richBlock = buildRichFaceContext();
     prompt = mode === 'deep' ? prompts.faceDetailed(richBlock) : prompts.faceStandard(richBlock);
   } else {
-    // Tea
-    const glossary = getCoffeeSymbolGlossary();
+    // Tea — Türk kahve falından ayrı bir gelenek (İngiliz/Doğu Avrupa
+    // tasseografisi), kendi sembol sözlüğünü kullanır.
+    const glossary = getTeaLeafSymbolGlossary();
     prompt = mode === 'deep' ? prompts.teaLeafDetailed(glossary) : prompts.teaLeafStandard(glossary);
   }
 
@@ -527,9 +546,19 @@ export async function interpretAuraReading(
 }
 
 export async function interpretScryingReading(
-  visionText: string,
+  vision: import('@/services/scryingEngine').ScryingVision,
+  intentText: string,
   mode: 'standard' | 'deep' = 'standard',
 ): Promise<string> {
+  const visionText = [
+    `Aynada Beliren Vizyon: ${vision.symbol}`,
+    `Netlik Derecesi: ${vision.clarityLabel} (${vision.clarityNote})`,
+    `Vizyonun İlk Sezgisel Anlamı: ${vision.meaning}`,
+    intentText
+      ? `Kullanıcının Aynaya Bakarken Odaklandığı Soru/Niyet: ${intentText}`
+      : `Kullanıcı özel bir soru belirtmedi; vizyonu genel bir sezgisel rehberlik olarak yorumla.`,
+  ].join('\n');
+
   const profileBlock = await buildProfileBlock();
   const basePrompt = mode === 'deep' ? prompts.scryingReadingDetailed(visionText) : prompts.scryingReadingStandard(visionText);
   const prompt = `${basePrompt}${profileBlock}`;

@@ -22,6 +22,10 @@
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
+    "androidNavigationBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#0B0A1F"
+    },
     "assetBundlePatterns": [
       "**/*"
     ],

@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
-import { cast41Beans, type BaklaReading } from '@/services/baklaEngine';
+import ReelRevealFX from '@/components/effects/ReelRevealFX';
+import SparkleBurst from '@/components/effects/SparkleBurst';
+import { cast41Beans, type BaklaOcak, type BaklaReading } from '@/services/baklaEngine';
 import { interpretBaklaReading } from '@/services/readings-ai';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
@@ -14,17 +16,72 @@ import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } fro
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BaklaReading'>;
 
+// 41 baklanın tek ocakta gerçekçi şekilde alabileceği aralık (9-17) — sayı
+// "sayılırken" bu havuzdan rastgele değerler yanıp söner, gerçek bir bakla
+// dökümü izlenimi verir.
+const COUNT_SPIN_POOL = Array.from({ length: 17 }, (_, i) => String(i + 1));
+
+const OCAK_META: Record<string, { icon: keyof typeof MaterialCommunityIcons.glyphMap; accent: string }> = {
+  hane: { icon: 'home-heart', accent: '#8BC24A' },
+  kalp: { icon: 'heart', accent: '#E08A8A' },
+  yol: { icon: 'road-variant', accent: '#6FD8E8' },
+};
+
+function BaklaOcakCard({ ocak, delay, onSettled }: { ocak: BaklaOcak; delay: number; onSettled: () => void }) {
+  const [settled, setSettled] = useState(false);
+  const meta = OCAK_META[ocak.key] ?? { icon: 'circle-outline' as const, accent: GOLD };
+
+  return (
+    <View style={styles.ocakCard}>
+      <View style={styles.ocakHeaderRow}>
+        <MaterialCommunityIcons name={meta.icon} size={16} color={meta.accent} />
+        <Text style={styles.ocakName}>{ocak.name}</Text>
+      </View>
+
+      <View style={styles.reelStage}>
+        <SparkleBurst active={settled} color={meta.accent} count={8} radius={34} />
+        <ReelRevealFX
+          finalSymbol={String(ocak.count)}
+          spinPool={COUNT_SPIN_POOL}
+          delay={delay}
+          glowColor={meta.accent}
+          onSettled={() => {
+            setSettled(true);
+            onSettled();
+          }}
+          renderSymbol={(symbol, isSettled) => (
+            <View style={styles.beansHeapVisual}>
+              <Text style={[styles.beansCountText, isSettled && { color: meta.accent }]}>{symbol}</Text>
+              <Text style={styles.beansLabel}>Bakla</Text>
+            </View>
+          )}
+        />
+      </View>
+
+      <View style={[styles.ocakStatusBadge, !settled && styles.ocakStatusBadgeHidden, ocak.isEven ? styles.badgeEven : styles.badgeOdd]}>
+        <Text style={styles.ocakStatusText}>{ocak.isEven ? 'ÇİFT (Denge & Açık)' : 'TEK (Hareket & Niyet)'}</Text>
+      </View>
+    </View>
+  );
+}
+
 export default function BaklaScreen({ navigation }: Props) {
   const [reading, setReading] = useState<BaklaReading | null>(null);
+  const [settledCount, setSettledCount] = useState(0);
   const [selectedMode, setSelectedMode] = useState<'standard' | 'deep'>('standard');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const castKey = useRef(0);
+
+  const allSettled = reading !== null && settledCount >= reading.ocaklar.length;
 
   const handleCastBeans = () => {
+    castKey.current += 1;
     const res = cast41Beans();
     setReading(res);
+    setSettledCount(0);
     setResult(null);
     setError(null);
   };
@@ -78,26 +135,31 @@ export default function BaklaScreen({ navigation }: Props) {
           <View style={styles.beansWrap}>
             <View style={styles.ocaklarRow}>
               {reading.ocaklar.map((ocak, idx) => (
-                <View key={idx} style={styles.ocakCard}>
-                  <Text style={styles.ocakName}>{ocak.name}</Text>
-                  <View style={styles.beansHeapVisual}>
-                    <Text style={styles.beansCountText}>{ocak.count}</Text>
-                    <Text style={styles.beansLabel}>Bakla</Text>
-                  </View>
-                  <View style={[styles.ocakStatusBadge, ocak.isEven ? styles.badgeEven : styles.badgeOdd]}>
-                    <Text style={styles.ocakStatusText}>{ocak.isEven ? 'ÇİFT (Denge & Açık)' : 'TEK (Hareket & Niyet)'}</Text>
-                  </View>
-                </View>
+                <BaklaOcakCard
+                  key={`${castKey.current}-${ocak.key}`}
+                  ocak={ocak}
+                  delay={idx * 220}
+                  onSettled={() => setSettledCount((c) => c + 1)}
+                />
               ))}
             </View>
 
-            <View style={styles.patternCard}>
-              <Text style={styles.patternTitle}>🌿 Remil Deseni: {reading.patternName}</Text>
-              <Text style={styles.patternMeaning}>{reading.meaning}</Text>
-              <Text style={styles.patternOutcome}>✨ Müjde: {reading.outcome}</Text>
-            </View>
+            {/* Baklalar sayılır sayılmaz erişilebilir — sonuca kadar aşağı
+                kaydırmaya gerek kalmadan hemen yeniden dağıtılabilir. */}
+            <Pressable onPress={handleCastBeans} style={styles.resetBtnTop}>
+              <Ionicons name="refresh" size={15} color={GOLD_SOFT} />
+              <Text style={styles.resetBtnText}>Yeniden Bakla Dağıt</Text>
+            </Pressable>
 
-            {!result && !loading && (
+            {allSettled && (
+              <View style={styles.patternCard}>
+                <Text style={styles.patternTitle}>🌿 Remil Deseni: {reading.patternName}</Text>
+                <Text style={styles.patternMeaning}>{reading.meaning}</Text>
+                <Text style={styles.patternOutcome}>✨ Müjde: {reading.outcome}</Text>
+              </View>
+            )}
+
+            {allSettled && !result && !loading && (
               <View style={styles.modeSection}>
                 <Text style={styles.modeTitle}>Bakla Yorum Seviyesi:</Text>
                 <View style={styles.modeCardsRow}>
@@ -159,11 +221,6 @@ export default function BaklaScreen({ navigation }: Props) {
                 <ShareButton text={`Mistik Rehber - 41 Bakla Falım\n\n${result}`} />
               </View>
             )}
-
-            <Pressable onPress={handleCastBeans} style={styles.resetBtn}>
-              <Ionicons name="refresh" size={16} color={GOLD_SOFT} />
-              <Text style={styles.resetBtnText}>Yeniden Bakla Dağıt</Text>
-            </Pressable>
           </View>
         )}
       </ScrollView>
@@ -254,10 +311,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
+  ocakHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   ocakName: {
     fontSize: 13,
     fontWeight: '700',
     color: GOLD_SOFT,
+  },
+  reelStage: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 4,
   },
   beansHeapVisual: {
     flexDirection: 'row',
@@ -279,6 +346,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 8,
   },
+  ocakStatusBadgeHidden: {
+    opacity: 0,
+  },
   badgeEven: {
     backgroundColor: 'rgba(76, 175, 80, 0.18)',
   },
@@ -289,6 +359,24 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     color: TEXT_PRIMARY,
+  },
+  resetBtnTop: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+  },
+  resetBtnText: {
+    fontSize: 12.5,
+    color: GOLD_SOFT,
+    fontWeight: '600',
   },
   patternCard: {
     backgroundColor: 'rgba(35, 20, 70, 0.85)',
@@ -389,16 +477,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 23,
     color: TEXT_PRIMARY,
-  },
-  resetBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 12,
-  },
-  resetBtnText: {
-    fontSize: 12.5,
-    color: GOLD_SOFT,
   },
 });

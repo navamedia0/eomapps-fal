@@ -300,8 +300,11 @@ const styles = StyleSheet.create({
     minHeight: 190,
   },
   quoteCardImage: {
-    width: '100%',
-    height: '100%',
+    // Percentage width/height on this Image can end up stale on native when
+    // the card's own height only settles after the quote text finishes
+    // wrapping (minHeight-based container) — pinning all four edges instead
+    // keeps the background locked to the card's actual final bounds.
+    ...StyleSheet.absoluteFillObject,
     borderRadius: 24,
   },
   quoteScrim: {

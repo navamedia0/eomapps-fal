@@ -44,14 +44,18 @@ export default function ReelRevealFX({ finalSymbol, spinPool, delay = 0, glowCol
     containerOpacity.value = withDelay(delay, withTiming(1, { duration: 140 }));
     scale.value = withDelay(delay, withTiming(1, { duration: 200, easing: Easing.out(Easing.quad) }));
 
-    const totalTicks = 12;
+    // Fewer, more widely-spaced ticks: each tick forces a re-render (setState),
+    // and with several reels spinning at once (e.g. a 5-stone rune cross) their
+    // JS-thread ticks used to overlap heavily and drop frames. This keeps the
+    // same decelerating feel with ~30% less render churn.
+    const totalTicks = 9;
     let tickCount = 0;
 
     const tick = () => {
       if (cancelled) return;
       tickCount++;
       const progress = tickCount / totalTicks;
-      const nextInterval = 45 + progress * progress * 170; // decelerating "reel" rhythm
+      const nextInterval = 60 + progress * progress * 170; // decelerating "reel" rhythm
 
       if (tickCount < totalTicks) {
         const pool = spinPool.length > 0 ? spinPool : [finalSymbol];

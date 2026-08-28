@@ -1,0 +1,22 @@
+{
+  "_source": "Özgün içerik — kadim scrying (kara ayna/kristal küre durugörüsü) geleneğinde pratisyenlerin bildirdiği klasik belirsiz vizyon tiplerinden derlenmiştir.",
+  "visions": [
+    { "symbol": "Dönen Sis Duvarı", "meaning": "Henüz netleşmemiş, şekillenmekte olan bir durum; cevap yakın ama tam berraklaşmadı." },
+    { "symbol": "Uzaklaşan Gölge Silüeti", "meaning": "Geride bırakman gereken bir kişi, bir alışkanlık ya da kapanmakta olan bir dönem." },
+    { "symbol": "Titreşen Uzak Bir Işık", "meaning": "Karanlıkta bile sönmeyen bir umut; doğru yönde ilerlediğinin işareti." },
+    { "symbol": "Belirsiz Bir Yüz Hattı", "meaning": "Hayatına girecek ya da zaten içinde olan, henüz tam tanımadığın biri." },
+    { "symbol": "Aralanan Bir Kapı Hattı", "meaning": "Önünde yeni bir fırsatın, bir kararın ya da bir eşiğin belirdiği." },
+    { "symbol": "Derinleşen Kara Girdap", "meaning": "İçine çekildiğin, kaçmaya çalıştığın ama yüzleşmen gereken bir duygu ya da düşünce." },
+    { "symbol": "Tek Bir Parlayan Göz", "meaning": "Seni izleyen ya da senin henüz fark etmediğin bir gerçeği gören biri; sezgilerine güven." },
+    { "symbol": "Dalgalanan Bir Su Yüzeyi", "meaning": "Duyguların şu an dengesiz; dalgalar yatıştığında gerçek yansımanı göreceksin." },
+    { "symbol": "Yükselen İnce Bir Alev", "meaning": "İçindeki tutkunun ya da bastırdığın bir arzunun yeniden canlandığı." },
+    { "symbol": "Kesişen İki Çizgi", "meaning": "Yolların kesiştiği; önemli bir karşılaşma ya da karar anının yaklaştığı." },
+    { "symbol": "Yavaşça Açılan Bir Spiral", "meaning": "Bilinçaltının yüzeye çıkarmaya çalıştığı, tekrar eden bir yaşam örüntüsü." },
+    { "symbol": "Donuklaşıp Yeniden Parlayan Ayna Yüzeyi", "meaning": "Şu an net görülemeyen ama sabırla beklendiğinde kendini açacak bir gerçek." }
+  ],
+  "clarityLevels": [
+    { "label": "Belirsiz Gölge", "note": "Vizyon henüz bulanık; sezgi güçlü ama detaylar örtük." },
+    { "label": "Yarı Net Silüet", "note": "Şekil belirginleşmeye başladı; anlam kısmen okunabiliyor." },
+    { "label": "Çarpıcı Net Vizyon", "note": "Aynada beliren imge olağanüstü keskin; mesaj doğrudan ve güçlü." }
+  ]
+}

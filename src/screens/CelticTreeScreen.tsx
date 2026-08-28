@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, TextInput } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Animated } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
@@ -13,6 +13,37 @@ import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CelticTreeReading'>;
+
+// Ağaç, kutsal ormandan "beliriyormuş" gibi hafif bir giriş animasyonu —
+// deterministik bir sonuç olduğu için (rastgelelik yok) sahte bir "dönen
+// sembol" animasyonu yerine sade bir materialize efekti kullanılır.
+function TreeRevealCard({ tree }: { tree: CelticTree }) {
+  const anim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(anim, { toValue: 1, duration: 480, useNativeDriver: true }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const animatedStyle = {
+    opacity: anim,
+    transform: [
+      { translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [18, 0] }) },
+      { scale: anim.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) },
+    ],
+  };
+
+  return (
+    <Animated.View style={[styles.treeCard, animatedStyle]}>
+      <Text style={styles.treeName}>{tree.name}</Text>
+      <Text style={styles.treeDates}>{tree.dates}</Text>
+      <View style={styles.treeDivider} />
+      <Text style={styles.treeMeta}>Yönetici Gezegen: {tree.ruler} | Element: {tree.element}</Text>
+      <Text style={styles.treeEssence}>🌿 Öz Değerler: {tree.essence}</Text>
+      <Text style={styles.treeDesc}>{tree.desc}</Text>
+    </Animated.View>
+  );
+}
 
 export default function CelticTreeScreen({ navigation }: Props) {
   const [day, setDay] = useState('');
@@ -110,14 +141,14 @@ export default function CelticTreeScreen({ navigation }: Props) {
           </View>
         ) : (
           <View style={styles.treeWrap}>
-            <View style={styles.treeCard}>
-              <Text style={styles.treeName}>{tree.name}</Text>
-              <Text style={styles.treeDates}>{tree.dates}</Text>
-              <View style={styles.treeDivider} />
-              <Text style={styles.treeMeta}>Yönetici Gezegen: {tree.ruler} | Element: {tree.element}</Text>
-              <Text style={styles.treeEssence}>🌿 Öz Değerler: {tree.essence}</Text>
-              <Text style={styles.treeDesc}>{tree.desc}</Text>
-            </View>
+            <TreeRevealCard tree={tree} />
+
+            {/* Sonuca kadar aşağı kaydırmaya gerek kalmadan hemen yeniden
+                hesaplanabilir. */}
+            <Pressable onPress={() => setTree(null)} style={styles.resetBtnTop}>
+              <Ionicons name="refresh" size={15} color={GOLD_SOFT} />
+              <Text style={styles.resetBtnText}>Farklı Bir Doğum Günü Hesapla</Text>
+            </Pressable>
 
             {!result && !loading && (
               <View style={styles.modeSection}>
@@ -181,11 +212,6 @@ export default function CelticTreeScreen({ navigation }: Props) {
                 <ShareButton text={`Mistik Rehber - Kelt Ağaç Burcum: ${tree.name}\n\n${result}`} />
               </View>
             )}
-
-            <Pressable onPress={() => setTree(null)} style={styles.resetBtn}>
-              <Ionicons name="refresh" size={16} color={GOLD_SOFT} />
-              <Text style={styles.resetBtnText}>Farklı Bir Doğum Günü Hesapla</Text>
-            </Pressable>
           </View>
         )}
       </ScrollView>
@@ -402,12 +428,18 @@ const styles = StyleSheet.create({
     color: '#E08A8A',
     textAlign: 'center',
   },
-  resetBtn: {
+  resetBtnTop: {
     flexDirection: 'row',
+    alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
   },
   resetBtnText: {
     fontSize: 12.5,

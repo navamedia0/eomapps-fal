@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { View, Text, Pressable, FlatList, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
@@ -17,10 +17,82 @@ import { GOLD, GOLD_SOFT, TEXT_CAPTION, TEXT_PRIMARY, TEXT_MUTED } from '@/theme
 
 type Props = NativeStackScreenProps<RootStackParamList, 'KartAnlamlari'>;
 
+type IskambilEntry = {
+  kind: 'iskambil';
+  id: string;
+  name: string;
+  suit: KatinaSuit;
+  rankSlug: string;
+  figure?: string;
+  meaning: string;
+  detail?: IskambilCardDetail;
+};
+
+type TarotEntry = {
+  kind: 'tarot';
+  id: string;
+  card: TarotCardDef;
+  name: string;
+  meaning: string;
+};
+
+type Entry = IskambilEntry | TarotEntry;
+
+// Kart yüzleri (özellikle iskambil figürleri) çok sayıda SVG path içeriyor;
+// hepsini tek seferde ScrollView'a basmak yerine FlatList ile pencereleyerek
+// sadece görünen kartları mount ediyoruz.
+function IskambilRow({ entry, onShowStory }: { entry: IskambilEntry; onShowStory: (entry: IskambilEntry) => void }) {
+  return (
+    <View style={styles.cardRow}>
+      <CornerTicks />
+      <View style={styles.faceWrap}>
+        <PlayingCardFace suit={entry.suit} rankSlug={entry.rankSlug} size={88} />
+      </View>
+      <View style={styles.textWrap}>
+        <View style={styles.titleRow}>
+          <Text style={styles.name}>{entry.name}</Text>
+          {entry.figure ? <Text style={styles.figureBadge}>{entry.figure}</Text> : null}
+        </View>
+        <Text style={styles.meaning}>{entry.meaning}</Text>
+        {entry.detail ? (
+          <Pressable
+            style={({ pressed }) => [styles.storyButton, pressed && styles.storyButtonPressed]}
+            onPress={() => onShowStory(entry)}
+          >
+            <Ionicons name="book-outline" size={13} color={GOLD} />
+            <Text style={styles.storyButtonText}>Kartın Hikayesini Gör</Text>
+          </Pressable>
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
+function TarotRow({ entry, onShowStory }: { entry: TarotEntry; onShowStory: (card: TarotCardDef) => void }) {
+  return (
+    <View style={styles.cardRow}>
+      <CornerTicks />
+      <View style={styles.faceWrap}>
+        <TarotCardFace card={entry.card} orientation="upright" />
+      </View>
+      <View style={styles.textWrap}>
+        <Text style={styles.name}>{entry.name}</Text>
+        <Text style={styles.meaning}>{entry.meaning}</Text>
+        <Pressable
+          style={({ pressed }) => [styles.storyButton, pressed && styles.storyButtonPressed]}
+          onPress={() => onShowStory(entry.card)}
+        >
+          <Ionicons name="book-outline" size={13} color={GOLD} />
+          <Text style={styles.storyButtonText}>Kartın Hikayesini Gör</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 export default function KartAnlamlariScreen({ route }: Props) {
   const { deck } = route.params;
 
-  // Modallar için seçili kart durumu
   const [selectedIskambil, setSelectedIskambil] = useState<{
     id: string;
     detail: IskambilCardDetail;
@@ -30,97 +102,78 @@ export default function KartAnlamlariScreen({ route }: Props) {
 
   const [selectedTarot, setSelectedTarot] = useState<TarotCardDef | null>(null);
 
-  const iskambilEntries = useMemo(() => {
-    return KATINA_DECK.map((card) => {
-      const rankSlug = card.id.slice(card.suit.length + 1);
-      const detail = getKatinaCardDetail(card.id);
-      return {
-        id: card.id,
-        name: card.name,
-        suit: card.suit,
-        rankSlug,
-        figure: detail?.figure,
-        element: detail?.element,
-        meaning: detail?.meaning ?? getKatinaMeaning(card.id) ?? '',
-        detail,
-        face: <PlayingCardFace suit={card.suit} rankSlug={rankSlug} size={88} />,
-      };
-    });
-  }, []);
-
-  const tarotEntries = useMemo(() => {
-    return TAROT_DECK.map((card) => ({
+  const entries: Entry[] = useMemo(() => {
+    if (deck === 'iskambil') {
+      return KATINA_DECK.map((card): IskambilEntry => {
+        const rankSlug = card.id.slice(card.suit.length + 1);
+        const detail = getKatinaCardDetail(card.id);
+        return {
+          kind: 'iskambil',
+          id: card.id,
+          name: card.name,
+          suit: card.suit,
+          rankSlug,
+          figure: detail?.figure,
+          meaning: detail?.meaning ?? getKatinaMeaning(card.id) ?? '',
+          detail,
+        };
+      });
+    }
+    return TAROT_DECK.map((card): TarotEntry => ({
+      kind: 'tarot',
       id: card.id,
       card,
       name: card.name,
       meaning: getTarotMeaning(card.id)?.upright ?? '',
-      face: <TarotCardFace card={card} orientation="upright" />,
     }));
+  }, [deck]);
+
+  const handleShowIskambilStory = useCallback((entry: IskambilEntry) => {
+    if (!entry.detail) return;
+    setSelectedIskambil({ id: entry.id, detail: entry.detail, suit: entry.suit, rankSlug: entry.rankSlug });
   }, []);
+
+  const handleShowTarotStory = useCallback((card: TarotCardDef) => {
+    setSelectedTarot(card);
+  }, []);
+
+  const renderItem = useCallback(
+    ({ item }: { item: Entry }) =>
+      item.kind === 'iskambil' ? (
+        <IskambilRow entry={item} onShowStory={handleShowIskambilStory} />
+      ) : (
+        <TarotRow entry={item} onShowStory={handleShowTarotStory} />
+      ),
+    [handleShowIskambilStory, handleShowTarotStory],
+  );
+
+  const intro = useMemo(
+    () => (
+      <Text style={styles.intro}>
+        {deck === 'iskambil'
+          ? '52 kartlık destenin kadim fal anlamları, mitolojik kökenleri ve hikayeleri.'
+          : '78 kartlık Rider-Waite destesinin düz (upright) anlamları ve sembolik hikayeleri.'}
+      </Text>
+    ),
+    [deck],
+  );
 
   return (
     <MysticTableBackground>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.intro}>
-          {deck === 'iskambil'
-            ? '52 kartlık destenin kadim fal anlamları, mitolojik kökenleri ve hikayeleri.'
-            : '78 kartlık Rider-Waite destesinin düz (upright) anlamları ve sembolik hikayeleri.'}
-        </Text>
-
-        <View style={styles.list}>
-          {deck === 'iskambil'
-            ? iskambilEntries.map((entry) => (
-                <View key={entry.id} style={styles.cardRow}>
-                  <CornerTicks />
-                  <View style={styles.faceWrap}>{entry.face}</View>
-                  <View style={styles.textWrap}>
-                    <View style={styles.titleRow}>
-                      <Text style={styles.name}>{entry.name}</Text>
-                      {entry.figure ? <Text style={styles.figureBadge}>{entry.figure}</Text> : null}
-                    </View>
-                    <Text style={styles.meaning} numberOfLines={3}>
-                      {entry.meaning}
-                    </Text>
-                    {entry.detail ? (
-                      <Pressable
-                        style={({ pressed }) => [styles.storyButton, pressed && styles.storyButtonPressed]}
-                        onPress={() =>
-                          setSelectedIskambil({
-                            id: entry.id,
-                            detail: entry.detail!,
-                            suit: entry.suit,
-                            rankSlug: entry.rankSlug,
-                          })
-                        }
-                      >
-                        <Ionicons name="book-outline" size={13} color={GOLD} />
-                        <Text style={styles.storyButtonText}>Kartın Hikayesini Gör</Text>
-                      </Pressable>
-                    ) : null}
-                  </View>
-                </View>
-              ))
-            : tarotEntries.map((entry) => (
-                <View key={entry.id} style={styles.cardRow}>
-                  <CornerTicks />
-                  <View style={styles.faceWrap}>{entry.face}</View>
-                  <View style={styles.textWrap}>
-                    <Text style={styles.name}>{entry.name}</Text>
-                    <Text style={styles.meaning} numberOfLines={3}>
-                      {entry.meaning}
-                    </Text>
-                    <Pressable
-                      style={({ pressed }) => [styles.storyButton, pressed && styles.storyButtonPressed]}
-                      onPress={() => setSelectedTarot(entry.card)}
-                    >
-                      <Ionicons name="book-outline" size={13} color={GOLD} />
-                      <Text style={styles.storyButtonText}>Kartın Hikayesini Gör</Text>
-                    </Pressable>
-                  </View>
-                </View>
-              ))}
-        </View>
-      </ScrollView>
+      <FlatList
+        data={entries}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        ListHeaderComponent={intro}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        initialNumToRender={8}
+        maxToRenderPerBatch={6}
+        windowSize={7}
+        updateCellsBatchingPeriod={50}
+        removeClippedSubviews
+      />
 
       {/* İskambil Hikaye Modalı */}
       <IskambilStoryModal
@@ -152,8 +205,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 12,
   },
-  list: {
-    gap: 16,
+  separator: {
+    height: 16,
   },
   cardRow: {
     position: 'relative',

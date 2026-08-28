@@ -4,7 +4,7 @@
     "0": {
       "sembol_adi": "kilit",
       "genel": "Fincanda kilit çıkması, uzun süredir çözülemeyen sırların aydınlanacağını ve hayatınızdaki kilitli kapıların sonunda açılacağını müjdeler. Genellikle sabrın sonundaki selameti ve gizli saklı kalmış bazı gerçeklerin gün yüzüne çıkmasını simgeler.",
-      "ask": "İlişkilerde yaşanan iletişim kopukluklarının ve yanlış anlaşılmaların son bulacağı bir döneme girildiğini gösterir. Bekarlar için ise kalbini uzun süredir aşka kapatmış kişilerin sürpriz bir şekilde duygusal duvarlarını yıkacak biriyle karşılaşacağ��na işaret eder.",
+      "ask": "İlişkilerde yaşanan iletişim kopukluklarının ve yanlış anlaşılmaların son bulacağı bir döneme girildiğini gösterir. Bekarlar için ise kalbini uzun süredir aşka kapatmış kişilerin sürpriz bir şekilde duygusal duvarlarını yıkacak biriyle karşılaşacağına işaret eder.",
       "kariyer_para": "İş hayatında kriz yaratan karmaşık bürokratik engellerin ve ödenmeyen alacakların nihayet çözüme kavuşacağını müjdeler. Finansal anlamda kilitli kalmış yatırımların veya beklenen paraların serbest kalmasıyla rahat bir nefes alacaksınız.",
       "uyari_golge": "Kilidin konumu fincanın dibindeyse geçmişteki takıntıların bugünü esir aldığını; kulpa yakınsa kendi elinizle hayatınızı zorlaştırdığınızı gösterir. Aşırı ketum davranarak fırsatları kaçırmamaya dikkat etmelisiniz."
     },
@@ -26,7 +26,7 @@
       "sembol_adi": "pasta",
       "genel": "Pasta, hayatınızda tatlı günlerin, kutlamaların ve keyifli anların çoğalacağını gösteren son derece olumlu bir semboldür. Sevdiklerinizle bir araya geleceğiniz neşeli günlerin ve bolluk bereketin habercisidir.",
       "ask": "İlişkinizde tatlı dilli günlerin hakim olacağını, varsa küslüklerin tatlıya bağlanarak romantik anlara dönüşeceğini müjdeler. Evli çiftler için aileye katılacak yeni bir birey veya evlilik yıl dönümü gibi özel kutlamaları simgeler.",
-      "kariyer_para": "Ortaklı işlerde ekmek parasını paylaşma, bereketli kazançlar ve iş yerinde kutlanacak ortak başarıları temsil eder. Maddi açıdan tatmin edici, rızkın bol olduğu ve kimseye muhtaç olmayacağınız bir d��neme işaret eder.",
+      "kariyer_para": "Ortaklı işlerde ekmek parasını paylaşma, bereketli kazançlar ve iş yerinde kutlanacak ortak başarıları temsil eder. Maddi açıdan tatmin edici, rızkın bol olduğu ve kimseye muhtaç olmayacağınız bir döneme işaret eder.",
       "uyari_golge": "Pastanın gölge yönü aşırı konfor düşkünlüğü ve tembelliktir; hayatın tatlı taraflarına dalıp sorumlulukları ihmal etmemelisiniz. Çevrenizdeki her 'tatlı' dilli insana ve sahte dostluklara karşı uyanık olmanız gerekir."
     },
     "4": {
@@ -356,7 +356,7 @@
     "cicek": {
       "genel": "Çiçek, neşe, kutlama, övgü ve kişinin emeklerinin karşılığını alarak sosyal hayatında parlayacağı çok keyifli bir dönemi müjdeler.",
       "ask": "Romantizmin zirve yapacağı, sevdiğiniz kişiden alacağınız hoş sürprizler ve ilişkideki tatlı dilli yaklaşımın getirdiği huzuru simgeler.",
-      "kariyer_para": "Çalışmalarınızın takdir göreceği, yöneticilerinizden övgü alacağınız ve bereketli kazanç kapılarının aralanacağı bir d��neme girdiğinizi gösterir.",
+      "kariyer_para": "Çalışmalarınızın takdir göreceği, yöneticilerinizden övgü alacağınız ve bereketli kazanç kapılarının aralanacağı bir döneme girdiğinizi gösterir.",
       "uyari_golge": "Solmuş veya yapraklarını dökmüş bir çiçek, gösterişe aldanıp kalıcı olmayan geçici heveslerin peşinden gitmenin getireceği pişmanlığı hatırlatır."
     },
     "gul": {
@@ -651,7 +651,7 @@
       "genel": "Gözlük, olaylara farklı bir açıdan bakma zorunluluğunu, gerçekleri net görememe durumunu veya bir konuda körü körüne inanmayı simgeler. Genellikle yanılgıların son bulacağına yorulur.",
       "ask": "Aşkta karşınızdaki kişinin gerçek yüzünü veya niyetini nihayet net bir şekilde göreceğinizi, pembe gözlükleri çıkarıp gerçeklerle yüzleşeceğinizi ifade eder.",
       "kariyer_para": "İş sözleşmelerini, atılacak imzaları ve finansal belgeleri incelerken iki kez okumanız, gizli detayları kaçırmamanız gerektiğine dair çok net bir uyarıdır.",
-      "uyari_golge": "Önyargılarınızın veya başkalarının size empoze ettiği bakı�� açısının gerçekleri ıskalamanıza neden olabileceği gölgesine dikkat çeker."
+      "uyari_golge": "Önyargılarınızın veya başkalarının size empoze ettiği bakış açısının gerçekleri ıskalamanıza neden olabileceği gölgesine dikkat çeker."
     },
     "nargile": {
       "genel": "Nargile, keyif, muhabbet, rahatlama ve aynı zamanda olayları ağırdan alma, demlenme sürecini temsil eder. Fal sahibinin yakın zamanda huzurlu bir ortamda dostlarıyla vakit geçireceğini gösterir.",
@@ -889,7 +889,7 @@
     },
     "piyano": {
       "genel": "Piyano, hayatın dengesini, disiplini, estetiği ve ince zevkleri simgeleyen ağırbaşlı bir semboldür.",
-      "ask": "İlişkilerde karşılıklı uyumun, saygının ve adım adım in��a edilen kalıcı bir romantizmin göstergesidir.",
+      "ask": "İlişkilerde karşılıklı uyumun, saygının ve adım adım inşa edilen kalıcı bir romantizmin göstergesidir.",
       "kariyer_para": "Kariyerinizde sistematik ve planlı çalışarak uzun vadeli başarılara ulaşacağınızı, maddi anlamda da istikrarlı bir büyüme yakalayacağınızı belirtir.",
       "uyari_golge": "Her şeyi kontrol etme arzunuzun ve mükemmeliyetçi yapınızın hem sizi hem de çevrenizdekileri yıpratabileceğine dikkat çeker."
     },
@@ -1147,7 +1147,7 @@
     },
     "cekirge": {
       "genel": "Çekirge, ani sıçramaları, risk almayı, bazen de istikrarsızlık ve sabırsızlığı simgeler. Hayatta hızlı değişimlerin yaşanacağı bir döneme işaret eder.",
-      "ask": "Aşkta daldan dala konma eğilimini, bir karar vermekte zorlanmayı veya ani gelişen heyecanlı ama geçici ili��kileri temsil eder.",
+      "ask": "Aşkta daldan dala konma eğilimini, bir karar vermekte zorlanmayı veya ani gelişen heyecanlı ama geçici ilişkileri temsil eder.",
       "kariyer_para": "Kariyerde riskli hamleler yapma isteğini gösterirken; finansal konularda anlık harcamalara ve spekülasyonlara dikkat edilmesi gerektiğini vurgular.",
       "uyari_golge": "Plansız hareket etmenin getireceği pişmanlıklara ve daldan dala atlayarak odak kaybetme sorununa karşı dikkatli olunmalıdır."
     },

@@ -18,24 +18,52 @@
   ],
   "patterns": [
     {
-      "name": "Dört Göz Açılımı (Dörtlü Çift Baklalar)",
+      "signature": "EEE",
+      "name": "Dört Göz Açılımı (Üçlü Çift Baklalar)",
       "meaning": "Tüm ocaklarda çift ve dengeli baklaların düşmesi; çok yakında haneye gelecek olan müjdeli bir haber, resmi evrak zaferi ve dört başı mamur bir huzur.",
       "outcome": "Dileğin tez vakitte (4 gün veya 4 hafta) gerçekleşecek."
     },
     {
+      "signature": "EEO",
       "name": "Açık Yol (Tekli ve İlerleyen Baklalar)",
       "meaning": "Yol ocağında tek ve temiz bir baklanın ayrılması; önünde hiçbir engelin kalmadığı ferah bir seyahat veya yeni bir iş teklifi.",
       "outcome": "Kararsız kaldığın adımı hemen at; yolun sonu aydınlık."
     },
     {
-      "name": "Düğümlü Ocak (Üçlü Yığılma)",
+      "signature": "EOE",
+      "name": "Düğümlü Ocak (Kalpte Tek Bakla)",
       "meaning": "Kalp ocağında baklaların üst üste binmesi; karşı tarafın gururu, üçüncü kişilerin laf taşıması veya geçmişten gelen bir kırgınlığın düğüm yapması.",
       "outcome": "Sabırlı ol; baskı kurmak yerine zamana bırakıldığında düğüm kendiliğinden çözülecek."
     },
     {
-      "name": "Kısmet Sofrası (Geniş Dağılım)",
-      "meaning": "Hane ocağında baklaların yuvarlak bir sofra gibi dağılması; haneye girecek bereketli toplu para, kutlama veya düğün/nişan meclisi.",
+      "signature": "EOO",
+      "name": "Kısmet Sofrası (Hanede Geniş Dağılım)",
+      "meaning": "Hane ocağında baklaların yuvarlak bir sofra gibi dağılması; haneye girecek bereketli toplu para, kutlama veya düğün/nişan meclisi. Kalp ve Yol'daki tekli hareketlilik ise bu bereketin peşinden koşarak geldiğine işaret eder.",
       "outcome": "Maddi sıkıntılar geride kalıyor; paylaşılan rızık çoğalacak."
+    },
+    {
+      "signature": "OOO",
+      "name": "Üç Ok Deseni (Tüm Ocaklar Tek)",
+      "meaning": "Her üç ocakta da tek ve ayrık baklaların düşmesi; hayatının üç cephesinde de (iç dünya, gönül ve kısmet) kimseyi beklemeden kendi başına, hızlı ve net kararlar alman gereken bir dönemdesin.",
+      "outcome": "Bu hafta içinde atacağın tek başına bir adım, ileride en çok teşekkür edeceğin karar olacak."
+    },
+    {
+      "signature": "OEE",
+      "name": "Yalnız Hane (Baş Ocağında Tek Bakla)",
+      "meaning": "Hane ocağının tek kalması; evde veya kendi başına aldığın, kimseyle paylaşmadan omuzladığın bir karar ya da sorumluluk var. Kalp ve Yol ocaklarındaki çift denge ise bu yükü taşırken yalnız kalmayacağına işaret eder.",
+      "outcome": "Aldığın kararı kimseye danışmaya çekinme; sandığından daha çok destek bulacaksın."
+    },
+    {
+      "signature": "OEO",
+      "name": "Aşk Bağı (Kalpte Tam Birleşme)",
+      "meaning": "Kalp ocağının çift ve dengeli düşmesi; gönül işlerinde karşılıklı bir bağın, birlikteliğin ya da evlilik/nişan kısmetinin kuvvetlendiğine işaret eder. Hane ve Yol'daki tekli hareketlilik bu birlikteliğin gölgesinde kalır.",
+      "outcome": "Gönlünün sesini dinle; kalpteki denge diğer her şeyin önüne geçecek."
+    },
+    {
+      "signature": "OOE",
+      "name": "Ortak Yol (Rızıkta Paylaşılan Kısmet)",
+      "meaning": "Yol ocağının çift düşmesi; iş, seyahat veya resmi bir konuda ortaklığa, birlikte yürünen bir yola işaret eder. Hane ve Kalp'teki tekli hareketlilik ise bu ortaklığın kişisel hayatına da yansıyacağını gösterir.",
+      "outcome": "Tek başına değil, birlikte atacağın adım seni kısmetine ulaştıracak."
     }
   ]
 }

@@ -1,10 +1,14 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Animated } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import ReelRevealFX from '@/components/effects/ReelRevealFX';
+import SparkleBurst from '@/components/effects/SparkleBurst';
+import visionData from '@/data/kara_ayna_vizyonlari.json';
+import { gazeIntoMirror, type ScryingVision } from '@/services/scryingEngine';
 import { interpretScryingReading } from '@/services/readings-ai';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
@@ -13,13 +17,18 @@ import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } fro
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ScryingReading'>;
 
+const VISION_SPIN_POOL = visionData.visions.map((v) => v.symbol);
+
 export default function ScryingScreen({ navigation }: Props) {
   const [focusText, setFocusText] = useState('');
+  const [vision, setVision] = useState<ScryingVision | null>(null);
+  const [visionSettled, setVisionSettled] = useState(false);
   const [selectedMode, setSelectedMode] = useState<'standard' | 'deep'>('standard');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const castKey = useRef(0);
 
   const mirrorGlow = useRef(new Animated.Value(0)).current;
 
@@ -32,8 +41,16 @@ export default function ScryingScreen({ navigation }: Props) {
     ).start();
   }, [mirrorGlow]);
 
+  const handleGaze = () => {
+    castKey.current += 1;
+    setVisionSettled(false);
+    setVision(gazeIntoMirror());
+    setResult(null);
+    setError(null);
+  };
+
   const handleInterpret = async (targetMode: 'standard' | 'deep' = selectedMode) => {
-    const textToAnalyze = focusText.trim() || 'Karanlık aynada beliren kadersel silüetler, gizli sırlar ve sezgisel uyanış vizyonu.';
+    if (!vision) return;
     setLoading(true);
     setError(null);
     setCoinFallback(null);
@@ -47,7 +64,7 @@ export default function ScryingScreen({ navigation }: Props) {
     }
 
     try {
-      const interp = await interpretScryingReading(textToAnalyze, targetMode);
+      const interp = await interpretScryingReading(vision, focusText.trim(), targetMode);
       setResult(interp);
     } catch {
       setError('Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin.');
@@ -70,13 +87,37 @@ export default function ScryingScreen({ navigation }: Props) {
         {/* Kara Ayna Görsel Meditasyon Kutusu */}
         <View style={styles.mirrorContainer}>
           <Animated.View style={[styles.mirrorGlowRing, { opacity: glowOpacity }]} />
-          <View style={styles.blackMirror}>
-            <MaterialCommunityIcons name="eye-circle-outline" size={48} color="rgba(242, 200, 121, 0.4)" />
-            <Text style={styles.mirrorHint}>Aynanın derinliğine odaklan ve zihnini boşalt...</Text>
+          <View style={styles.blackMirror} key={castKey.current}>
+            {!vision ? (
+              <>
+                <MaterialCommunityIcons name="eye-circle-outline" size={48} color="rgba(242, 200, 121, 0.4)" />
+                <Text style={styles.mirrorHint}>Aynanın derinliğine odaklan ve zihnini boşalt...</Text>
+              </>
+            ) : (
+              <>
+                <SparkleBurst active={visionSettled} color={GOLD} count={10} radius={54} />
+                <ReelRevealFX
+                  finalSymbol={vision.symbol}
+                  spinPool={VISION_SPIN_POOL}
+                  delay={0}
+                  glowColor={GOLD}
+                  onSettled={() => setVisionSettled(true)}
+                  renderSymbol={(symbol, isSettled) => (
+                    <MaterialCommunityIcons
+                      name={isSettled ? 'eye' : 'eye-circle-outline'}
+                      size={40}
+                      color={isSettled ? GOLD : 'rgba(242, 200, 121, 0.5)'}
+                    />
+                  )}
+                />
+                <Text style={styles.mirrorVisionText}>{vision.symbol}</Text>
+                {visionSettled && <Text style={styles.mirrorClarityText}>{vision.clarityLabel}</Text>}
+              </>
+            )}
           </View>
         </View>
 
-        {!result ? (
+        {!vision ? (
           <View style={styles.inputCard}>
             <Text style={styles.inputTitle}>Zihnine Doğan Hissi veya Sorunu Yaz (İsteğe Bağlı)</Text>
             <TextInput
@@ -89,7 +130,25 @@ export default function ScryingScreen({ navigation }: Props) {
               style={styles.textArea}
             />
 
-            {!loading && (
+            <Pressable onPress={handleGaze} style={({ pressed }) => [styles.primaryBtn, pressed && styles.btnPressed]}>
+              <MaterialCommunityIcons name="eye-outline" size={20} color={NIGHT_CARD} />
+              <Text style={styles.primaryBtnText}>Aynaya Odaklan ve Vizyonu Gör</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View style={styles.resultWrap}>
+            {visionSettled && vision.meaning && (
+              <View style={styles.visionMeaningCard}>
+                <Text style={styles.visionMeaningText}>🔮 İlk Sezgi: {vision.meaning}</Text>
+              </View>
+            )}
+
+            <Pressable onPress={handleGaze} style={styles.resetBtnTop}>
+              <Ionicons name="refresh" size={15} color={GOLD_SOFT} />
+              <Text style={styles.resetBtnText}>Yeniden Aynaya Odaklan</Text>
+            </Pressable>
+
+            {visionSettled && !result && !loading && (
               <View style={styles.modeSection}>
                 <Text style={styles.modeTitle}>Durugörü Seviyesi:</Text>
                 <View style={styles.modeCardsRow}>
@@ -118,7 +177,7 @@ export default function ScryingScreen({ navigation }: Props) {
                 >
                   <MaterialCommunityIcons name={selectedMode === 'deep' ? 'crown' : 'star-crescent'} size={20} color={NIGHT_CARD} />
                   <Text style={styles.primaryBtnText}>
-                    {selectedMode === 'deep' ? 'Kapsamlı Aynayı Çözümle (20 Coin)' : 'Aynaya Bak (15 Coin)'}
+                    {selectedMode === 'deep' ? 'Kapsamlı Aynayı Çözümle (20 Coin)' : 'Vizyonu Yorumla (15 Coin)'}
                   </Text>
                 </Pressable>
               </View>
@@ -140,22 +199,17 @@ export default function ScryingScreen({ navigation }: Props) {
                 onDismiss={() => setCoinFallback(null)}
               />
             )}
-          </View>
-        ) : (
-          <View style={styles.resultWrap}>
-            <View style={styles.resultCard}>
-              <View style={styles.badgeRow}>
-                <MaterialCommunityIcons name="crown" size={16} color={GOLD} />
-                <Text style={styles.badgeText}>Kara Ayna Durugörü Raporu</Text>
-              </View>
-              <Text style={styles.resultText}>{result}</Text>
-              <ShareButton text={`Mistik Rehber - Kara Ayna Durugörü Yorumum\n\n${result}`} />
-            </View>
 
-            <Pressable onPress={() => setResult(null)} style={styles.resetBtn}>
-              <Ionicons name="refresh" size={16} color={GOLD_SOFT} />
-              <Text style={styles.resetBtnText}>Yeniden Aynaya Odaklan</Text>
-            </Pressable>
+            {result && (
+              <View style={styles.resultCard}>
+                <View style={styles.badgeRow}>
+                  <MaterialCommunityIcons name="crown" size={16} color={GOLD} />
+                  <Text style={styles.badgeText}>Kara Ayna Durugörü Raporu</Text>
+                </View>
+                <Text style={styles.resultText}>{result}</Text>
+                <ShareButton text={`Mistik Rehber - Kara Ayna Durugörü Yorumum\n\n${result}`} />
+              </View>
+            )}
           </View>
         )}
       </ScrollView>
@@ -224,6 +278,31 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: TEXT_MUTED,
     textAlign: 'center',
+  },
+  mirrorVisionText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: GOLD_SOFT,
+    textAlign: 'center',
+  },
+  mirrorClarityText: {
+    fontSize: 10,
+    color: TEXT_MUTED,
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+  visionMeaningCard: {
+    width: '100%',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderRadius: 14,
+    padding: 14,
+  },
+  visionMeaningText: {
+    fontSize: 12.5,
+    color: TEXT_PRIMARY,
+    lineHeight: 18,
   },
   inputCard: {
     width: '100%',
@@ -303,6 +382,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 14,
     marginTop: 4,
+    width: '100%',
   },
   btnDeep: {
     backgroundColor: '#F5C862',
@@ -353,15 +433,22 @@ const styles = StyleSheet.create({
     lineHeight: 23,
     color: TEXT_PRIMARY,
   },
-  resetBtn: {
+  resetBtnTop: {
     flexDirection: 'row',
+    alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
   },
   resetBtnText: {
     fontSize: 12.5,
     color: GOLD_SOFT,
+    fontWeight: '600',
   },
 });

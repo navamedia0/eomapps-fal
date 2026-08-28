@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, TextInput } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Animated } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
-import { calculateDestinyMatrix, type DestinyMatrix } from '@/services/destinyMatrixEngine';
+import { calculateDestinyMatrix, type ArcanaInfo, type DestinyMatrix } from '@/services/destinyMatrixEngine';
 import { interpretDestinyMatrix } from '@/services/readings-ai';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
@@ -13,6 +13,53 @@ import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MatrixOfDestiny'>;
+
+type NodeVariant = 'nodeCardHighlight' | 'nodeCardKarma' | 'nodeCardCenter' | undefined;
+
+// Sekizgenin sekiz düğümünün tamamı — önceden sadece 4'ü gösteriliyordu,
+// oysa motor (destinyMatrixEngine) 8 arkananın tamamını hesaplıyor ve AI
+// yorumu zaten hepsinden bahsediyordu. Görsel harita artık eksiksiz.
+function NodeRevealCard({
+  icon,
+  label,
+  arcana,
+  detail,
+  delay,
+  variant,
+}: {
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  label: string;
+  arcana: ArcanaInfo;
+  detail: string;
+  delay: number;
+  variant?: NodeVariant;
+}) {
+  const anim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(anim, { toValue: 1, duration: 420, delay, useNativeDriver: true }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const animatedStyle = {
+    opacity: anim,
+    transform: [
+      { translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [14, 0] }) },
+      { scale: anim.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) },
+    ],
+  };
+
+  return (
+    <Animated.View style={[styles.nodeCard, variant && styles[variant], animatedStyle]}>
+      <View style={styles.nodeLabelRow}>
+        <MaterialCommunityIcons name={icon} size={13} color={GOLD_SOFT} />
+        <Text style={styles.nodeLabel}>{label}</Text>
+      </View>
+      <Text style={styles.nodeArcana}>{arcana.id}. {arcana.name}</Text>
+      <Text style={styles.nodeDesc}>{detail}</Text>
+    </Animated.View>
+  );
+}
 
 export default function MatrixOfDestinyScreen({ navigation }: Props) {
   const [day, setDay] = useState('');
@@ -124,31 +171,74 @@ export default function MatrixOfDestinyScreen({ navigation }: Props) {
           </View>
         ) : (
           <View style={styles.matrixWrap}>
-            {/* Matris Düğümleri */}
+            {/* Sonuca kadar aşağı kaydırmaya gerek kalmadan hemen yeniden
+                hesaplanabilir. */}
+            <Pressable onPress={() => setMatrix(null)} style={styles.resetBtnTop}>
+              <Ionicons name="refresh" size={15} color={GOLD_SOFT} />
+              <Text style={styles.resetBtnText}>Farklı Bir Doğum Tarihi Hesapla</Text>
+            </Pressable>
+
+            {/* Matris Düğümleri — sekizgenin 8 köşesi de tam olarak gösterilir */}
             <View style={styles.nodesGrid}>
-              <View style={[styles.nodeCard, styles.nodeCardHighlight]}>
-                <Text style={styles.nodeLabel}>✨ 1. Ruh Kimliği (Kişilik)</Text>
-                <Text style={styles.nodeArcana}>{matrix.dayArcana.id}. {matrix.dayArcana.name}</Text>
-                <Text style={styles.nodeDesc}>{matrix.dayArcana.general}</Text>
-              </View>
-
-              <View style={styles.nodeCard}>
-                <Text style={styles.nodeLabel}>💖 Aşk & Ruh Eşi Kapısı</Text>
-                <Text style={styles.nodeArcana}>{matrix.loveArcana.id}. {matrix.loveArcana.name}</Text>
-                <Text style={styles.nodeDesc}>{matrix.loveArcana.love}</Text>
-              </View>
-
-              <View style={styles.nodeCard}>
-                <Text style={styles.nodeLabel}>💰 Zenginlik & Para Kanalı</Text>
-                <Text style={styles.nodeArcana}>{matrix.moneyArcana.id}. {matrix.moneyArcana.name}</Text>
-                <Text style={styles.nodeDesc}>{matrix.moneyArcana.money}</Text>
-              </View>
-
-              <View style={[styles.nodeCard, styles.nodeCardKarma]}>
-                <Text style={styles.nodeLabel}>🗝️ Karmik Kuyruk (Geçmiş Borç)</Text>
-                <Text style={styles.nodeArcana}>{matrix.bottomArcana.id}. {matrix.bottomArcana.name}</Text>
-                <Text style={styles.nodeDesc}>{matrix.bottomArcana.shadow}</Text>
-              </View>
+              <NodeRevealCard
+                icon="account-star-outline"
+                label="1. Ruh Kimliği (Doğum Günü)"
+                arcana={matrix.dayArcana}
+                detail={matrix.dayArcana.general}
+                delay={0}
+                variant="nodeCardHighlight"
+              />
+              <NodeRevealCard
+                icon="lightbulb-on-outline"
+                label="2. Yetenekler & Sezgi (Doğum Ayı)"
+                arcana={matrix.monthArcana}
+                detail={matrix.monthArcana.talent}
+                delay={90}
+              />
+              <NodeRevealCard
+                icon="earth"
+                label="3. Maddiyat & Dünya Görevi (Doğum Yılı)"
+                arcana={matrix.yearArcana}
+                detail={matrix.yearArcana.general}
+                delay={180}
+              />
+              <NodeRevealCard
+                icon="heart-circle-outline"
+                label="5. Kalp & Konfor Merkezi"
+                arcana={matrix.centerArcana}
+                detail={matrix.centerArcana.general}
+                delay={270}
+                variant="nodeCardCenter"
+              />
+              <NodeRevealCard
+                icon="heart-outline"
+                label="6. Aşk & Ruh Eşi Kapısı"
+                arcana={matrix.loveArcana}
+                detail={matrix.loveArcana.love}
+                delay={360}
+              />
+              <NodeRevealCard
+                icon="cash-multiple"
+                label="7. Zenginlik & Para Kanalı"
+                arcana={matrix.moneyArcana}
+                detail={matrix.moneyArcana.money}
+                delay={450}
+              />
+              <NodeRevealCard
+                icon="compass-outline"
+                label="8. Yaşam Amacı & Bütünlük"
+                arcana={matrix.purposeArcana}
+                detail={matrix.purposeArcana.general}
+                delay={540}
+              />
+              <NodeRevealCard
+                icon="infinity"
+                label="4. Karmik Kuyruk (Geçmiş Yaşam Borcu)"
+                arcana={matrix.bottomArcana}
+                detail={matrix.bottomArcana.shadow}
+                delay={630}
+                variant="nodeCardKarma"
+              />
             </View>
 
             {/* Analiz Modu Seçimi */}
@@ -214,11 +304,6 @@ export default function MatrixOfDestinyScreen({ navigation }: Props) {
                 <ShareButton text={`Mistik Rehber - Kader Matrisi Raporum\n\n${result}`} />
               </View>
             )}
-
-            <Pressable onPress={() => setMatrix(null)} style={styles.resetBtn}>
-              <Ionicons name="refresh" size={16} color={GOLD_SOFT} />
-              <Text style={styles.resetBtnText}>Farklı Bir Doğum Tarihi Hesapla</Text>
-            </Pressable>
           </View>
         )}
       </ScrollView>
@@ -333,6 +418,15 @@ const styles = StyleSheet.create({
   nodeCardKarma: {
     borderColor: 'rgba(224, 138, 138, 0.4)',
   },
+  nodeCardCenter: {
+    borderColor: 'rgba(139, 92, 246, 0.55)',
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+  },
+  nodeLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
   nodeLabel: {
     fontSize: 12,
     fontWeight: '700',
@@ -430,12 +524,18 @@ const styles = StyleSheet.create({
     color: '#E08A8A',
     textAlign: 'center',
   },
-  resetBtn: {
+  resetBtnTop: {
     flexDirection: 'row',
+    alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    backgroundColor: 'rgba(242, 200, 121, 0.08)',
   },
   resetBtnText: {
     fontSize: 12.5,

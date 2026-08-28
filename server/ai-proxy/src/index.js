@@ -1,6 +1,12 @@
 const GEMINI_URL = (model) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 const GEMINI_TEXT_MODEL = 'gemini-3.1-flash-lite';
 const CLOUDFLARE_MODEL = '@cf/meta/llama-3.2-11b-vision-instruct';
+// Speech-to-text fallback for voice readings — Gemini's audio model is the
+// only provider that understands raw audio directly, so when it's rate
+// limited the client re-sends the same recording here to get a transcript,
+// then interprets that transcript through the normal text fallback chain
+// instead of failing outright.
+const WHISPER_MODEL = '@cf/openai/whisper';
 
 // 3rd fallback layer. Free OpenRouter vision models get hit hard and 429
 // often on their shared upstream pool, so we hand OpenRouter a short list
@@ -71,8 +77,14 @@ function jsonResponse(body, status = 200, extraHeaders = {}) {
 function isHeavyPayload(payload) {
   const json = JSON.stringify(payload ?? {});
   // Gemini/Cloudflare embed images as inline_data/imageBase64; OpenRouter and
-  // Hugging Face (OpenAI-style messages) use image_url content parts instead.
-  return json.includes('inline_data') || json.includes('inlineData') || json.includes('image_url');
+  // Hugging Face (OpenAI-style messages) use image_url content parts instead;
+  // audioBase64 is the whisper transcription fallback's raw recording.
+  return (
+    json.includes('inline_data') ||
+    json.includes('inlineData') ||
+    json.includes('image_url') ||
+    json.includes('audioBase64')
+  );
 }
 
 function getClientIp(request) {
@@ -130,24 +142,35 @@ async function enforceRateLimits(env, request, payload) {
 // Called whenever the Gemini relay actually gets rate-limited upstream.
 // Tallies real failures in a rolling window; once enough pile up in a short
 // span, flips on the "congestion:active" flag that checkCongestion reads.
-async function recordUpstreamRateLimit(env) {
+// Scoped per provider+reading-type (readingType is client-supplied, e.g.
+// "sesli", "tarot") — without this, a tight Gemini quota on one reading type
+// would trip a single flag that also blocks unrelated reading types AND
+// unrelated providers, e.g. the whisper speech-to-text fallback that voice
+// readings fall back to (see interpretVoiceReading) even though whisper
+// itself isn't the thing that's rate-limited.
+async function recordUpstreamRateLimit(env, provider, readingType) {
   if (!env.RATE_LIMIT_KV) return;
+  const scope = `${provider || 'unknown'}:${readingType || 'unknown'}`;
   const bucket = Math.floor(Date.now() / (CONGESTION_WINDOW_SECONDS * 1000));
-  const key = `congestion:failures:${bucket}`;
+  const key = `congestion:failures:${scope}:${bucket}`;
   const raw = await env.RATE_LIMIT_KV.get(key);
   const count = raw ? parseInt(raw, 10) : 0;
   await env.RATE_LIMIT_KV.put(key, String(count + 1), { expirationTtl: CONGESTION_WINDOW_SECONDS * 2 });
   if (count + 1 >= CONGESTION_FAILURE_THRESHOLD) {
-    await env.RATE_LIMIT_KV.put('congestion:active', String(Date.now()), { expirationTtl: CONGESTION_HOLD_SECONDS });
+    await env.RATE_LIMIT_KV.put(`congestion:active:${scope}`, String(Date.now()), { expirationTtl: CONGESTION_HOLD_SECONDS });
   }
 }
 
 // Real congestion gate — only blocks when recordUpstreamRateLimit has
 // actually tripped the breaker (genuine, evidence-based signal), and never
-// blocks a request the user already paid coins for.
-async function checkCongestion(env, isPaid) {
+// blocks a request the user already paid coins for. Scoped per
+// provider+reading-type, mirroring the client's per-type cooldown storage
+// (useReadingCooldown) and letting a same-type fallback to a different
+// provider through even while the original provider is genuinely congested.
+async function checkCongestion(env, isPaid, provider, readingType) {
   if (!env.RATE_LIMIT_KV || isPaid) return null;
-  const active = await env.RATE_LIMIT_KV.get('congestion:active');
+  const scope = `${provider || 'unknown'}:${readingType || 'unknown'}`;
+  const active = await env.RATE_LIMIT_KV.get(`congestion:active:${scope}`);
   if (!active) return null;
 
   const elapsed = Math.floor((Date.now() - parseInt(active, 10)) / 1000);
@@ -164,7 +187,7 @@ async function checkCongestion(env, isPaid) {
 }
 
 async function relayProvider(env, body) {
-  const { provider, model, payload } = body;
+  const { provider, model, payload, readingType } = body;
 
   if (provider === 'gemini') {
     if (!model || typeof model !== 'string') {
@@ -176,7 +199,7 @@ async function relayProvider(env, body) {
       body: JSON.stringify(payload),
     });
     if (upstream.status === 429) {
-      await recordUpstreamRateLimit(env);
+      await recordUpstreamRateLimit(env, 'gemini', readingType);
     }
     const text = await upstream.text();
     return new Response(text, {
@@ -200,6 +223,21 @@ async function relayProvider(env, body) {
       return jsonResponse(result);
     } catch (err) {
       return jsonResponse({ error: `Cloudflare AI hatası: ${err && err.message}` }, 502);
+    }
+  }
+
+  if (provider === 'whisper') {
+    if (!env.AI) {
+      return jsonResponse({ error: 'Workers AI binding tanımlı değil.' }, 500);
+    }
+    if (!payload.audioBase64 || typeof payload.audioBase64 !== 'string') {
+      return jsonResponse({ error: 'audioBase64 alani gerekli.' }, 400);
+    }
+    try {
+      const result = await env.AI.run(WHISPER_MODEL, { audio: base64ToByteArray(payload.audioBase64) });
+      return jsonResponse(result);
+    } catch (err) {
+      return jsonResponse({ error: `Whisper hatası: ${err && err.message}` }, 502);
     }
   }
 
@@ -241,7 +279,7 @@ async function relayProvider(env, body) {
     });
   }
 
-  return jsonResponse({ error: 'Bilinmeyen provider. "gemini", "cloudflare", "openrouter" veya "huggingface" kullanin.' }, 400);
+  return jsonResponse({ error: 'Bilinmeyen provider. "gemini", "cloudflare", "openrouter", "huggingface" veya "whisper" kullanin.' }, 400);
 }
 
 function dayIndex() {
@@ -549,7 +587,7 @@ export default {
     const burstBlock = await enforceRateLimits(env, request, body.payload);
     if (burstBlock) return burstBlock;
 
-    const congestionBlock = await checkCongestion(env, body.isPaid === true);
+    const congestionBlock = await checkCongestion(env, body.isPaid === true, body.provider, body.readingType);
     if (congestionBlock) return congestionBlock;
 
     return relayProvider(env, body);

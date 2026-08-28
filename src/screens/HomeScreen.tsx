@@ -138,7 +138,7 @@ export default function HomeScreen({ navigation }: Props) {
         },
         {
           key: 'tea',
-          title: 'Çay Yaprağı Falı',
+          title: 'Çay Falı',
           subtitle: 'Tasseografi yaprak desenleri',
           icon: <MaterialCommunityIcons name="leaf" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('ImageReading', { kind: 'tea' }),
@@ -186,7 +186,7 @@ export default function HomeScreen({ navigation }: Props) {
         },
         {
           key: 'aura',
-          title: 'Aura & Çakra Enerji Falı',
+          title: 'Aura & Çakra Falı',
           subtitle: '7 çakra ve ışıltılı aura analizi',
           icon: <MaterialCommunityIcons name="atom" size={26} color={GOLD} />,
           onPress: () => navigation.navigate('AuraEnergy'),
