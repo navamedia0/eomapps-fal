@@ -15,7 +15,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const GEMINI_API_KEY  = process.env.GEMINI_API_KEY || 'REDACTED_ROTATE_THIS_KEY';
+const GEMINI_API_KEY  = process.env.GEMINI_API_KEY || '';
 const GEMINI_MODEL    = 'gemini-3.5-flash-lite';
 const TARGET_TOTAL    = 5500;    // 183 × 30 söz = 5490 ~ 5500
 const BATCH_SIZE      = 50;
