@@ -5,17 +5,117 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
-import { drawRandomRunes, type Rune } from '@/services/runeEngine';
+import ReelRevealFX from '@/components/effects/ReelRevealFX';
+import SparkleBurst from '@/components/effects/SparkleBurst';
+import { drawRandomRunes, getAllRunes, type Rune } from '@/services/runeEngine';
 import { interpretRuneReading } from '@/services/readings-ai';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
+const ALL_RUNE_SYMBOLS = getAllRunes().map((r) => r.symbol);
+
 type Props = NativeStackScreenProps<RootStackParamList, 'RuneReading'>;
+type SpreadType = 'single' | 'norn' | 'cross';
+
+const SPREADS: Record<SpreadType, { count: number; label: string; desc: string; icon: keyof typeof MaterialCommunityIcons.glyphMap; positions: string[] }> = {
+  single: {
+    count: 1,
+    label: 'Tek Rün (Günün Rehberi)',
+    desc: 'Gününe yön veren tek bir kadim işaret',
+    icon: 'star-outline',
+    positions: ['Günün Rehber Rünü'],
+  },
+  norn: {
+    count: 3,
+    label: '3 Taşlı Norn Açılımı',
+    desc: 'Geçmiş - Şimdi - Gelecek akışı',
+    icon: 'triangle-outline',
+    positions: ['1. Urd (Geçmiş / Kökler)', '2. Verdandi (Şimdi / Ateş)', '3. Skuld (Gelecek / Kehanet)'],
+  },
+  cross: {
+    count: 5,
+    label: '5 Taşlı Norse Haçı',
+    desc: 'Durumun özü, gizli etkenler ve olası sonuç',
+    icon: 'compass-outline',
+    positions: [
+      '1. Merkez (Durumun Özü)',
+      '2. Üst (Görünen Etken)',
+      '3. Alt (Gizli / Bilinçaltı Etken)',
+      '4. Sol (Geçmişten Gelen Kök)',
+      '5. Sağ (Olası Yol / Sonuç)',
+    ],
+  },
+};
+
+const ELEMENT_COLORS: Array<{ match: string; color: string }> = [
+  { match: 'Ateş', color: '#FF7A4D' },
+  { match: 'Buz', color: '#6FD8E8' },
+  { match: 'Su', color: '#4FA8E0' },
+  { match: 'Toprak', color: '#8BC24A' },
+  { match: 'Hava', color: '#B9A6F2' },
+  { match: 'Tüm Elementler', color: GOLD },
+];
+
+function elementColor(element: string): string {
+  const found = ELEMENT_COLORS.find((e) => element.includes(e.match));
+  return found ? found.color : GOLD;
+}
+
+function RuneStoneCard({ rune, positionLabel, delay }: { rune: Rune; positionLabel: string; delay: number }) {
+  const [settled, setSettled] = useState(false);
+  const accent = elementColor(rune.element);
+  const glyphColor = rune.isReversed ? '#F2A65A' : accent;
+
+  return (
+    <View style={styles.stoneCard}>
+      <Text style={styles.stonePosition}>{positionLabel}</Text>
+
+      <View style={styles.reelStage}>
+        <SparkleBurst active={settled} color={accent} />
+        <ReelRevealFX
+          finalSymbol={rune.symbol}
+          spinPool={ALL_RUNE_SYMBOLS}
+          delay={delay}
+          glowColor={accent}
+          onSettled={() => setSettled(true)}
+          renderSymbol={(symbol, isSettled) => (
+            <View
+              style={[
+                styles.runeStoneVisual,
+                { borderColor: isSettled ? accent : 'rgba(242, 200, 121, 0.4)' },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.runeRuneGlyph,
+                  isSettled && rune.isReversed && styles.runeGlyphReversed,
+                  { color: isSettled ? glyphColor : GOLD_SOFT },
+                ]}
+              >
+                {symbol}
+              </Text>
+            </View>
+          )}
+        />
+      </View>
+
+      {settled && (
+        <>
+          <Text style={styles.runeStoneName}>
+            {rune.name} {rune.isReversed ? '(TERS)' : ''}
+          </Text>
+          <Text style={styles.runeStoneElement}>Element: {rune.element}</Text>
+          <Text style={styles.runeStoneMeaning}>{rune.isReversed ? rune.reversed : rune.upright}</Text>
+        </>
+      )}
+    </View>
+  );
+}
 
 export default function RuneScreen({ navigation }: Props) {
-  const [spreadType, setSpreadType] = useState<'single' | 'norn'>('norn');
+  const [spreadType, setSpreadType] = useState<SpreadType>('norn');
   const [runes, setRunes] = useState<Rune[]>([]);
   const [selectedMode, setSelectedMode] = useState<'standard' | 'deep'>('standard');
   const [loading, setLoading] = useState(false);
@@ -24,8 +124,7 @@ export default function RuneScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const handleDrawRunes = () => {
-    const count = spreadType === 'single' ? 1 : 3;
-    const drawn = drawRandomRunes(count);
+    const drawn = drawRandomRunes(SPREADS[spreadType].count);
     setRunes(drawn);
     setResult(null);
     setError(null);
@@ -55,7 +154,12 @@ export default function RuneScreen({ navigation }: Props) {
     }
   };
 
-  const nornPositions = ['1. Urd (Geçmiş / Kökler)', '2. Verdandi (Şimdi / Ateş)', '3. Skuld (Gelecek / Kehanet)'];
+  const renderStone = (rune: Rune | undefined, i: number) => {
+    if (!rune) return null;
+    return (
+      <RuneStoneCard key={i} rune={rune} positionLabel={SPREADS[spreadType].positions[i]} delay={i * 220} />
+    );
+  };
 
   return (
     <MysticTableBackground>
@@ -70,25 +174,25 @@ export default function RuneScreen({ navigation }: Props) {
           <View style={styles.setupCard}>
             <Text style={styles.cardTitle}>Açılım Türünü Seç</Text>
             <View style={styles.spreadTypeRow}>
-              <Pressable
-                onPress={() => setSpreadType('single')}
-                style={[styles.spreadTypeBtn, spreadType === 'single' && styles.spreadTypeBtnActive]}
-              >
-                <MaterialCommunityIcons name="star-outline" size={20} color={spreadType === 'single' ? GOLD : TEXT_MUTED} />
-                <Text style={[styles.spreadTypeBtnText, spreadType === 'single' && styles.spreadTypeBtnTextActive]}>
-                  Tek Rün (Günün Rehberi)
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => setSpreadType('norn')}
-                style={[styles.spreadTypeBtn, spreadType === 'norn' && styles.spreadTypeBtnActive]}
-              >
-                <MaterialCommunityIcons name="triangle-outline" size={20} color={spreadType === 'norn' ? GOLD : TEXT_MUTED} />
-                <Text style={[styles.spreadTypeBtnText, spreadType === 'norn' && styles.spreadTypeBtnTextActive]}>
-                  3 Taşlı Norn Açılımı (Geçmiş-Şimdi-Gelecek)
-                </Text>
-              </Pressable>
+              {(Object.keys(SPREADS) as SpreadType[]).map((key) => {
+                const spread = SPREADS[key];
+                const active = spreadType === key;
+                return (
+                  <Pressable
+                    key={key}
+                    onPress={() => setSpreadType(key)}
+                    style={[styles.spreadTypeBtn, active && styles.spreadTypeBtnActive]}
+                  >
+                    <MaterialCommunityIcons name={spread.icon} size={20} color={active ? GOLD : TEXT_MUTED} />
+                    <View style={{ flex: 1 }}>
+                      <Text style={[styles.spreadTypeBtnText, active && styles.spreadTypeBtnTextActive]}>
+                        {spread.label}
+                      </Text>
+                      <Text style={styles.spreadTypeBtnDesc}>{spread.desc}</Text>
+                    </View>
+                  </Pressable>
+                );
+              })}
             </View>
 
             <Pressable onPress={handleDrawRunes} style={({ pressed }) => [styles.primaryBtn, pressed && styles.btnPressed]}>
@@ -98,27 +202,27 @@ export default function RuneScreen({ navigation }: Props) {
           </View>
         ) : (
           <View style={styles.runesWrap}>
-            <View style={styles.stonesRow}>
-              {runes.map((rune, i) => (
-                <View key={i} style={styles.stoneCard}>
-                  <Text style={styles.stonePosition}>
-                    {spreadType === 'norn' ? nornPositions[i] : 'Günün Rehber Rünü'}
-                  </Text>
-                  <View style={styles.runeStoneVisual}>
-                    <Text style={[styles.runeRuneGlyph, rune.isReversed && styles.runeGlyphReversed]}>
-                      {rune.symbol}
-                    </Text>
-                  </View>
-                  <Text style={styles.runeStoneName}>
-                    {rune.name} {rune.isReversed ? '(TERS)' : ''}
-                  </Text>
-                  <Text style={styles.runeStoneElement}>Element: {rune.element}</Text>
-                  <Text style={styles.runeStoneMeaning}>
-                    {rune.isReversed ? rune.reversed : rune.upright}
-                  </Text>
+            {spreadType === 'cross' ? (
+              <View style={styles.crossGrid}>
+                <View style={styles.crossRow}>
+                  <View style={styles.crossSlot} />
+                  <View style={styles.crossSlot}>{renderStone(runes[1], 1)}</View>
+                  <View style={styles.crossSlot} />
                 </View>
-              ))}
-            </View>
+                <View style={styles.crossRow}>
+                  <View style={styles.crossSlot}>{renderStone(runes[3], 3)}</View>
+                  <View style={styles.crossSlot}>{renderStone(runes[0], 0)}</View>
+                  <View style={styles.crossSlot}>{renderStone(runes[4], 4)}</View>
+                </View>
+                <View style={styles.crossRow}>
+                  <View style={styles.crossSlot} />
+                  <View style={styles.crossSlot}>{renderStone(runes[2], 2)}</View>
+                  <View style={styles.crossSlot} />
+                </View>
+              </View>
+            ) : (
+              <View style={styles.stonesRow}>{runes.map((rune, i) => renderStone(rune, i))}</View>
+            )}
 
             {!result && !loading && (
               <View style={styles.modeSection}>
@@ -139,7 +243,7 @@ export default function RuneScreen({ navigation }: Props) {
                   >
                     <MaterialCommunityIcons name="crown" size={18} color={GOLD} />
                     <Text style={[styles.modeCardTitle, { color: '#F5C862' }]}>Kapsamlı Derin</Text>
-                    <Text style={styles.modeCardDesc}>4 Boyutlu Norn kehaneti (20 Coin)</Text>
+                    <Text style={styles.modeCardDesc}>4 Boyutlu derin kehanet (20 Coin)</Text>
                   </Pressable>
                 </View>
 
@@ -266,6 +370,23 @@ const styles = StyleSheet.create({
     color: GOLD,
     fontWeight: '700',
   },
+  spreadTypeBtnDesc: {
+    fontSize: 10.5,
+    color: TEXT_MUTED,
+    marginTop: 2,
+  },
+  crossGrid: {
+    width: '100%',
+    gap: 10,
+  },
+  crossRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  crossSlot: {
+    flex: 1,
+    alignItems: 'center',
+  },
   primaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -308,6 +429,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: GOLD_SOFT,
   },
+  reelStage: {
+    width: 72,
+    height: 72,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 4,
+  },
   runeStoneVisual: {
     width: 60,
     height: 60,
@@ -317,7 +445,6 @@ const styles = StyleSheet.create({
     borderColor: GOLD,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 4,
   },
   runeRuneGlyph: {
     fontSize: 32,

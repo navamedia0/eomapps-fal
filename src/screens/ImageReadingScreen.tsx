@@ -5,6 +5,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet, Image, Animated } from '
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import { interpretImages, validateImage } from '@/services/readings-ai';
+import { ApiRequestError } from '@/services/http';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import { saveReadingHistory } from '@/services/readingHistory';
@@ -105,7 +106,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
   const [adTotalNeeded, setAdTotalNeeded] = useState(1);
 
   const pulse = useRef(new Animated.Value(0)).current;
-  const { remaining: cooldownRemaining, notifyStarted } = useReadingCooldown(
+  const { remaining: cooldownRemaining, notifyCongested } = useReadingCooldown(
     kind === 'coffee' ? 'kahve' : kind === 'palm' ? 'el' : 'yuz',
   );
 
@@ -262,11 +263,12 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
       }
 
       setLoading(true);
-      notifyStarted();
 
       const queueTimer = setTimeout(() => {
         setQueueNotice('Sistemdeki yoğunluk nedeniyle falınız inceleniyor; hazır olduğunda sonuç burada ve Geçmiş bölümünde görünecektir...');
       }, 12000);
+
+      const isPaid = modeToRun === 'deep' || payWithCoins;
 
       try {
         const interpretation = await interpretImages(
@@ -274,6 +276,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
           images.map((img) => ({ mimeType: img.mimeType, data: img.base64 })),
           skipPersonInfo ? null : personInfo,
           modeToRun,
+          isPaid,
         );
         clearTimeout(queueTimer);
         setQueueNotice(null);
@@ -292,12 +295,17 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
         });
       } catch (err) {
         clearTimeout(queueTimer);
-        setError(err instanceof Error ? err.message : 'Sistem yoğunluğu nedeniyle biraz zaman alabilir, lütfen birazdan tekrar deneyin.');
+        if (err instanceof ApiRequestError && err.congestion) {
+          notifyCongested(err.retryAfterSeconds ?? 30);
+          setError(err.message);
+        } else {
+          setError(err instanceof Error ? err.message : 'Sistem yoğunluğu nedeniyle biraz zaman alabilir, lütfen birazdan tekrar deneyin.');
+        }
       } finally {
         setLoading(false);
       }
     },
-    [images, kind, categoryKey, selectedMode, copy.invalidSubject, copy.shareTitle, cooldownRemaining, notifyStarted, hasPersonChoice, skipPersonInfo, personInfo],
+    [images, kind, categoryKey, selectedMode, copy.invalidSubject, copy.shareTitle, cooldownRemaining, notifyCongested, hasPersonChoice, skipPersonInfo, personInfo],
   );
 
   const handleAdComplete = useCallback(async () => {

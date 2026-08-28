@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
-import { tossCoins, getHexagramFromLines, type IChingLine, type Hexagram } from '@/services/ichingEngine';
+import ReelRevealFX from '@/components/effects/ReelRevealFX';
+import SparkleBurst from '@/components/effects/SparkleBurst';
+import { tossCoins, getHexagramFromLines, getTransformedHexagram, type IChingLine, type Hexagram } from '@/services/ichingEngine';
 import { interpretIChingReading } from '@/services/readings-ai';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
@@ -14,9 +16,77 @@ import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } fro
 
 type Props = NativeStackScreenProps<RootStackParamList, 'IChingReading'>;
 
+const COIN_SPIN_POOL = ['Yazı', 'Tura'];
+
+function CoinTossReveal({ line, onDone }: { line: IChingLine; onDone: () => void }) {
+  const [settledCount, setSettledCount] = useState(0);
+  const [barRevealed, setBarRevealed] = useState(false);
+  const doneCalled = useRef(false);
+
+  const handleCoinSettled = () => {
+    setSettledCount((c) => {
+      const next = c + 1;
+      if (next === 3) {
+        setTimeout(() => setBarRevealed(true), 150);
+        setTimeout(() => {
+          if (!doneCalled.current) {
+            doneCalled.current = true;
+            onDone();
+          }
+        }, 900);
+      }
+      return next;
+    });
+  };
+
+  return (
+    <View style={styles.tossRevealBox}>
+      <View style={styles.coinsRow}>
+        {line.coins.map((c, i) => (
+          <ReelRevealFX
+            key={i}
+            finalSymbol={c === 3 ? 'Tura' : 'Yazı'}
+            spinPool={COIN_SPIN_POOL}
+            delay={i * 180}
+            glowColor={GOLD}
+            onSettled={handleCoinSettled}
+            renderSymbol={(symbol, isSettled) => (
+              <View style={[styles.coinCircle, isSettled && styles.coinCircleSettled]}>
+                <Text style={styles.coinText}>{symbol}</Text>
+              </View>
+            )}
+          />
+        ))}
+      </View>
+
+      {barRevealed && (
+        <View style={styles.revealedBarWrap}>
+          <SparkleBurst active={barRevealed} color={line.isChanging ? '#F2A65A' : GOLD} />
+          <View style={styles.lineVisualBig}>
+            {line.isYang ? (
+              <View style={[styles.yangSolid, line.isChanging && styles.lineChanging]} />
+            ) : (
+              <View style={styles.yinBrokenRow}>
+                <View style={[styles.yinHalf, line.isChanging && styles.lineChanging]} />
+                <View style={styles.yinGap} />
+                <View style={[styles.yinHalf, line.isChanging && styles.lineChanging]} />
+              </View>
+            )}
+          </View>
+          <Text style={styles.revealedBarLabel}>
+            {line.isYang ? 'Yang (—)' : 'Yin (- -)'} {line.isChanging ? '⚡ Değişen Çizgi' : ''}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
 export default function IChingScreen({ navigation }: Props) {
   const [lines, setLines] = useState<IChingLine[]>([]);
+  const [tossingLine, setTossingLine] = useState<IChingLine | null>(null);
   const [hexagram, setHexagram] = useState<Hexagram | null>(null);
+  const [transformedHexagram, setTransformedHexagram] = useState<Hexagram | null>(null);
   const [selectedMode, setSelectedMode] = useState<'standard' | 'deep'>('standard');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -24,14 +94,20 @@ export default function IChingScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const handleTossNextLine = () => {
-    if (lines.length >= 6) return;
-    const newLine = tossCoins();
-    const updated = [...lines, newLine];
+    if (lines.length >= 6 || tossingLine) return;
+    setTossingLine(tossCoins());
+  };
+
+  const handleTossSettled = () => {
+    if (!tossingLine) return;
+    const updated = [...lines, tossingLine];
     setLines(updated);
+    setTossingLine(null);
 
     if (updated.length === 6) {
       const built = getHexagramFromLines(updated);
       setHexagram(built);
+      setTransformedHexagram(getTransformedHexagram(updated));
     }
   };
 
@@ -50,7 +126,7 @@ export default function IChingScreen({ navigation }: Props) {
     }
 
     try {
-      const reading = await interpretIChingReading(hexagram, targetMode);
+      const reading = await interpretIChingReading(hexagram, targetMode, transformedHexagram);
       setResult(reading);
     } catch {
       setError('Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin.');
@@ -61,7 +137,9 @@ export default function IChingScreen({ navigation }: Props) {
 
   const handleReset = () => {
     setLines([]);
+    setTossingLine(null);
     setHexagram(null);
+    setTransformedHexagram(null);
     setResult(null);
     setError(null);
   };
@@ -111,12 +189,16 @@ export default function IChingScreen({ navigation }: Props) {
               </View>
             )}
 
-            <Pressable onPress={handleTossNextLine} style={({ pressed }) => [styles.primaryBtn, pressed && styles.btnPressed]}>
-              <MaterialCommunityIcons name="circle-multiple-outline" size={22} color={NIGHT_CARD} />
-              <Text style={styles.primaryBtnText}>
-                {lines.length === 0 ? 'İlk Çizgiyi At (1/6)' : `Sikkeleri Çevir (${lines.length + 1}/6)`}
-              </Text>
-            </Pressable>
+            {tossingLine ? (
+              <CoinTossReveal line={tossingLine} onDone={handleTossSettled} />
+            ) : (
+              <Pressable onPress={handleTossNextLine} style={({ pressed }) => [styles.primaryBtn, pressed && styles.btnPressed]}>
+                <MaterialCommunityIcons name="circle-multiple-outline" size={22} color={NIGHT_CARD} />
+                <Text style={styles.primaryBtnText}>
+                  {lines.length === 0 ? 'İlk Çizgiyi At (1/6)' : `Sikkeleri Çevir (${lines.length + 1}/6)`}
+                </Text>
+              </Pressable>
+            )}
           </View>
         ) : (
           <View style={styles.hexagramWrap}>
@@ -128,6 +210,22 @@ export default function IChingScreen({ navigation }: Props) {
               <Text style={styles.hexJudgment}>📜 {hexagram.judgment}</Text>
               <Text style={styles.hexWisdom}>💡 Bilgelik: {hexagram.wisdom}</Text>
             </View>
+
+            {transformedHexagram && (
+              <View style={styles.transformCard}>
+                <View style={styles.transformHeader}>
+                  <MaterialCommunityIcons name="autorenew" size={18} color="#F2A65A" />
+                  <Text style={styles.transformTitle}>Dönüşen Gelecek Heksagramı</Text>
+                </View>
+                <Text style={styles.transformDesc}>
+                  Değişen çizgilerin ⚡ sonucunda durum şuna evriliyor:
+                </Text>
+                <Text style={styles.transformHexName}>
+                  #{transformedHexagram.number} — {transformedHexagram.name}
+                </Text>
+                <Text style={styles.transformHexJudgment}>{transformedHexagram.judgment}</Text>
+              </View>
+            )}
 
             {!result && !loading && (
               <View style={styles.modeSection}>
@@ -256,6 +354,85 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     borderColor: 'rgba(242, 200, 121, 0.2)',
+  },
+  tossRevealBox: {
+    alignItems: 'center',
+    gap: 18,
+    paddingVertical: 8,
+  },
+  coinsRow: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  coinCircle: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: 'rgba(38, 22, 75, 0.95)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(242, 200, 121, 0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coinCircleSettled: {
+    borderColor: GOLD,
+  },
+  coinText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: GOLD_SOFT,
+  },
+  revealedBarWrap: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  lineVisualBig: {
+    width: 140,
+    height: 14,
+    justifyContent: 'center',
+  },
+  lineChanging: {
+    backgroundColor: '#F2A65A',
+  },
+  revealedBarLabel: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: GOLD_SOFT,
+  },
+  transformCard: {
+    width: '100%',
+    backgroundColor: 'rgba(35, 20, 70, 0.85)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 166, 90, 0.45)',
+    borderRadius: 16,
+    padding: 16,
+    gap: 6,
+  },
+  transformHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  transformTitle: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: '#F2A65A',
+  },
+  transformDesc: {
+    fontSize: 11.5,
+    color: TEXT_MUTED,
+    lineHeight: 16,
+  },
+  transformHexName: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: TEXT_PRIMARY,
+    marginTop: 2,
+  },
+  transformHexJudgment: {
+    fontSize: 12.5,
+    color: TEXT_PRIMARY,
+    lineHeight: 18,
   },
   lineRow: {
     flexDirection: 'row',

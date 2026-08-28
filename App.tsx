@@ -1,3 +1,4 @@
+import 'react-native-reanimated';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -44,7 +45,6 @@ import RuyaKitapligiScreen from '@/screens/RuyaKitapligiScreen';
 import KartAnlamlariScreen from '@/screens/KartAnlamlariScreen';
 import BilgiMakaleScreen from '@/screens/BilgiMakaleScreen';
 import MatrixOfDestinyScreen from '@/screens/MatrixOfDestinyScreen';
-import KursunDokmeScreen from '@/screens/KursunDokmeScreen';
 import RuneScreen from '@/screens/RuneScreen';
 import IChingScreen from '@/screens/IChingScreen';
 import BaklaScreen from '@/screens/BaklaScreen';
@@ -76,7 +76,7 @@ export default function App() {
     <View style={styles.root}>
       <View style={styles.appShell}>
         <NavigationContainer theme={navigationTheme}>
-          <StatusBar style="light" />
+          <StatusBar hidden style="light" />
           <Stack.Navigator
             screenOptions={({ navigation }) => ({
               headerStyle: { backgroundColor: NIGHT_MID },
@@ -84,6 +84,9 @@ export default function App() {
               headerTitleStyle: { color: TEXT_PRIMARY, fontWeight: '600' },
               headerShadowVisible: false,
               headerBackButtonDisplayMode: 'minimal',
+              // Durum çubuğu gizli olduğu için üstte doğal bir boşluk kalmıyor;
+              // başlığı ekranın en tepesine yapışmasın diye kendimiz boşluk veriyoruz.
+              headerStatusBarHeight: 22,
               // Guards against the back button vanishing when a screen ends up
               // as the sole stack entry (e.g. a hard refresh on web) — always
               // falls back to Home instead of relying on stack history alone.
@@ -121,7 +124,6 @@ export default function App() {
               })}
             />
             <Stack.Screen name="MatrixOfDestiny" component={MatrixOfDestinyScreen} options={{ title: 'Kader Matrisi' }} />
-            <Stack.Screen name="KursunDokme" component={KursunDokmeScreen} options={{ title: 'Kurşun Dökme Falı' }} />
             <Stack.Screen name="RuneReading" component={RuneScreen} options={{ title: 'Nordik Rün Falı' }} />
             <Stack.Screen name="IChingReading" component={IChingScreen} options={{ title: 'Çin I Ching Falı' }} />
             <Stack.Screen name="BaklaReading" component={BaklaScreen} options={{ title: '41 Bakla Falı' }} />

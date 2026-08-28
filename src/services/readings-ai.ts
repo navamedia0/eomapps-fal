@@ -4,7 +4,6 @@ import { askCloudflare, askCloudflareChat, askCloudflareVision } from '@/service
 import { askOpenRouter, askOpenRouterChat, askOpenRouterVision } from '@/services/openrouter';
 import { askHuggingFace, askHuggingFaceChat, askHuggingFaceVision } from '@/services/huggingface';
 import { withFallbackChain } from '@/services/aiFallback';
-import { guardReadingCooldown } from '@/services/aiQueue';
 import { tarotReadingType } from '@/constants/aiQueue';
 import type { TarotCard } from '@/services/tarot';
 import { getTarotMeaning } from '@/services/tarotMeanings';
@@ -51,7 +50,7 @@ async function buildProfileBlock(): Promise<string> {
   return `\n\nDanışan / Fal Sahibi hakkında arka plan bilgileri (yalnızca senin özümsemen ve kartları kişiye özel hissettirerek yorumlaman için — asla "verdiğin bilgilere göre" gibi mekanik ifadeler kullanma; sezgisel bir falcı gibi yorumuna sızdır):\n${parts.join('\n\n')}`;
 }
 
-export async function interpretTarotSpread(cards: TarotCard[], positions: string[]): Promise<string> {
+export async function interpretTarotSpread(cards: TarotCard[], positions: string[], isPaid = false): Promise<string> {
   const cardText = cards
     .map((card, index) => {
       const meaning = getTarotMeaning(card.id);
@@ -71,16 +70,15 @@ export async function interpretTarotSpread(cards: TarotCard[], positions: string
   const mysticBlock = buildRichMysticContext('tarot');
   const prompt = `${prompts.tarotSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${mysticBlock}${profileBlock}`;
   const readingType = tarotReadingType(cards.length);
-  await guardReadingCooldown(readingType);
   return withFallbackChain([
-    () => askGemini(prompt, undefined, readingType),
+    () => askGemini(prompt, undefined, readingType, isPaid),
     () => askCloudflare(prompt),
     () => askOpenRouter(prompt),
     () => askHuggingFace(prompt),
   ]);
 }
 
-export async function interpretSolitaireSpread(cards: KatinaCard[]): Promise<string> {
+export async function interpretSolitaireSpread(cards: KatinaCard[], isPaid = false): Promise<string> {
   const cardText = cards
     .map((card) => {
       const meaning = getKatinaMeaning(card.id);
@@ -89,16 +87,15 @@ export async function interpretSolitaireSpread(cards: KatinaCard[]): Promise<str
     .join(', ');
   const profileBlock = await buildProfileBlock();
   const prompt = `${prompts.solitaireSpread(cards.map((card) => card.name))}\n\nAçılan kartlar ve klasik anlamları (esin için, birebir kopyalama):\n${cardText}${profileBlock}`;
-  await guardReadingCooldown('solitaire');
   return withFallbackChain([
-    () => askGemini(prompt, undefined, 'solitaire'),
+    () => askGemini(prompt, undefined, 'solitaire', isPaid),
     () => askCloudflare(prompt),
     () => askOpenRouter(prompt),
     () => askHuggingFace(prompt),
   ]);
 }
 
-export async function interpretKatinaSpread(cards: KatinaCard[], positions: string[]): Promise<string> {
+export async function interpretKatinaSpread(cards: KatinaCard[], positions: string[], isPaid = false): Promise<string> {
   const cardText = cards
     .map((card, index) => {
       const meaning = getKatinaMeaning(card.id);
@@ -112,9 +109,8 @@ export async function interpretKatinaSpread(cards: KatinaCard[], positions: stri
   const profileBlock = await buildProfileBlock();
   const mysticBlock = buildRichMysticContext('katina');
   const prompt = `${prompts.katinaSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${mysticBlock}${profileBlock}`;
-  await guardReadingCooldown('katina');
   return withFallbackChain([
-    () => askGemini(prompt, undefined, 'katina'),
+    () => askGemini(prompt, undefined, 'katina', isPaid),
     () => askCloudflare(prompt),
     () => askOpenRouter(prompt),
     () => askHuggingFace(prompt),
@@ -256,11 +252,10 @@ export async function interpretNumerology(
   ]);
 }
 
-export async function interpretVoiceReading(audioBase64: string, mimeType: string): Promise<string> {
-  await guardReadingCooldown('sesli');
+export async function interpretVoiceReading(audioBase64: string, mimeType: string, isPaid = false): Promise<string> {
   // No Cloudflare fallback here — llama-3.2-11b-vision-instruct doesn't
   // accept audio input, only text and a single image.
-  return askGeminiAudio(prompts.voiceReading, audioBase64, mimeType, 'sesli');
+  return askGeminiAudio(prompts.voiceReading, audioBase64, mimeType, 'sesli', isPaid);
 }
 
 export async function interpretImages(
@@ -268,6 +263,7 @@ export async function interpretImages(
   images: Array<{ mimeType: string; data: string }>,
   personInfo?: PersonInfo | null,
   mode: 'standard' | 'deep' = 'standard',
+  isPaid = false,
 ): Promise<string> {
   if (images.length === 0) throw new Error('En az bir görsel gerekli.');
   let prompt: string;
@@ -308,9 +304,8 @@ export async function interpretImages(
   prompt += profileBlock;
 
   const readingType = kind === 'coffee' ? 'kahve' : kind === 'palm' ? 'el' : kind === 'face' ? 'yuz' : 'kahve';
-  await guardReadingCooldown(readingType);
   return withFallbackChain([
-    () => askGeminiVision(prompt, images, readingType),
+    () => askGeminiVision(prompt, images, readingType, isPaid),
     () => askCloudflareVision(prompt, images[0].data),
     () => askOpenRouterVision(prompt, images),
     () => askHuggingFaceVision(prompt, images),
@@ -362,35 +357,30 @@ export async function interpretDestinyMatrix(
   ]);
 }
 
-export async function interpretLeadReading(
-  shapes: Array<{ name: string; meaning: string }>,
-  mode: 'standard' | 'deep' = 'standard',
-): Promise<string> {
-  const summary = shapes.map((s) => `- ${s.name}: ${s.meaning}`).join('\n');
-  const profileBlock = await buildProfileBlock();
-  const basePrompt = mode === 'deep' ? prompts.leadReadingDetailed(summary) : prompts.leadReadingStandard(summary);
-  const prompt = `${basePrompt}${profileBlock}`;
-
-  return withFallbackChain([
-    () => askGemini(prompt),
-    () => askCloudflare(prompt),
-    () => askOpenRouter(prompt),
-    () => askHuggingFace(prompt),
-  ]);
-}
+const RUNE_SPREAD_POSITIONS: Record<'single' | 'norn' | 'cross', string[]> = {
+  single: ['Günün Rehber Rünü'],
+  norn: ['1. Urd (Geçmiş / Kökler)', '2. Verdandi (Şimdi / Ateş)', '3. Skuld (Gelecek / Kehanet)'],
+  cross: [
+    '1. Merkez (Durumun Özü)',
+    '2. Üst (Görünen / Yüzeydeki Etken)',
+    '3. Alt (Gizli / Bilinçaltı Etken)',
+    '4. Sol (Geçmişten Gelen Kök)',
+    '5. Sağ (Olası Yol / Sonuç)',
+  ],
+};
 
 export async function interpretRuneReading(
   runes: import('@/services/runeEngine').Rune[],
-  spreadType: 'single' | 'norn' = 'norn',
+  spreadType: 'single' | 'norn' | 'cross' = 'norn',
   mode: 'standard' | 'deep' = 'standard',
 ): Promise<string> {
-  const positions = spreadType === 'norn' ? ['1. Urd (Geçmiş / Kökler)', '2. Verdandi (Şimdi / Ateş)', '3. Skuld (Gelecek / Kehanet)'] : ['Günün Rehber Rünü'];
+  const positions = RUNE_SPREAD_POSITIONS[spreadType];
   const summary = runes
     .map((r, i) => `${positions[i] || `Rün ${i + 1}`}: ${r.symbol} ${r.name} (${r.isReversed ? 'TERS' : 'DÜZ'}) - Anlam: ${r.isReversed ? r.reversed : r.upright}\nÖğüt: ${r.advice}`)
     .join('\n\n');
 
   const profileBlock = await buildProfileBlock();
-  const basePrompt = mode === 'deep' ? prompts.runeReadingDetailed(summary) : prompts.runeReadingStandard(summary);
+  const basePrompt = mode === 'deep' ? prompts.runeReadingDetailed(summary, spreadType) : prompts.runeReadingStandard(summary);
   const prompt = `${basePrompt}${profileBlock}`;
 
   return withFallbackChain([
@@ -404,14 +394,31 @@ export async function interpretRuneReading(
 export async function interpretIChingReading(
   hexagram: import('@/services/ichingEngine').Hexagram,
   mode: 'standard' | 'deep' = 'standard',
+  transformedHexagram?: import('@/services/ichingEngine').Hexagram | null,
 ): Promise<string> {
-  const summary = [
+  const changingLineNumbers = hexagram.lines
+    .map((l, i) => (l.isChanging ? i + 1 : null))
+    .filter((n): n is number => n !== null);
+
+  const summaryParts = [
     `Heksagram No: ${hexagram.number} - ${hexagram.name}`,
     `Üst Trigram: ${hexagram.upper}, Alt Trigram: ${hexagram.lower}`,
     `Hüküm: ${hexagram.judgment}`,
     `Bilgelik: ${hexagram.wisdom}`,
     `Eylem: ${hexagram.action}`,
-  ].join('\n');
+  ];
+
+  if (transformedHexagram) {
+    summaryParts.push(
+      `Değişen Çizgiler: ${changingLineNumbers.join(', ')}. numaralı çizgiler (alttan sayarak) dönüşüyor.`,
+      `Dönüşen Gelecek Heksagramı: No ${transformedHexagram.number} - ${transformedHexagram.name} (Üst: ${transformedHexagram.upper}, Alt: ${transformedHexagram.lower})`,
+      `Dönüşen Heksagramın Hükmü: ${transformedHexagram.judgment}`,
+    );
+  } else {
+    summaryParts.push('Değişen Çizgiler: Yok — durum sabit ve dengeli, dönüşüm baskısı taşımıyor.');
+  }
+
+  const summary = summaryParts.join('\n');
 
   const profileBlock = await buildProfileBlock();
   const basePrompt = mode === 'deep' ? prompts.ichingReadingDetailed(summary) : prompts.ichingReadingStandard(summary);

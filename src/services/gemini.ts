@@ -12,22 +12,28 @@ const extractText = (result: GeminiResponse): string => {
   return text;
 };
 
-async function callProxy(model: string, payload: unknown, readingType?: ReadingType): Promise<GeminiResponse> {
+async function callProxy(model: string, payload: unknown, readingType?: ReadingType, isPaid?: boolean): Promise<GeminiResponse> {
   const appSecret = env.appSecret();
   return postJson<GeminiResponse>(
     env.aiProxyUrl(),
-    { provider: 'gemini', model, payload, readingType },
+    { provider: 'gemini', model, payload, readingType, isPaid },
     appSecret ? { 'X-App-Secret': appSecret } : {},
   );
 }
 
-export async function askGemini(prompt: string, model = AI_MODELS.geminiText, readingType?: ReadingType): Promise<string> {
+export async function askGemini(
+  prompt: string,
+  model = AI_MODELS.geminiText,
+  readingType?: ReadingType,
+  isPaid?: boolean,
+): Promise<string> {
   const result = await callProxy(
     model,
     {
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     },
     readingType,
+    isPaid,
   );
   return extractText(result);
 }
@@ -48,18 +54,30 @@ export async function askGeminiChat(
   return extractText(result);
 }
 
-export async function askGeminiVision(prompt: string, images: ImagePart[], readingType?: ReadingType): Promise<string> {
+export async function askGeminiVision(
+  prompt: string,
+  images: ImagePart[],
+  readingType?: ReadingType,
+  isPaid?: boolean,
+): Promise<string> {
   const result = await callProxy(
     AI_MODELS.geminiVision,
     {
       contents: [{ role: 'user', parts: [{ text: prompt }, ...images.map((image) => ({ inline_data: { mime_type: image.mimeType, data: image.data } }))] }],
     },
     readingType,
+    isPaid,
   );
   return extractText(result);
 }
 
-export async function askGeminiAudio(prompt: string, audioBase64: string, mimeType: string, readingType?: ReadingType): Promise<string> {
+export async function askGeminiAudio(
+  prompt: string,
+  audioBase64: string,
+  mimeType: string,
+  readingType?: ReadingType,
+  isPaid?: boolean,
+): Promise<string> {
   const result = await callProxy(
     AI_MODELS.geminiVision,
     {
@@ -71,6 +89,7 @@ export async function askGeminiAudio(prompt: string, audioBase64: string, mimeTy
       ],
     },
     readingType,
+    isPaid,
   );
   return extractText(result);
 }

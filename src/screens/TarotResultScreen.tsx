@@ -9,6 +9,9 @@ import { interpretTarotSpread } from '@/services/readings-ai';
 import { getCredits } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
+import { ApiRequestError } from '@/services/http';
+import { reportCongestion } from '@/services/aiQueue';
+import { tarotReadingType } from '@/constants/aiQueue';
 import { saveReadingHistory } from '@/services/readingHistory';
 import {
   getCategoryStatus,
@@ -75,7 +78,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
           setLoading(false);
           return;
         }
-        const interpretation = await interpretTarotSpread(cards, spread.positions);
+        const interpretation = await interpretTarotSpread(cards, spread.positions, true);
         await spendCoins(spread.priceCoins);
         setResult(interpretation);
         await saveReadingHistory({ type: 'tarot', title: `${spread.id} Kart Açılımı`, result: interpretation });
@@ -120,7 +123,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
         setQueueNotice('Sistemdeki yoğunluk nedeniyle açılımınız inceleniyor; hazır olduğunda burada ve Geçmiş bölümünde görünecektir...');
       }, 12000);
 
-      const interpretation = await interpretTarotSpread(cards, spread.positions);
+      const interpretation = await interpretTarotSpread(cards, spread.positions, payWithCoins);
       clearTimeout(queueTimer);
       setQueueNotice(null);
 
@@ -130,6 +133,9 @@ export default function TarotResultScreen({ route, navigation }: Props) {
       setResult(interpretation);
       await saveReadingHistory({ type: 'tarot', title: `${spread.id} Kart Açılımı`, result: interpretation });
     } catch (err) {
+      if (err instanceof ApiRequestError && err.congestion) {
+        await reportCongestion(tarotReadingType(spread.id), err.retryAfterSeconds ?? 30);
+      }
       setError(err instanceof Error ? err.message : 'Kartlar okunurken bir sorun oluştu.');
     } finally {
       setLoading(false);

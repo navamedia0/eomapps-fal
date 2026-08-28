@@ -47,6 +47,60 @@
       "action": "Eğitime, mentorluğa ve tecrübeli rehberlere kulak ver."
     },
     {
+      "number": 5,
+      "name": "Xu / Sabırla Beklemek",
+      "upper": "Su",
+      "lower": "Gök",
+      "judgment": "Bulutlar gökte toplanıyor ama henüz yağmur yağmıyor. İçten bir güvenle doğru zamanı bekle.",
+      "wisdom": "Acele etmek tehlikeyi davet eder. Sabır, gücünü kaybetmeden biriktirmenin sanatıdır.",
+      "action": "Beslenmeye ve dinlenmeye zaman ayır, harekete geçmeden önce gücünü topla."
+    },
+    {
+      "number": 6,
+      "name": "Song / Çekişme ve Anlaşmazlık",
+      "upper": "Gök",
+      "lower": "Su",
+      "judgment": "Su aşağı akar, gök yukarı yükselir; yönler ayrışınca çatışma doğar. Haklı olsan da davayı sonuna kadar götürme.",
+      "wisdom": "Çatışmanın içinde zafer yoktur, sadece yorgunluk vardır. Erken bir uzlaşma, gecikmiş bir zaferden daha değerlidir.",
+      "action": "Israrla mücadele etmek yerine arabulucu bir üçüncü göz ara."
+    },
+    {
+      "number": 7,
+      "name": "Shi / Disiplinli Ordu",
+      "upper": "Yer",
+      "lower": "Su",
+      "judgment": "Yerin bağrında gizlenen su gibi, güç sabır ve disiplinle örgütlenmeli. Deneyimli bir lider zafer getirir.",
+      "wisdom": "Kitleleri yönetmek adalet ve disiplin ister; sevgisiz disiplin zorbalığa, disiplinsiz sevgi kaosa dönüşür.",
+      "action": "Ekibini ve kaynaklarını tek bir net hedef etrafında topla, dağınıklığa izin verme."
+    },
+    {
+      "number": 8,
+      "name": "Bi / Birlik ve Kucaklaşma",
+      "upper": "Su",
+      "lower": "Yer",
+      "judgment": "Su yerin üzerine yayılıp her çatlağı doldurur. Bağlılık ve dayanışma zamanı, geç kalma.",
+      "wisdom": "Yalnız duran taş yosun tutmaz. Doğru topluluğa, doğru niyetle ve zamanında katıl.",
+      "action": "İttifaklarını şimdi sağlamlaştır; tereddüt seni dışarıda bırakabilir."
+    },
+    {
+      "number": 9,
+      "name": "Xiao Chu / Küçük Terbiye Edilme",
+      "upper": "Rüzgar",
+      "lower": "Gök",
+      "judgment": "Rüzgar gökte toplanır ama henüz yağmura dönüşmemiştir. Büyük güç küçük bir incelikle yavaşça dizginlenir.",
+      "wisdom": "Şimdilik büyük hamleler için zaman değil; küçük, zarif düzeltmelerle enerjini biriktir.",
+      "action": "Detaylara ve küçük iyileştirmelere odaklan, büyük atılımı ertele."
+    },
+    {
+      "number": 10,
+      "name": "Lu / Kaplanın Kuyruğuna Basmak",
+      "upper": "Gök",
+      "lower": "Göl",
+      "judgment": "Neşeli göl, güçlü göğün altında yürür. Tehlikeli bir yolda bile nezaketle ilerleyen zarar görmez.",
+      "wisdom": "Güçlünün yanında saygılı ve ölçülü davranmak, korkudan değil bilgelikten gelir.",
+      "action": "Adımlarını nazik ama kararlı at; kaba güce kabalıkla değil zarafetle karşılık ver."
+    },
+    {
       "number": 11,
       "name": "Tai / Barış ve Kusursuz Uyum",
       "upper": "Yer",
@@ -65,6 +119,150 @@
       "action": "Gereksiz münakaşalardan kaçın, enerjini koru."
     },
     {
+      "number": 13,
+      "name": "Tong Ren / İnsanlarla Birlik",
+      "upper": "Gök",
+      "lower": "Ateş",
+      "judgment": "Ateş göğe doğru yükselir, ortak bir ışıkta buluşan gönüller büyük işler başarır.",
+      "wisdom": "Gerçek birlik, farklılıkları yok saymadan ortak bir vizyonda buluşmaktır.",
+      "action": "Açık kalplilikle bir topluluk veya ortaklık kur, gizli ajandalardan kaçın."
+    },
+    {
+      "number": 14,
+      "name": "Da You / Büyük Bolluk",
+      "upper": "Ateş",
+      "lower": "Gök",
+      "judgment": "Güneş gökyüzünün zirvesinde parlar, her şeyi aydınlatır. Büyük bir bolluk ve güç dönemindesin.",
+      "wisdom": "Bolluk zamanında tevazu kaybedilirse, ışık kibrin gölgesinde sönebilir.",
+      "action": "Kazandığını paylaş, gücünü alçakgönüllülükle taçlandır."
+    },
+    {
+      "number": 15,
+      "name": "Qian / Alçakgönüllülüğün Dağı",
+      "upper": "Yer",
+      "lower": "Dağ",
+      "judgment": "Yüce dağ, kendini yerin altına gömerek alçakgönüllülüğü öğretir. Bu yolda her adım bereketlenir.",
+      "wisdom": "Gerçek büyüklük, kendini küçültebilme cesaretinde saklıdır.",
+      "action": "Başarını sessizce taşı, övünme ihtiyacından özgürleş."
+    },
+    {
+      "number": 16,
+      "name": "Yu / Coşku ve Harekete Geçiş",
+      "upper": "Gök Gürültüsü",
+      "lower": "Yer",
+      "judgment": "Gök gürültüsü yerden coşkuyla patlar. Doğru coşkuyla harekete geçmek, önderleri ve orduları bile ardından sürükler.",
+      "wisdom": "Coşku bulaşıcıdır ama yönü olmalı; başıboş heyecan çabuk söner.",
+      "action": "İlham verici bir hedef belirle ve o coşkuyu paylaşarak çoğalt."
+    },
+    {
+      "number": 17,
+      "name": "Sui / Doğru Akışı Takip Etmek",
+      "upper": "Göl",
+      "lower": "Gök Gürültüsü",
+      "judgment": "Gök gürültüsü gölün derinliklerinde dinlenir. Zamanın ruhuna uyum sağlayan, doğru olanı takip eder.",
+      "wisdom": "Bazen liderlik etmek değil, akışı okuyup doğru anda takip etmek asıl bilgeliktir.",
+      "action": "Egonu bir kenara bırak, şu an kimin ya da neyin rehberliğine güvenmen gerektiğini gör."
+    },
+    {
+      "number": 18,
+      "name": "Gu / Çürümüşü Onarmak",
+      "upper": "Dağ",
+      "lower": "Rüzgar",
+      "judgment": "Dağın eteğinde rüzgar durgunlaşmış, ihmalden çürüme başlamış. Şimdi cesaretle onarım zamanı.",
+      "wisdom": "İhmal edilen her şey sessizce bozulur; yüzleşmek acı verse de iyileşmenin tek yolu budur.",
+      "action": "Ertelediğin o meseleyi şimdi ele al, kökten temizlik yap."
+    },
+    {
+      "number": 19,
+      "name": "Lin / Yaklaşan Bahar",
+      "upper": "Yer",
+      "lower": "Göl",
+      "judgment": "Yer gölün üzerine eğilir, büyüme ve yakınlaşma zamanı gelir. Sekiz ay sonra bir değişim gelecek, hazırlıklı ol.",
+      "wisdom": "Fırsatlar yaklaşırken alçakgönüllü ve şefkatli bir liderlik en çok meyve verir.",
+      "action": "Büyümekte olan bir fırsata veya ilişkiye sabırla ve nazikçe yaklaş."
+    },
+    {
+      "number": 20,
+      "name": "Guan / Derin Seyir ve Tefekkür",
+      "upper": "Rüzgar",
+      "lower": "Yer",
+      "judgment": "Rüzgar yerin üzerinde dolaşıp her şeyi görür. Uzaklaş, gözlemle, önce anla sonra hareket et.",
+      "wisdom": "Bazen en güçlü eylem, sessizce izleyip iç görüyü olgunlaştırmaktır.",
+      "action": "Karar vermeden önce bir adım geri çekilip büyük resmi seyret."
+    },
+    {
+      "number": 21,
+      "name": "Shi He / Engeli Isırıp Geçmek",
+      "upper": "Ateş",
+      "lower": "Gök Gürültüsü",
+      "judgment": "Ateş ve gök gürültüsü birlikte adaleti sağlar. Aradaki engeli kararlılıkla kaldırmak gerekir.",
+      "wisdom": "Adaletsizlik veya engel karşısında sessiz kalmak, çürümeyi büyütür.",
+      "action": "Meseleyi doğrudan, adil ama kararlı biçimde çöz; ertelemekten vazgeç."
+    },
+    {
+      "number": 22,
+      "name": "Bi / Zarafet ve Süsleme",
+      "upper": "Dağ",
+      "lower": "Ateş",
+      "judgment": "Dağın eteğinde ateş parıldar, biçim ve güzellik özün üzerine ışık düşürür. Küçük işlerde güzellik başarı getirir.",
+      "wisdom": "Süs, özün yerini tutmaz; zarafet ancak dürüstlükle birleşince kalıcıdır.",
+      "action": "Sunumuna özen göster ama içeriği asla ihmal etme."
+    },
+    {
+      "number": 23,
+      "name": "Bo / Ayrışma ve Çöküş",
+      "upper": "Dağ",
+      "lower": "Yer",
+      "judgment": "Dağ yerin üzerinde yükselip erozyona uğrar. Çöküş dönemindesin; ilerlemek yerine geri çekilmek bilgeliktir.",
+      "wisdom": "Her çöküş, yeni bir toprağın hazırlığıdır; şimdi direnmek yerine kabul et.",
+      "action": "Kayıpları durdurmaya çalış, yeni girişimleri ertele."
+    },
+    {
+      "number": 24,
+      "name": "Fu / Dönüş ve Yeniden Doğuş",
+      "upper": "Yer",
+      "lower": "Gök Gürültüsü",
+      "judgment": "Gök gürültüsü yerin bağrında uyanır, ışık dönüyor. Yedi gün içinde bir dönüş gelir.",
+      "wisdom": "En karanlık noktadan sonra ilk ışık huzur içinde, kendiliğinden doğar.",
+      "action": "Terk ettiğin doğru bir yola veya alışkanlığa yumuşakça geri dön."
+    },
+    {
+      "number": 25,
+      "name": "Wu Wang / Saf Masumiyet",
+      "upper": "Gök",
+      "lower": "Gök Gürültüsü",
+      "judgment": "Gök gürültüsü göğün altında saf bir güçle titrer. Hesapsız, doğal ve dürüst olan büyük başarı getirir.",
+      "wisdom": "Art niyetle atılan her adım seni yolundan saptırır; kalbinin doğal sesine güven.",
+      "action": "Stratejik hesap yapmadan, içgüdülerine ve dürüstlüğüne güvenerek ilerle."
+    },
+    {
+      "number": 26,
+      "name": "Da Chu / Büyük Biriktirme Gücü",
+      "upper": "Dağ",
+      "lower": "Gök",
+      "judgment": "Dağ göğün enerjisini içinde tutar, büyük bir güç ve bilgelik birikimi oluşur.",
+      "wisdom": "Geçmişin derslerini özümseyerek biriktirdiğin güç, doğru zamanda büyük işler için serbest kalacak.",
+      "action": "Eğitim, birikim ve sabırla kendini güçlendir; sonuç yakında gelecek."
+    },
+    {
+      "number": 27,
+      "name": "Yi / Beslenmenin Çenesi",
+      "upper": "Dağ",
+      "lower": "Gök Gürültüsü",
+      "judgment": "Dağın altında gök gürültüsü titrer; ağzından ne çıktığına ve ne aldığına dikkat et, tıpkı çene gibi.",
+      "wisdom": "Bedenini, zihnini ve ilişkilerini nasıl beslediğin, karakterinin ta kendisidir.",
+      "action": "Sözlerine, yediklerine ve kiminle vakit geçirdiğine özenle dikkat et."
+    },
+    {
+      "number": 28,
+      "name": "Da Guo / Aşırı Yüklenme",
+      "upper": "Göl",
+      "lower": "Rüzgar",
+      "judgment": "Göl rüzgarın köklerini boğuyor; kiriş ortadan çökme noktasında. Olağanüstü bir yük taşınıyor.",
+      "wisdom": "Aşırı yük altında yalnız kalmak yıkımı hızlandırır; destek arayarak dengeyi bul.",
+      "action": "Üzerindeki yükü azalt veya paylaş, tek başına taşımaya devam etme."
+    },
+    {
       "number": 29,
       "name": "Kan / Çifte Uçurum ve Derin Sınav",
       "upper": "Su",
@@ -72,6 +270,312 @@
       "judgment": "Uçurumun kenarında su gibi ak. Samimi ve dürüst kalırsan felaketten sağ çıkarsın.",
       "wisdom": "Korkularla yüzleşme vakti. Tıpkı suyun en derin yarıklardan bile çıkış yolu bulması gibi, esnek ve dürüst ol.",
       "action": "Hileden ve yalandan kesinlikle uzak dur; kalbinin masumiyetine sığın."
+    },
+    {
+      "number": 30,
+      "name": "Li / Çift Alevin Aydınlığı",
+      "upper": "Ateş",
+      "lower": "Ateş",
+      "judgment": "İki ateş üst üste parlar; netlik ve aydınlanma zirvededir. Doğru olana bağlı kalmak ışığı büyütür.",
+      "wisdom": "Ateş kendi başına duramaz, tutunacak bir şeye ihtiyaç duyar; senin ışığın da doğru değerlere bağlı kalarak parlar.",
+      "action": "Netliğini koru, doğru olduğuna inandığın değerlere sıkı sıkı tutun."
+    },
+    {
+      "number": 31,
+      "name": "Xian / Karşılıklı Çekim",
+      "upper": "Göl",
+      "lower": "Dağ",
+      "judgment": "Göl dağın üzerinde durur, karşılıklı bir etkileşim ve çekim doğar. Açık kalp büyük başarı getirir.",
+      "wisdom": "Gerçek bağlantı zorlamayla değil, karşılıklı duyarlılık ve açıklıkla kurulur.",
+      "action": "Kalbini aç, bir ilişkide veya ortaklıkta karşılıklı duyarlılığa alan tanı."
+    },
+    {
+      "number": 32,
+      "name": "Heng / Kalıcılık ve Süreklilik",
+      "upper": "Gök Gürültüsü",
+      "lower": "Rüzgar",
+      "judgment": "Gök gürültüsü ve rüzgar birbirini besleyerek sürekliliği yaratır. Sabit bir yolda ilerlemek başarı getirir.",
+      "wisdom": "Kalıcılık, değişmezlik değil; değişimin içinde tutarlı bir öze sadık kalmaktır.",
+      "action": "Uzun vadeli taahhütlerine sadık kal, ani terk edişlerden kaçın."
+    },
+    {
+      "number": 33,
+      "name": "Dun / Stratejik Geri Çekiliş",
+      "upper": "Gök",
+      "lower": "Dağ",
+      "judgment": "Gök dağın üzerinde uzaklaşıyor. Küçük olan yükseliyor, şerefli bir geri çekiliş zamanı.",
+      "wisdom": "Geri çekilmek yenilgi değildir; doğru zamanda çekilmek gücünü korumanın yoludur.",
+      "action": "Kaybedilen bir mevziden onurunla çekil, enerjini gelecek için sakla."
+    },
+    {
+      "number": 34,
+      "name": "Da Zhuang / Büyük Gücün Doruğu",
+      "upper": "Gök Gürültüsü",
+      "lower": "Gök",
+      "judgment": "Gök gürültüsü göğün üzerinde kükrer; büyük bir güç elinde ama disiplinsiz kullanılırsa zarar verir.",
+      "wisdom": "Gerçek güç, ne zaman durması gerektiğini bilmekle ölçülür.",
+      "action": "Gücünü doğru olanı yapmak için kullan, sadece yapabildiğin için değil."
+    },
+    {
+      "number": 35,
+      "name": "Jin / Doğan Güneşin İlerleyişi",
+      "upper": "Ateş",
+      "lower": "Yer",
+      "judgment": "Güneş yerin üzerinde yükselir; hızlı ve parlak bir ilerleme dönemi başlıyor.",
+      "wisdom": "Işık kendiliğinden yükselir; senin de içten parlamana izin verecek olan alçakgönüllü bir güvendir.",
+      "action": "Fırsatları cesaretle kucakla, tanınma ve ilerleme şu an senin yanında."
+    },
+    {
+      "number": 36,
+      "name": "Ming Yi / Işığın Karardığı Zaman",
+      "upper": "Yer",
+      "lower": "Ateş",
+      "judgment": "Ateş yerin altına gömülür, ışık gizlenir. Zor bir dönemde parlaklığını saklayıp içe dön.",
+      "wisdom": "Karanlık zamanlarda ışığını dışa vurmak seni kırılgan kılar; sabırla içeride koru.",
+      "action": "Şu an değerlerini açıkça sergileme; sessizce dayanıklılığını koru."
+    },
+    {
+      "number": 37,
+      "name": "Jia Ren / Ailenin Ocağı",
+      "upper": "Rüzgar",
+      "lower": "Ateş",
+      "judgment": "Rüzgar ateşten doğar; sıcak ocağın etrafında düzen ve sevgi büyür. Ailenin temeli sağlam olmalı.",
+      "wisdom": "Dışarıdaki her düzenin kökü, evdeki dürüstlük ve sevgidir.",
+      "action": "Yakın çevrenle ve ev/aile düzeninle ilgilen, temeli sağlamlaştır."
+    },
+    {
+      "number": 38,
+      "name": "Kui / Ayrılan Yollar",
+      "upper": "Ateş",
+      "lower": "Göl",
+      "judgment": "Ateş yukarı, göl aşağı akar; yönler ayrışır. Küçük işlerde başarı, büyük ayrılıklarda sabır gerekir.",
+      "wisdom": "Zıtlıklar düşman değildir; doğru bakış açısıyla farklılıklar tamamlayıcı olabilir.",
+      "action": "Anlaşmazlıkta ortak küçük bir zemin ara, büyük uzlaşmayı zorlamadan."
+    },
+    {
+      "number": 39,
+      "name": "Jian / Önündeki Engel",
+      "upper": "Su",
+      "lower": "Dağ",
+      "judgment": "Su dağın üzerinde, geçit zor. İleri gitmek tehlikeli, geri dönüp yardım aramak akıllıca.",
+      "wisdom": "Her engel, yönünü ve yol arkadaşlarını yeniden düşünmen için bir davettir.",
+      "action": "Tek başına zorlamak yerine deneyimli birinden destek iste."
+    },
+    {
+      "number": 40,
+      "name": "Jie / Kurtuluş ve Ferahlama",
+      "upper": "Gök Gürültüsü",
+      "lower": "Su",
+      "judgment": "Gök gürültüsü suyun üzerinde patlar, gerilim çözülür. Geçmişe dönmeden hızla ileri adım at.",
+      "wisdom": "Kurtuluş anında geçmiş suçlamalarla vakit kaybetme; affet ve devam et.",
+      "action": "Uzun süredir çözülmemiş bir gerginliği şimdi bırak, hafifle."
+    },
+    {
+      "number": 41,
+      "name": "Sun / Bilinçli Azaltma",
+      "upper": "Dağ",
+      "lower": "Göl",
+      "judgment": "Göl dağın eteğini besler, kendinden vererek diğerini zenginleştirir. Aşağıdan alıp yukarıya vermek doğrudur.",
+      "wisdom": "Bazen kaybetmek gibi görünen bir azalma, aslında daha derin bir kazanımın tohumudur.",
+      "action": "Gereksiz olanı bilinçle bırak, sadeleş; bu seni zayıflatmaz, güçlendirir."
+    },
+    {
+      "number": 42,
+      "name": "Yi / Bereketli Artış",
+      "upper": "Rüzgar",
+      "lower": "Gök Gürültüsü",
+      "judgment": "Rüzgar ve gök gürültüsü birbirini güçlendirir; büyük bir bereket ve artış zamanı. Harekete geçmek yararlı.",
+      "wisdom": "Yukarıdan aşağıya cömertçe vermek, en büyük artışı yaratır.",
+      "action": "Bu bereketli dönemde büyük bir girişime veya yatırıma cesaretle adım at."
+    },
+    {
+      "number": 43,
+      "name": "Guai / Kararlı Atılım",
+      "upper": "Göl",
+      "lower": "Gök",
+      "judgment": "Göl göğe yükselir, taşma noktasına gelir. Kararlılıkla ama saldırganlık olmadan gerçeği ortaya koy.",
+      "wisdom": "Doğruyu söylemek cesaret ister, ama bunu kibirle değil netlikle yapmalısın.",
+      "action": "Ertelediğin bir gerçeği veya kararı artık açıkça ortaya koy."
+    },
+    {
+      "number": 44,
+      "name": "Gou / Beklenmedik Karşılaşma",
+      "upper": "Gök",
+      "lower": "Rüzgar",
+      "judgment": "Rüzgar göğün altında esiyor, ani ve beklenmedik bir karşılaşma geliyor. Dikkatli ve seçici ol.",
+      "wisdom": "Her karşılaşma davet edilmeli değildir; bazı etkiler sessizce içeri sızabilir.",
+      "action": "Yeni bir kişi veya fırsat karşısında hemen teslim olmadan sınırlarını koru."
+    },
+    {
+      "number": 45,
+      "name": "Cui / Toplanma ve Bir Araya Geliş",
+      "upper": "Göl",
+      "lower": "Yer",
+      "judgment": "Göl yerin üzerinde toplanır, insanlar ortak bir amaç etrafında birleşir. Büyük bir toplanma başarı getirir.",
+      "wisdom": "Birlik gücü, ortak bir niyet ve saygın bir liderlik etrafında şekillenmelidir.",
+      "action": "Bir topluluğu veya ekibi ortak bir hedef etrafında bir araya getir."
+    },
+    {
+      "number": 46,
+      "name": "Sheng / Yükselen Filiz",
+      "upper": "Yer",
+      "lower": "Rüzgar",
+      "judgment": "Rüzgar yerin içinden nazikçe yükselir, tıpkı toprağı yaran bir filiz gibi. Adım adım yükseliş kesindir.",
+      "wisdom": "Büyük ağaçlar bir gecede yükselmez; sabırlı ve istikrarlı çaba en kalıcı yükselişi getirir.",
+      "action": "Küçük, istikrarlı adımlarla hedefine doğru sabırla tırman."
+    },
+    {
+      "number": 47,
+      "name": "Kun / Tükenmişlik Sınavı",
+      "upper": "Göl",
+      "lower": "Su",
+      "judgment": "Göldeki su çekilmiş, kuraklık ve sıkışmışlık hissi var. Zor zamanda bile içsel bütünlüğünü koru.",
+      "wisdom": "Dışsal kısıtlamalar seni tüketse de, iç dünyandaki özgürlük asla elinden alınamaz.",
+      "action": "Şikayet yerine sınırlı imkanlarla en iyisini yapmaya odaklan, sabret."
+    },
+    {
+      "number": 48,
+      "name": "Jing / Tükenmeyen Kuyu",
+      "upper": "Su",
+      "lower": "Rüzgar",
+      "judgment": "Su rüzgarın altında, derin kuyu şehirler değişse de yerinde durur. Kaynağın temiz ve erişilebilir olmalı.",
+      "wisdom": "Gerçek değer, yer değiştirmeyen ama herkese hizmet eden derin bir kaynaktan gelir.",
+      "action": "Temel kaynaklarına (bilgi, ilişkiler, değerler) bak, ihmal edilmiş olanı temizle."
+    },
+    {
+      "number": 49,
+      "name": "Ge / Köklü Dönüşüm",
+      "upper": "Göl",
+      "lower": "Ateş",
+      "judgment": "Göl ateşi söndürür, ateş gölü buharlaştırır; köklü bir değişim kaçınılmaz. Doğru zamanda güven kazanır.",
+      "wisdom": "Değişim ancak olgunlaştığında ve doğru zamanda gerçekleşirse kalıcı olur.",
+      "action": "Artık işlevini yitirmiş bir yapıyı veya alışkanlığı kökten değiştirmeye hazırlan."
+    },
+    {
+      "number": 50,
+      "name": "Ding / Dönüştüren Kazan",
+      "upper": "Ateş",
+      "lower": "Rüzgar",
+      "judgment": "Ateş rüzgarla beslenir, ham maddeyi besleyici bir öze dönüştürür. Büyük iyi şans ve başarı.",
+      "wisdom": "Ham deneyim, doğru ateşte pişirildiğinde bilgeliğe ve besine dönüşür.",
+      "action": "Deneyimlerini olgunlaştır ve başkalarını besleyecek bir bilgeliğe dönüştür."
+    },
+    {
+      "number": 51,
+      "name": "Zhen / Sarsıcı Uyanış",
+      "upper": "Gök Gürültüsü",
+      "lower": "Gök Gürültüsü",
+      "judgment": "Çifte gök gürültüsü sarsar, korku önce gelir sonra gülüş. Şok anında bile iç disiplinini koru.",
+      "wisdom": "Ani sarsıntılar seni köklerinden koparmak için değil, uyanık kalman için gelir.",
+      "action": "Beklenmedik bir haber veya olay karşısında paniklemeden merkezinde kal."
+    },
+    {
+      "number": 52,
+      "name": "Gen / Dağın Sarsılmaz Sükuneti",
+      "upper": "Dağ",
+      "lower": "Dağ",
+      "judgment": "Çifte dağ, mutlak durgunluk ve sükunet. Sırtını dön, düşünceyi bedenden ayır, huzur bul.",
+      "wisdom": "Gerçek durgunluk kaçış değildir; zihni doğru anda susturabilmenin ustalığıdır.",
+      "action": "Meditasyon veya sessiz bir mola ile zihnini sakinleştir, tepkisel davranma."
+    },
+    {
+      "number": 53,
+      "name": "Jian / Yavaş ve Sağlam Gelişim",
+      "upper": "Rüzgar",
+      "lower": "Dağ",
+      "judgment": "Rüzgar dağın üzerinde nazikçe eser; kaz gibi adım adım, doğal bir sırayla ilerleyiş büyük başarı getirir.",
+      "wisdom": "Aceleyle atlanan adımlar temeli zayıflatır; doğal bir sırayla gelişen her şey kalıcıdır.",
+      "action": "Hedefine adım adım, doğru sırayla ve sabırla ilerle."
+    },
+    {
+      "number": 54,
+      "name": "Gui Mei / Tabi Olan Konum",
+      "upper": "Gök Gürültüsü",
+      "lower": "Göl",
+      "judgment": "Gök gürültüsü gölü coşturur, ama konum ikincildir. Dürtüsel adımlar yerine doğru zamanlamayı bekle.",
+      "wisdom": "İkincil bir konumda olmak, değersiz olmak demek değildir; bilgece davranmak her konumda mümkündür.",
+      "action": "Adil olmayan bir konumda bile dürüstlüğünü ve sabrını koru, aceleyle bağlanma."
+    },
+    {
+      "number": 55,
+      "name": "Feng / Doruk Noktasındaki Bolluk",
+      "upper": "Gök Gürültüsü",
+      "lower": "Ateş",
+      "judgment": "Gök gürültüsü ve ateş birlikte zirvedeki bolluğu yaratır. Öğle güneşi gibi, bu an kısa sürebilir, değerini bil.",
+      "wisdom": "Bolluğun zirvesinde bile, güneşin batacağını unutmadan alçakgönüllü kal.",
+      "action": "Şu anki bereketi kutla ama geleceğe de hazırlıklı ol, savurganlıktan kaçın."
+    },
+    {
+      "number": 56,
+      "name": "Lu / Yolcunun Öğrenişi",
+      "upper": "Ateş",
+      "lower": "Dağ",
+      "judgment": "Ateş dağın üzerinde hareket eder, kalıcı olmayan bir yolculuk. Küçük işlerde başarı, temkinli ol.",
+      "wisdom": "Yabancı bir topraktaki yolcu gibi, alçakgönüllülük ve uyum sağlama en büyük koruyucundur.",
+      "action": "Tanıdık olmayan bir ortamda dikkatli, saygılı ve esnek davran."
+    },
+    {
+      "number": 57,
+      "name": "Xun / Nüfuz Eden Rüzgar",
+      "upper": "Rüzgar",
+      "lower": "Rüzgar",
+      "judgment": "Çifte rüzgar, her çatlağa nazikçe nüfuz eder. Küçük ama ısrarlı adımlar büyük etkiler yaratır.",
+      "wisdom": "Zorla değil, yumuşak ve sürekli bir etkiyle en dirençli engeller bile aşılır.",
+      "action": "Doğrudan değil, nazik ve sürekli bir ikna yoluyla hedefine ilerle."
+    },
+    {
+      "number": 58,
+      "name": "Dui / Paylaşılan Neşe",
+      "upper": "Göl",
+      "lower": "Göl",
+      "judgment": "Çifte göl birbirini besler; paylaşılan neşe ve açık sözlü iletişim başarı getirir.",
+      "wisdom": "Gerçek neşe, içten paylaşıldığında çoğalır; yapmacık gülümseme boşluğu gizler.",
+      "action": "Sevdiklerinle içten, neşeli bir diyalog kur; samimiyeti önceliklendir."
+    },
+    {
+      "number": 59,
+      "name": "Huan / Dağılan Buzların Çözülüşü",
+      "upper": "Rüzgar",
+      "lower": "Su",
+      "judgment": "Rüzgar suyun üzerinde eser, donmuş katılıklar çözülür. Ayrılıkları iyileştirmenin zamanı.",
+      "wisdom": "Bazen dağılmak, yeni ve daha sağlıklı bir bütünlüğe giden ilk adımdır.",
+      "action": "Küskünlükleri ve katı tutumları yumuşat, bağları yeniden kur."
+    },
+    {
+      "number": 60,
+      "name": "Jie / Sağlıklı Sınır",
+      "upper": "Su",
+      "lower": "Göl",
+      "judgment": "Su gölün üzerinde birikir, taşmadan önce sınır gerekir. Ölçülü sınırlar acı vermeden başarı getirir.",
+      "wisdom": "Sınırsızlık özgürlük değil kaostur; doğru sınırlar seni korur ve güçlendirir.",
+      "action": "Kendine veya bir ilişkide net, adil bir sınır koy."
+    },
+    {
+      "number": 61,
+      "name": "Zhong Fu / İçsel Doğruluk",
+      "upper": "Rüzgar",
+      "lower": "Göl",
+      "judgment": "Rüzgar gölün üzerinde eser, en derindeki gerçeği titretir. İçten bir güven, en zor engelleri bile aşar.",
+      "wisdom": "Dışsal ikna değil, içten gelen samimiyet en derin güveni inşa eder.",
+      "action": "Niyetini sözlerinle değil, içten davranışlarınla kanıtla."
+    },
+    {
+      "number": 62,
+      "name": "Xiao Guo / Küçük Adımların Aşkınlığı",
+      "upper": "Gök Gürültüsü",
+      "lower": "Dağ",
+      "judgment": "Gök gürültüsü dağın üzerinde titrer; büyük hedefler yerine küçük, dikkatli adımlar başarı getirir.",
+      "wisdom": "Şu an büyük iddialar zamanı değil; alçakgönüllü ve titiz küçük hareketler en güvenlisi.",
+      "action": "Büyük planlar yerine küçük, somut ve dikkatli adımlarla ilerle."
+    },
+    {
+      "number": 63,
+      "name": "Ji Ji / Tamamlanmışlığın Ustalığı",
+      "upper": "Su",
+      "lower": "Ateş",
+      "judgment": "Su ateşin üzerinde, denge kusursuz kurulmuş. Ama her tamamlanma, yeni bir dikkat gerektirir.",
+      "wisdom": "Zirvede gevşemek, düşüşün ilk adımıdır; başarıyı sürdürmek başarmaktan daha zordur.",
+      "action": "Kazandığın dengeyi korumak için küçük detayları ihmal etme."
     },
     {
       "number": 64,

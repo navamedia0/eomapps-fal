@@ -27,23 +27,15 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Headers': 'Content-Type, X-App-Secret',
 };
 
-// Per-reading-type cooldown, in seconds — one client (by IP) can only start a
-// given reading type this often. Mirrors the "sırada bekleme" durations shown
-// client-side, and is the real enforcement point since the client-side timer
-// alone can't protect the shared Gemini quota once many different users are
-// concurrent.
-const READING_COOLDOWN_SECONDS = {
-  kahve: 5 * 60,
-  el: 5 * 60,
-  yuz: 5 * 60,
-  tarot3: 1 * 60,
-  tarot5: 2 * 60,
-  tarot7: 2 * 60,
-  tarot10: 3 * 60,
-  katina: 1 * 60,
-  sesli: 3 * 60,
-  solitaire: 1 * 60,
-};
+// Real congestion circuit breaker — replaces the old flat per-reading-type
+// cooldown (which fired unconditionally regardless of actual load, even for
+// a single solo user). This only trips when the upstream Gemini API has
+// genuinely rate-limited us (429) several times in a short window, i.e. the
+// shared quota is actually under pressure right now. Paid (coin-spent)
+// requests always bypass it — see checkCongestion below.
+const CONGESTION_WINDOW_SECONDS = 60;
+const CONGESTION_FAILURE_THRESHOLD = 3; // 3+ real upstream 429s within the window = genuinely congested
+const CONGESTION_HOLD_SECONDS = 30; // how long the "busy" state holds once tripped
 
 // General burst/abuse protection, independent of reading type — catches a
 // single source hammering the proxy regardless of what it claims to be
@@ -135,25 +127,40 @@ async function enforceRateLimits(env, request, payload) {
   return null;
 }
 
-async function enforceReadingCooldown(env, request, readingType) {
-  if (!env.RATE_LIMIT_KV || !readingType) return null;
-  const cooldownSeconds = READING_COOLDOWN_SECONDS[readingType];
-  if (!cooldownSeconds) return null;
-
-  const ip = getClientIp(request);
-  const key = `cooldown:${readingType}:${ip}`;
-  const existing = await env.RATE_LIMIT_KV.get(key);
-  if (existing) {
-    const remaining = Math.max(1, cooldownSeconds - Math.floor((Date.now() - parseInt(existing, 10)) / 1000));
-    return jsonResponse(
-      { error: 'Bu fal türü için kısa süre önce bir istek gönderildi. Lütfen sırasının dolmasını bekle.', retryAfterSeconds: remaining },
-      429,
-      { 'Retry-After': String(remaining) },
-    );
+// Called whenever the Gemini relay actually gets rate-limited upstream.
+// Tallies real failures in a rolling window; once enough pile up in a short
+// span, flips on the "congestion:active" flag that checkCongestion reads.
+async function recordUpstreamRateLimit(env) {
+  if (!env.RATE_LIMIT_KV) return;
+  const bucket = Math.floor(Date.now() / (CONGESTION_WINDOW_SECONDS * 1000));
+  const key = `congestion:failures:${bucket}`;
+  const raw = await env.RATE_LIMIT_KV.get(key);
+  const count = raw ? parseInt(raw, 10) : 0;
+  await env.RATE_LIMIT_KV.put(key, String(count + 1), { expirationTtl: CONGESTION_WINDOW_SECONDS * 2 });
+  if (count + 1 >= CONGESTION_FAILURE_THRESHOLD) {
+    await env.RATE_LIMIT_KV.put('congestion:active', String(Date.now()), { expirationTtl: CONGESTION_HOLD_SECONDS });
   }
+}
 
-  await env.RATE_LIMIT_KV.put(key, String(Date.now()), { expirationTtl: cooldownSeconds });
-  return null;
+// Real congestion gate — only blocks when recordUpstreamRateLimit has
+// actually tripped the breaker (genuine, evidence-based signal), and never
+// blocks a request the user already paid coins for.
+async function checkCongestion(env, isPaid) {
+  if (!env.RATE_LIMIT_KV || isPaid) return null;
+  const active = await env.RATE_LIMIT_KV.get('congestion:active');
+  if (!active) return null;
+
+  const elapsed = Math.floor((Date.now() - parseInt(active, 10)) / 1000);
+  const remaining = Math.max(1, CONGESTION_HOLD_SECONDS - elapsed);
+  return jsonResponse(
+    {
+      error: 'Sistem şu anda gerçekten yoğun, isteğin kısa bir süre sıraya alındı. Birazdan tekrar dene.',
+      retryAfterSeconds: remaining,
+      congestion: true,
+    },
+    429,
+    { 'Retry-After': String(remaining) },
+  );
 }
 
 async function relayProvider(env, body) {
@@ -168,6 +175,9 @@ async function relayProvider(env, body) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    if (upstream.status === 429) {
+      await recordUpstreamRateLimit(env);
+    }
     const text = await upstream.text();
     return new Response(text, {
       status: upstream.status,
@@ -539,8 +549,8 @@ export default {
     const burstBlock = await enforceRateLimits(env, request, body.payload);
     if (burstBlock) return burstBlock;
 
-    const cooldownBlock = await enforceReadingCooldown(env, request, body.readingType);
-    if (cooldownBlock) return cooldownBlock;
+    const congestionBlock = await checkCongestion(env, body.isPaid === true);
+    if (congestionBlock) return congestionBlock;
 
     return relayProvider(env, body);
   },

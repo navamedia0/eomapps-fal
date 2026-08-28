@@ -5,6 +5,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import { pickRandomKatinaCards, type KatinaCard } from '@/services/katina';
 import { interpretSolitaireSpread } from '@/services/readings-ai';
+import { ApiRequestError } from '@/services/http';
 import { getCredits, spendCredit } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
@@ -38,7 +39,7 @@ export default function SolitaireScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [fallbackCoins, setFallbackCoins] = useState(0);
   const pulse = useRef(new Animated.Value(0)).current;
-  const { remaining: cooldownRemaining, notifyStarted } = useReadingCooldown('solitaire');
+  const { remaining: cooldownRemaining, notifyCongested } = useReadingCooldown('solitaire');
 
   const reveal = useCallback(async (payWithCoins = false) => {
     if (cooldownRemaining > 0) return;
@@ -61,18 +62,20 @@ export default function SolitaireScreen({ navigation }: Props) {
         }
       }
       const drawn = pickRandomKatinaCards(CARD_COUNT);
-      notifyStarted();
-      const interpretation = await interpretSolitaireSpread(drawn);
+      const interpretation = await interpretSolitaireSpread(drawn, payWithCoins);
       if (!payWithCoins) await spendCredit();
       setCards(drawn);
       setResult(interpretation);
       setPhase('result');
       await saveReadingHistory({ type: 'solitaire', title: 'Solitaire Falı', result: interpretation });
     } catch (err) {
+      if (err instanceof ApiRequestError && err.congestion) {
+        notifyCongested(err.retryAfterSeconds ?? 30);
+      }
       setError(err instanceof Error ? err.message : 'Kartlar açılırken bir sorun oluştu.');
       setPhase('error');
     }
-  }, [cooldownRemaining, notifyStarted]);
+  }, [cooldownRemaining, notifyCongested]);
 
   const reset = useCallback(() => {
     setPhase('wish');

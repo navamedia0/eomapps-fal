@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Mistik Rehber",
-    "slug": "mistik-rehber",
+    "slug": "eomapps",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -12,12 +12,19 @@
       "backgroundColor": "#0B0A1F"
     },
     "android": {
+      "package": "com.mistikrehber.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#0B0A1F"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "plugins": [
       [
         "expo-image-picker",
@@ -37,7 +44,14 @@
         {
           "color": "#F2C879"
         }
-      ]
-    ]
+      ],
+      "expo-asset"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "dde15614-3cf8-411e-a730-eddec1601cde"
+      }
+    },
+    "owner": "eomappss-team"
   }
 }

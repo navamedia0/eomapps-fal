@@ -109,13 +109,6 @@ export default function HomeScreen({ navigation }: Props) {
           onPress: () => navigation.navigate('Katina'),
         },
         {
-          key: 'lead',
-          title: 'Kurşun Dökme Falı',
-          subtitle: 'Nazar ve ağırlıkları arındır',
-          icon: <MaterialCommunityIcons name="water-opacity" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('KursunDokme'),
-        },
-        {
           key: 'rune',
           title: 'Nordik Rün Falı',
           subtitle: 'Vikinglerin kutsal taşları',

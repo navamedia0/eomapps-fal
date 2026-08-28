@@ -191,35 +191,42 @@ Raporunu TAM OLARAK şu 4 ana başlıkla yapılandır:
 "3. AŞK, RUH EŞİ KANALI VE İLİŞKİ DİNAMİKLERİ:"
 "4. PARA KANALI, ZENGİNLİK KAPILARI VE YAŞAM AMACI:"`,
 
-  leadReadingStandard: (shapesSummary: string) =>
-    `Sen Anadolu'nun kadim kurşun dökme ve nazar arınma geleneğine hakim usta bir şifacısın. Suya dökülen kurşunun aldığı şu şekilleri Türkçe, ferahlatıcı, sıcak ve samimi bir dille yorumla:
-${shapesSummary}
-120-160 kelimelik, nazarın nasıl kırıldığını ve iç ferahlığını müjdeleyen bir yorum sun.`,
-
-  leadReadingDetailed: (shapesSummary: string) =>
-    `Sen Anadolu'nun kadim kurşun dökme, ocaklı şifa ve nazar bozma geleneğine hakim bilge bir şifacısın. Kurşunun suya dökülüşünü ve oluşan şekilleri son derece zengin, edebi ve katman katman analiz et.
-${shapesSummary}
-
-Raporunu TAM OLARAK şu 4 ana başlıkla yapılandır:
-"1. NAZAR VE NEGATİF ENERJİ TABLOSU (ÇAPAKLAR VE DİKENLER):"
-"2. KISMET, AÇILAN KİLİTLER VE BAĞLARIN ÇÖZÜLMESİ:"
-"3. HANE HUZURU, KORUMA KALKANI VE SAÇILAN BEREKET:"
-"4. ŞİFA REHBERLİĞİ VE ARINMA MÜHRÜ:"`,
-
   runeReadingStandard: (runesSummary: string) =>
     `Sen Nordik mitolojisi ve Elder Futhark rün ilmine hakim bilge bir rün ustasısın. Çekilen şu rünleri Türkçe, bilgece, net ve ilham verici bir dille yorumla:
 ${runesSummary}
 120-160 kelimelik, günün ve sorunun özünü veren samimi bir kehanet sun.`,
 
-  runeReadingDetailed: (runesSummary: string) =>
-    `Sen kadim Viking ve Kelt rün üstadısın. Nornların (Kader Tanrıçaları: Urd/Geçmiş, Verdandi/Şimdi, Skuld/Gelecek) rehberliğinde çekilen rünleri derinlemesine analiz et.
-${runesSummary}
+  runeReadingDetailed: (runesSummary: string, spreadType: 'single' | 'norn' | 'cross' = 'norn') => {
+    const intro = `Sen kadim Viking ve Kelt rün üstadısın. Çekilen rünleri derinlemesine, katman katman analiz et.\n${runesSummary}\n\nRaporunu TAM OLARAK şu 4 ana başlıkla yapılandır:\n`;
 
-Raporunu TAM OLARAK şu 4 ana başlıkla yapılandır:
-"1. URD'UN FISILTISI (GEÇMİŞTEN GELEN KÖKLER VE DERSLER):"
+    if (spreadType === 'single') {
+      return (
+        intro +
+        `"1. RÜNÜN ÖZÜ VE KADİM KÖKENİ:"
+"2. GÜNÜN FIRSATI VE YÜKSELEN ENERJİ:"
+"3. GÖLGE YÖNÜ VE DİKKAT EDİLMESİ GEREKEN NOKTA:"
+"4. ODİN'İN GÜNLÜK REHBERLİĞİ VE EYLEM ÇAĞRISI:"`
+      );
+    }
+
+    if (spreadType === 'cross') {
+      return (
+        intro +
+        `"1. MERKEZ VE YÜZEYDEKİ TABLO (DURUMUN ÖZÜ VE GÖRÜNEN ETKEN):"
+"2. DERİNLERDEKİ AKIŞ (BİLİNÇALTI VE GEÇMİŞTEN GELEN KÖK):"
+"3. OLASI YOL VE SONUÇ HARİTASI:"
+"4. ODİN'İN NİHAİ REHBERLİĞİ VE EYLEM ÇAĞRISI:"`
+      );
+    }
+
+    return (
+      intro +
+      `"1. URD'UN FISILTISI (GEÇMİŞTEN GELEN KÖKLER VE DERSLER):"
 "2. VERDANDI'NİN AYNASI (ŞİMDİKİ DURUM VE MÜCADELE ATEŞİ):"
 "3. SKULD'UN KEHANETİ (GELECEK AKIŞI VE DÖNÜM NOKTALARI):"
-"4. ODİN'İN BİLGELİĞİ VE EYLEM REHBERİ:"`,
+"4. ODİN'İN BİLGELİĞİ VE EYLEM REHBERİ:"`
+    );
+  },
 
   ichingReadingStandard: (hexagramSummary: string) =>
     `Sen Taoist Doğu bilgeliği ve kadim Çin I Ching (Değişimler Kitabı) üstadısın. Atılan sikkelerle ortaya çıkan şu heksagramı Türkçe, derin, huzurlu ve bilgece yorumla:

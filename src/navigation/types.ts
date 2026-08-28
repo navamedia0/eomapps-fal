@@ -15,7 +15,6 @@ export type RootStackParamList = {
   ProfileChat: undefined;
   ImageReading: { kind: 'coffee' | 'palm' | 'face' | 'tea' };
   MatrixOfDestiny: undefined;
-  KursunDokme: undefined;
   RuneReading: undefined;
   IChingReading: undefined;
   BaklaReading: undefined;

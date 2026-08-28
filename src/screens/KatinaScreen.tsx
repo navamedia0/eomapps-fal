@@ -5,6 +5,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import { pickRandomKatinaCards, type KatinaCard } from '@/services/katina';
 import { interpretKatinaSpread } from '@/services/readings-ai';
+import { ApiRequestError } from '@/services/http';
 import { getCredits, spendCredit } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
@@ -48,7 +49,7 @@ export default function KatinaScreen({ navigation }: Props) {
   const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
 
   const pulse = useRef(new Animated.Value(0)).current;
-  const { remaining: cooldownRemaining, checked: cooldownChecked, notifyStarted } = useReadingCooldown('katina');
+  const { remaining: cooldownRemaining, checked: cooldownChecked, notifyCongested } = useReadingCooldown('katina');
 
   const startReading = useCallback(
     async (payWithCoins = false) => {
@@ -78,9 +79,8 @@ export default function KatinaScreen({ navigation }: Props) {
 
         const drawn = pickRandomKatinaCards(3);
         setCards(drawn);
-        notifyStarted();
 
-        const interpretation = await interpretKatinaSpread(drawn, POSITIONS);
+        const interpretation = await interpretKatinaSpread(drawn, POSITIONS, payWithCoins);
 
         if (!payWithCoins) {
           await spendCredit();
@@ -90,11 +90,14 @@ export default function KatinaScreen({ navigation }: Props) {
         setPhase('result');
         await saveReadingHistory({ type: 'katina', title: 'Katina Falı', result: interpretation });
       } catch (err) {
+        if (err instanceof ApiRequestError && err.congestion) {
+          notifyCongested(err.retryAfterSeconds ?? 30);
+        }
         setError(err instanceof Error ? err.message : 'Kartlar okunurken bir sorun oluştu.');
         setPhase('error');
       }
     },
-    [cooldownRemaining, notifyStarted],
+    [cooldownRemaining, notifyCongested],
   );
 
   const resetToReady = useCallback(() => {

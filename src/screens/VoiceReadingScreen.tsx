@@ -7,6 +7,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import { readAudioAsBase64 } from '@/utils/audioBase64';
 import { interpretVoiceReading } from '@/services/readings-ai';
+import { ApiRequestError } from '@/services/http';
 import { getCredits, spendCredit } from '@/services/credits';
 import { getCoins, spendCoins } from '@/services/coins';
 import { VOICE_READING_COIN_COST } from '@/constants/economy';
@@ -39,7 +40,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
   const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const [lastAudioUri, setLastAudioUri] = useState<string | null>(null);
   const pulse = useRef(new Animated.Value(0)).current;
-  const { remaining: cooldownRemaining, notifyStarted } = useReadingCooldown('sesli');
+  const { remaining: cooldownRemaining, notifyCongested } = useReadingCooldown('sesli');
 
   useEffect(() => {
     if (!isRecording) return;
@@ -125,17 +126,19 @@ export default function VoiceReadingScreen({ navigation }: Props) {
         }
       }
       const base64 = await readAudioAsBase64(uri);
-      notifyStarted();
-      const interpretation = await interpretVoiceReading(base64, AUDIO_MIME_TYPE);
+      const interpretation = await interpretVoiceReading(base64, AUDIO_MIME_TYPE, payWithCoins);
       if (!payWithCoins) await spendCredit();
       setResult(interpretation);
       await saveReadingHistory({ type: 'sesli', title: 'Sesli Fal', result: interpretation });
     } catch (err) {
+      if (err instanceof ApiRequestError && err.congestion) {
+        notifyCongested(err.retryAfterSeconds ?? 30);
+      }
       setError(err instanceof Error ? err.message : 'Sesin yorumlanırken bir sorun oluştu.');
     } finally {
       setLoading(false);
     }
-  }, [notifyStarted]);
+  }, [notifyCongested]);
 
   const reset = useCallback(() => {
     setResult(null);
