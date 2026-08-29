@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_MID, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = Math.min(width * 0.85, 340);
@@ -43,7 +43,7 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
           <View style={styles.drawerHeader}>
             <View style={styles.drawerTitleRow}>
               <MaterialCommunityIcons name="book-open-page-variant" size={24} color={GOLD} />
-              <Text style={styles.drawerTitle}>Sözler & Bilgi Köşkü</Text>
+              <Text style={styles.drawerTitle}>Mistik Menü</Text>
             </View>
             <Pressable onPress={onClose} style={styles.closeBtn} hitSlop={10}>
               <Ionicons name="close" size={22} color={GOLD} />
@@ -51,139 +51,130 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.drawerContent}>
-            {/* BÖLÜM 1: SÖZLER KÖŞKÜ */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Ionicons name="chatbubbles-outline" size={16} color={GOLD} />
-                <Text style={styles.sectionTitle}>SÖZLER KÖŞKÜ</Text>
+            {/* 1. SÖZLER KÖŞESİ */}
+            <Pressable
+              onPress={() => handleNavigate('SozlerKosku', { initialTab: 'sozler' })}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(242, 200, 121, 0.15)' }]}>
+                <MaterialCommunityIcons name="feather" size={20} color={GOLD} />
               </View>
-
-              <Pressable
-                onPress={() => handleNavigate('SozlerKosku')}
-                style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
-              >
-                <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(242, 200, 121, 0.15)' }]}>
-                  <MaterialCommunityIcons name="feather" size={20} color={GOLD} />
-                </View>
-                <View style={styles.menuTextWrap}>
-                  <Text style={styles.menuItemTitle}>Sözler Köşesi</Text>
-                  <Text style={styles.menuItemDesc}>Günün mistik sözü ve 365 günlük havuz</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={GOLD} />
-              </Pressable>
-
-              <Pressable
-                onPress={() => handleNavigate('SozlerKosku')}
-                style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
-              >
-                <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
-                  <Ionicons name="flame" size={20} color="#EF4444" />
-                </View>
-                <View style={styles.menuTextWrap}>
-                  <Text style={styles.menuItemTitle}>Haftanın En Sevilenleri</Text>
-                  <Text style={styles.menuItemDesc}>En çok beğenilen ve paylaşılan sözler</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={GOLD} />
-              </Pressable>
-            </View>
-
-            {/* BÖLÜM 2: BİLGİ KÖŞKÜ VE KART BİLGİLERİ */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Ionicons name="library-outline" size={16} color={GOLD} />
-                <Text style={styles.sectionTitle}>KADİM BİLGİ VE KART REHBERİ</Text>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>Sözler Köşesi</Text>
+                <Text style={styles.menuItemDesc}>Günün mistik sözü ve 365 günlük akış</Text>
               </View>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+            </Pressable>
 
-              {/* Tarot Kartları */}
-              <Pressable
-                onPress={() => handleNavigate('KartAnlamlari', { deck: 'tarot' })}
-                style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
-              >
-                <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.15)' }]}>
-                  <MaterialCommunityIcons name="cards-outline" size={20} color="#C084FC" />
-                </View>
-                <View style={styles.menuTextWrap}>
-                  <Text style={styles.menuItemTitle}>Tarot Kartları ve Anlamları</Text>
-                  <Text style={styles.menuItemDesc}>78 kartlık Rider-Waite tam destesi</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={GOLD} />
-              </Pressable>
+            {/* 2. BİLGİ KÖŞESİ */}
+            <Pressable
+              onPress={() => handleNavigate('SozlerKosku', { initialTab: 'bilgi' })}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.15)' }]}>
+                <Ionicons name="library-outline" size={20} color="#C084FC" />
+              </View>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>Bilgi Köşesi</Text>
+                <Text style={styles.menuItemDesc}>7.500 kadim bilgi kartı ve arama</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+            </Pressable>
 
-              {/* İskambil Kartları */}
-              <Pressable
-                onPress={() => handleNavigate('KartAnlamlari', { deck: 'iskambil' })}
-                style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
-              >
-                <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-                  <MaterialCommunityIcons name="cards-playing-outline" size={20} color="#60A5FA" />
-                </View>
-                <View style={styles.menuTextWrap}>
-                  <Text style={styles.menuItemTitle}>İskambil Kartları Dili</Text>
-                  <Text style={styles.menuItemDesc}>52 kartın kadim fal anlamları</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={GOLD} />
-              </Pressable>
+            {/* 3. HAFTANIN EN SEVİLENLERİ */}
+            <Pressable
+              onPress={() => handleNavigate('SozlerKosku', { initialTab: 'haftaninSevilenleri' })}
+              style={({ pressed }) => [styles.menuItem, styles.highlightMenuItem, pressed && styles.menuItemPressed]}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(239, 68, 68, 0.18)' }]}>
+                <Ionicons name="flame" size={20} color="#EF4444" />
+              </View>
+              <View style={styles.menuTextWrap}>
+                <Text style={[styles.menuItemTitle, { color: '#FCA5A5' }]}>Haftanın En Sevilenleri</Text>
+                <Text style={styles.menuItemDesc}>En çok sevilen sözler ve bilgi kartları</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+            </Pressable>
 
-              {/* Katina Kartları */}
-              <Pressable
-                onPress={() => handleNavigate('KartAnlamlari', { deck: 'katina' })}
-                style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
-              >
-                <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(236, 72, 153, 0.15)' }]}>
-                  <MaterialCommunityIcons name="cards-club-outline" size={20} color="#F472B6" />
-                </View>
-                <View style={styles.menuTextWrap}>
-                  <Text style={styles.menuItemTitle}>Katina Falı Deste Rehberi</Text>
-                  <Text style={styles.menuItemDesc}>İskambil kökenli mistik semboller</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={GOLD} />
-              </Pressable>
+            <View style={styles.divider} />
 
-              {/* Burçların Kökeni ve 4 Element */}
-              <Pressable
-                onPress={() => handleNavigate('BilgiMakale', { topic: 'burc_kokeni' })}
-                style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
-              >
-                <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
-                  <MaterialCommunityIcons name="zodiac-leo" size={20} color="#FBBF24" />
-                </View>
-                <View style={styles.menuTextWrap}>
-                  <Text style={styles.menuItemTitle}>Burçların Kökeni & 4 Element</Text>
-                  <Text style={styles.menuItemDesc}>Zodyak tarihi ve element döngüsü</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={GOLD} />
-              </Pressable>
+            {/* KADİM BİLGİ KARTLARI & REHBERLER */}
+            <Text style={styles.sectionHeading}>KADİM KART & REHBER DETAYLARI</Text>
 
-              {/* Kahve Falı Tarihi */}
-              <Pressable
-                onPress={() => handleNavigate('BilgiMakale', { topic: 'kahve_tarihi' })}
-                style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
-              >
-                <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(180, 83, 9, 0.15)' }]}>
-                  <MaterialCommunityIcons name="coffee-outline" size={20} color="#F59E0B" />
-                </View>
-                <View style={styles.menuTextWrap}>
-                  <Text style={styles.menuItemTitle}>Kahve Telvesinin Tarihi</Text>
-                  <Text style={styles.menuItemDesc}>Osmanlı'dan günümüze fal geleneği</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={GOLD} />
-              </Pressable>
+            {/* Tarot Kartları */}
+            <Pressable
+              onPress={() => handleNavigate('KartAnlamlari', { deck: 'tarot' })}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.15)' }]}>
+                <MaterialCommunityIcons name="cards-outline" size={20} color="#C084FC" />
+              </View>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>Tarot Kartları ve Anlamları</Text>
+                <Text style={styles.menuItemDesc}>78 kartlık Rider-Waite destesi</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+            </Pressable>
 
-              {/* 7.500 Bilgi Kartı Ansiklopedisi */}
-              <Pressable
-                onPress={() => handleNavigate('SozlerKosku')}
-                style={({ pressed }) => [styles.menuItem, styles.highlightMenuItem, pressed && styles.menuItemPressed]}
-              >
-                <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(242, 200, 121, 0.25)' }]}>
-                  <Ionicons name="search-outline" size={20} color={GOLD} />
-                </View>
-                <View style={styles.menuTextWrap}>
-                  <Text style={[styles.menuItemTitle, { color: GOLD }]}>7.500 Kadim Bilgi Kartı</Text>
-                  <Text style={styles.menuItemDesc}>Konulara göre arama ve bilgi kartları</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={GOLD} />
-              </Pressable>
-            </View>
+            {/* İskambil Kartları */}
+            <Pressable
+              onPress={() => handleNavigate('KartAnlamlari', { deck: 'iskambil' })}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
+                <MaterialCommunityIcons name="cards-playing-outline" size={20} color="#60A5FA" />
+              </View>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>İskambil Kartları Dili</Text>
+                <Text style={styles.menuItemDesc}>52 kartın kadim fal anlamları</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+            </Pressable>
+
+            {/* Katina Kartları */}
+            <Pressable
+              onPress={() => handleNavigate('KartAnlamlari', { deck: 'katina' })}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(236, 72, 153, 0.15)' }]}>
+                <MaterialCommunityIcons name="cards-club-outline" size={20} color="#F472B6" />
+              </View>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>Katina Falı Deste Rehberi</Text>
+                <Text style={styles.menuItemDesc}>İskambil kökenli mistik semboller</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+            </Pressable>
+
+            {/* Burçların Kökeni ve 4 Element */}
+            <Pressable
+              onPress={() => handleNavigate('BilgiMakale', { topic: 'burc_kokeni' })}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
+                <MaterialCommunityIcons name="zodiac-leo" size={20} color="#FBBF24" />
+              </View>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>Burçların Kökeni & 4 Element</Text>
+                <Text style={styles.menuItemDesc}>Zodyak tarihi ve element döngüsü</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+            </Pressable>
+
+            {/* Kahve Falı Tarihi */}
+            <Pressable
+              onPress={() => handleNavigate('BilgiMakale', { topic: 'kahve_tarihi' })}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(180, 83, 9, 0.15)' }]}>
+                <MaterialCommunityIcons name="coffee-outline" size={20} color="#F59E0B" />
+              </View>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>Kahve Telvesinin Tarihi</Text>
+                <Text style={styles.menuItemDesc}>Osmanlı'dan günümüze fal geleneği</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+            </Pressable>
           </ScrollView>
         </View>
       </View>
@@ -220,7 +211,7 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(242, 200, 121, 0.2)',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   drawerTitleRow: {
     flexDirection: 'row',
@@ -237,23 +228,8 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   drawerContent: {
-    paddingVertical: 10,
-    gap: 18,
-  },
-  section: {
-    gap: 8,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 4,
-  },
-  sectionTitle: {
-    fontSize: 11.5,
-    fontWeight: '800',
-    color: GOLD_SOFT,
-    letterSpacing: 0.6,
+    paddingVertical: 8,
+    gap: 10,
   },
   menuItem: {
     flexDirection: 'row',
@@ -262,12 +238,12 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     borderColor: 'rgba(242, 200, 121, 0.2)',
-    padding: 10,
+    padding: 11,
     gap: 10,
   },
   highlightMenuItem: {
-    backgroundColor: 'rgba(48, 30, 88, 0.95)',
-    borderColor: 'rgba(242, 200, 121, 0.45)',
+    backgroundColor: 'rgba(48, 22, 60, 0.95)',
+    borderColor: 'rgba(239, 68, 68, 0.45)',
   },
   menuItemPressed: {
     backgroundColor: 'rgba(58, 36, 106, 0.95)',
@@ -292,5 +268,17 @@ const styles = StyleSheet.create({
     fontSize: 10.5,
     color: TEXT_MUTED,
     marginTop: 1,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(242, 200, 121, 0.2)',
+    marginVertical: 4,
+  },
+  sectionHeading: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: GOLD_SOFT,
+    letterSpacing: 0.6,
+    marginBottom: 2,
   },
 });

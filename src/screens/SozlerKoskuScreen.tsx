@@ -38,7 +38,7 @@ import {
 const QUOTE_CARD_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SozlerKosku'>;
-type SozlerKoskuTab = 'sozler' | 'bilgi';
+type SozlerKoskuTab = 'sozler' | 'bilgi' | 'haftaninSevilenleri';
 
 const TOPIC_ARTICLES: Array<{
   key: string;
@@ -152,7 +152,9 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
     }
     if (infoSearch.trim()) {
       const q = infoSearch.toLowerCase().trim();
-      list = list.filter((c) => c.title.toLowerCase().includes(q) || c.body.toLowerCase().includes(q));
+      list = list.filter(
+        (c) => c.title.toLowerCase().includes(q) || c.body.toLowerCase().includes(q),
+      );
     }
     return list;
   }, [infoCategory, infoSearch]);
@@ -161,7 +163,7 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
     return filteredInfoCards.slice(0, infoPage * PAGE_SIZE);
   }, [filteredInfoCards, infoPage]);
 
-  const loadPopulars = useCallback(() => {
+  const loadData = useCallback(() => {
     getPopularFavorites().then((items) => {
       setPopularQuotes(items.filter((item) => item.kind === 'quote' || item.id.startsWith('quote:')));
       setPopularInfo(items.filter((item) => item.kind === 'info' || item.id.startsWith('info:')));
@@ -169,16 +171,22 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
   }, []);
 
   useEffect(() => {
-    loadPopulars();
-  }, [loadPopulars]);
+    loadData();
+  }, [loadData]);
+
+  useEffect(() => {
+    if (route.params?.initialTab) {
+      setTab(route.params.initialTab as SozlerKoskuTab);
+    }
+  }, [route.params?.initialTab]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setQuotePage(1);
     setInfoPage(1);
-    loadPopulars();
+    loadData();
     setTimeout(() => setRefreshing(false), 500);
-  }, [loadPopulars]);
+  }, [loadData]);
 
   return (
     <MysticTableBackground>
@@ -189,24 +197,21 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={GOLD} colors={[GOLD]} />
         }
       >
-        {/* Header Title */}
+        {/* Header */}
         <View style={styles.header}>
-          <View style={styles.headerIconCircle}>
-            <MaterialCommunityIcons name="book-open-page-variant" size={28} color={GOLD} />
-          </View>
+          <Ionicons name="book-outline" size={24} color={GOLD} />
           <Text style={styles.headerTitle}>Sözler Köşkü</Text>
-          <Text style={styles.headerSubtitle}>Mistik Sözler, Kadim Bilgiler & İlham Aynası</Text>
         </View>
 
-        {/* Tab Switcher - Sohbet Odaları Tarzında */}
+        {/* Tab Switcher: 3 Ayrı Bağımsız Bölüm */}
         <View style={styles.tabSwitchRow}>
           <Pressable
             onPress={() => setTab('sozler')}
             style={[styles.tabSwitchButton, tab === 'sozler' && styles.tabSwitchButtonActive]}
           >
-            <Ionicons name="sparkles" size={16} color={tab === 'sozler' ? '#1a0d33' : GOLD} />
+            <Ionicons name="sparkles" size={15} color={tab === 'sozler' ? '#1a0d33' : GOLD} />
             <Text style={[styles.tabSwitchText, tab === 'sozler' && styles.tabSwitchTextActive]}>
-              Sözler Köşesi ({filteredQuotes.length})
+              Sözler
             </Text>
           </Pressable>
 
@@ -216,11 +221,21 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
           >
             <MaterialCommunityIcons
               name="book-cross"
-              size={17}
+              size={16}
               color={tab === 'bilgi' ? '#1a0d33' : GOLD}
             />
             <Text style={[styles.tabSwitchText, tab === 'bilgi' && styles.tabSwitchTextActive]}>
-              Bilgi Köşesi ({filteredInfoCards.length})
+              Bilgi
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setTab('haftaninSevilenleri')}
+            style={[styles.tabSwitchButton, tab === 'haftaninSevilenleri' && styles.tabSwitchButtonActive]}
+          >
+            <Ionicons name="flame" size={15} color={tab === 'haftaninSevilenleri' ? '#1a0d33' : '#EF4444'} />
+            <Text style={[styles.tabSwitchText, tab === 'haftaninSevilenleri' && styles.tabSwitchTextActive]}>
+              Popüler
             </Text>
           </Pressable>
         </View>
@@ -228,34 +243,6 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
         {/* TAB 1: SÖZLER KÖŞESİ */}
         {tab === 'sozler' && (
           <View style={styles.tabContent}>
-            {/* Sözler Köşesi - Haftanın En Sevilenleri */}
-            {popularQuotes.length > 0 && (
-              <View style={styles.popularSection}>
-                <View style={styles.popularHeader}>
-                  <Ionicons name="flame-outline" size={16} color={GOLD} />
-                  <Text style={styles.popularTitle}>Haftanın En Sevilen Sözleri</Text>
-                </View>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.popularRow}
-                >
-                  {popularQuotes.map((item) => (
-                    <Pressable
-                      key={item.id}
-                      onPress={() => setSelectedPopular(item)}
-                      style={({ pressed }) => [styles.popularCard, pressed && styles.popularCardPressed]}
-                    >
-                      <Text style={styles.popularCardBody} numberOfLines={4}>
-                        "{item.body}"
-                      </Text>
-                    </Pressable>
-                  ))}
-                </ScrollView>
-              </View>
-            )}
-
-            {/* Arama Çubuğu */}
             <View style={styles.searchBarWrap}>
               <Ionicons name="search" size={17} color={GOLD_SOFT} />
               <TextInput
@@ -277,7 +264,7 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
 
             <View style={styles.sectionHeader}>
               <Ionicons name="sparkles-outline" size={16} color={GOLD} />
-              <Text style={styles.sectionTitle}>Ruhunu Aydınlatan Günün Sözleri</Text>
+              <Text style={styles.sectionTitle}>Günün Mistik Sözleri (365 Günlük Akış)</Text>
             </View>
 
             <View style={styles.quotesFeed}>
@@ -310,14 +297,13 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
               ))}
             </View>
 
-            {/* Daha Fazla Yükle Butonu */}
             {visibleQuotes.length < filteredQuotes.length && (
               <Pressable
                 onPress={() => setQuotePage((p) => p + 1)}
                 style={({ pressed }) => [styles.loadMoreBtn, pressed && styles.loadMoreBtnPressed]}
               >
                 <Ionicons name="chevron-down-circle-outline" size={18} color={GOLD} />
-                <Text style={styles.loadMoreBtnText}>Daha Fazla Söz Göster ({filteredQuotes.length - visibleQuotes.length} Kalan)</Text>
+                <Text style={styles.loadMoreBtnText}>Daha Fazla Söz ({filteredQuotes.length - visibleQuotes.length} Kalan)</Text>
               </Pressable>
             )}
           </View>
@@ -326,39 +312,6 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
         {/* TAB 2: BİLGİ KÖŞESİ */}
         {tab === 'bilgi' && (
           <View style={styles.tabContent}>
-            {/* Popülerler Bölümü */}
-            {popularInfo.length > 0 && (
-              <View style={styles.popularSection}>
-                <View style={styles.popularHeader}>
-                  <Ionicons name="flame-outline" size={16} color={GOLD} />
-                  <Text style={styles.popularTitle}>Haftanın En Sevilen Bilgileri</Text>
-                </View>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.popularRow}
-                >
-                  {popularInfo.map((item) => (
-                    <Pressable
-                      key={item.id}
-                      onPress={() => setSelectedPopular(item)}
-                      style={({ pressed }) => [styles.popularCard, pressed && styles.popularCardPressed]}
-                    >
-                      {item.title ? (
-                        <Text style={styles.popularCardTitle} numberOfLines={2}>
-                          {item.title}
-                        </Text>
-                      ) : null}
-                      <Text style={styles.popularCardBody} numberOfLines={4}>
-                        {item.body}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </ScrollView>
-              </View>
-            )}
-
-            {/* Ana Rehber & Makale Kartları (5 Büyük Kart) */}
             <View style={styles.sectionHeader}>
               <MaterialCommunityIcons name="feather" size={16} color={GOLD} />
               <Text style={styles.sectionTitle}>Kadim Kehanet & Fal Ansiklopedisi</Text>
@@ -381,7 +334,6 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
               ))}
             </View>
 
-            {/* BİLGİ ARAMA ÇUBUĞU - 5 Makale Kartının Tam Altında */}
             <View style={[styles.searchBarWrap, { marginTop: 18 }]}>
               <Ionicons name="search" size={17} color={GOLD_SOFT} />
               <TextInput
@@ -401,7 +353,6 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
               ) : null}
             </View>
 
-            {/* Kategori Filtre Butonları */}
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -437,12 +388,11 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
               ))}
             </ScrollView>
 
-            {/* İlginç Bilgi Kartları Feed - Arama Sonuçları Doğrudan Burada */}
             {visibleInfoCards.length > 0 && (
               <>
                 <View style={[styles.sectionHeader, { marginTop: 8 }]}>
                   <Ionicons name="bulb-outline" size={16} color={GOLD} />
-                  <Text style={styles.sectionTitle}>Kadim Bilgi Kartları ({filteredInfoCards.length})</Text>
+                  <Text style={styles.sectionTitle}>Kadim Bilgi Kartları</Text>
                 </View>
 
                 <View style={styles.factsFeed}>
@@ -470,23 +420,95 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
                   ))}
                 </View>
 
-                {/* Daha Fazla Bilgi Kartı Yükle */}
                 {visibleInfoCards.length < filteredInfoCards.length && (
                   <Pressable
                     onPress={() => setInfoPage((p) => p + 1)}
                     style={({ pressed }) => [styles.loadMoreBtn, pressed && styles.loadMoreBtnPressed]}
                   >
                     <Ionicons name="chevron-down-circle-outline" size={18} color={GOLD} />
-                    <Text style={styles.loadMoreBtnText}>Daha Fazla Bilgi Kartı Göster ({filteredInfoCards.length - visibleInfoCards.length} Kalan)</Text>
+                    <Text style={styles.loadMoreBtnText}>Daha Fazla Bilgi ({filteredInfoCards.length - visibleInfoCards.length} Kalan)</Text>
                   </Pressable>
                 )}
               </>
             )}
           </View>
         )}
+
+        {/* TAB 3: HAFTANIN EN SEVİLENLERİ */}
+        {tab === 'haftaninSevilenleri' && (
+          <View style={styles.tabContent}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="flame" size={18} color="#EF4444" />
+              <Text style={[styles.sectionTitle, { color: '#FCA5A5' }]}>Haftanın En Sevilen Mistik Sözleri</Text>
+            </View>
+
+            {popularQuotes.length === 0 ? (
+              <Text style={styles.emptyPopularText}>Henüz favorilenen popüler söz yok.</Text>
+            ) : (
+              <View style={styles.quotesFeed}>
+                {popularQuotes.map((item) => (
+                  <ImageBackground
+                    key={item.id}
+                    source={QUOTE_CARD_BG}
+                    style={styles.quoteCard}
+                    imageStyle={styles.quoteCardImage}
+                    resizeMode="cover"
+                  >
+                    <LinearGradient
+                      colors={['rgba(11, 10, 31, 0.55)', 'rgba(11, 10, 31, 0.75)']}
+                      style={styles.quoteScrim}
+                      pointerEvents="none"
+                    />
+                    <FavoriteStarButton id={item.id} kind="quote" body={item.body} />
+                    <MaterialCommunityIcons
+                      name="star-crescent"
+                      size={16}
+                      color={GOLD}
+                      style={styles.quoteIcon}
+                    />
+                    <Text style={styles.quoteText}>{item.body}</Text>
+                    <View style={styles.quoteShareRow}>
+                      <ShareButton text={`Mistik Rehber\n\n"${item.body}"`} label="Paylaş" />
+                      <ShareImageButton text={item.body} label="Görsel Paylaş" />
+                    </View>
+                  </ImageBackground>
+                ))}
+              </View>
+            )}
+
+            <View style={[styles.sectionHeader, { marginTop: 24 }]}>
+              <Ionicons name="flame" size={18} color={GOLD} />
+              <Text style={[styles.sectionTitle, { color: GOLD }]}>Haftanın En Sevilen Kadim Bilgileri</Text>
+            </View>
+
+            {popularInfo.length === 0 ? (
+              <Text style={styles.emptyPopularText}>Henüz favorilenen popüler bilgi kartı yok.</Text>
+            ) : (
+              <View style={styles.factsFeed}>
+                {popularInfo.map((card) => (
+                  <View key={card.id} style={styles.factCard}>
+                    <CornerTicks />
+                    <View style={styles.factHeader}>
+                      <View style={styles.factCategoryBadge}>
+                        <MaterialCommunityIcons name="information-outline" size={13} color={GOLD} />
+                        <Text style={styles.factCategoryText}>POPÜLER BİLGİ</Text>
+                      </View>
+                      <FavoriteStarButton id={card.id} kind="info" body={card.body} title={card.title} />
+                    </View>
+                    {card.title ? <Text style={styles.factTitle}>{card.title}</Text> : null}
+                    <Text style={styles.factBody}>{card.body}</Text>
+                    <View style={styles.factFooter}>
+                      <ShareButton text={`Mistik Rehber - ${card.title || 'Bilgi'}\n\n${card.body}`} label="Paylaş" />
+                      <ShareImageButton text={`${card.title || ''}\n\n${card.body}`} label="Görsel Paylaş" />
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        )}
       </ScrollView>
 
-      {/* Popüler Detay Modalı */}
       {selectedPopular && (
         <PopularDetailModal item={selectedPopular} onClose={() => setSelectedPopular(null)} />
       )}
@@ -803,5 +825,12 @@ const styles = StyleSheet.create({
   factFooter: {
     flexDirection: 'row',
     gap: 8,
+  },
+  emptyPopularText: {
+    fontSize: 13,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+    paddingVertical: 20,
+    fontStyle: 'italic',
   },
 });
