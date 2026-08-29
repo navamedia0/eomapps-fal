@@ -14,6 +14,10 @@ import { parseSpreadReading } from '@/utils/parseSpreadReading';
 import { turkishUpperCase } from '@/utils/turkishCase';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
+import type { ReadingSection } from '@/utils/parseNumberedSections';
 import PlayingCardFace from '@/components/PlayingCardFace';
 import PlayingCardBack, { type PlayingCardBackVariant } from '@/components/PlayingCardBack';
 import CornerTicks from '@/components/CornerTicks';
@@ -93,6 +97,7 @@ export default function KatinaScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [blocked, setBlocked] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
 
   const pulse = useRef(new Animated.Value(0)).current;
   const { remaining: cooldownRemaining, checked: cooldownChecked, notifyCongested } = useReadingCooldown('katina');
@@ -212,7 +217,7 @@ export default function KatinaScreen({ navigation }: Props) {
   const nextPositionLabel = cards.length < 3 ? POSITIONS[cards.length] : null;
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.katina.background}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Üst Başlık */}
         <View style={styles.header}>
@@ -485,6 +490,32 @@ export default function KatinaScreen({ navigation }: Props) {
           </View>
         )}
       </ScrollView>
+
+      {phase === 'result' && sections ? (
+        <ParchmentReadingResult
+          visible={true}
+          badge="Katina Aşk Falı Raporu"
+          sections={DISPLAY_POSITIONS.map((pos, idx) => ({
+            title: pos === 'Genel Yorum' ? 'Genel Yorum & İlişki Tavsiyesi' : `${pos} Kartı Yorumu`,
+            body: sections[idx] || '',
+          }))}
+          shareTextPrefix="Mistik Rehber - Katina Aşk Falım"
+          parchmentBg={FORTUNE_THEMES.katina.resultBg}
+          accentColor={FORTUNE_THEMES.katina.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={resetToReady}
+        />
+      ) : null}
+      {FORTUNE_THEMES.katina.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.katina.figure}
+          title={FORTUNE_THEMES.katina.splashTitle}
+          subtitle={FORTUNE_THEMES.katina.splashSubtitle}
+          accentColor={FORTUNE_THEMES.katina.accentColor}
+          onFinish={() => setShowSplash(false)}
+        />
+      )}
     </MysticTableBackground>
   );
 }

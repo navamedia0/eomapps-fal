@@ -8,6 +8,9 @@ import ShareButton from '@/components/ShareButton';
 import ReelRevealFX from '@/components/effects/ReelRevealFX';
 import SparkleBurst from '@/components/effects/SparkleBurst';
 import ReadingCardStack from '@/components/ReadingCardStack';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { drawRandomRunes, getAllRunes, type Rune } from '@/services/runeEngine';
 import { interpretRuneReading } from '@/services/readings-ai';
@@ -124,6 +127,7 @@ export default function RuneScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
   const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
 
   const handleDrawRunes = () => {
@@ -166,7 +170,7 @@ export default function RuneScreen({ navigation }: Props) {
   };
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.rune.background}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.runeBigSymbol}>ᚱ</Text>
@@ -299,11 +303,26 @@ export default function RuneScreen({ navigation }: Props) {
         )}
       </ScrollView>
 
-      {runes.length > 0 && result && resultSections && (
-        <ReadingCardStack
+      {runes.length > 0 && result && resultSections ? (
+        <ParchmentReadingResult
+          visible={true}
           badge="Nordik Rün Kehaneti Raporu"
           sections={resultSections}
           shareTextPrefix="Mistik Rehber - Runik Taş Kehanetim"
+          parchmentBg={FORTUNE_THEMES.rune.resultBg}
+          accentColor={FORTUNE_THEMES.rune.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={() => setRunes([])}
+        />
+      ) : null}
+      {FORTUNE_THEMES.rune.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.rune.figure}
+          title={FORTUNE_THEMES.rune.splashTitle}
+          subtitle={FORTUNE_THEMES.rune.splashSubtitle}
+          accentColor={FORTUNE_THEMES.rune.accentColor}
+          onFinish={() => setShowSplash(false)}
         />
       )}
     </MysticTableBackground>

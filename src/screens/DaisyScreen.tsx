@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, TextInput, Pressable, StyleSheet, Animated, Easing, KeyboardAvoidingView, Platform } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CornerTicks from '@/components/CornerTicks';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { getFunFortuneUsage, recordFunFortuneAttempt } from '@/services/funFortunesLimit';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
@@ -40,11 +44,13 @@ function Petal({ angle, anim }: PetalProps) {
 }
 
 export default function DaisyScreen() {
+  const navigation = useNavigation<any>();
   const [name, setName] = useState('');
   const [started, setStarted] = useState(false);
   const [totalPetals, setTotalPetals] = useState(randomPetalCount());
   const [plucked, setPlucked] = useState(0);
   const [limitReached, setLimitReached] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const pop = useRef(new Animated.Value(1)).current;
   const petalAnimsRef = useRef<Animated.Value[]>([]);
 
@@ -93,8 +99,8 @@ export default function DaisyScreen() {
   }, [name]);
 
   return (
-    <MysticTableBackground>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.daisy.background}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
         <View style={styles.wrap}>
           <Text style={styles.title}>Papatya Falı</Text>
 
@@ -164,6 +170,36 @@ export default function DaisyScreen() {
           )}
         </View>
       </KeyboardAvoidingView>
+
+      {finished && (
+        <ParchmentReadingResult
+          visible={true}
+          badge="Papatya Falı Kehaneti"
+          sections={[
+            {
+              title: `Papatya Cevabı: ${currentLabel}`,
+              body: currentLabel === 'Seviyor'
+                ? 'Son yaprak "seviyor" dedi. Kalbin bugün rahat olsun. Gönlündeki kişinin hisleri ve evrenin saf enerjisi seninle rezonans içinde.'
+                : 'Son yaprak "sevmiyor" dedi. Ama unutma, bu sadece bir oyun — kalbin en derin gerçeği ve doğru cevabı zaten biliyor.',
+            },
+          ]}
+          shareTextPrefix="Mistik Rehber - Papatya Falım"
+          parchmentBg={FORTUNE_THEMES.daisy.resultBg}
+          accentColor={FORTUNE_THEMES.daisy.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={reset}
+        />
+      )}
+      {FORTUNE_THEMES.daisy.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.daisy.figure}
+          title={FORTUNE_THEMES.daisy.splashTitle}
+          subtitle={FORTUNE_THEMES.daisy.splashSubtitle}
+          accentColor={FORTUNE_THEMES.daisy.accentColor}
+          onFinish={() => setShowSplash(false)}
+        />
+      )}
     </MysticTableBackground>
   );
 }

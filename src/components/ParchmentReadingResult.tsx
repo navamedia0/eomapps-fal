@@ -194,6 +194,7 @@ export default function ParchmentReadingResult({
                 <ShareButton
                   text={`${shareTextPrefix}\n\n${currentSection.title}\n${currentSection.body}`}
                   label="Bu Kartı Paylaş"
+                  variant="parchment"
                 />
               </View>
             )}
@@ -217,7 +218,8 @@ export default function ParchmentReadingResult({
               <View style={styles.shareAllWrap}>
                 <ShareButton
                   text={`${shareTextPrefix}\n\n${fullReadingText}`}
-                  label="🌟 Tümünü Paylaş"
+                  label="Tümünü Paylaş"
+                  variant="parchment"
                 />
               </View>
             )}

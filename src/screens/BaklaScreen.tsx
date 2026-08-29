@@ -8,6 +8,9 @@ import ShareButton from '@/components/ShareButton';
 import ReelRevealFX from '@/components/effects/ReelRevealFX';
 import SparkleBurst from '@/components/effects/SparkleBurst';
 import ReadingCardStack from '@/components/ReadingCardStack';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { cast41Beans, type BaklaOcak, type BaklaReading } from '@/services/baklaEngine';
 import { interpretBaklaReading } from '@/services/readings-ai';
@@ -75,6 +78,7 @@ export default function BaklaScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
   const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
   const castKey = useRef(0);
 
@@ -114,8 +118,16 @@ export default function BaklaScreen({ navigation }: Props) {
     }
   };
 
+  const handleReset = () => {
+    setReading(null);
+    setSettledCount(0);
+    setResult(null);
+    setError(null);
+    setCoinFallback(null);
+  };
+
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.bakla.background}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <MaterialCommunityIcons name="dots-hexagon" size={42} color={GOLD} />
@@ -229,11 +241,26 @@ export default function BaklaScreen({ navigation }: Props) {
         )}
       </ScrollView>
 
-      {reading && result && resultSections && (
-        <ReadingCardStack
+      {reading && result && resultSections ? (
+        <ParchmentReadingResult
+          visible={true}
           badge="41 Bakla Remil Raporu"
           sections={resultSections}
           shareTextPrefix="Mistik Rehber - 41 Bakla Falım"
+          parchmentBg={FORTUNE_THEMES.bakla.resultBg}
+          accentColor={FORTUNE_THEMES.bakla.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={handleReset}
+        />
+      ) : null}
+      {FORTUNE_THEMES.bakla.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.bakla.figure}
+          title={FORTUNE_THEMES.bakla.splashTitle}
+          subtitle={FORTUNE_THEMES.bakla.splashSubtitle}
+          accentColor={FORTUNE_THEMES.bakla.accentColor}
+          onFinish={() => setShowSplash(false)}
         />
       )}
     </MysticTableBackground>

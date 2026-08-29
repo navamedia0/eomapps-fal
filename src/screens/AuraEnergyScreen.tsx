@@ -7,6 +7,9 @@ import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import ReadingCardStack from '@/components/ReadingCardStack';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { analyzeAuraEnergy, type AuraAnalysis } from '@/services/auraEngine';
 import { interpretAuraReading } from '@/services/readings-ai';
@@ -85,6 +88,7 @@ export default function AuraEnergyScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
   const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
 
   const scanPulse = useRef(new Animated.Value(1)).current;
@@ -181,7 +185,7 @@ export default function AuraEnergyScreen({ navigation }: Props) {
   };
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.aura.background}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <MaterialCommunityIcons name="atom" size={42} color={GOLD} />
@@ -318,11 +322,29 @@ export default function AuraEnergyScreen({ navigation }: Props) {
         )}
       </ScrollView>
 
-      {aura && result && resultSections && (
-        <ReadingCardStack
+      {aura && result && resultSections ? (
+        <ParchmentReadingResult
+          visible={true}
           badge="Aura & Çakra Enerji Raporu"
           sections={resultSections}
           shareTextPrefix={`Mistik Rehber - Aura Raporum: ${aura.dominantAuraName}`}
+          parchmentBg={FORTUNE_THEMES.aura.resultBg}
+          accentColor={FORTUNE_THEMES.aura.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={() => {
+            setAura(null);
+            setScanProgress(0);
+          }}
+        />
+      ) : null}
+      {FORTUNE_THEMES.aura.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.aura.figure}
+          title={FORTUNE_THEMES.aura.splashTitle}
+          subtitle={FORTUNE_THEMES.aura.splashSubtitle}
+          accentColor={FORTUNE_THEMES.aura.accentColor}
+          onFinish={() => setShowSplash(false)}
         />
       )}
     </MysticTableBackground>

@@ -6,6 +6,9 @@ import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import ReadingCardStack from '@/components/ReadingCardStack';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import DateFields from '@/components/DateFields';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { calculateDestinyMatrix, type ArcanaInfo, type DestinyMatrix } from '@/services/destinyMatrixEngine';
@@ -74,6 +77,7 @@ export default function MatrixOfDestinyScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
   const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
 
   const handleCalculate = () => {
@@ -117,7 +121,7 @@ export default function MatrixOfDestinyScreen({ navigation }: Props) {
   };
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.matrix.background}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <MaterialCommunityIcons name="octagram-outline" size={44} color={GOLD} />
@@ -283,11 +287,26 @@ export default function MatrixOfDestinyScreen({ navigation }: Props) {
         )}
       </ScrollView>
 
-      {matrix && result && resultSections && (
-        <ReadingCardStack
+      {matrix && result && resultSections ? (
+        <ParchmentReadingResult
+          visible={true}
           badge="Kader Matrisi Analiz Raporu"
           sections={resultSections}
           shareTextPrefix="Mistik Rehber - Kader Matrisi Raporum"
+          parchmentBg={FORTUNE_THEMES.matrix.resultBg}
+          accentColor={FORTUNE_THEMES.matrix.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={() => setMatrix(null)}
+        />
+      ) : null}
+      {FORTUNE_THEMES.matrix.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.matrix.figure}
+          title={FORTUNE_THEMES.matrix.splashTitle}
+          subtitle={FORTUNE_THEMES.matrix.splashSubtitle}
+          accentColor={FORTUNE_THEMES.matrix.accentColor}
+          onFinish={() => setShowSplash(false)}
         />
       )}
     </MysticTableBackground>

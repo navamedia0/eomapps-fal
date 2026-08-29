@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { Audio } from 'expo-av';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -15,6 +15,9 @@ import { saveReadingHistory } from '@/services/readingHistory';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
+import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
 import { useReadingCooldown } from '@/hooks/useReadingCooldown';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -39,6 +42,12 @@ export default function VoiceReadingScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number } | null>(null);
   const [lastAudioUri, setLastAudioUri] = useState<string | null>(null);
+  const resultSections = useMemo(() => {
+    if (!result) return null;
+    const parsed = parseNumberedSections(result);
+    if (parsed && parsed.length > 0) return parsed;
+    return [{ title: 'Sesli Kehanet Analizi', body: result }];
+  }, [result]);
   const pulse = useRef(new Animated.Value(0)).current;
   const { remaining: cooldownRemaining, notifyCongested } = useReadingCooldown('sesli');
 
@@ -156,7 +165,7 @@ export default function VoiceReadingScreen({ navigation }: Props) {
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.95, 1.12] });
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.voiceReading.background}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {!result && !loading && !coinFallback && !error && (
           <View style={styles.recordWrap}>
@@ -230,6 +239,19 @@ export default function VoiceReadingScreen({ navigation }: Props) {
           </View>
         )}
       </ScrollView>
+
+      {result && resultSections ? (
+        <ParchmentReadingResult
+          visible={true}
+          badge="Sesli Kehanet Analiz Raporu"
+          sections={resultSections}
+          shareTextPrefix="Mistik Rehber - Sesli Falım"
+          parchmentBg={FORTUNE_THEMES.voiceReading.resultBg}
+          accentColor={FORTUNE_THEMES.voiceReading.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={reset}
+        />
+      ) : null}
     </MysticTableBackground>
   );
 }

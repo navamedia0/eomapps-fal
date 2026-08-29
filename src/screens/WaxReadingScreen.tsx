@@ -8,6 +8,9 @@ import ShareButton from '@/components/ShareButton';
 import ReelRevealFX from '@/components/effects/ReelRevealFX';
 import SparkleBurst from '@/components/effects/SparkleBurst';
 import ReadingCardStack from '@/components/ReadingCardStack';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import waxData from '@/data/balmumu_fali_sembolleri.json';
 import { interpretWaxReading } from '@/services/readings-ai';
@@ -130,6 +133,7 @@ export default function WaxReadingScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
   const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
   const castKey = useRef(0);
 
@@ -171,7 +175,7 @@ export default function WaxReadingScreen({ navigation }: Props) {
   };
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.wax.background}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <MaterialCommunityIcons name="candle" size={42} color={GOLD} />
@@ -283,11 +287,29 @@ export default function WaxReadingScreen({ navigation }: Props) {
         )}
       </ScrollView>
 
-      {waxShapes.length > 0 && result && resultSections && (
-        <ReadingCardStack
+      {waxShapes.length > 0 && result && resultSections ? (
+        <ParchmentReadingResult
+          visible={true}
           badge="Balmumu Falı & Aşk Raporu"
           sections={resultSections}
           shareTextPrefix="Mistik Rehber - Balmumu Falım"
+          parchmentBg={FORTUNE_THEMES.wax.resultBg}
+          accentColor={FORTUNE_THEMES.wax.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={() => {
+            setWaxShapes([]);
+            setFlameSignal(null);
+          }}
+        />
+      ) : null}
+      {FORTUNE_THEMES.wax.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.wax.figure}
+          title={FORTUNE_THEMES.wax.splashTitle}
+          subtitle={FORTUNE_THEMES.wax.splashSubtitle}
+          accentColor={FORTUNE_THEMES.wax.accentColor}
+          onFinish={() => setShowSplash(false)}
         />
       )}
     </MysticTableBackground>

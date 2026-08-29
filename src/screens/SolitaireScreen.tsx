@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet, Animated, Easing } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -13,6 +13,10 @@ import { saveReadingHistory } from '@/services/readingHistory';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import PlayingCardFace from '@/components/PlayingCardFace';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
+import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
 import { useReadingCooldown } from '@/hooks/useReadingCooldown';
@@ -38,6 +42,13 @@ export default function SolitaireScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fallbackCoins, setFallbackCoins] = useState(0);
+  const [showSplash, setShowSplash] = useState(true);
+  const resultSections = useMemo(() => {
+    if (!result) return null;
+    const parsed = parseNumberedSections(result);
+    if (parsed && parsed.length > 0) return parsed;
+    return [{ title: 'Solitaire Dilek Açılımı', body: result }];
+  }, [result]);
   const pulse = useRef(new Animated.Value(0)).current;
   const { remaining: cooldownRemaining, notifyCongested } = useReadingCooldown('solitaire');
 
@@ -105,7 +116,7 @@ export default function SolitaireScreen({ navigation }: Props) {
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.15] });
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.solitaire.background}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {phase === 'wish' && (
           <View style={styles.wishWrap}>
@@ -184,6 +195,29 @@ export default function SolitaireScreen({ navigation }: Props) {
           </View>
         )}
       </ScrollView>
+
+      {phase === 'result' && result && resultSections ? (
+        <ParchmentReadingResult
+          visible={true}
+          badge="Solitaire Dilek Açılımı Raporu"
+          sections={resultSections}
+          shareTextPrefix="Mistik Rehber - Solitaire Falım"
+          parchmentBg={FORTUNE_THEMES.solitaire.resultBg}
+          accentColor={FORTUNE_THEMES.solitaire.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={reset}
+        />
+      ) : null}
+      {FORTUNE_THEMES.solitaire.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.solitaire.figure}
+          title={FORTUNE_THEMES.solitaire.splashTitle}
+          subtitle={FORTUNE_THEMES.solitaire.splashSubtitle}
+          accentColor={FORTUNE_THEMES.solitaire.accentColor}
+          onFinish={() => setShowSplash(false)}
+        />
+      )}
     </MysticTableBackground>
   );
 }

@@ -8,6 +8,9 @@ import ShareButton from '@/components/ShareButton';
 import ReelRevealFX from '@/components/effects/ReelRevealFX';
 import SparkleBurst from '@/components/effects/SparkleBurst';
 import ReadingCardStack from '@/components/ReadingCardStack';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import visionData from '@/data/kara_ayna_vizyonlari.json';
 import { gazeIntoMirror, type ScryingVision } from '@/services/scryingEngine';
@@ -30,6 +33,7 @@ export default function ScryingScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
   const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
   const castKey = useRef(0);
 
@@ -80,7 +84,7 @@ export default function ScryingScreen({ navigation }: Props) {
   const glowOpacity = mirrorGlow.interpolate({ inputRange: [0, 1], outputRange: [0.3, 0.8] });
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.scrying.background}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <MaterialCommunityIcons name="mirror" size={42} color={GOLD} />
@@ -218,11 +222,26 @@ export default function ScryingScreen({ navigation }: Props) {
         )}
       </ScrollView>
 
-      {vision && result && resultSections && (
-        <ReadingCardStack
+      {vision && result && resultSections ? (
+        <ParchmentReadingResult
+          visible={true}
           badge="Kara Ayna Durugörü Raporu"
           sections={resultSections}
           shareTextPrefix="Mistik Rehber - Kara Ayna Durugörü Yorumum"
+          parchmentBg={FORTUNE_THEMES.scrying.resultBg}
+          accentColor={FORTUNE_THEMES.scrying.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={() => setVision(null)}
+        />
+      ) : null}
+      {FORTUNE_THEMES.scrying.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.scrying.figure}
+          title={FORTUNE_THEMES.scrying.splashTitle}
+          subtitle={FORTUNE_THEMES.scrying.splashSubtitle}
+          accentColor={FORTUNE_THEMES.scrying.accentColor}
+          onFinish={() => setShowSplash(false)}
         />
       )}
     </MysticTableBackground>

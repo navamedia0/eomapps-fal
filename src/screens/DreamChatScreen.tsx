@@ -35,6 +35,8 @@ import CoinFallbackBox from '@/components/CoinFallbackBox';
 import RewardedAdModal from '@/components/RewardedAdModal';
 import PersonInfoModal from '@/components/PersonInfoModal';
 import CornerTicks from '@/components/CornerTicks';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import type { PersonInfo } from '@/types/personInfo';
 import { getSavedPersonInfo, savePersonInfo } from '@/services/personInfo';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -69,6 +71,7 @@ export default function DreamChatScreen({ navigation }: Props) {
   const [adModalVisible, setAdModalVisible] = useState(false);
   const [isPersonModalVisible, setIsPersonModalVisible] = useState(false);
   const [personInfo, setPersonInfo] = useState<PersonInfo | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
 
   const scrollRef = useRef<ScrollView>(null);
   const pulseAnim = useRef(new Animated.Value(0)).current;
@@ -578,6 +581,16 @@ export default function DreamChatScreen({ navigation }: Props) {
         onComplete={handleAdComplete}
         onCancel={() => setAdModalVisible(false)}
       />
+      {FORTUNE_THEMES.dream.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.dream.figure}
+          title={FORTUNE_THEMES.dream.splashTitle}
+          subtitle={FORTUNE_THEMES.dream.splashSubtitle}
+          accentColor={FORTUNE_THEMES.dream.accentColor}
+          onFinish={() => setShowSplash(false)}
+        />
+      )}
     </CosmicChatBackground>
   );
 }

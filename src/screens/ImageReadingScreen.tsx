@@ -25,6 +25,7 @@ import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
 import FeatureIcon from '@/components/FeatureIcon';
 import EkolEntranceSplash from '@/components/EkolEntranceSplash';
 import { FEATURE_ICONS } from '@/assets/icons';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { useReadingCooldown } from '@/hooks/useReadingCooldown';
 import PersonInfoModal from '@/components/PersonInfoModal';
 import type { PersonInfo } from '@/types/personInfo';
@@ -88,6 +89,7 @@ const COPY = {
 export default function ImageReadingScreen({ route, navigation }: Props) {
   const { kind } = route.params;
   const copy = COPY[kind];
+  const theme = FORTUNE_THEMES[kind] || FORTUNE_THEMES.coffee;
   const categoryKey: ReadingCategory = kind === 'coffee' ? 'kahve' : kind === 'palm' ? 'el' : kind === 'face' ? 'yuz' : 'kahve';
 
   const [images, setImages] = useState<PickedImage[]>([]);
@@ -109,7 +111,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
   const [adModalVisible, setAdModalVisible] = useState(false);
   const [adVideoIndex, setAdVideoIndex] = useState(1);
   const [adTotalNeeded, setAdTotalNeeded] = useState(1);
-  const [showSplash, setShowSplash] = useState(kind === 'coffee');
+  const [showSplash, setShowSplash] = useState(true);
 
   const pulse = useRef(new Animated.Value(0)).current;
   const { remaining: cooldownRemaining, notifyCongested } = useReadingCooldown(
@@ -350,7 +352,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.15] });
 
   const showPicker = !result && !loading && !validating && !coinFallback;
-  const customBg = route.params.kind === 'coffee' ? require('@/assets/ekoller/kahve_screen_bg.jpg') : undefined;
+  const customBg = theme.background;
 
   return (
     <MysticTableBackground customBackground={customBg}>
@@ -646,31 +648,25 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
         )}
       </ScrollView>
 
-      {result && resultSections && kind === 'coffee' ? (
+      {result && resultSections ? (
         <ParchmentReadingResult
           visible={true}
           badge={copy.shareTitle}
           sections={resultSections}
           shareTextPrefix={`Mistik Rehber - ${copy.shareTitle}`}
-          parchmentBg={require('@/assets/ekoller/osmanli_reading_card_clean.jpg')}
-          accentColor="#B45309"
+          parchmentBg={theme.resultBg}
+          accentColor={theme.accentColor}
           onHomePress={() => navigation.navigate('Home')}
           onNewReadingPress={resetAll}
         />
-      ) : result && resultSections ? (
-        <ReadingCardStack
-          badge={copy.shareTitle}
-          sections={resultSections}
-          shareTextPrefix={`Mistik Rehber - ${copy.shareTitle}`}
-        />
       ) : null}
-      {kind === 'coffee' && (
+      {theme.figure && (
         <EkolEntranceSplash
           visible={showSplash}
-          figureSource={require('@/assets/ekoller/kahve_tulip_clean.png')}
-          title="Kahve Falı"
-          subtitle="Osmanlı Saray Kehaneti Başlıyor..."
-          accentColor="#38BDF8"
+          figureSource={theme.figure}
+          title={theme.splashTitle}
+          subtitle={theme.splashSubtitle}
+          accentColor={theme.accentColor}
           onFinish={() => setShowSplash(false)}
         />
       )}

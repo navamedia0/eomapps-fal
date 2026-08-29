@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, StyleSheet, Animated, Easing } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import FeatureIcon from '@/components/FeatureIcon';
 import CornerTicks from '@/components/CornerTicks';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { getFunFortuneUsage, recordFunFortuneAttempt } from '@/services/funFortunesLimit';
 import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -110,9 +114,11 @@ function Die({ rolling, finalValue, delay }: { rolling: boolean; finalValue: num
 }
 
 export default function DiceScreen() {
+  const navigation = useNavigation<any>();
   const [values, setValues] = useState<[number, number] | null>(null);
   const [rolling, setRolling] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     getFunFortuneUsage('zar').then(({ reachedLimit }) => {
@@ -139,7 +145,7 @@ export default function DiceScreen() {
   const total = values ? values[0] + values[1] : null;
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.dice.background}>
       <View style={styles.wrap}>
         <Text style={styles.title}>Zar Falı</Text>
         <Text style={styles.subtitle}>Zarları at, şansına bak.</Text>
@@ -173,6 +179,34 @@ export default function DiceScreen() {
           </Pressable>
         )}
       </View>
+
+      {total !== null && (
+        <ParchmentReadingResult
+          visible={true}
+          badge="Zar Falı Kehaneti"
+          sections={[
+            {
+              title: `Zarların Toplamı: ${total}`,
+              body: `${FLAVOR_BY_TOTAL[total]}\n\nZarların enerjisi bugün senin için ${values ? `${values[0]} ve ${values[1]}` : ''} sayılarını getirdi. Evrenin akışında adımlarını bu sezgisel rehberlikle at.`,
+            },
+          ]}
+          shareTextPrefix="Mistik Rehber - Zar Falım"
+          parchmentBg={FORTUNE_THEMES.dice.resultBg}
+          accentColor={FORTUNE_THEMES.dice.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={() => setValues(null)}
+        />
+      )}
+      {FORTUNE_THEMES.dice.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.dice.figure}
+          title={FORTUNE_THEMES.dice.splashTitle}
+          subtitle={FORTUNE_THEMES.dice.splashSubtitle}
+          accentColor={FORTUNE_THEMES.dice.accentColor}
+          onFinish={() => setShowSplash(false)}
+        />
+      )}
     </MysticTableBackground>
   );
 }

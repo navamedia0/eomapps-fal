@@ -6,6 +6,9 @@ import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import ReadingCardStack from '@/components/ReadingCardStack';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { getCelticTreeByDate, type CelticTree } from '@/services/celticTreeEngine';
 import { interpretCelticTreeReading } from '@/services/readings-ai';
@@ -74,6 +77,7 @@ export default function CelticTreeScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
   const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
 
   const handleCalculate = () => {
@@ -116,7 +120,7 @@ export default function CelticTreeScreen({ navigation }: Props) {
   };
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.celticTree.background}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <MaterialCommunityIcons name="tree-outline" size={42} color={GOLD} />
@@ -256,11 +260,26 @@ export default function CelticTreeScreen({ navigation }: Props) {
         )}
       </ScrollView>
 
-      {tree && result && resultSections && (
-        <ReadingCardStack
+      {tree && result && resultSections ? (
+        <ParchmentReadingResult
+          visible={true}
           badge="Kelt Ağaç Astrolojisi Raporu"
           sections={resultSections}
           shareTextPrefix={`Mistik Rehber - Kelt Ağaç Burcum: ${tree.name}`}
+          parchmentBg={FORTUNE_THEMES.celticTree.resultBg}
+          accentColor={FORTUNE_THEMES.celticTree.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={() => setTree(null)}
+        />
+      ) : null}
+      {FORTUNE_THEMES.celticTree.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.celticTree.figure}
+          title={FORTUNE_THEMES.celticTree.splashTitle}
+          subtitle={FORTUNE_THEMES.celticTree.splashSubtitle}
+          accentColor={FORTUNE_THEMES.celticTree.accentColor}
+          onFinish={() => setShowSplash(false)}
         />
       )}
     </MysticTableBackground>

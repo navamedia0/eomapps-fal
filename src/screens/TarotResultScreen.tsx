@@ -27,6 +27,10 @@ import TarotSpreadLayout from '@/components/tarot/TarotSpreadLayout';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CardStoryModal from '@/components/tarot/CardStoryModal';
 import ShareButton from '@/components/ShareButton';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
+import type { ReadingSection } from '@/utils/parseNumberedSections';
 import CornerTicks from '@/components/CornerTicks';
 import { getTarotKeywordList } from '@/services/tarotKeywords';
 import type { TarotCardDef } from '@/services/tarot';
@@ -60,6 +64,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
   const [adModalVisible, setAdModalVisible] = useState(false);
   const [adVideoIndex, setAdVideoIndex] = useState(1);
   const [adTotalNeeded, setAdTotalNeeded] = useState(1);
+  const [showSplash, setShowSplash] = useState(true);
 
   const pulse = useRef(new Animated.Value(0)).current;
 
@@ -196,7 +201,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.15] });
 
   return (
-    <MysticTableBackground variant="tarot">
+    <MysticTableBackground customBackground={FORTUNE_THEMES.tarot.background}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {loading && (
           <View style={styles.loadingWrap}>
@@ -323,6 +328,35 @@ export default function TarotResultScreen({ route, navigation }: Props) {
           </View>
         )}
       </ScrollView>
+
+      {result && sections ? (
+        <ParchmentReadingResult
+          visible={true}
+          badge="Tarot Kadim Açılım Raporu"
+          sections={[
+            ...spread.positions.map((pos, idx) => ({
+              title: `${pos}: ${turkishUpperCase(cards[idx]?.name || '')}`,
+              body: sections[idx] || '',
+            })),
+            ...(generalSummary ? [{ title: 'Genel Uyum ve Sentez', body: generalSummary }] : []),
+          ]}
+          shareTextPrefix="Mistik Rehber - Tarot Falım"
+          parchmentBg={FORTUNE_THEMES.tarot.resultBg}
+          accentColor={FORTUNE_THEMES.tarot.accentColor}
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={() => navigation.navigate('TarotSpread')}
+        />
+      ) : null}
+      {FORTUNE_THEMES.tarot.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.tarot.figure}
+          title={FORTUNE_THEMES.tarot.splashTitle}
+          subtitle={FORTUNE_THEMES.tarot.splashSubtitle}
+          accentColor={FORTUNE_THEMES.tarot.accentColor}
+          onFinish={() => setShowSplash(false)}
+        />
+      )}
       <CardStoryModal card={storyCard} onClose={() => setStoryCard(null)} />
       <RewardedAdModal
         visible={adModalVisible}

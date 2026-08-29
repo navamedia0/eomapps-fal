@@ -16,6 +16,7 @@ import CoinFallbackBox from '@/components/CoinFallbackBox';
 import ReadingCardStack from '@/components/ReadingCardStack';
 import ParchmentReadingResult from '@/components/ParchmentReadingResult';
 import EkolEntranceSplash from '@/components/EkolEntranceSplash';
+import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { GOLD, GOLD_SOFT, GOLD_DEEP, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
@@ -327,20 +328,22 @@ export default function IChingScreen({ navigation }: Props) {
           badge="I Ching Değişimler Kitabı Raporu"
           sections={resultSections}
           shareTextPrefix="Mistik Rehber - I Ching Kehanetim"
-          parchmentBg={require('@/assets/ekoller/cin_reading_card_cropped.jpg')}
-          accentColor="#E11D48"
+          parchmentBg={FORTUNE_THEMES.iching.resultBg}
+          accentColor={FORTUNE_THEMES.iching.accentColor}
           onHomePress={() => navigation.navigate('Home')}
           onNewReadingPress={handleReset}
         />
       ) : null}
-      <EkolEntranceSplash
-        visible={showSplash}
-        figureSource={require('@/assets/ekoller/iching_crane_clean.png')}
-        title="Çin I Ching Falı"
-        subtitle="3000 Yıllık Taoist Değişimler Kitabı"
-        accentColor="#E11D48"
-        onFinish={() => setShowSplash(false)}
-      />
+      {FORTUNE_THEMES.iching.figure && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={FORTUNE_THEMES.iching.figure}
+          title={FORTUNE_THEMES.iching.splashTitle}
+          subtitle={FORTUNE_THEMES.iching.splashSubtitle}
+          accentColor={FORTUNE_THEMES.iching.accentColor}
+          onFinish={() => setShowSplash(false)}
+        />
+      )}
     </MysticTableBackground>
   );
 }
