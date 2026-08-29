@@ -5,6 +5,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet, Image, Animated } from '
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import ReadingCardStack from '@/components/ReadingCardStack';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { interpretImages, validateImage } from '@/services/readings-ai';
 import { ApiRequestError } from '@/services/http';
@@ -645,16 +646,24 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
         )}
       </ScrollView>
 
-      {result && resultSections && (
+      {result && resultSections && kind === 'coffee' ? (
+        <ParchmentReadingResult
+          visible={true}
+          badge={copy.shareTitle}
+          sections={resultSections}
+          shareTextPrefix={`Mistik Rehber - ${copy.shareTitle}`}
+          parchmentBg={require('@/assets/ekoller/osmanli_reading_card_cropped.jpg')}
+          accentColor="#B45309"
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={resetAll}
+        />
+      ) : result && resultSections ? (
         <ReadingCardStack
           badge={copy.shareTitle}
           sections={resultSections}
           shareTextPrefix={`Mistik Rehber - ${copy.shareTitle}`}
-          cardBackgroundImage={
-            kind === 'coffee' ? require('@/assets/ekoller/osmanli_reading_card.jpg') : undefined
-          }
         />
-      )}
+      ) : null}
       {kind === 'coffee' && (
         <EkolEntranceSplash
           visible={showSplash}

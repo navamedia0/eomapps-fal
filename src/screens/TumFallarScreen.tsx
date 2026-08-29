@@ -22,7 +22,7 @@ type Ekol = {
   title: string;
   sub: string;
   accent: string;
-  sectionFrame?: any;
+  headerBanner?: any;
   items: GridItem[];
 };
 
@@ -73,7 +73,7 @@ export default function TumFallarScreen({ navigation }: Props) {
       title: 'Çin Ekolü',
       sub: 'Lake kırmızısı & imparatorluk altını',
       accent: '#E11D48',
-      sectionFrame: require('@/assets/ekoller/cin_section_frame.png'),
+      headerBanner: require('@/assets/ekoller/cin_section_frame.png'),
       items: [
         {
           key: 'face',
@@ -96,7 +96,7 @@ export default function TumFallarScreen({ navigation }: Props) {
       title: 'Osmanlı & Anadolu Ekolü',
       sub: 'İznik turkuazı & pirinç & lale motifi',
       accent: '#0EA5E9',
-      sectionFrame: require('@/assets/ekoller/osmanli_section_frame.png'),
+      headerBanner: require('@/assets/ekoller/osmanli_section_frame.png'),
       items: [
         {
           key: 'coffee',
@@ -270,60 +270,54 @@ export default function TumFallarScreen({ navigation }: Props) {
         <Text style={styles.headerCaption}>Dünyanın dört bir yanından kadim kehanet ekolleri</Text>
 
         <View style={styles.ekolList}>
-          {ekoller.map((ekol) => {
-            const hasSectionFrame = !!ekol.sectionFrame;
+          {ekoller.map((ekol) => (
+            <View key={ekol.key} style={styles.ekolSection}>
+              {/* Ekol Title Banner (İsim Çerçevesi) */}
+              {ekol.headerBanner ? (
+                <View style={styles.bannerWrap}>
+                  <Image
+                    source={ekol.headerBanner}
+                    resizeMode="stretch"
+                    style={styles.bannerImage}
+                  />
+                  <View style={styles.bannerTextContent}>
+                    <Text style={[styles.bannerTitle, { color: ekol.accent }]}>
+                      {ekol.title}
+                    </Text>
+                    <Text style={styles.bannerSub}>{ekol.sub}</Text>
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.standardHeaderWrap}>
+                  <View style={[styles.ekolHeadBar, { backgroundColor: ekol.accent }]} />
+                  <Text style={[styles.ekolTitle, { color: ekol.accent }]}>{ekol.title}</Text>
+                  <Text style={styles.ekolSub}>{ekol.sub}</Text>
+                </View>
+              )}
 
-            const content = (
-              <View style={[styles.ekolInnerPadding, hasSectionFrame && styles.ekolThemedPadding]}>
-                <View style={[styles.ekolHeadBar, { backgroundColor: ekol.accent }]} />
-                <Text style={[styles.ekolTitle, { color: ekol.accent }]}>{ekol.title}</Text>
-                <Text style={styles.ekolSub}>{ekol.sub}</Text>
-                <View style={styles.grid}>
-                  {chunkPairs(ekol.items).map((pair, idx) => (
-                    <View key={`${ekol.key}-${idx}`} style={styles.gridRow}>
+              {/* Fortune Buttons Grid */}
+              <View style={styles.grid}>
+                {chunkPairs(ekol.items).map((pair, idx) => (
+                  <View key={`${ekol.key}-${idx}`} style={styles.gridRow}>
+                    <EkolGridButton
+                      item={pair[0]}
+                      accent={ekol.accent}
+                      navigation={navigation}
+                    />
+                    {pair[1] ? (
                       <EkolGridButton
-                        item={pair[0]}
+                        item={pair[1]}
                         accent={ekol.accent}
                         navigation={navigation}
                       />
-                      {pair[1] ? (
-                        <EkolGridButton
-                          item={pair[1]}
-                          accent={ekol.accent}
-                          navigation={navigation}
-                        />
-                      ) : (
-                        <View style={styles.gridPlaceholder} />
-                      )}
-                    </View>
-                  ))}
-                </View>
+                    ) : (
+                      <View style={styles.gridPlaceholder} />
+                    )}
+                  </View>
+                ))}
               </View>
-            );
-
-            if (hasSectionFrame) {
-              return (
-                <View
-                  key={ekol.key}
-                  style={[styles.ekolThemedContainer, { borderColor: ekol.accent }]}
-                >
-                  <Image
-                    source={ekol.sectionFrame}
-                    resizeMode="stretch"
-                    style={styles.sectionFrameImage}
-                  />
-                  <View style={styles.sectionDarkBackdrop} />
-                  {content}
-                </View>
-              );
-            }
-
-            return (
-              <View key={ekol.key} style={styles.ekolSection}>
-                {content}
-              </View>
-            );
-          })}
+            </View>
+          ))}
         </View>
       </ScrollView>
     </MysticTableBackground>
@@ -359,38 +353,46 @@ const styles = StyleSheet.create({
   },
   ekolList: {
     width: '100%',
-    gap: 20,
+    gap: 22,
   },
   ekolSection: {
     width: '100%',
   },
-  ekolThemedContainer: {
+  bannerWrap: {
     width: '100%',
-    borderRadius: 22,
-    overflow: 'hidden',
-    borderWidth: 1.4,
-    backgroundColor: '#0F091E',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
+    height: 72,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    position: 'relative',
   },
-  sectionFrameImage: {
+  bannerImage: {
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: '100%',
   },
-  sectionDarkBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 5, 20, 0.45)',
-  },
-  ekolInnerPadding: {
-    width: '100%',
-  },
-  ekolThemedPadding: {
-    padding: 16,
+  bannerTextContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
     zIndex: 2,
+  },
+  bannerTitle: {
+    fontSize: 15,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  bannerSub: {
+    fontSize: 11,
+    color: '#FDE68A',
+    marginTop: 2,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  standardHeaderWrap: {
+    marginBottom: 10,
   },
   ekolHeadBar: {
     width: 36,
@@ -408,7 +410,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#D1D5DB',
     marginTop: 2,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   grid: {
     width: '100%',

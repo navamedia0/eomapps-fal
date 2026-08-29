@@ -14,6 +14,7 @@ import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import ReadingCardStack from '@/components/ReadingCardStack';
+import ParchmentReadingResult from '@/components/ParchmentReadingResult';
 import EkolEntranceSplash from '@/components/EkolEntranceSplash';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { GOLD, GOLD_SOFT, GOLD_DEEP, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -320,14 +321,18 @@ export default function IChingScreen({ navigation }: Props) {
         )}
       </ScrollView>
 
-      {result && resultSections && (
-        <ReadingCardStack
+      {result && resultSections ? (
+        <ParchmentReadingResult
+          visible={true}
           badge="I Ching Değişimler Kitabı Raporu"
           sections={resultSections}
           shareTextPrefix="Mistik Rehber - I Ching Kehanetim"
-          cardBackgroundImage={require('@/assets/ekoller/cin_reading_card.jpg')}
+          parchmentBg={require('@/assets/ekoller/cin_reading_card_cropped.jpg')}
+          accentColor="#E11D48"
+          onHomePress={() => navigation.navigate('Home')}
+          onNewReadingPress={handleReset}
         />
-      )}
+      ) : null}
       <EkolEntranceSplash
         visible={showSplash}
         figureSource={require('@/assets/ekoller/iching_crane_clean.png')}
