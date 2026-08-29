@@ -81,6 +81,21 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
+            {/* 3. HAFTANIN EN SEVİLENLERİ (Sözler & Bilgiler - Pazartesi 08:00) */}
+            <Pressable
+              onPress={() => handleNavigate('HaftaninSevilenleri')}
+              style={({ pressed }) => [styles.menuItem, styles.highlightMenuItem, pressed && styles.menuItemPressed]}
+            >
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(239, 68, 68, 0.18)' }]}>
+                <Ionicons name="flame" size={20} color="#EF4444" />
+              </View>
+              <View style={styles.menuTextWrap}>
+                <Text style={[styles.menuItemTitle, { color: '#FCA5A5' }]}>Haftanın En Sevilenleri</Text>
+                <Text style={styles.menuItemDesc}>Haftalık 15 popüler söz ve bilgi kartı</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+            </Pressable>
+
             <View style={styles.divider} />
 
             {/* KADİM BİLGİ KARTLARI & REHBERLER */}
@@ -225,6 +240,10 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(242, 200, 121, 0.2)',
     padding: 11,
     gap: 10,
+  },
+  highlightMenuItem: {
+    backgroundColor: 'rgba(48, 20, 58, 0.95)',
+    borderColor: 'rgba(239, 68, 68, 0.45)',
   },
   menuItemPressed: {
     backgroundColor: 'rgba(58, 36, 106, 0.95)',

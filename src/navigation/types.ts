@@ -55,6 +55,7 @@ export type RootStackParamList = {
   BilgiMakale: { topic: 'kahve_tarihi' | 'katina_nedir' | 'burc_kokeni' };
   BilgiKosesi: undefined;
   SozlerKosku: undefined;
+  HaftaninSevilenleri: undefined;
   UserProfile: { userId: string };
   BlockedUsers: undefined;
   DMThread: { userId: string; displayName?: string | null; avatarUrl?: string | null };

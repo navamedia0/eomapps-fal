@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -17,13 +17,10 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import FavoriteStarButton from '@/components/FavoriteStarButton';
 import ShareButton from '@/components/ShareButton';
 import ShareImageButton from '@/components/ShareImageButton';
-import PopularDetailModal from '@/components/PopularDetailModal';
 import quotesData from '@/data/kesfet_sozleri.json';
-import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
 import {
   GOLD,
   GOLD_SOFT,
-  NIGHT_CARD,
   TEXT_PRIMARY,
   TEXT_MUTED,
 } from '@/theme/colors';
@@ -34,13 +31,10 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SozlerKosku'>;
 
 const ALL_QUOTES: string[] = quotesData as string[];
 const PAGE_SIZE = 25;
-const POPULAR_LIMIT = 15;
 
 export default function SozlerKoskuScreen({ navigation }: Props) {
   const [quotePage, setQuotePage] = useState(1);
   const [quoteSearch, setQuoteSearch] = useState('');
-  const [popularQuotes, setPopularQuotes] = useState<PopularFavorite[]>([]);
-  const [selectedPopular, setSelectedPopular] = useState<PopularFavorite | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   // Günlük dönen 365 günlük söz havuzu algoritması
@@ -67,25 +61,11 @@ export default function SozlerKoskuScreen({ navigation }: Props) {
     return filteredQuotes.slice(0, quotePage * PAGE_SIZE);
   }, [filteredQuotes, quotePage]);
 
-  const loadData = useCallback(() => {
-    getPopularFavorites().then((items) => {
-      const quotes = items
-        .filter((item) => item.kind === 'quote' || item.id.startsWith('quote:'))
-        .slice(0, POPULAR_LIMIT);
-      setPopularQuotes(quotes);
-    });
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setQuotePage(1);
-    loadData();
-    setTimeout(() => setRefreshing(false), 500);
-  }, [loadData]);
+    setTimeout(() => setRefreshing(false), 400);
+  }, []);
 
   return (
     <MysticTableBackground>
@@ -102,36 +82,6 @@ export default function SozlerKoskuScreen({ navigation }: Props) {
           <Text style={styles.headerTitle}>Sözler Köşkü</Text>
           <Text style={styles.headerSubtitle}>Ruhunu Aydınlatan Kadim & Anlamlı Sözler</Text>
         </View>
-
-        {/* 15 POPÜLER SÖZ BÖLÜMÜ */}
-        {popularQuotes.length > 0 && (
-          <View style={styles.popularSection}>
-            <View style={styles.popularHeader}>
-              <Ionicons name="flame" size={18} color="#EF4444" />
-              <Text style={styles.popularTitle}>Haftanın En Sevilen 15 Mistik Sözü</Text>
-            </View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.popularRow}
-            >
-              {popularQuotes.map((item, idx) => (
-                <Pressable
-                  key={item.id || idx}
-                  onPress={() => setSelectedPopular(item)}
-                  style={({ pressed }) => [styles.popularCard, pressed && styles.popularCardPressed]}
-                >
-                  <View style={styles.popularRankBadge}>
-                    <Text style={styles.popularRankText}>#{idx + 1}</Text>
-                  </View>
-                  <Text style={styles.popularCardBody} numberOfLines={4}>
-                    "{item.body}"
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </View>
-        )}
 
         {/* Arama Çubuğu */}
         <View style={styles.searchBarWrap}>
@@ -205,11 +155,6 @@ export default function SozlerKoskuScreen({ navigation }: Props) {
           </Pressable>
         )}
       </ScrollView>
-
-      {/* Popüler Detay Modalı */}
-      {selectedPopular && (
-        <PopularDetailModal item={selectedPopular} onClose={() => setSelectedPopular(null)} />
-      )}
     </MysticTableBackground>
   );
 }
@@ -236,58 +181,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: TEXT_MUTED,
     textAlign: 'center',
-  },
-  popularSection: {
-    marginBottom: 16,
-  },
-  popularHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 10,
-  },
-  popularTitle: {
-    fontSize: 13.5,
-    fontWeight: '800',
-    color: '#FCA5A5',
-    letterSpacing: 0.4,
-  },
-  popularRow: {
-    gap: 10,
-    paddingRight: 10,
-  },
-  popularCard: {
-    width: 220,
-    minHeight: 90,
-    backgroundColor: 'rgba(38, 20, 54, 0.95)',
-    borderRadius: 14,
-    borderWidth: 1.2,
-    borderColor: 'rgba(239, 68, 68, 0.4)',
-    padding: 12,
-    justifyContent: 'center',
-  },
-  popularCardPressed: {
-    opacity: 0.85,
-  },
-  popularRankBadge: {
-    position: 'absolute',
-    top: 6,
-    right: 8,
-    backgroundColor: 'rgba(239, 68, 68, 0.25)',
-    borderRadius: 6,
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-  },
-  popularRankText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#FCA5A5',
-  },
-  popularCardBody: {
-    fontSize: 12.5,
-    lineHeight: 18,
-    color: '#FFF',
-    fontStyle: 'italic',
   },
   searchBarWrap: {
     flexDirection: 'row',

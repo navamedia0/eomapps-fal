@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -16,10 +16,8 @@ import CornerTicks from '@/components/CornerTicks';
 import FavoriteStarButton from '@/components/FavoriteStarButton';
 import ShareButton from '@/components/ShareButton';
 import ShareImageButton from '@/components/ShareImageButton';
-import PopularDetailModal from '@/components/PopularDetailModal';
 import allInfoCards from '@/data/bilgi_kosesi_kartlari.json';
 import { type InfoCard, type InfoCategory } from '@/services/bilgiKosesiFeed';
-import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
 import {
   GOLD,
   GOLD_SOFT,
@@ -31,7 +29,6 @@ type Props = NativeStackScreenProps<RootStackParamList, 'BilgiKosesi'>;
 
 const ALL_INFO_CARDS: InfoCard[] = allInfoCards as InfoCard[];
 const PAGE_SIZE = 25;
-const POPULAR_LIMIT = 15;
 
 const CATEGORY_ICON: Record<InfoCategory, keyof typeof MaterialCommunityIcons.glyphMap> = {
   burc: 'zodiac-leo',
@@ -51,8 +48,6 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
   const [infoCategory, setInfoCategory] = useState<'all' | InfoCategory>('all');
   const [infoPage, setInfoPage] = useState(1);
   const [infoSearch, setInfoSearch] = useState('');
-  const [popularInfo, setPopularInfo] = useState<PopularFavorite[]>([]);
-  const [selectedPopular, setSelectedPopular] = useState<PopularFavorite | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   // Filtrelenmiş bilgi kartları (7.500 Kart Havuzu)
@@ -74,25 +69,11 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
     return filteredInfoCards.slice(0, infoPage * PAGE_SIZE);
   }, [filteredInfoCards, infoPage]);
 
-  const loadData = useCallback(() => {
-    getPopularFavorites().then((items) => {
-      const popular = items
-        .filter((item) => item.kind === 'info' || item.id.startsWith('info:'))
-        .slice(0, POPULAR_LIMIT);
-      setPopularInfo(popular);
-    });
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setInfoPage(1);
-    loadData();
-    setTimeout(() => setRefreshing(false), 500);
-  }, [loadData]);
+    setTimeout(() => setRefreshing(false), 400);
+  }, []);
 
   return (
     <MysticTableBackground>
@@ -109,41 +90,6 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
           <Text style={styles.headerTitle}>Bilgi Köşesi</Text>
           <Text style={styles.headerSubtitle}>7.500 Kadim Bilgi Kartı & İlham Ansiklopedisi</Text>
         </View>
-
-        {/* 15 POPÜLER BİLGİ BÖLÜMÜ */}
-        {popularInfo.length > 0 && (
-          <View style={styles.popularSection}>
-            <View style={styles.popularHeader}>
-              <Ionicons name="flame" size={18} color={GOLD} />
-              <Text style={styles.popularTitle}>Haftanın En Sevilen 15 Kadim Bilgisi</Text>
-            </View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.popularRow}
-            >
-              {popularInfo.map((item, idx) => (
-                <Pressable
-                  key={item.id || idx}
-                  onPress={() => setSelectedPopular(item)}
-                  style={({ pressed }) => [styles.popularCard, pressed && styles.popularCardPressed]}
-                >
-                  <View style={styles.popularRankBadge}>
-                    <Text style={styles.popularRankText}>#{idx + 1}</Text>
-                  </View>
-                  {item.title ? (
-                    <Text style={styles.popularCardTitle} numberOfLines={2}>
-                      {item.title}
-                    </Text>
-                  ) : null}
-                  <Text style={styles.popularCardBody} numberOfLines={4}>
-                    {item.body}
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </View>
-        )}
 
         {/* BİLGİ ARAMA ÇUBUĞU */}
         <View style={styles.searchBarWrap}>
@@ -247,11 +193,6 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
           </Pressable>
         )}
       </ScrollView>
-
-      {/* Popüler Detay Modalı */}
-      {selectedPopular && (
-        <PopularDetailModal item={selectedPopular} onClose={() => setSelectedPopular(null)} />
-      )}
     </MysticTableBackground>
   );
 }
@@ -278,64 +219,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: TEXT_MUTED,
     textAlign: 'center',
-  },
-  popularSection: {
-    marginBottom: 16,
-  },
-  popularHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 10,
-  },
-  popularTitle: {
-    fontSize: 13.5,
-    fontWeight: '800',
-    color: GOLD,
-    letterSpacing: 0.4,
-  },
-  popularRow: {
-    gap: 10,
-    paddingRight: 10,
-  },
-  popularCard: {
-    width: 240,
-    minHeight: 100,
-    backgroundColor: 'rgba(38, 20, 54, 0.95)',
-    borderRadius: 14,
-    borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
-    padding: 12,
-    justifyContent: 'center',
-  },
-  popularCardPressed: {
-    opacity: 0.85,
-  },
-  popularRankBadge: {
-    position: 'absolute',
-    top: 6,
-    right: 8,
-    backgroundColor: 'rgba(242, 200, 121, 0.25)',
-    borderRadius: 6,
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-  },
-  popularRankText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: GOLD,
-  },
-  popularCardTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: GOLD,
-    marginBottom: 4,
-    paddingRight: 24,
-  },
-  popularCardBody: {
-    fontSize: 12,
-    lineHeight: 17,
-    color: TEXT_MUTED,
   },
   searchBarWrap: {
     flexDirection: 'row',
