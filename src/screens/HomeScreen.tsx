@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Animated, View, Text, Pressable, Image, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { TabScreenProps } from '@/navigation/types';
 import { getCheckinStatus, type CheckinStatus } from '@/services/streak';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import FeatureIcon from '@/components/FeatureIcon';
+import SozlerKoskuDrawerModal from '@/components/SozlerKoskuDrawerModal';
 import { FEATURE_ICONS } from '@/assets/icons';
 import {
   GOLD,
@@ -60,6 +62,8 @@ function GridButton({ item }: { item: GridItem }) {
 
 export default function HomeScreen({ navigation }: Props) {
   const [checkinInfo, setCheckinInfo] = useState<CheckinStatus | null>(null);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -251,13 +255,6 @@ export default function HomeScreen({ navigation }: Props) {
           onPress: () => navigation.navigate('BreathingExercise'),
         },
         {
-          key: 'sozlerKosku',
-          title: 'Sözler Köşkü',
-          subtitle: 'Sözler Köşesi & Bilgi Köşesi',
-          icon: <MaterialCommunityIcons name="book-open-page-variant" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('SozlerKosku'),
-        },
-        {
           key: 'moodJournal',
           title: 'Duygu Günlüğü',
           subtitle: 'Bugünkü ruh halini kaydet',
@@ -270,6 +267,17 @@ export default function HomeScreen({ navigation }: Props) {
 
   return (
     <MysticTableBackground scrollY={scrollY}>
+      {/* Sol Üst 3 Çizgi Hamburger Menü Butonu (Sözler & Bilgi Köşkü) */}
+      <View style={[styles.floatingMenuWrap, { top: insets.top + 8 }]} pointerEvents="box-none">
+        <Pressable
+          onPress={() => setDrawerVisible(true)}
+          style={({ pressed }) => [styles.hamburgerButton, pressed && styles.hamburgerButtonPressed]}
+          hitSlop={8}
+        >
+          <Ionicons name="menu" size={22} color={GOLD} />
+        </Pressable>
+      </View>
+
       <Animated.ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -338,11 +346,43 @@ export default function HomeScreen({ navigation }: Props) {
           ))}
         </View>
       </Animated.ScrollView>
+
+      {/* Sözler & Bilgi Köşkü Açılır Çekmece Menüsü */}
+      <SozlerKoskuDrawerModal
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        navigation={navigation}
+      />
     </MysticTableBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  floatingMenuWrap: {
+    position: 'absolute',
+    left: 14,
+    zIndex: 999,
+  },
+  hamburgerButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(26, 16, 52, 0.92)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(242, 200, 121, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.35,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  hamburgerButtonPressed: {
+    backgroundColor: 'rgba(58, 36, 106, 0.95)',
+    borderColor: GOLD,
+    transform: [{ scale: 0.92 }],
+  },
   scrollContent: {
     flexGrow: 1,
     alignItems: 'center',

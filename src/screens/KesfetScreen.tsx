@@ -367,7 +367,7 @@ function LikeOptionsModal({
   );
 }
 
-// FOTOĞRAFLI GÖNDERİ KARTI (Instagram Tarzı + Popüler Kırmızı Çerçeve)
+// FOTOĞRAFLI GÖNDERİ KARTI (Instagram Tarzı + Popüler Lüks Kozmik Çerçeve)
 function PhotoPostCard({
   post,
   isPopular,
@@ -386,12 +386,14 @@ function PhotoPostCard({
   onPressAuthor: (userId: string) => void;
 }) {
   return (
-    <View style={[styles.photoCard, isPopular && styles.popularRedBorder]}>
-      {/* Popüler Rozet */}
+    <View style={[styles.photoCard, isPopular && styles.popularLuxuryFrame]}>
+      {/* Popüler Lüks Kozmik Rozet */}
       {isPopular && (
-        <View style={styles.popularBadgeWrap}>
-          <Ionicons name="flame" size={13} color="#FFF" />
-          <Text style={styles.popularBadgeText}>24 Saatin Efsanesi · Popüler Gönderi</Text>
+        <View style={styles.popularLuxuryBadgeWrap}>
+          <MaterialCommunityIcons name="crown" size={15} color={GOLD} />
+          <Text style={styles.popularLuxuryBadgeText}>24 Saatin Efsanesi · Popüler Gönderi</Text>
+          <View style={{ flex: 1 }} />
+          <Ionicons name="sparkles" size={13} color={GOLD_SOFT} />
         </View>
       )}
 
@@ -458,7 +460,7 @@ function PhotoPostCard({
   );
 }
 
-// METİN DURUM KARTI (Tweet / X Tarzı + Popüler Kırmızı Çerçeve)
+// METİN DURUM KARTI (Tweet / X Tarzı + Popüler Lüks Kozmik Çerçeve)
 function TextStatusCard({
   post,
   isPopular,
@@ -477,12 +479,14 @@ function TextStatusCard({
   onPressAuthor: (userId: string) => void;
 }) {
   return (
-    <View style={[styles.statusCard, isPopular && styles.popularRedBorder]}>
-      {/* Popüler Rozet */}
+    <View style={[styles.statusCard, isPopular && styles.popularLuxuryFrame]}>
+      {/* Popüler Lüks Kozmik Rozet */}
       {isPopular && (
-        <View style={styles.popularBadgeWrap}>
-          <Ionicons name="flame" size={13} color="#FFF" />
-          <Text style={styles.popularBadgeText}>24 Saatin Efsanesi · Popüler Durum</Text>
+        <View style={styles.popularLuxuryBadgeWrap}>
+          <MaterialCommunityIcons name="crown" size={15} color={GOLD} />
+          <Text style={styles.popularLuxuryBadgeText}>24 Saatin Efsanesi · Popüler Durum</Text>
+          <View style={{ flex: 1 }} />
+          <Ionicons name="sparkles" size={13} color={GOLD_SOFT} />
         </View>
       )}
 
@@ -1160,25 +1164,28 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(242, 200, 121, 0.3)',
     padding: 16,
   },
-  popularRedBorder: {
-    borderColor: '#EF4444',
+  popularLuxuryFrame: {
+    borderColor: '#E11D48',
     borderWidth: 2,
-    shadowColor: '#EF4444',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.35,
-    shadowRadius: 6,
-    elevation: 5,
+    backgroundColor: 'rgba(26, 14, 52, 0.98)',
+    shadowColor: '#E11D48',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 8,
   },
-  popularBadgeWrap: {
+  popularLuxuryBadgeWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#EF4444',
-    paddingVertical: 4,
+    backgroundColor: 'rgba(225, 29, 72, 0.95)',
+    paddingVertical: 5,
     paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(242, 200, 121, 0.4)',
   },
-  popularBadgeText: {
-    fontSize: 11,
+  popularLuxuryBadgeText: {
+    fontSize: 11.5,
     fontWeight: '800',
     color: '#FFF',
     letterSpacing: 0.4,
