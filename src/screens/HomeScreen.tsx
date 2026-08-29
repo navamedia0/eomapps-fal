@@ -251,6 +251,13 @@ export default function HomeScreen({ navigation }: Props) {
           onPress: () => navigation.navigate('BreathingExercise'),
         },
         {
+          key: 'sozlerKosku',
+          title: 'Sözler Köşkü',
+          subtitle: 'Sözler Köşesi & Bilgi Köşesi',
+          icon: <MaterialCommunityIcons name="book-open-page-variant" size={26} color={GOLD} />,
+          onPress: () => navigation.navigate('SozlerKosku'),
+        },
+        {
           key: 'moodJournal',
           title: 'Duygu Günlüğü',
           subtitle: 'Bugünkü ruh halini kaydet',

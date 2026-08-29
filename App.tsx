@@ -78,6 +78,7 @@ import CelticTreeScreen from '@/screens/CelticTreeScreen';
 import AuraEnergyScreen from '@/screens/AuraEnergyScreen';
 import ScryingScreen from '@/screens/ScryingScreen';
 import BilgiKosesiScreen from '@/screens/BilgiKosesiScreen';
+import SozlerKoskuScreen from '@/screens/SozlerKoskuScreen';
 import UserProfileScreen from '@/screens/UserProfileScreen';
 import BlockedUsersScreen from '@/screens/BlockedUsersScreen';
 import DMThreadScreen from '@/screens/DMThreadScreen';
@@ -221,6 +222,7 @@ export default function App() {
               options={({ route }) => ({ title: bilgiMakaleleri[route.params.topic].title })}
             />
             <Stack.Screen name="BilgiKosesi" component={BilgiKosesiScreen} options={{ title: 'Bilgi Köşesi' }} />
+            <Stack.Screen name="SozlerKosku" component={SozlerKoskuScreen} options={{ title: 'Sözler Köşkü' }} />
             <Stack.Screen name="UserProfile" component={UserProfileScreen} options={{ title: 'Profil' }} />
             <Stack.Screen name="BlockedUsers" component={BlockedUsersScreen} options={{ title: 'Engellenen Kullanıcılar' }} />
             <Stack.Screen

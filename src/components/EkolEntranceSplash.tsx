@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, View, Text, Modal, Image, type ImageSourcePropType } from 'react-native';
+import React, { useEffect, useCallback } from 'react';
+import { StyleSheet, View, Text, Modal, Image, Pressable, type ImageSourcePropType } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,6 +9,7 @@ import Animated, {
   withRepeat,
   Easing,
   runOnJS,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GOLD } from '@/theme/colors';
@@ -31,50 +32,67 @@ export default function EkolEntranceSplash({
   onFinish,
 }: Props) {
   const opacity = useSharedValue(0);
-  const scale = useSharedValue(0.6);
-  const glowScale = useSharedValue(0.75);
+  const scale = useSharedValue(0.7);
+  const glowOpacity = useSharedValue(0.2);
   const textOpacity = useSharedValue(0);
-  const floatY = useSharedValue(20);
+  const floatY = useSharedValue(15);
+
+  const handleFinish = useCallback(() => {
+    onFinish();
+  }, [onFinish]);
+
+  const handleSkip = useCallback(() => {
+    cancelAnimation(opacity);
+    cancelAnimation(scale);
+    cancelAnimation(glowOpacity);
+    cancelAnimation(textOpacity);
+    cancelAnimation(floatY);
+    opacity.value = withTiming(0, { duration: 250, easing: Easing.out(Easing.quad) }, (finished) => {
+      if (finished) {
+        runOnJS(handleFinish)();
+      }
+    });
+  }, [opacity, scale, glowOpacity, textOpacity, floatY, handleFinish]);
 
   useEffect(() => {
     if (!visible) return;
 
     // Reset initial values
     opacity.value = 0;
-    scale.value = 0.6;
-    glowScale.value = 0.75;
+    scale.value = 0.7;
+    glowOpacity.value = 0.2;
     textOpacity.value = 0;
-    floatY.value = 20;
+    floatY.value = 15;
 
-    // 1. Slow, majestic float-in (1.8 seconds)
-    opacity.value = withTiming(1, { duration: 1200, easing: Easing.out(Easing.cubic) });
-    scale.value = withSpring(1.0, { damping: 14, stiffness: 60 });
-    floatY.value = withTiming(0, { duration: 1600, easing: Easing.out(Easing.cubic) });
+    // 1. Slow, majestic float-in
+    opacity.value = withTiming(1, { duration: 900, easing: Easing.out(Easing.cubic) });
+    scale.value = withSpring(1.0, { damping: 14, stiffness: 70 });
+    floatY.value = withTiming(0, { duration: 1200, easing: Easing.out(Easing.cubic) });
 
-    // 2. Slow breathing glow pulse
-    glowScale.value = withRepeat(
+    // 2. Ultra-lightweight pulsing glow
+    glowOpacity.value = withRepeat(
       withSequence(
-        withTiming(1.3, { duration: 1400, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0.95, { duration: 1400, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0.55, { duration: 1200, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0.2, { duration: 1200, easing: Easing.inOut(Easing.sin) }),
       ),
       -1,
       true,
     );
 
     // 3. Text fade in smoothly
-    textOpacity.value = withTiming(1, { duration: 1000, easing: Easing.out(Easing.quad) });
+    textOpacity.value = withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) });
 
-    // 4. Hold on screen for ~3.2 seconds so user enjoys the mascot, then smoothly fade out
+    // 4. Hold on screen then smoothly fade out
     const timer = setTimeout(() => {
-      opacity.value = withTiming(0, { duration: 650, easing: Easing.in(Easing.cubic) }, (finished) => {
+      opacity.value = withTiming(0, { duration: 500, easing: Easing.in(Easing.cubic) }, (finished) => {
         if (finished) {
-          runOnJS(onFinish)();
+          runOnJS(handleFinish)();
         }
       });
-    }, 4500);
+    }, 4200);
 
     return () => clearTimeout(timer);
-  }, [visible, onFinish, opacity, scale, glowScale, textOpacity, floatY]);
+  }, [visible, handleFinish, opacity, scale, glowOpacity, textOpacity, floatY]);
 
   const figureAnimStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -82,8 +100,7 @@ export default function EkolEntranceSplash({
   }));
 
   const glowAnimStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value * 0.75,
-    transform: [{ scale: glowScale.value }],
+    opacity: opacity.value * glowOpacity.value,
   }));
 
   const textAnimStyle = useAnimatedStyle(() => ({
@@ -94,17 +111,23 @@ export default function EkolEntranceSplash({
 
   return (
     <Modal visible={visible} transparent animationType="none" statusBarTranslucent>
-      <View style={styles.container}>
+      <Pressable onPress={handleSkip} style={styles.container}>
         <LinearGradient
           colors={['rgba(9, 4, 20, 0.96)', 'rgba(15, 6, 32, 0.98)', 'rgba(6, 2, 14, 0.99)']}
           style={StyleSheet.absoluteFillObject}
         />
 
-        {/* Ambient Glow Aura */}
-        <Animated.View style={[styles.glowCircle, { backgroundColor: accentColor }, glowAnimStyle]} />
+        {/* High-Performance Radial Glow Aura (No slow CSS blur filters) */}
+        <Animated.View
+          style={[styles.glowCircle, { borderColor: accentColor }, glowAnimStyle]}
+          renderToHardwareTextureAndroid={true}
+        />
 
         {/* Floating Mascot / Tulip Figure */}
-        <Animated.View style={[styles.figureWrap, figureAnimStyle]}>
+        <Animated.View
+          style={[styles.figureWrap, figureAnimStyle]}
+          renderToHardwareTextureAndroid={true}
+        >
           <Image source={figureSource} style={styles.figureImage} resizeMode="contain" />
         </Animated.View>
 
@@ -114,7 +137,10 @@ export default function EkolEntranceSplash({
           {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
           <View style={[styles.accentLine, { backgroundColor: accentColor }]} />
         </Animated.View>
-      </View>
+
+        {/* Subtle Tap to Skip Indicator */}
+        <Text style={styles.skipHint}>Atlamak için dokunun</Text>
+      </Pressable>
     </Modal>
   );
 }
@@ -128,11 +154,12 @@ const styles = StyleSheet.create({
   },
   glowCircle: {
     position: 'absolute',
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    filter: [{ blur: 45 }],
-    opacity: 0.4,
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    borderWidth: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    opacity: 0.35,
   },
   figureWrap: {
     width: 240,
@@ -166,5 +193,12 @@ const styles = StyleSheet.create({
     height: 3,
     borderRadius: 2,
     marginTop: 8,
+  },
+  skipHint: {
+    position: 'absolute',
+    bottom: 40,
+    fontSize: 11.5,
+    color: 'rgba(255, 255, 255, 0.4)',
+    letterSpacing: 0.5,
   },
 });

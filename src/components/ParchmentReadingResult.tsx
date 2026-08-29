@@ -135,8 +135,10 @@ export default function ParchmentReadingResult({
             </Pressable>
 
             <View style={styles.badgePill}>
-              <MaterialCommunityIcons name="feather" size={15} color="#92400E" />
-              <Text style={styles.badgePillText}>{badge}</Text>
+              <MaterialCommunityIcons name="feather" size={13} color="#92400E" />
+              <Text style={styles.badgePillText} numberOfLines={1} ellipsizeMode="tail">
+                {badge}
+              </Text>
             </View>
 
             <Pressable onPress={onNewReadingPress} style={styles.newReadingBtn} hitSlop={10}>
@@ -244,17 +246,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 6,
-    marginBottom: 4,
+    gap: 6,
+    paddingHorizontal: 2,
+    marginBottom: 6,
   },
   homeBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: 4,
     backgroundColor: '#FEF3C7',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 18,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 16,
     borderWidth: 1.5,
     borderColor: '#D97706',
     shadowColor: '#000',
@@ -262,28 +265,34 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
+    flexShrink: 0,
   },
   homeBtnText: {
-    fontSize: 12.5,
+    fontSize: 12,
     fontWeight: '800',
     color: '#451A03',
   },
   badgePill: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    justifyContent: 'center',
+    gap: 4,
     backgroundColor: 'rgba(254, 243, 199, 0.95)',
-    paddingHorizontal: 12,
-    paddingVertical: 7,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
     borderRadius: 16,
     borderWidth: 1.2,
     borderColor: '#B45309',
+    minWidth: 0,
+    overflow: 'hidden',
   },
   badgePillText: {
-    fontSize: 12,
+    fontSize: 11.5,
     fontWeight: '800',
     color: '#78350F',
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
+    flexShrink: 1,
   },
   newReadingBtn: {
     flexDirection: 'row',
@@ -291,8 +300,8 @@ const styles = StyleSheet.create({
     gap: 4,
     backgroundColor: '#FEF3C7',
     paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderRadius: 18,
+    paddingVertical: 7,
+    borderRadius: 16,
     borderWidth: 1.5,
     borderColor: '#D97706',
     shadowColor: '#000',
@@ -300,9 +309,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
+    flexShrink: 0,
   },
   newReadingBtnText: {
-    fontSize: 12.5,
+    fontSize: 12,
     fontWeight: '800',
     color: '#451A03',
   },
