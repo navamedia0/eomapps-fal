@@ -30,6 +30,7 @@ import {
 } from '@/theme/colors';
 
 const QUOTE_CARD_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
+const PARCHMENT_BG = require('@/assets/textures/parchment_info_card.jpg');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HaftaninSevilenleri'>;
 
@@ -236,7 +237,18 @@ export default function HaftaninSevilenleriScreen({ navigation }: Props) {
 
             <View style={styles.factsFeed}>
               {weeklyTopInfo.map((item) => (
-                <View key={`top_info_${item.rank}`} style={styles.factCard}>
+                <ImageBackground
+                  key={`top_info_${item.rank}`}
+                  source={PARCHMENT_BG}
+                  style={styles.factCard}
+                  imageStyle={styles.factCardImage}
+                  resizeMode="cover"
+                >
+                  <LinearGradient
+                    colors={['rgba(11, 10, 31, 0.45)', 'rgba(11, 10, 31, 0.72)']}
+                    style={styles.factScrim}
+                    pointerEvents="none"
+                  />
                   <CornerTicks />
                   {/* Rank Badge */}
                   <View style={styles.rankBadge}>
@@ -259,7 +271,7 @@ export default function HaftaninSevilenleriScreen({ navigation }: Props) {
                     <ShareButton text={`Mistik Rehber (Haftanın #${item.rank} Bilgisi) - ${item.card.title}\n\n${item.card.body}`} label="Paylaş" />
                     <ShareImageButton text={`${item.card.title}\n\n${item.card.body}`} label="Görsel Paylaş" />
                   </View>
-                </View>
+                </ImageBackground>
               ))}
             </View>
           </View>
@@ -415,11 +427,18 @@ const styles = StyleSheet.create({
   },
   factCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.88)',
     borderRadius: 16,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.28)',
+    borderColor: 'rgba(242, 200, 121, 0.35)',
     padding: 16,
+    overflow: 'hidden',
+  },
+  factCardImage: {
+    borderRadius: 16,
+  },
+  factScrim: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 16,
   },
   factHeader: {
     flexDirection: 'row',
@@ -432,7 +451,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(242, 200, 121, 0.18)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
@@ -452,7 +471,7 @@ const styles = StyleSheet.create({
   factBody: {
     fontSize: 13.5,
     lineHeight: 20,
-    color: TEXT_PRIMARY,
+    color: '#FFF',
     marginBottom: 14,
   },
   factFooter: {

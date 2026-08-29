@@ -131,21 +131,6 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
-            {/* Katina Kartları */}
-            <Pressable
-              onPress={() => handleNavigate('KartAnlamlari', { deck: 'katina' })}
-              style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
-            >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(236, 72, 153, 0.15)' }]}>
-                <MaterialCommunityIcons name="cards-club-outline" size={20} color="#F472B6" />
-              </View>
-              <View style={styles.menuTextWrap}>
-                <Text style={styles.menuItemTitle}>Katina Falı Deste Rehberi</Text>
-                <Text style={styles.menuItemDesc}>İskambil kökenli mistik semboller</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color={GOLD} />
-            </Pressable>
-
             {/* Burçların Kökeni ve 4 Element */}
             <Pressable
               onPress={() => handleNavigate('BilgiMakale', { topic: 'burc_kokeni' })}

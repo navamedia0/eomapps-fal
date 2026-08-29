@@ -6,8 +6,10 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
+  ImageBackground,
   RefreshControl,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
@@ -24,6 +26,8 @@ import {
   TEXT_PRIMARY,
   TEXT_MUTED,
 } from '@/theme/colors';
+
+const PARCHMENT_BG = require('@/assets/textures/parchment_info_card.jpg');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BilgiKosesi'>;
 
@@ -157,7 +161,18 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
 
         <View style={styles.factsFeed}>
           {visibleInfoCards.map((card) => (
-            <View key={card.id} style={styles.factCard}>
+            <ImageBackground
+              key={card.id}
+              source={PARCHMENT_BG}
+              style={styles.factCard}
+              imageStyle={styles.factCardImage}
+              resizeMode="cover"
+            >
+              <LinearGradient
+                colors={['rgba(11, 10, 31, 0.45)', 'rgba(11, 10, 31, 0.72)']}
+                style={styles.factScrim}
+                pointerEvents="none"
+              />
               <CornerTicks />
               <View style={styles.factHeader}>
                 <View style={styles.factCategoryBadge}>
@@ -176,7 +191,7 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
                 <ShareButton text={`Mistik Rehber - ${card.title}\n\n${card.body}`} label="Paylaş" />
                 <ShareImageButton text={`${card.title}\n\n${card.body}`} label="Görsel Paylaş" />
               </View>
-            </View>
+            </ImageBackground>
           ))}
         </View>
 
@@ -280,11 +295,18 @@ const styles = StyleSheet.create({
   },
   factCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.88)',
     borderRadius: 16,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.28)',
+    borderColor: 'rgba(242, 200, 121, 0.35)',
     padding: 16,
+    overflow: 'hidden',
+  },
+  factCardImage: {
+    borderRadius: 16,
+  },
+  factScrim: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 16,
   },
   factHeader: {
     flexDirection: 'row',
@@ -296,7 +318,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(242, 200, 121, 0.18)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
@@ -316,7 +338,7 @@ const styles = StyleSheet.create({
   factBody: {
     fontSize: 13.5,
     lineHeight: 20,
-    color: TEXT_PRIMARY,
+    color: '#FFF',
     marginBottom: 14,
   },
   factFooter: {
