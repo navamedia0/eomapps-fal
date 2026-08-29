@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -7,9 +7,11 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import ReelRevealFX from '@/components/effects/ReelRevealFX';
 import SparkleBurst from '@/components/effects/SparkleBurst';
+import ReadingCardStack from '@/components/ReadingCardStack';
+import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import waxData from '@/data/balmumu_fali_sembolleri.json';
 import { interpretWaxReading } from '@/services/readings-ai';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -128,6 +130,7 @@ export default function WaxReadingScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
   const castKey = useRef(0);
 
   const totalReveals = waxShapes.length > 0 ? waxShapes.length + 1 : 0; // +1 alev
@@ -160,7 +163,8 @@ export default function WaxReadingScreen({ navigation }: Props) {
       const interp = await interpretWaxReading(flameSignal, waxShapes, targetMode);
       setResult(interp);
     } catch {
-      setError('Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin.');
+      await addCoins(cost);
+      setError(`Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin. (${cost} coin iade edildi.)`);
     } finally {
       setLoading(false);
     }
@@ -265,7 +269,7 @@ export default function WaxReadingScreen({ navigation }: Props) {
               />
             )}
 
-            {result && (
+            {result && !resultSections && (
               <View style={styles.resultCard}>
                 <View style={styles.badgeRow}>
                   <MaterialCommunityIcons name="crown" size={16} color={GOLD} />
@@ -278,6 +282,14 @@ export default function WaxReadingScreen({ navigation }: Props) {
           </View>
         )}
       </ScrollView>
+
+      {waxShapes.length > 0 && result && resultSections && (
+        <ReadingCardStack
+          badge="Balmumu Falı & Aşk Raporu"
+          sections={resultSections}
+          shareTextPrefix="Mistik Rehber - Balmumu Falım"
+        />
+      )}
     </MysticTableBackground>
   );
 }

@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import { getVipTiers, subscribeVip, getMyVipSubscription, type VipTier, type VipSubscription } from '@/services/shop';
@@ -37,10 +38,10 @@ export default function VipTiersScreen() {
       setSubscribingId(tier.id);
       try {
         await subscribeVip(tier.id);
-        Alert.alert('Aboneliğin başladı', `${tier.name} kademesine hoş geldin!`);
+        showAlert('Aboneliğin başladı', `${tier.name} kademesine hoş geldin!`);
         load();
       } catch (err) {
-        Alert.alert('Abone olunamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+        showAlert('Abone olunamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
       } finally {
         setSubscribingId(null);
       }

@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet, Image, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { showAlert } from '@/services/themedAlert';
 import type { TabScreenProps } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import FeatureIcon from '@/components/FeatureIcon';
@@ -52,14 +53,14 @@ function AuthSection() {
       const signedInUser = await signInWithGoogle();
       setUser(signedInUser);
     } catch (err) {
-      Alert.alert('Giriş yapılamadı', err instanceof Error ? err.message : 'Bilinmeyen bir hata oluştu.');
+      showAlert('Giriş yapılamadı', err instanceof Error ? err.message : 'Bilinmeyen bir hata oluştu.');
     } finally {
       setSigningIn(false);
     }
   }, []);
 
   const handleSignOut = useCallback(() => {
-    Alert.alert('Çıkış yap', 'Hesabından çıkış yapmak istediğine emin misin?', [
+    showAlert('Çıkış yap', 'Hesabından çıkış yapmak istediğine emin misin?', [
       { text: 'Vazgeç', style: 'cancel' },
       {
         text: 'Çıkış Yap',
@@ -121,7 +122,7 @@ function AuthSection() {
       </Pressable>
       <AppleSignInButton
         onSuccess={() => getStoredSession().then((session) => setUser(session?.user ?? null))}
-        onError={(message) => Alert.alert('Giriş yapılamadı', message)}
+        onError={(message) => showAlert('Giriş yapılamadı', message)}
       />
     </View>
   );

@@ -1,6 +1,6 @@
 import { env } from '@/config/env';
 import { getStoredSession } from '@/services/auth';
-import { getJson, postJson, deleteRequest } from '@/services/http';
+import { getJson, postJson, patchJson, deleteRequest } from '@/services/http';
 
 export type RoomSummary = {
   id: string;
@@ -9,6 +9,7 @@ export type RoomSummary = {
   hostName: string;
   seatedCount: number;
   capacity: number;
+  topic: string | null;
   createdAt: string;
 };
 
@@ -19,9 +20,14 @@ export type RoomSeat = {
   avatarUrl: string | null;
 } | null;
 
+export type RoomViewer = { userId: string; displayName: string; avatarUrl: string | null };
+
 export type RoomDetail = {
-  room: { id: string; name: string; hostId: string; hostName: string; createdAt: string };
+  room: { id: string; name: string; hostId: string; hostName: string; capacity: number; topic: string | null; createdAt: string };
   seats: RoomSeat[];
+  viewers: RoomViewer[];
+  isBanned: boolean;
+  isMuted: boolean;
 };
 
 export type RoomMessage = {
@@ -31,6 +37,9 @@ export type RoomMessage = {
   text: string;
   createdAt: string;
 };
+
+export const ROOM_CAPACITIES = [2, 3, 5, 7, 10] as const;
+export const ROOM_TOPICS = ['Genel Sohbet', 'Fal Değerlendirme', 'Müzik', 'Sadece Dinleme', 'Diğer'] as const;
 
 function appHeaders(): Record<string, string> {
   const appSecret = env.appSecret();
@@ -55,17 +64,56 @@ export async function getRooms(): Promise<RoomSummary[]> {
   return rooms;
 }
 
-export async function createRoom(name: string): Promise<RoomSummary> {
+export async function createRoom(name: string, capacity: number, topic: string | null): Promise<RoomSummary> {
   const trimmed = name.trim();
   if (!trimmed) throw new Error('Oda adı gerekli.');
   const headers = await requireAuthHeaders();
-  const { room } = await postJson<{ room: RoomSummary }>(`${env.socialApiUrl()}/rooms`, { name: trimmed }, headers);
+  const { room } = await postJson<{ room: RoomSummary }>(
+    `${env.socialApiUrl()}/rooms`,
+    { name: trimmed, capacity, topic },
+    headers,
+  );
   return room;
 }
 
 export async function getRoom(roomId: string): Promise<RoomDetail> {
   const headers = await optionalAuthHeaders();
   return getJson<RoomDetail>(`${env.socialApiUrl()}/rooms/${roomId}`, headers);
+}
+
+export async function updateRoom(roomId: string, updates: { name?: string; topic?: string | null }): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await patchJson(`${env.socialApiUrl()}/rooms/${roomId}`, updates, headers);
+}
+
+export async function closeRoom(roomId: string): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await deleteRequest(`${env.socialApiUrl()}/rooms/${roomId}`, headers);
+}
+
+export async function clearRoomMessages(roomId: string): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await deleteRequest(`${env.socialApiUrl()}/rooms/${roomId}/messages`, headers);
+}
+
+export async function banRoomUser(roomId: string, userId: string): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await postJson(`${env.socialApiUrl()}/rooms/${roomId}/bans/${userId}`, {}, headers);
+}
+
+export async function unbanRoomUser(roomId: string, userId: string): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await deleteRequest(`${env.socialApiUrl()}/rooms/${roomId}/bans/${userId}`, headers);
+}
+
+export async function muteRoomUser(roomId: string, userId: string): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await postJson(`${env.socialApiUrl()}/rooms/${roomId}/mutes/${userId}`, {}, headers);
+}
+
+export async function unmuteRoomUser(roomId: string, userId: string): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await deleteRequest(`${env.socialApiUrl()}/rooms/${roomId}/mutes/${userId}`, headers);
 }
 
 export async function takeSeat(roomId: string, seatIndex: number): Promise<void> {
@@ -94,6 +142,16 @@ export async function sendRoomMessage(roomId: string, text: string): Promise<Roo
     headers,
   );
   return message;
+}
+
+export async function pingRoomViewer(roomId: string): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await postJson(`${env.socialApiUrl()}/rooms/${roomId}/viewers`, {}, headers);
+}
+
+export async function leaveRoomViewer(roomId: string): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await deleteRequest(`${env.socialApiUrl()}/rooms/${roomId}/viewers`, headers);
 }
 
 export async function getRoomVoiceToken(roomId: string): Promise<string> {

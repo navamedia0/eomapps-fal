@@ -33,11 +33,23 @@ const MAX_POST_LENGTH = 280;
 const MAX_COMMENT_LENGTH = 500;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const MAX_MESSAGE_LENGTH = 2000;
-const ROOM_SEAT_COUNT = 10;
+const ROOM_SEAT_COUNT = 10; // eski oda kayıtlarında capacity boşsa kullanılan varsayılan
+const ALLOWED_ROOM_CAPACITIES = [2, 3, 5, 7, 10];
+const ROOM_TOPICS = ['Genel Sohbet', 'Fal Değerlendirme', 'Müzik', 'Sadece Dinleme', 'Diğer'];
+const ROOM_VIEWER_TIMEOUT_SECONDS = 45;
 const MAX_ROOM_NAME_LENGTH = 60;
 const MAX_ROOM_MESSAGE_LENGTH = 500;
 const LIVEKIT_TOKEN_TTL_SECONDS = 6 * 3600;
 const MAX_REPORT_REASON_LENGTH = 300;
+const WALLET_BUNDLES = {
+  starter: { coin: 100, crystal: 20 },
+  popular: { coin: 300, crystal: 70 },
+  value: { coin: 700, crystal: 180 },
+  mega: { coin: 1500, crystal: 400 },
+};
+const GARDEN_SLOT_COUNT = 6;
+const GARDEN_MOON_GROWTH_BONUS = 0.15; // yeni ayda ekim bu kadar hızlı büyür
+const GARDEN_MOON_YIELD_BONUS = 0.25; // dolunayda hasat bu kadar fazla verir
 const MAX_GUIDE_APPLICATION_LENGTH = 600;
 const VALID_REPORT_TARGETS = new Set(['post', 'comment', 'user']);
 // Bu kadar farklı kullanıcı şikayet ederse içerik manuel inceleme
@@ -46,6 +58,31 @@ const REPORT_HIDE_THRESHOLD = 3;
 // Keşfet kalıcı bir arşiv değil — gönderiler bu süre sonunda feed'den
 // düşer ve zamanlanmış görev tarafından tamamen silinir (metin dahil).
 const POST_RETENTION_DAYS = 3;
+
+// Uygulamanın kendi Ay Takvimi özelliği astronomy-engine kullanıyor ama o
+// paketi sırf küçük bir oyun bonusu için worker'a eklemek gereksiz —
+// standart sinodik ay formülüyle (~29.53 gün) birkaç saat hassasiyetle aynı
+// sonucu veren, bağımsız/küçük bir yaklaşık hesap yeterli.
+function moonIllumination(date = new Date()) {
+  const synodicMonth = 29.53058867;
+  const knownNewMoon = Date.UTC(2000, 0, 6, 18, 14);
+  const daysSince = (date.getTime() - knownNewMoon) / 86400000;
+  const phase = ((daysSince % synodicMonth) + synodicMonth) % synodicMonth;
+  const fraction = phase / synodicMonth; // 0 = yeni ay, 0.5 = dolunay
+  const illumination = (1 - Math.cos(2 * Math.PI * fraction)) / 2; // 0..1
+  return { fraction, illumination };
+}
+
+function moonPhaseLabel(fraction) {
+  if (fraction < 0.03 || fraction >= 0.97) return 'Yeni Ay';
+  if (fraction < 0.22) return 'Hilal (Büyüyen)';
+  if (fraction < 0.28) return 'İlk Dördün';
+  if (fraction < 0.47) return 'Şişkin Ay (Büyüyen)';
+  if (fraction < 0.53) return 'Dolunay';
+  if (fraction < 0.72) return 'Şişkin Ay (Küçülen)';
+  if (fraction < 0.78) return 'Son Dördün';
+  return 'Hilal (Küçülen)';
+}
 
 function postRetentionCutoff() {
   return new Date(Date.now() - POST_RETENTION_DAYS * 24 * 3600 * 1000).toISOString();
@@ -97,6 +134,28 @@ async function purgeExpiredPosts(env) {
   if (imageKeys.length > 0) await env.IMAGES.delete(imageKeys);
 }
 
+// Kimse koltuğa oturmadan (kurucu dahil) 2 saatten eski kalan odalar —
+// "boş oda listede birikmesin" hijyeni. Dolu odalar zaten son kişi koltuktan
+// kalkınca kendi kendine siliniyor, bu sadece hiç oturulmamış odalar için.
+async function purgeEmptyRooms(env) {
+  const cutoff = new Date(Date.now() - 2 * 3600 * 1000).toISOString();
+  const { results } = await env.DB.prepare(
+    `SELECT rooms.id FROM rooms
+     WHERE rooms.created_at < ?
+       AND NOT EXISTS (SELECT 1 FROM room_seats WHERE room_seats.room_id = rooms.id)`,
+  )
+    .bind(cutoff)
+    .all();
+  if (results.length === 0) return;
+  const ids = results.map((row) => row.id);
+  const placeholders = ids.map(() => '?').join(',');
+  await env.DB.batch([
+    env.DB.prepare(`DELETE FROM room_messages WHERE room_id IN (${placeholders})`).bind(...ids),
+    env.DB.prepare(`DELETE FROM room_viewers WHERE room_id IN (${placeholders})`).bind(...ids),
+    env.DB.prepare(`DELETE FROM rooms WHERE id IN (${placeholders})`).bind(...ids),
+  ]);
+}
+
 // Rehberler/kullanıcı adı sistemi henüz yok — o gelene kadar profil id'sinin
 // ilk 8 karakterinden geçici bir @etiket türetiyoruz.
 function publicPost(row, imagesOrigin, meId) {
@@ -146,14 +205,28 @@ async function creditWallet(env, userId, currency, amount, reason) {
 }
 
 // Bakiye yetersizse hiçbir şey yazmadan false döner; yeterliyse borç düşer
-// (negatif tutarla creditWallet çağırır) ve true döner. Mağaza/VIP satın
-// alma gibi harcama gerektiren her akış bunu kullanır.
+// ve true döner. Mağaza/VIP satın alma gibi harcama gerektiren her akış
+// bunu kullanır.
+//
+// Bakiye kontrolü VE düşümü tek atomik UPDATE'te yapılır (WHERE balance >=
+// amount) — önceki sürüm önce SELECT ile bakiyeyi okuyup sonra ayrı bir
+// yazma yapıyordu; eşzamanlı iki istek aynı başlangıç bakiyesini okuyup
+// ikisi de düşebiliyordu (bakiye eksiye inebiliyordu). Satır hiç yoksa
+// (kullanıcının o para biriminde hiç işlemi olmamış) UPDATE 0 satır
+// etkiler, bu da doğru şekilde "yetersiz bakiye" sayılır.
 async function debitWallet(env, ctx, userId, currency, amount, reason) {
-  const wallet = await env.DB.prepare('SELECT balance FROM wallets WHERE user_id = ? AND currency = ?')
-    .bind(userId, currency)
-    .first();
-  if ((wallet?.balance ?? 0) < amount) return false;
-  await creditWallet(env, userId, currency, -amount, reason);
+  const now = new Date().toISOString();
+  const result = await env.DB.prepare(
+    'UPDATE wallets SET balance = balance - ?, updated_at = ? WHERE user_id = ? AND currency = ? AND balance >= ?',
+  )
+    .bind(amount, now, userId, currency, amount)
+    .run();
+  if (!result.meta.changes) return false;
+  await env.DB.prepare(
+    'INSERT INTO ledger_entries (id, user_id, currency, amount, reason, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+  )
+    .bind(crypto.randomUUID(), userId, currency, -amount, reason, now)
+    .run();
   // Harcama = popülerlik puanı (Faz 7). Ödül gösterimi ayrı bir liderlik
   // tablosu tutmuyor, doğrudan ledger_entries'ten canlı hesaplanıyor.
   const totalSpent = await env.DB.prepare('SELECT SUM(-amount) as total FROM ledger_entries WHERE user_id = ? AND amount < 0')
@@ -161,6 +234,13 @@ async function debitWallet(env, ctx, userId, currency, amount, reason) {
     .first();
   ctx.waitUntil(checkAndGrantAchievement(env, ctx, userId, 'popularity_legend', totalSpent.total ?? 0));
   return true;
+}
+
+// debitWallet başarılı olduktan sonra teslimat (ürün/abonelik) yazımı
+// başarısız olursa parayı iade eder — "ücret alındı ama hiçbir şey
+// verilmedi" durumuna düşülmesin diye.
+async function refundWallet(env, userId, currency, amount, reason) {
+  await creditWallet(env, userId, currency, amount, reason);
 }
 
 // Takip/hediye/mesaj gibi olaylar bu fonksiyonu çağırarak kullanıcının
@@ -545,7 +625,7 @@ export default {
 
       if (path === '/rooms' && request.method === 'GET') {
         const { results } = await env.DB.prepare(
-          `SELECT rooms.id, rooms.name, rooms.host_id, rooms.created_at, users.display_name AS host_display_name,
+          `SELECT rooms.id, rooms.name, rooms.host_id, rooms.capacity, rooms.topic, rooms.created_at, users.display_name AS host_display_name,
                   (SELECT COUNT(*) FROM room_seats WHERE room_seats.room_id = rooms.id) AS seated_count
            FROM rooms
            JOIN users ON users.id = rooms.host_id
@@ -559,7 +639,8 @@ export default {
             hostId: row.host_id,
             hostName: row.host_display_name || 'Mistik Rehber Kullanıcısı',
             seatedCount: row.seated_count,
-            capacity: ROOM_SEAT_COUNT,
+            capacity: row.capacity || ROOM_SEAT_COUNT,
+            topic: row.topic || null,
             createdAt: row.created_at,
           })),
         });
@@ -568,19 +649,19 @@ export default {
       if (path === '/rooms' && request.method === 'POST') {
         const me = await getSessionUser(request, env);
         if (!me) return json({ error: 'oturum geçersiz' }, 401);
-        const { name } = await request.json();
+        const { name, capacity, topic } = await request.json();
         const trimmed = String(name || '').trim().slice(0, MAX_ROOM_NAME_LENGTH);
         if (!trimmed) return json({ error: 'Oda adı gerekli.' }, 400);
+        const finalCapacity = ALLOWED_ROOM_CAPACITIES.includes(Number(capacity)) ? Number(capacity) : 10;
+        const finalTopic = topic ? String(topic).trim().slice(0, 40) : null;
         const id = crypto.randomUUID();
         const now = new Date().toISOString();
-        await env.DB.batch([
-          env.DB.prepare('INSERT INTO rooms (id, name, host_id, created_at) VALUES (?, ?, ?, ?)').bind(id, trimmed, me.id, now),
-          env.DB.prepare('INSERT INTO room_seats (room_id, seat_index, user_id, joined_at) VALUES (?, 0, ?, ?)').bind(
-            id,
-            me.id,
-            now,
-          ),
-        ]);
+        // Kurucu da dahil kimse otomatik koltuğa oturtulmuyor — odaya giren
+        // herkes önce dinleyici, koltuğa geçmek için elle "+" ya da "Sese
+        // Katıl"a dokunması gerekiyor.
+        await env.DB.prepare('INSERT INTO rooms (id, name, host_id, capacity, topic, created_at) VALUES (?, ?, ?, ?, ?, ?)')
+          .bind(id, trimmed, me.id, finalCapacity, finalTopic, now)
+          .run();
         return json(
           {
             room: {
@@ -588,8 +669,9 @@ export default {
               name: trimmed,
               hostId: me.id,
               hostName: me.display_name || 'Mistik Rehber Kullanıcısı',
-              seatedCount: 1,
-              capacity: ROOM_SEAT_COUNT,
+              seatedCount: 0,
+              capacity: finalCapacity,
+              topic: finalTopic,
               createdAt: now,
             },
           },
@@ -603,11 +685,16 @@ export default {
         if (!me) return json({ error: 'oturum geçersiz' }, 401);
         const roomId = roomSeatMatch[1];
         const seatIndex = Number(roomSeatMatch[2]);
-        if (!Number.isInteger(seatIndex) || seatIndex < 0 || seatIndex >= ROOM_SEAT_COUNT) {
+        const room = await env.DB.prepare('SELECT id, host_id, capacity FROM rooms WHERE id = ?').bind(roomId).first();
+        if (!room) return json({ error: 'oda bulunamadı' }, 404);
+        const capacity = room.capacity || ROOM_SEAT_COUNT;
+        if (!Number.isInteger(seatIndex) || seatIndex < 0 || seatIndex >= capacity) {
           return json({ error: 'geçersiz koltuk' }, 400);
         }
-        const room = await env.DB.prepare('SELECT id, host_id FROM rooms WHERE id = ?').bind(roomId).first();
-        if (!room) return json({ error: 'oda bulunamadı' }, 404);
+        const banned = await env.DB.prepare('SELECT 1 FROM room_bans WHERE room_id = ? AND user_id = ?')
+          .bind(roomId, me.id)
+          .first();
+        if (banned) return json({ error: 'bu odadan yasaklandın' }, 403);
         const taken = await env.DB.prepare('SELECT user_id FROM room_seats WHERE room_id = ? AND seat_index = ?')
           .bind(roomId, seatIndex)
           .first();
@@ -642,6 +729,7 @@ export default {
         if (remaining.c === 0) {
           await env.DB.batch([
             env.DB.prepare('DELETE FROM room_messages WHERE room_id = ?').bind(roomId),
+            env.DB.prepare('DELETE FROM room_viewers WHERE room_id = ?').bind(roomId),
             env.DB.prepare('DELETE FROM rooms WHERE id = ?').bind(roomId),
           ]);
         }
@@ -690,10 +778,17 @@ export default {
         const me = await getSessionUser(request, env);
         if (!me) return json({ error: 'oturum geçersiz' }, 401);
         const roomId = roomMessagesMatch[1];
-        const seated = await env.DB.prepare('SELECT 1 FROM room_seats WHERE room_id = ? AND user_id = ?')
+        // Yazılı sohbet artık koltuğa oturmuş olmayı gerektirmiyor — odadaki
+        // herkes (dinleyiciler dahil) yazabiliyor, ses akışı için hâlâ
+        // koltuk gerekiyor (bkz. /token endpoint'i).
+        const banned = await env.DB.prepare('SELECT 1 FROM room_bans WHERE room_id = ? AND user_id = ?')
           .bind(roomId, me.id)
           .first();
-        if (!seated) return json({ error: 'konuşmak için koltuğa oturmalısın' }, 403);
+        if (banned) return json({ error: 'bu odadan yasaklandın' }, 403);
+        const muted = await env.DB.prepare('SELECT 1 FROM room_mutes WHERE room_id = ? AND user_id = ?')
+          .bind(roomId, me.id)
+          .first();
+        if (muted) return json({ error: 'bu odada susturuldun' }, 403);
         const { text } = await request.json();
         const trimmed = String(text || '').trim().slice(0, MAX_ROOM_MESSAGE_LENGTH);
         if (!trimmed) return json({ error: 'Boş bir mesaj gönderilemez.' }, 400);
@@ -720,12 +815,13 @@ export default {
       if (roomMatch && request.method === 'GET') {
         const roomId = roomMatch[1];
         const room = await env.DB.prepare(
-          `SELECT rooms.id, rooms.name, rooms.host_id, rooms.created_at, users.display_name AS host_display_name
+          `SELECT rooms.id, rooms.name, rooms.host_id, rooms.capacity, rooms.topic, rooms.created_at, users.display_name AS host_display_name
            FROM rooms JOIN users ON users.id = rooms.host_id WHERE rooms.id = ?`,
         )
           .bind(roomId)
           .first();
         if (!room) return json({ error: 'oda bulunamadı' }, 404);
+        const capacity = room.capacity || ROOM_SEAT_COUNT;
         const { results: seatRows } = await env.DB.prepare(
           `SELECT room_seats.seat_index, room_seats.user_id, users.display_name, users.avatar_url
            FROM room_seats
@@ -734,7 +830,7 @@ export default {
         )
           .bind(roomId)
           .all();
-        const seats = Array.from({ length: ROOM_SEAT_COUNT }, (_, index) => {
+        const seats = Array.from({ length: capacity }, (_, index) => {
           const occupant = seatRows.find((row) => row.seat_index === index);
           return occupant
             ? {
@@ -745,16 +841,169 @@ export default {
               }
             : null;
         });
+        const seatedIds = new Set(seatRows.map((row) => row.user_id));
+        const viewerCutoff = new Date(Date.now() - ROOM_VIEWER_TIMEOUT_SECONDS * 1000).toISOString();
+        const { results: viewerRows } = await env.DB.prepare(
+          `SELECT room_viewers.user_id, users.display_name, users.avatar_url
+           FROM room_viewers
+           JOIN users ON users.id = room_viewers.user_id
+           WHERE room_viewers.room_id = ? AND room_viewers.last_seen_at > ?`,
+        )
+          .bind(roomId, viewerCutoff)
+          .all();
+        const viewers = viewerRows
+          .filter((row) => !seatedIds.has(row.user_id))
+          .map((row) => ({
+            userId: row.user_id,
+            displayName: row.display_name || 'Mistik Rehber Kullanıcısı',
+            avatarUrl: row.avatar_url,
+          }));
+        const requester = await getSessionUser(request, env).catch(() => null);
+        let isBanned = false;
+        let isMuted = false;
+        if (requester) {
+          const [banRow, muteRow] = await Promise.all([
+            env.DB.prepare('SELECT 1 FROM room_bans WHERE room_id = ? AND user_id = ?').bind(roomId, requester.id).first(),
+            env.DB.prepare('SELECT 1 FROM room_mutes WHERE room_id = ? AND user_id = ?').bind(roomId, requester.id).first(),
+          ]);
+          isBanned = !!banRow;
+          isMuted = !!muteRow;
+        }
         return json({
           room: {
             id: room.id,
             name: room.name,
             hostId: room.host_id,
             hostName: room.host_display_name || 'Mistik Rehber Kullanıcısı',
+            capacity,
+            topic: room.topic || null,
             createdAt: room.created_at,
           },
           seats,
+          viewers,
+          isBanned,
+          isMuted,
         });
+      }
+
+      if (roomMatch && request.method === 'PATCH') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const roomId = roomMatch[1];
+        const room = await env.DB.prepare('SELECT host_id FROM rooms WHERE id = ?').bind(roomId).first();
+        if (!room) return json({ error: 'oda bulunamadı' }, 404);
+        if (room.host_id !== me.id) return json({ error: 'sadece oda kurucusu düzenleyebilir' }, 403);
+        const { name, topic } = await request.json();
+        const updates = [];
+        const binds = [];
+        if (typeof name === 'string' && name.trim()) {
+          updates.push('name = ?');
+          binds.push(name.trim().slice(0, MAX_ROOM_NAME_LENGTH));
+        }
+        if (topic !== undefined) {
+          updates.push('topic = ?');
+          binds.push(topic ? String(topic).trim().slice(0, 40) : null);
+        }
+        if (updates.length === 0) return json({ error: 'güncellenecek alan yok' }, 400);
+        binds.push(roomId);
+        await env.DB.prepare(`UPDATE rooms SET ${updates.join(', ')} WHERE id = ?`).bind(...binds).run();
+        return json({ ok: true });
+      }
+
+      if (roomMatch && request.method === 'DELETE') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const roomId = roomMatch[1];
+        const room = await env.DB.prepare('SELECT host_id FROM rooms WHERE id = ?').bind(roomId).first();
+        if (!room) return json({ error: 'oda bulunamadı' }, 404);
+        if (room.host_id !== me.id) return json({ error: 'sadece oda kurucusu kapatabilir' }, 403);
+        await env.DB.batch([
+          env.DB.prepare('DELETE FROM room_seats WHERE room_id = ?').bind(roomId),
+          env.DB.prepare('DELETE FROM room_viewers WHERE room_id = ?').bind(roomId),
+          env.DB.prepare('DELETE FROM room_messages WHERE room_id = ?').bind(roomId),
+          env.DB.prepare('DELETE FROM room_bans WHERE room_id = ?').bind(roomId),
+          env.DB.prepare('DELETE FROM room_mutes WHERE room_id = ?').bind(roomId),
+          env.DB.prepare('DELETE FROM rooms WHERE id = ?').bind(roomId),
+        ]);
+        return json({ ok: true });
+      }
+
+      const roomClearMatch = path.match(/^\/rooms\/([^/]+)\/messages$/);
+      if (roomClearMatch && request.method === 'DELETE') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const roomId = roomClearMatch[1];
+        const room = await env.DB.prepare('SELECT host_id FROM rooms WHERE id = ?').bind(roomId).first();
+        if (!room) return json({ error: 'oda bulunamadı' }, 404);
+        if (room.host_id !== me.id) return json({ error: 'sadece oda kurucusu temizleyebilir' }, 403);
+        await env.DB.prepare('DELETE FROM room_messages WHERE room_id = ?').bind(roomId).run();
+        return json({ ok: true });
+      }
+
+      const roomBanMatch = path.match(/^\/rooms\/([^/]+)\/bans\/([^/]+)$/);
+      if (roomBanMatch && (request.method === 'POST' || request.method === 'DELETE')) {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const [, roomId, targetUserId] = roomBanMatch;
+        const room = await env.DB.prepare('SELECT host_id FROM rooms WHERE id = ?').bind(roomId).first();
+        if (!room) return json({ error: 'oda bulunamadı' }, 404);
+        if (room.host_id !== me.id) return json({ error: 'sadece oda kurucusu yasaklayabilir' }, 403);
+        if (targetUserId === me.id) return json({ error: 'kendini yasaklayamazsın' }, 400);
+        if (request.method === 'POST') {
+          await env.DB.batch([
+            env.DB.prepare('INSERT OR IGNORE INTO room_bans (room_id, user_id, banned_at) VALUES (?, ?, ?)').bind(
+              roomId,
+              targetUserId,
+              new Date().toISOString(),
+            ),
+            env.DB.prepare('DELETE FROM room_seats WHERE room_id = ? AND user_id = ?').bind(roomId, targetUserId),
+            env.DB.prepare('DELETE FROM room_viewers WHERE room_id = ? AND user_id = ?').bind(roomId, targetUserId),
+          ]);
+        } else {
+          await env.DB.prepare('DELETE FROM room_bans WHERE room_id = ? AND user_id = ?').bind(roomId, targetUserId).run();
+        }
+        return json({ ok: true });
+      }
+
+      const roomMuteMatch = path.match(/^\/rooms\/([^/]+)\/mutes\/([^/]+)$/);
+      if (roomMuteMatch && (request.method === 'POST' || request.method === 'DELETE')) {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const [, roomId, targetUserId] = roomMuteMatch;
+        const room = await env.DB.prepare('SELECT host_id FROM rooms WHERE id = ?').bind(roomId).first();
+        if (!room) return json({ error: 'oda bulunamadı' }, 404);
+        if (room.host_id !== me.id) return json({ error: 'sadece oda kurucusu susturabilir' }, 403);
+        if (targetUserId === me.id) return json({ error: 'kendini susturamazsın' }, 400);
+        if (request.method === 'POST') {
+          await env.DB.prepare('INSERT OR IGNORE INTO room_mutes (room_id, user_id, muted_at) VALUES (?, ?, ?)')
+            .bind(roomId, targetUserId, new Date().toISOString())
+            .run();
+        } else {
+          await env.DB.prepare('DELETE FROM room_mutes WHERE room_id = ? AND user_id = ?').bind(roomId, targetUserId).run();
+        }
+        return json({ ok: true });
+      }
+
+      const roomViewerMatch = path.match(/^\/rooms\/([^/]+)\/viewers$/);
+      if (roomViewerMatch && request.method === 'POST') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const roomId = roomViewerMatch[1];
+        await env.DB.prepare(
+          `INSERT INTO room_viewers (room_id, user_id, last_seen_at) VALUES (?, ?, ?)
+           ON CONFLICT(room_id, user_id) DO UPDATE SET last_seen_at = excluded.last_seen_at`,
+        )
+          .bind(roomId, me.id, new Date().toISOString())
+          .run();
+        return json({ ok: true });
+      }
+
+      if (roomViewerMatch && request.method === 'DELETE') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const roomId = roomViewerMatch[1];
+        await env.DB.prepare('DELETE FROM room_viewers WHERE room_id = ? AND user_id = ?').bind(roomId, me.id).run();
+        return json({ ok: true });
       }
 
       const userMatch = path.match(/^\/users\/([^/]+)$/);
@@ -886,6 +1135,106 @@ export default {
         });
       }
 
+      if (path === '/garden/seeds' && request.method === 'GET') {
+        const { results } = await env.DB.prepare('SELECT * FROM garden_seed_types WHERE active = 1 ORDER BY price').all();
+        return json({
+          seeds: results.map((row) => ({
+            id: row.id,
+            name: row.name,
+            currency: row.currency,
+            price: row.price,
+            growMinutes: row.grow_minutes,
+            yieldCoin: row.yield_coin,
+          })),
+        });
+      }
+
+      if (path === '/garden' && request.method === 'GET') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const { results } = await env.DB.prepare(
+          `SELECT garden_plots.slot_index, garden_plots.planted_at, garden_plots.ready_at,
+                  garden_seed_types.id AS seed_id, garden_seed_types.name AS seed_name
+           FROM garden_plots
+           LEFT JOIN garden_seed_types ON garden_seed_types.id = garden_plots.seed_type_id
+           WHERE garden_plots.user_id = ?`,
+        )
+          .bind(me.id)
+          .all();
+        const byIndex = new Map(results.map((row) => [row.slot_index, row]));
+        const now = new Date().toISOString();
+        const slots = Array.from({ length: GARDEN_SLOT_COUNT }, (_, index) => {
+          const row = byIndex.get(index);
+          if (!row || !row.seed_id) return { index, empty: true };
+          return {
+            index,
+            empty: false,
+            seedId: row.seed_id,
+            seedName: row.seed_name,
+            plantedAt: row.planted_at,
+            readyAt: row.ready_at,
+            ready: row.ready_at <= now,
+          };
+        });
+        const { fraction, illumination } = moonIllumination();
+        return json({ slots, moon: { illumination, label: moonPhaseLabel(fraction) } });
+      }
+
+      if (path === '/garden/plant' && request.method === 'POST') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const { slotIndex, seedTypeId } = await request.json();
+        if (!Number.isInteger(slotIndex) || slotIndex < 0 || slotIndex >= GARDEN_SLOT_COUNT) {
+          return json({ error: 'geçersiz arsa' }, 400);
+        }
+        const existing = await env.DB.prepare('SELECT seed_type_id FROM garden_plots WHERE user_id = ? AND slot_index = ?')
+          .bind(me.id, slotIndex)
+          .first();
+        if (existing?.seed_type_id) return json({ error: 'bu arsa dolu' }, 409);
+        const seed = await env.DB.prepare('SELECT * FROM garden_seed_types WHERE id = ? AND active = 1').bind(seedTypeId).first();
+        if (!seed) return json({ error: 'tohum bulunamadı' }, 404);
+        const debited = await debitWallet(env, ctx, me.id, seed.currency, seed.price, `garden_plant:${seedTypeId}`);
+        if (!debited) return json({ error: 'yetersiz bakiye' }, 402);
+        const { illumination } = moonIllumination();
+        const multiplier = 1 - GARDEN_MOON_GROWTH_BONUS * (1 - illumination);
+        const now = new Date();
+        const readyAt = new Date(now.getTime() + seed.grow_minutes * multiplier * 60000);
+        await env.DB.prepare(
+          `INSERT INTO garden_plots (user_id, slot_index, seed_type_id, planted_at, ready_at) VALUES (?, ?, ?, ?, ?)
+           ON CONFLICT(user_id, slot_index) DO UPDATE SET seed_type_id = excluded.seed_type_id, planted_at = excluded.planted_at, ready_at = excluded.ready_at`,
+        )
+          .bind(me.id, slotIndex, seedTypeId, now.toISOString(), readyAt.toISOString())
+          .run();
+        return json({ ok: true, readyAt: readyAt.toISOString() }, 201);
+      }
+
+      if (path === '/garden/harvest' && request.method === 'POST') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const { slotIndex } = await request.json();
+        const plot = await env.DB.prepare('SELECT * FROM garden_plots WHERE user_id = ? AND slot_index = ?')
+          .bind(me.id, slotIndex)
+          .first();
+        if (!plot || !plot.seed_type_id) return json({ error: 'bu arsa boş' }, 400);
+        if (plot.ready_at > new Date().toISOString()) return json({ error: 'henüz hazır değil' }, 400);
+        const seed = await env.DB.prepare('SELECT yield_coin FROM garden_seed_types WHERE id = ?').bind(plot.seed_type_id).first();
+        const { illumination } = moonIllumination();
+        const yieldCoin = Math.round((seed?.yield_coin ?? 0) * (1 + GARDEN_MOON_YIELD_BONUS * illumination));
+        await env.DB.prepare(
+          'UPDATE garden_plots SET seed_type_id = NULL, planted_at = NULL, ready_at = NULL WHERE user_id = ? AND slot_index = ?',
+        )
+          .bind(me.id, slotIndex)
+          .run();
+        await creditWallet(env, me.id, 'coin', yieldCoin, 'garden_harvest');
+        const harvestCount = await env.DB.prepare(
+          "SELECT COUNT(*) as c FROM ledger_entries WHERE user_id = ? AND reason = 'garden_harvest'",
+        )
+          .bind(me.id)
+          .first();
+        ctx.waitUntil(checkAndGrantAchievement(env, ctx, me.id, 'game_harvests', harvestCount.c));
+        return json({ ok: true, yieldCoin });
+      }
+
       if (path === '/popularity/leaderboard' && request.method === 'GET') {
         const weekStart = currentWeekStart().toISOString();
         const { results } = await env.DB.prepare(
@@ -973,6 +1322,32 @@ export default {
         });
       }
 
+      // Coin + Kristal (elmas) paket satın alma — henüz gerçek bir ödeme
+      // sağlayıcısı (App Store/Play Billing) bağlı değil; mevcut yerel Coin
+      // Mağazası'ndaki (CoinShopScreen) mock-satın-alma mantığıyla aynı
+      // desende, ama sunucudaki kristal cüzdanını da kredilendiriyor.
+      // Paket tanımları sunucuda sabit — istemci sadece bundleId gönderiyor,
+      // rastgele miktar kredilendirilemez.
+      const walletBundleMatch = path.match(/^\/wallet\/bundles\/([^/]+)\/purchase$/);
+      if (walletBundleMatch && request.method === 'POST') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const bundle = WALLET_BUNDLES[walletBundleMatch[1]];
+        if (!bundle) return json({ error: 'geçersiz paket' }, 400);
+        await Promise.all([
+          creditWallet(env, me.id, 'coin', bundle.coin, `bundle_purchase:${walletBundleMatch[1]}`),
+          creditWallet(env, me.id, 'crystal', bundle.crystal, `bundle_purchase:${walletBundleMatch[1]}`),
+        ]);
+        const { results: walletRows } = await env.DB.prepare('SELECT currency, balance FROM wallets WHERE user_id = ?')
+          .bind(me.id)
+          .all();
+        const balances = { coin: 0, crystal: 0 };
+        walletRows.forEach((row) => {
+          balances[row.currency] = row.balance;
+        });
+        return json({ balances });
+      }
+
       if (path === '/shop/items' && request.method === 'GET') {
         const me = await getSessionUser(request, env);
         const category = url.searchParams.get('category');
@@ -1011,9 +1386,21 @@ export default {
         if (already) return json({ error: 'bu ürüne zaten sahipsin' }, 409);
         const debited = await debitWallet(env, ctx, me.id, item.currency, item.price, `shop_purchase:${itemId}`);
         if (!debited) return json({ error: 'yetersiz bakiye' }, 402);
-        await env.DB.prepare('INSERT INTO shop_purchases (id, user_id, item_id, created_at) VALUES (?, ?, ?, ?)')
-          .bind(crypto.randomUUID(), me.id, itemId, new Date().toISOString())
-          .run();
+        // shop_purchases(user_id, item_id) üzerinde tekil indeks var — iki eşzamanlı
+        // istek burada yarışırsa kaybeden taraf ürünü alamaz (changes=0) ve az önce
+        // düşülen ücret otomatik iade edilir; "ücret alındı, ürün verilmedi" olmaz.
+        try {
+          const grant = await env.DB.prepare('INSERT OR IGNORE INTO shop_purchases (id, user_id, item_id, created_at) VALUES (?, ?, ?, ?)')
+            .bind(crypto.randomUUID(), me.id, itemId, new Date().toISOString())
+            .run();
+          if (!grant.meta.changes) {
+            await refundWallet(env, me.id, item.currency, item.price, `shop_purchase_refund:${itemId}`);
+            return json({ error: 'bu ürüne zaten sahipsin' }, 409);
+          }
+        } catch (err) {
+          await refundWallet(env, me.id, item.currency, item.price, `shop_purchase_refund:${itemId}`);
+          throw err;
+        }
         return json({ ok: true }, 201);
       }
 
@@ -1062,13 +1449,27 @@ export default {
         const debited = await debitWallet(env, ctx, me.id, 'crystal', tier.monthly_price_crystal, `vip_subscribe:${tierId}`);
         if (!debited) return json({ error: 'yetersiz bakiye' }, 402);
         const now = new Date();
-        const expires = new Date(now.getTime() + 30 * 24 * 3600 * 1000);
-        await env.DB.prepare(
-          `INSERT INTO vip_subscriptions (user_id, tier_id, started_at, expires_at) VALUES (?, ?, ?, ?)
-           ON CONFLICT(user_id) DO UPDATE SET tier_id = excluded.tier_id, started_at = excluded.started_at, expires_at = excluded.expires_at`,
-        )
-          .bind(me.id, tierId, now.toISOString(), expires.toISOString())
-          .run();
+        // Hâlâ süresi dolmamış bir aboneliği varsa yeni 30 günü sıfırlamak
+        // yerine üstüne ekliyoruz — aksi halde erken yenileme ya da bir
+        // yarış durumunda ikinci ücret hiçbir ek fayda getirmeden kaybolurdu.
+        const existing = await env.DB.prepare('SELECT expires_at FROM vip_subscriptions WHERE user_id = ?')
+          .bind(me.id)
+          .first();
+        const existingExpiry = existing ? new Date(existing.expires_at) : null;
+        const base = existingExpiry && existingExpiry > now ? existingExpiry : now;
+        const expires = new Date(base.getTime() + 30 * 24 * 3600 * 1000);
+        try {
+          await env.DB.prepare(
+            `INSERT INTO vip_subscriptions (user_id, tier_id, started_at, expires_at) VALUES (?, ?, ?, ?)
+             ON CONFLICT(user_id) DO UPDATE SET tier_id = excluded.tier_id, started_at = excluded.started_at, expires_at = excluded.expires_at`,
+          )
+            .bind(me.id, tierId, now.toISOString(), expires.toISOString())
+            .run();
+        } catch (err) {
+          // Ücret alındı ama abonelik yazılamadı — parayı iade et.
+          await refundWallet(env, me.id, 'crystal', tier.monthly_price_crystal, `vip_subscribe_refund:${tierId}`);
+          throw err;
+        }
         return json({ ok: true, expiresAt: expires.toISOString() }, 201);
       }
 
@@ -1278,6 +1679,7 @@ export default {
 
   async scheduled(event, env, ctx) {
     ctx.waitUntil(purgeExpiredPosts(env));
+    ctx.waitUntil(purgeEmptyRooms(env));
     if (new Date().getUTCDay() === 1) ctx.waitUntil(grantWeeklyPopularityAwards(env, ctx));
   },
 };

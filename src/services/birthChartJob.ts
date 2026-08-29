@@ -6,6 +6,8 @@ import {
 } from '@/services/astrology';
 import { interpretDetailedBirthChart } from '@/services/readings-ai';
 import { saveReadingHistory } from '@/services/readingHistory';
+import { addCoins } from '@/services/coins';
+import { DETAILED_BIRTH_CHART_COIN_COST } from '@/constants/economy';
 
 const JOB_STORAGE_KEY = '@mistik-rehber/active-birth-chart-job';
 export const DETAILED_DURATION_MS = 180 * 1000; // 3 Dakika (180 saniye)
@@ -21,6 +23,7 @@ export type BirthChartJob = {
   detailedChart?: DetailedBirthChart;
   aiReport?: string;
   error?: string;
+  refunded?: boolean;
 };
 
 export async function getActiveBirthChartJob(): Promise<BirthChartJob | null> {
@@ -111,6 +114,14 @@ export async function runJobExecution(job: BirthChartJob): Promise<BirthChartJob
       status: 'error',
       error: err instanceof Error ? err.message : 'Doğum haritası oluşturulurken hata oluştu.',
     };
+    // Ücret alınmış ama analiz teslim edilemedi — iade et. `refunded`
+    // bayrağı, uygulama arka planda işi yeniden tetiklerse (processing
+    // durumundaki bir işi tekrar deneme akışı) aynı ücretin iki kez iade
+    // edilmesini engelliyor.
+    if (!job.refunded) {
+      await addCoins(DETAILED_BIRTH_CHART_COIN_COST);
+      errorJob.refunded = true;
+    }
     await saveActiveBirthChartJob(errorJob);
     throw err;
   }

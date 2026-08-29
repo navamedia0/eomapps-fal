@@ -81,6 +81,13 @@ export default function HomeScreen({ navigation }: Props) {
           onPress: () => navigation.navigate('ImageReading', { kind: 'coffee' }),
         },
         {
+          key: 'tarot',
+          title: 'Tarot Falı',
+          subtitle: 'Kartlar bugününü aydınlatsın',
+          icon: <MaterialCommunityIcons name="cards" size={26} color={GOLD} />,
+          onPress: () => navigation.navigate('TarotSpread'),
+        },
+        {
           key: 'face',
           title: 'Yüz Falı',
           subtitle: 'Sima ilmiyle kaderini keşfet',
@@ -95,18 +102,11 @@ export default function HomeScreen({ navigation }: Props) {
           onPress: () => navigation.navigate('ImageReading', { kind: 'palm' }),
         },
         {
-          key: 'tarot',
-          title: 'Tarot Falı',
-          subtitle: 'Kartlar bugününü aydınlatsın',
-          icon: <MaterialCommunityIcons name="cards" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('TarotSpread'),
-        },
-        {
-          key: 'katina',
-          title: 'Katina Falı',
-          subtitle: 'İskambille geleceğe bak',
-          icon: <MaterialCommunityIcons name="cards-playing-outline" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('Katina'),
+          key: 'iching',
+          title: 'Çin I Ching Falı',
+          subtitle: '3 sikke ile 64 heksagram',
+          icon: <MaterialCommunityIcons name="yin-yang" size={26} color={GOLD} />,
+          onPress: () => navigation.navigate('IChingReading'),
         },
         {
           key: 'rune',
@@ -116,94 +116,11 @@ export default function HomeScreen({ navigation }: Props) {
           onPress: () => navigation.navigate('RuneReading'),
         },
         {
-          key: 'iching',
-          title: 'Çin I Ching Falı',
-          subtitle: '3 sikke ile 64 heksagram',
-          icon: <MaterialCommunityIcons name="yin-yang" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('IChingReading'),
-        },
-        {
-          key: 'bakla',
-          title: '41 Bakla Falı',
-          subtitle: '3 ocak remil kehaneti',
-          icon: <MaterialCommunityIcons name="dots-hexagon" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('BaklaReading'),
-        },
-        {
-          key: 'wax',
-          title: 'Balmumu Falı',
-          subtitle: 'Alevin ve balmumunun aşk dili',
-          icon: <MaterialCommunityIcons name="candle" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('WaxReading'),
-        },
-        {
-          key: 'tea',
-          title: 'Çay Falı',
-          subtitle: 'Tasseografi yaprak desenleri',
-          icon: <MaterialCommunityIcons name="leaf" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('ImageReading', { kind: 'tea' }),
-        },
-        {
           key: 'voiceReading',
           title: 'Sesli Fal',
           subtitle: 'Anlat, biz yorumlayalım',
           icon: <Ionicons name="mic-outline" size={24} color={GOLD} />,
           onPress: () => navigation.navigate('VoiceReading'),
-        },
-        {
-          key: 'solitaire',
-          title: 'Solitaire Falı',
-          subtitle: 'Kartları aç, cevabını bul',
-          icon: <MaterialCommunityIcons name="cards-club-outline" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('Solitaire'),
-        },
-        {
-          key: 'daisy',
-          title: 'Papatya Falı',
-          subtitle: 'Seviyor mu, sevmiyor mu?',
-          icon: <Ionicons name="flower-outline" size={24} color={GOLD} />,
-          onPress: () => navigation.navigate('Daisy'),
-        },
-        {
-          key: 'dice',
-          title: 'Zar Falı',
-          subtitle: 'Zarları at, şansına bak',
-          icon: <MaterialCommunityIcons name="dice-multiple-outline" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('Dice'),
-        },
-      ],
-    },
-    {
-      key: 'kader-enerji',
-      title: 'Kader & Mistik Enerji',
-      items: [
-        {
-          key: 'matrix',
-          title: 'Kader Matrisi',
-          subtitle: '22 Arkana ve sekizgen haritan',
-          icon: <MaterialCommunityIcons name="octagram-outline" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('MatrixOfDestiny'),
-        },
-        {
-          key: 'aura',
-          title: 'Aura & Çakra Falı',
-          subtitle: '7 çakra ve ışıltılı aura analizi',
-          icon: <MaterialCommunityIcons name="atom" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('AuraEnergy'),
-        },
-        {
-          key: 'celticTree',
-          title: 'Kelt Ağaç Takvimi',
-          subtitle: 'Druidlerin kutsal 13 ağaç burcu',
-          icon: <MaterialCommunityIcons name="tree-outline" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('CelticTreeReading'),
-        },
-        {
-          key: 'scrying',
-          title: 'Kara Ayna Durugörü',
-          subtitle: 'Obsidyen ayna ile sezgisel vizyon',
-          icon: <MaterialCommunityIcons name="mirror" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('ScryingReading'),
         },
       ],
     },
@@ -400,6 +317,16 @@ export default function HomeScreen({ navigation }: Props) {
                   </View>
                 ))}
               </View>
+
+              {category.key === 'fallar' && (
+                <Pressable
+                  onPress={() => navigation.navigate('TumFallar')}
+                  style={({ pressed }) => [styles.allFalsButton, pressed && styles.pressedFade]}
+                >
+                  <Text style={styles.allFalsButtonText}>Tüm fal çeşitleri için tıklayınız</Text>
+                  <Ionicons name="chevron-forward" size={16} color={GOLD} />
+                </Pressable>
+              )}
             </View>
           ))}
         </View>
@@ -534,6 +461,23 @@ const styles = StyleSheet.create({
   },
   gridPlaceholder: {
     flex: 1,
+  },
+  allFalsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 10,
+    paddingVertical: 12,
+    borderRadius: 14,
+    borderWidth: 1.2,
+    borderColor: GOLD_SOFT,
+    borderStyle: 'dashed',
+  },
+  allFalsButtonText: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: GOLD,
   },
   gridTextWrap: {
     flex: 1,

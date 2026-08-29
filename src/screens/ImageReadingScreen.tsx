@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet, Image, Animated } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
+import ReadingCardStack from '@/components/ReadingCardStack';
+import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { interpretImages, validateImage } from '@/services/readings-ai';
 import { ApiRequestError } from '@/services/http';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import { saveReadingHistory } from '@/services/readingHistory';
 import {
@@ -95,6 +97,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [permissionError, setPermissionError] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
+  const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
   const [isPersonModalVisible, setIsPersonModalVisible] = useState(false);
   const [personInfo, setPersonInfo] = useState<PersonInfo | null>(null);
   const [skipPersonInfo, setSkipPersonInfo] = useState(false);
@@ -295,11 +298,19 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
         });
       } catch (err) {
         clearTimeout(queueTimer);
+        // Ücret alınmış (derin mod her zaman, standart modda coin ile
+        // ödendiyse) ama sonuç teslim edilemediyse iade et.
+        const spentAmount = modeToRun === 'deep' ? DEEP_IMAGE_READING_COIN_COST : payWithCoins ? READING_COIN_COST : 0;
+        if (spentAmount > 0) await addCoins(spentAmount);
+        const refundNote = spentAmount > 0 ? ` (${spentAmount} coin iade edildi.)` : '';
         if (err instanceof ApiRequestError && err.congestion) {
           notifyCongested(err.retryAfterSeconds ?? 30);
-          setError(err.message);
+          setError(err.message + refundNote);
         } else {
-          setError(err instanceof Error ? err.message : 'Sistem yoğunluğu nedeniyle biraz zaman alabilir, lütfen birazdan tekrar deneyin.');
+          setError(
+            (err instanceof Error ? err.message : 'Sistem yoğunluğu nedeniyle biraz zaman alabilir, lütfen birazdan tekrar deneyin.') +
+              refundNote,
+          );
         }
       } finally {
         setLoading(false);
@@ -563,7 +574,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
           />
         )}
 
-        {result && (
+        {result && !resultSections && (
           <View style={styles.resultBox}>
             <View style={styles.resultHeaderBadge}>
               <MaterialCommunityIcons
@@ -612,7 +623,32 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
             </View>
           </View>
         )}
+
+        {result && resultSections && (
+          <View style={styles.resultBox}>
+            <View style={styles.resultHeaderBadge}>
+              <MaterialCommunityIcons name="crown" size={16} color={GOLD} />
+              <Text style={styles.resultHeaderBadgeText}>Kapsamlı Derin Mistik Analiz Raporu</Text>
+            </View>
+
+            <Pressable
+              onPress={resetAll}
+              style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}
+            >
+              <Ionicons name="refresh" size={18} color={NIGHT_CARD} />
+              <Text style={styles.actionButtonText}>Yeni Fal Bak</Text>
+            </Pressable>
+          </View>
+        )}
       </ScrollView>
+
+      {result && resultSections && (
+        <ReadingCardStack
+          badge={copy.shareTitle}
+          sections={resultSections}
+          shareTextPrefix={`Mistik Rehber - ${copy.shareTitle}`}
+        />
+      )}
       <PersonInfoModal
         visible={isPersonModalVisible}
         initialInfo={personInfo}

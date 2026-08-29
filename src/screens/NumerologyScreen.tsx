@@ -17,7 +17,7 @@ import type { RootStackParamList } from '@/navigation/types';
 import { calculateLifePath, calculateNameNumber } from '@/services/numerology';
 import { interpretNumerology } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -94,7 +94,12 @@ export default function NumerologyScreen({ navigation }: Props) {
       if (!payWithCoins) await spendCredit();
       setResult({ lifePath, nameNumber, text });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Numeroloji yorumu alınırken bir sorun oluştu.');
+      let message = err instanceof Error ? err.message : 'Numeroloji yorumu alınırken bir sorun oluştu.';
+      if (payWithCoins) {
+        await addCoins(READING_COIN_COST);
+        message += ` (${READING_COIN_COST} coin iade edildi.)`;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }

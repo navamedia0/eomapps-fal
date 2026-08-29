@@ -1,32 +1,30 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import {
-  getWallet,
   getShopItems,
   purchaseItem,
   getInventory,
   type ShopCategory,
   type ShopItem,
   type InventoryItem,
-  type WalletBalances,
 } from '@/services/shop';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_DEEP, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
-const TABS: { key: ShopCategory | 'inventory'; label: string }[] = [
-  { key: 'frame', label: 'Çerçeveler' },
-  { key: 'badge', label: 'Rozetler' },
-  { key: 'entrance_effect', label: 'Giriş Efektleri' },
-  { key: 'inventory', label: 'Envanterim' },
+const TABS: { key: ShopCategory | 'inventory'; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+  { key: 'frame', label: 'Çerçeveler', icon: 'images-outline' },
+  { key: 'badge', label: 'Rozetler', icon: 'ribbon-outline' },
+  { key: 'entrance_effect', label: 'Giriş Efektleri', icon: 'sparkles-outline' },
+  { key: 'inventory', label: 'Envanterim', icon: 'briefcase-outline' },
 ];
 
 const CURRENCY_LABEL: Record<'coin' | 'crystal', string> = { coin: 'Coin', crystal: 'Kristal' };
 
 export default function ShopScreen() {
   const [tab, setTab] = useState<(typeof TABS)[number]['key']>('frame');
-  const [wallet, setWallet] = useState<WalletBalances | null>(null);
   const [items, setItems] = useState<ShopItem[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,9 +32,6 @@ export default function ShopScreen() {
 
   const load = useCallback((currentTab: typeof tab) => {
     setLoading(true);
-    getWallet()
-      .then(setWallet)
-      .catch(() => setWallet(null));
     if (currentTab === 'inventory') {
       getInventory()
         .then(setInventory)
@@ -62,10 +57,10 @@ export default function ShopScreen() {
       setPurchasingId(item.id);
       try {
         await purchaseItem(item.id);
-        Alert.alert('Alındı', `${item.name} artık senin!`);
+        showAlert('Alındı', `${item.name} artık senin!`);
         load(tab);
       } catch (err) {
-        Alert.alert('Satın alınamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+        showAlert('Satın alınamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
       } finally {
         setPurchasingId(null);
       }
@@ -76,27 +71,25 @@ export default function ShopScreen() {
   return (
     <MysticTableBackground>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.walletRow}>
-          <View style={styles.walletPill}>
-            <Ionicons name="disc-outline" size={14} color={GOLD} />
-            <Text style={styles.walletText}>{wallet ? wallet.coin : '—'} Coin</Text>
-          </View>
-          <View style={styles.walletPill}>
-            <Ionicons name="diamond-outline" size={14} color={GOLD} />
-            <Text style={styles.walletText}>{wallet ? wallet.crystal : '—'} Kristal</Text>
-          </View>
+        <View style={styles.header}>
+          <Ionicons name="storefront-outline" size={26} color={GOLD} />
+          <Text style={styles.headerTitle}>Sosyal Mağaza</Text>
         </View>
 
         <View style={styles.tabRow}>
-          {TABS.map((t) => (
-            <Pressable
-              key={t.key}
-              onPress={() => setTab(t.key)}
-              style={[styles.tabButton, tab === t.key && styles.tabButtonActive]}
-            >
-              <Text style={[styles.tabButtonText, tab === t.key && styles.tabButtonTextActive]}>{t.label}</Text>
-            </Pressable>
-          ))}
+          {TABS.map((t) => {
+            const active = tab === t.key;
+            return (
+              <Pressable
+                key={t.key}
+                onPress={() => setTab(t.key)}
+                style={({ pressed }) => [styles.tabButton, active && styles.tabButtonActive, pressed && styles.tabButtonPressed]}
+              >
+                <Ionicons name={t.icon} size={20} color={active ? NIGHT_DEEP : GOLD} />
+                <Text style={[styles.tabButtonText, active && styles.tabButtonTextActive]}>{t.label}</Text>
+              </Pressable>
+            );
+          })}
         </View>
 
         {loading ? (
@@ -156,23 +149,32 @@ export default function ShopScreen() {
 
 const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 20, paddingBottom: 48 },
-  walletRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
-  walletPill: {
-    flexDirection: 'row',
+  header: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 },
+  headerTitle: { fontSize: 22, fontWeight: '700', color: GOLD },
+  tabRow: { flexDirection: 'row', gap: 8, marginBottom: 20 },
+  tabButton: {
+    flex: 1,
     alignItems: 'center',
     gap: 6,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    borderRadius: 999,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    borderRadius: 16,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.25)',
+    backgroundColor: 'rgba(26, 16, 52, 0.6)',
   },
-  walletText: { fontSize: 12, fontWeight: '700', color: TEXT_PRIMARY },
-  tabRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 18 },
-  tabButton: { borderWidth: 1, borderColor: GOLD_SOFT, borderRadius: 999, paddingVertical: 7, paddingHorizontal: 14 },
-  tabButtonActive: { backgroundColor: GOLD, borderColor: GOLD },
-  tabButtonText: { fontSize: 12, fontWeight: '700', color: TEXT_MUTED },
-  tabButtonTextActive: { color: '#1a0d33' },
+  tabButtonActive: {
+    backgroundColor: GOLD,
+    borderColor: GOLD,
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  tabButtonPressed: { opacity: 0.85 },
+  tabButtonText: { fontSize: 10.5, fontWeight: '700', color: TEXT_MUTED, textAlign: 'center', lineHeight: 13 },
+  tabButtonTextActive: { color: NIGHT_DEEP },
   list: { gap: 10 },
   emptyText: { fontSize: 12.5, color: TEXT_MUTED, textAlign: 'center', paddingVertical: 20 },
   itemCard: {

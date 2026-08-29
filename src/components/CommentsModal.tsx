@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   KeyboardAvoidingView,
   Modal,
@@ -12,6 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { showAlert } from '@/services/themedAlert';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getComments, addComment, deleteComment, reportContent, type KesfetComment } from '@/services/kesfetPosts';
@@ -57,7 +57,7 @@ export default function CommentsModal({ postId, onClose, onPressAuthor }: Props)
       setComments((prev) => [...prev, comment]);
       setText('');
     } catch (err) {
-      Alert.alert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+      showAlert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
     } finally {
       setSending(false);
     }
@@ -66,13 +66,13 @@ export default function CommentsModal({ postId, onClose, onPressAuthor }: Props)
   const handleReport = useCallback((id: string) => {
     promptReport((reason) => {
       reportContent('comment', id, reason)
-        .then(() => Alert.alert('Teşekkürler', 'Şikayetin alındı.'))
-        .catch((err) => Alert.alert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.'));
+        .then(() => showAlert('Teşekkürler', 'Şikayetin alındı.'))
+        .catch((err) => showAlert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.'));
     });
   }, []);
 
   const handleDelete = useCallback((id: string) => {
-    Alert.alert('Yorumu sil', 'Bu yorumu silmek istediğine emin misin?', [
+    showAlert('Yorumu sil', 'Bu yorumu silmek istediğine emin misin?', [
       { text: 'Vazgeç', style: 'cancel' },
       {
         text: 'Sil',
@@ -82,7 +82,7 @@ export default function CommentsModal({ postId, onClose, onPressAuthor }: Props)
             await deleteComment(id);
             setComments((prev) => prev.filter((c) => c.id !== id));
           } catch (err) {
-            Alert.alert('Silinemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+            showAlert('Silinemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
           }
         },
       },

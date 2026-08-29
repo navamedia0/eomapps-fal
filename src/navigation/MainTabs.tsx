@@ -8,10 +8,10 @@ import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
 import HomeScreen from '@/screens/HomeScreen';
 import KesfetScreen from '@/screens/KesfetScreen';
 import SohbetScreen from '@/screens/SohbetScreen';
-import RehberlerScreen from '@/screens/RehberlerScreen';
+import GardenScreen from '@/screens/GardenScreen';
 import MagazaScreen from '@/screens/MagazaScreen';
 import ProfilScreen from '@/screens/ProfilScreen';
-import CoinBadge from '@/components/CoinBadge';
+import WalletBadge from '@/components/WalletBadge';
 import { NAV_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_MID, TEXT_MUTED } from '@/theme/colors';
 
@@ -24,17 +24,17 @@ const ROUTES: TabRoute[] = [
   { key: 'AnaSayfa', title: 'Ana Sayfa' },
   { key: 'Kesfet', title: 'Keşfet' },
   { key: 'Sohbet', title: 'Sohbet' },
-  { key: 'Rehberler', title: 'Rehberler' },
+  { key: 'Garden', title: 'Kader Bahçesi' },
   { key: 'Magaza', title: 'Mağaza' },
   { key: 'Profil', title: 'Profil' },
 ];
 
-// Sohbet ve Rehberler için henüz özel sanat üretilmedi (Kader Atölyesi
-// belgesindeki görsel üretim hattını bekliyor) — o güne kadar Ionicons
-// üzerinden tutarlı bir geçici simge gösteriyoruz.
+// Sohbet için henüz özel sanat üretilmedi (Kader Atölyesi belgesindeki
+// görsel üretim hattını bekliyor) — o güne kadar Ionicons üzerinden tutarlı
+// bir geçici simge gösteriyoruz.
 const FALLBACK_TAB_ICONS: Partial<Record<TabKey, keyof typeof Ionicons.glyphMap>> = {
   Sohbet: 'chatbubbles-outline',
-  Rehberler: 'sparkles-outline',
+  Garden: 'flower-outline',
 };
 
 export default function MainTabs({ navigation }: Props) {
@@ -45,9 +45,9 @@ export default function MainTabs({ navigation }: Props) {
 
   return (
     <View style={styles.flex}>
-      {/* Floating coin badge */}
+      {/* Floating wallet badge (Coin + Kristal) */}
       <View style={[styles.floatingCoinWrap, { top: insets.top + 8 }]} pointerEvents="box-none">
-        <CoinBadge navigation={navigation} />
+        <WalletBadge navigation={navigation} />
       </View>
       <TabView<TabRoute>
         navigationState={{ index, routes: ROUTES }}
@@ -62,8 +62,8 @@ export default function MainTabs({ navigation }: Props) {
               return <KesfetScreen navigation={navigation} />;
             case 'Sohbet':
               return <SohbetScreen navigation={navigation} />;
-            case 'Rehberler':
-              return <RehberlerScreen navigation={navigation} />;
+            case 'Garden':
+              return <GardenScreen />;
             case 'Magaza':
               return <MagazaScreen navigation={navigation} />;
             case 'Profil':

@@ -7,6 +7,7 @@ export type TarotLayoutId = 'grid' | 'fan' | 'radial';
 
 export type RootStackParamList = {
   Home: undefined;
+  TumFallar: undefined;
   TarotSpread: undefined;
   TarotLayout: { spreadId: SpreadId };
   Tarot: { spreadId: SpreadId; layout: TarotLayoutId };
@@ -61,13 +62,14 @@ export type RootStackParamList = {
   VipTiers: undefined;
   Achievements: undefined;
   Popularity: undefined;
+  Garden: undefined;
 };
 
 export type MainTabParamList = {
   AnaSayfa: undefined;
   Kesfet: undefined;
   Sohbet: undefined;
-  Rehberler: undefined;
+  Garden: undefined;
   Magaza: undefined;
   Profil: undefined;
 };

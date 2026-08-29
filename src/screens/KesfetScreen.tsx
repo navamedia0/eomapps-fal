@@ -6,12 +6,13 @@ import {
   Pressable,
   Image,
   ImageBackground,
+  RefreshControl,
   ScrollView,
   TextInput,
   StyleSheet,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
+import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
@@ -78,7 +79,7 @@ function Composer({ onPosted }: { onPosted: () => void }) {
   const pickImage = useCallback(async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('İzin gerekli', 'Fotoğraf eklemek için galeri erişimine izin vermelisin.');
+      showAlert('İzin gerekli', 'Fotoğraf eklemek için galeri erişimine izin vermelisin.');
       return;
     }
     const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.7 });
@@ -93,7 +94,7 @@ function Composer({ onPosted }: { onPosted: () => void }) {
       reset();
       onPosted();
     } catch (err) {
-      Alert.alert('Paylaşılamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+      showAlert('Paylaşılamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
     } finally {
       setPosting(false);
     }
@@ -219,6 +220,7 @@ function PostCard({
 export default function KesfetScreen({ navigation }: Props) {
   const [feed, setFeed] = useState<KesfetFeedPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [feedError, setFeedError] = useState(false);
   const [popular, setPopular] = useState<PopularFavorite[]>([]);
   const [selectedPopular, setSelectedPopular] = useState<PopularFavorite | null>(null);
@@ -243,6 +245,20 @@ export default function KesfetScreen({ navigation }: Props) {
     }, [refreshFeed]),
   );
 
+  // Aşağı çekince yenileme — Instagram tarzı; arka planda periyodik bir
+  // zamanlayıcı YOK, sadece bu jestte veya ekrana tekrar girildiğinde
+  // (useFocusEffect) yenileniyor.
+  const handlePullRefresh = useCallback(() => {
+    setRefreshing(true);
+    getFeed()
+      .then((items) => {
+        setFeed(items);
+        setFeedError(false);
+      })
+      .catch(() => setFeedError(true))
+      .finally(() => setRefreshing(false));
+  }, []);
+
   useEffect(() => {
     getPopularFavorites().then((items) => {
       setPopular(items.filter((item) => item.kind !== 'info' && !item.id.startsWith('info:')));
@@ -255,7 +271,7 @@ export default function KesfetScreen({ navigation }: Props) {
         await toggleLike(id);
         refreshFeed();
       } catch (err) {
-        Alert.alert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+        showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
       }
     },
     [refreshFeed],
@@ -263,7 +279,7 @@ export default function KesfetScreen({ navigation }: Props) {
 
   const handleDelete = useCallback(
     (id: string) => {
-      Alert.alert('Gönderiyi sil', 'Bu gönderiyi silmek istediğine emin misin?', [
+      showAlert('Gönderiyi sil', 'Bu gönderiyi silmek istediğine emin misin?', [
         { text: 'Vazgeç', style: 'cancel' },
         {
           text: 'Sil',
@@ -273,7 +289,7 @@ export default function KesfetScreen({ navigation }: Props) {
               await deletePost(id);
               refreshFeed();
             } catch (err) {
-              Alert.alert('Silinemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+              showAlert('Silinemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
             }
           },
         },
@@ -292,8 +308,8 @@ export default function KesfetScreen({ navigation }: Props) {
   const handleReport = useCallback((id: string) => {
     promptReport((reason) => {
       reportContent('post', id, reason)
-        .then(() => Alert.alert('Teşekkürler', 'Şikayetin alındı.'))
-        .catch((err) => Alert.alert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.'));
+        .then(() => showAlert('Teşekkürler', 'Şikayetin alındı.'))
+        .catch((err) => showAlert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.'));
     });
   }, []);
 
@@ -314,7 +330,13 @@ export default function KesfetScreen({ navigation }: Props) {
 
   return (
     <MysticTableBackground>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handlePullRefresh} tintColor={GOLD} colors={[GOLD]} />
+        }
+      >
         <View style={styles.header}>
           <Ionicons name="compass-outline" size={26} color={GOLD} />
           <Text style={styles.headerTitle}>Keşfet</Text>

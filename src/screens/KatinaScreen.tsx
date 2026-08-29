@@ -7,7 +7,7 @@ import { shuffleKatinaDeck, type KatinaCard } from '@/services/katina';
 import { interpretKatinaSpread } from '@/services/readings-ai';
 import { ApiRequestError } from '@/services/http';
 import { getCredits, spendCredit } from '@/services/credits';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
 import { saveReadingHistory } from '@/services/readingHistory';
 import { parseSpreadReading } from '@/utils/parseSpreadReading';
@@ -166,7 +166,15 @@ export default function KatinaScreen({ navigation }: Props) {
         if (err instanceof ApiRequestError && err.congestion) {
           notifyCongested(err.retryAfterSeconds ?? 30);
         }
-        setError(err instanceof Error ? err.message : 'Kartlar okunurken bir sorun oluştu.');
+        let message = err instanceof Error ? err.message : 'Kartlar okunurken bir sorun oluştu.';
+        if (payWithCoins) {
+          // Ücret alındı ama sonuç gelmediyse iade et — ücretsiz hak
+          // (spendCredit) zaten sadece başarıdan SONRA düşülüyor, oradan
+          // kayıp yok.
+          await addCoins(READING_COIN_COST);
+          message += ` (${READING_COIN_COST} coin iade edildi.)`;
+        }
+        setError(message);
         setPhase('error');
       }
     },

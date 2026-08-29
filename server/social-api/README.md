@@ -83,7 +83,9 @@ npm run deploy
 | POST | `/messages/:userId` | `{ text }` → mesaj gönderir, karşı tarafa push bildirimi yollar |
 | GET | `/rooms` | Aktif odaların listesi (isim, koltuk doluluğu) |
 | POST | `/rooms` | `{ name }` → oda oluşturur, kurucuyu 0. koltuğa oturtur |
-| GET | `/rooms/:id` | Oda detayı: 10 koltukluk dizi (dolu/boş) |
+| GET | `/rooms/:id` | Oda detayı: 10 koltukluk dizi + koltuksuz dinleyiciler listesi |
+| POST | `/rooms/:id/viewers` | Dinleyici olarak varlığını bildirir (heartbeat, ~45sn geçerli) |
+| DELETE | `/rooms/:id/viewers` | Dinleyici listesinden çıkar |
 | POST | `/rooms/:id/seats/:index` | Belirtilen koltuğa otur (0-9) |
 | DELETE | `/rooms/:id/seat` | Koltuktan kalk — son kişi kalkınca oda silinir |
 | GET | `/rooms/:id/messages` | Odanın yazılı sohbet geçmişi |
@@ -109,6 +111,10 @@ npm run deploy
 | GET | `/vip/me` | Güncel VIP aboneliği → `{ subscription }` (`null` olabilir) |
 | GET | `/achievements` | Kendi başarımların: tanımlar + açılan kademeler + ilerleme |
 | GET | `/popularity/leaderboard` | Bu haftanın harcama liderlik tablosu (herkese açık) |
+| GET | `/garden/seeds` | Tohum kataloğu (herkese açık) |
+| GET | `/garden` | Kendi bahçen: 6 arsa + o anki ay evresi bilgisi |
+| POST | `/garden/plant` | `{ slotIndex, seedTypeId }` → eker (bakiyeden düşer) |
+| POST | `/garden/harvest` | `{ slotIndex }` → hazırsa hasat eder, coin kazandırır |
 | POST | `/push-token` | `{ token, platform? }` → cihazın Expo push tokenını kaydeder |
 | DELETE | `/push-token` | `{ token }` → çıkış yapılan cihazın tokenını siler |
 | POST | `/reports` | `{ targetType: 'post'\|'comment'\|'user', targetId, reason }` → şikayet kaydeder |
@@ -132,6 +138,10 @@ Not: `coin` aktiviteyle kazanılan, `crystal` gerçek parayla alınan premium bi
 Ayrı bir "popülerlik puanı" ledger'ı yok — puan, `ledger_entries`'teki harcamalardan (negatif tutarlar) canlı hesaplanıyor, bu yüzden ayrı bir "sıfırlama" işlemine gerek yok: `GET /popularity/leaderboard` her zaman o anki haftanın (Pazartesi 00:00 UTC başlangıçlı) toplamını döner. Her Pazartesi çalışan zamanlanmış görev (`grantWeeklyPopularityAwards`, aynı cron içinde `purgeExpiredPosts` ile birlikte) biten haftanın ilk 10'una "Haftalık Yıldız" başarımını veriyor; "Efsane" başarımı (toplam 1M harcama) her harcamada (`debitWallet` içinde) otomatik kontrol ediliyor.
 
 Hediye sistemine (Faz 8) bağlı `pop-guard` (kendi kendine gönderip puan şişirme koruması) bilinçli olarak henüz yapılmadı — hediye mekaniği yokken önlenecek somut bir istismar yolu da yok; hediye sistemi yazılınca ele alınacak.
+
+## Kader Bahçesi (Faz 5, ilk deneme)
+
+Tohum kataloğu (`garden_seed_types`) [Örnek] önekli yer tutucu içerik — mekanizmayı test etmek için, gerçek isim/görsel/fiyat ayrı belgeyi bekliyor (roadmap'teki `farm-concept`). Büyüme süresi ve hasat verimi gerçek ay evresine göre hafifçe değişiyor: `moonIllumination()` bağımsız bir sinodik-ay yaklaşık hesabı (uygulamanın `astronomy-engine` kullanan Ay Takvimi kadar hassas değil ama küçük bir oyun bonusu için yeterli, worker'a yeni bağımlılık eklemiyor). Yeni ayda ekim daha hızlı büyür, dolunayda hasat daha fazla coin verir. Her hasat "Bahçıvan" başarımını (Faz 6, `game` kategorisi) ilerletir.
 
 ## Başarımlar (Faz 6)
 

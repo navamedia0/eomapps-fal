@@ -9,7 +9,7 @@ import { ZODIAC_TRAITS } from '@/constants/zodiacTraits';
 import { interpretDailyZodiac } from '@/services/readings-ai';
 import { getCachedZodiacReading, setCachedZodiacReading } from '@/services/dailyZodiacCache';
 import { getCredits, spendCredit } from '@/services/credits';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
@@ -59,7 +59,12 @@ export default function ZodiacScreen({ navigation }: Props) {
       await setCachedZodiacReading(sign, reading);
       setResult(reading);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Burç yorumu alınırken bir sorun oluştu.');
+      let message = err instanceof Error ? err.message : 'Burç yorumu alınırken bir sorun oluştu.';
+      if (payWithCoins) {
+        await addCoins(READING_COIN_COST);
+        message += ` (${READING_COIN_COST} coin iade edildi.)`;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }

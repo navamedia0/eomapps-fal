@@ -8,7 +8,7 @@ import { resolveBirthDate } from '@/utils/resolveBirthDate';
 import { ZODIAC_INFO } from '@/constants/zodiacInfo';
 import { TURKISH_CITIES } from '@/constants/turkishCities';
 import { interpretBirthChart } from '@/services/readings-ai';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import BirthDataForm, { EMPTY_BIRTH_FORM, type BirthFormValue } from '@/components/BirthDataForm';
 import NatalChartWheel from '@/components/NatalChartWheel';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -69,7 +69,9 @@ export default function RisingSignScreen({ navigation }: Props) {
       );
       setAiReading(reading);
     } catch (err) {
-      setAiError(err instanceof Error ? err.message : 'Analiz alınırken bir sorun oluştu. Lütfen tekrar deneyin.');
+      await addCoins(15);
+      const base = err instanceof Error ? err.message : 'Analiz alınırken bir sorun oluştu. Lütfen tekrar deneyin.';
+      setAiError(`${base} (15 coin iade edildi.)`);
     } finally {
       setLoadingAi(false);
     }

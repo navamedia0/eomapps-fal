@@ -101,6 +101,9 @@ CREATE TABLE IF NOT EXISTS shop_purchases (
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_shop_purchases_user ON shop_purchases(user_id);
+-- Aynı ürünü iki kez satın almayı (ve dolayısıyla çift ücretlendirmeyi)
+-- eşzamanlı isteklerde bile DB seviyesinde imkansız kılar.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_shop_purchases_unique ON shop_purchases(user_id, item_id);
 
 CREATE TABLE IF NOT EXISTS vip_tiers (
   id TEXT PRIMARY KEY,
@@ -156,10 +159,14 @@ CREATE TABLE IF NOT EXISTS push_tokens (
 -- Sesli/yazılı odalar (Faz 2). Bir odanın 10 koltuğu var; koltuktaki
 -- katılımcılar hem LiveKit ses akışına hem oda yazılı sohbetine dahil.
 -- Sınırsız "sadece dinleyici" modeli bilinçli olarak bu sürümde yok.
+-- capacity/topic sütunları sonradan eklendi (var olan uzak veritabanında
+-- ayrı bir ALTER TABLE ile); burada fresh-DB kurulumları için tanımlıdır.
 CREATE TABLE IF NOT EXISTS rooms (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   host_id TEXT NOT NULL REFERENCES users(id),
+  capacity INTEGER NOT NULL DEFAULT 10,
+  topic TEXT,
   created_at TEXT NOT NULL
 );
 
@@ -172,6 +179,17 @@ CREATE TABLE IF NOT EXISTS room_seats (
 );
 CREATE INDEX IF NOT EXISTS idx_room_seats_user ON room_seats(user_id);
 
+-- Odayı açık tutan (ekranda görüntüleyen) ama koltuğa oturmamış kullanıcılar
+-- — "sadece dinleyici" listesi. Gerçek zamanlı bir bağlantı yok, istemci
+-- düzenli aralıklarla POST ile "hâlâ buradayım" bildiriyor (heartbeat);
+-- ROOM_VIEWER_TIMEOUT_SECONDS'tan eski kayıtlar sorgudan otomatik düşüyor.
+CREATE TABLE IF NOT EXISTS room_viewers (
+  room_id TEXT NOT NULL REFERENCES rooms(id),
+  user_id TEXT NOT NULL REFERENCES users(id),
+  last_seen_at TEXT NOT NULL,
+  PRIMARY KEY (room_id, user_id)
+);
+
 CREATE TABLE IF NOT EXISTS room_messages (
   id TEXT PRIMARY KEY,
   room_id TEXT NOT NULL REFERENCES rooms(id),
@@ -180,6 +198,23 @@ CREATE TABLE IF NOT EXISTS room_messages (
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_room_messages_room ON room_messages(room_id, created_at);
+
+-- Host moderasyonu: yasaklanan kullanıcı koltuğa oturamaz, mesaj atamaz;
+-- susturulan kullanıcı yalnızca oda yazılı sohbetine mesaj atamaz (ses
+-- tarafında LiveKit admin API entegrasyonu henüz yok).
+CREATE TABLE IF NOT EXISTS room_bans (
+  room_id TEXT NOT NULL REFERENCES rooms(id),
+  user_id TEXT NOT NULL REFERENCES users(id),
+  banned_at TEXT NOT NULL,
+  PRIMARY KEY (room_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS room_mutes (
+  room_id TEXT NOT NULL REFERENCES rooms(id),
+  user_id TEXT NOT NULL REFERENCES users(id),
+  muted_at TEXT NOT NULL,
+  PRIMARY KEY (room_id, user_id)
+);
 
 CREATE TABLE IF NOT EXISTS messages (
   id TEXT PRIMARY KEY,
@@ -235,6 +270,39 @@ INSERT OR IGNORE INTO achievement_definitions (id, category, name, description, 
   ('social_followers', 'social', 'Popüler Profil', 'Takipçi sayın arttıkça yeni kademeler açılır.', '[{"tier":1,"threshold":10,"label":"10"},{"tier":2,"threshold":50,"label":"50"},{"tier":3,"threshold":100,"label":"100"},{"tier":4,"threshold":500,"label":"500"},{"tier":5,"threshold":1000,"label":"1000"},{"tier":6,"threshold":5000,"label":"5000"}]', '2026-01-01T00:00:00.000Z'),
   ('popularity_weekly_star', 'popularity', 'Haftalık Yıldız', 'Hafta sonunda harcama liderliğinde ilk 10''a girdin.', '[{"tier":1,"threshold":1,"label":"İlk 10"}]', '2026-01-01T00:00:00.000Z'),
   ('popularity_legend', 'popularity', 'Efsane', 'Toplamda 1 milyon popülerlik puanına ulaştın.', '[{"tier":1,"threshold":1000000,"label":"1M"}]', '2026-01-01T00:00:00.000Z');
+
+-- Kader Bahçesi (Faz 5, ilk mekanik denemesi). Tohum kataloğu yer tutucu
+-- ([Örnek] önekli) — çalışma mekanizmasını test etmek için, gerçek görsel/
+-- isimler hazır olunca değişecek. Büyüme/hasat süresi ve verimi gerçek ay
+-- evresine göre hafifçe değişiyor (yeni ayda ekim daha hızlı büyür, dolunayda
+-- hasat daha verimli) — moon_illumination() sunucu tarafında hesaplıyor.
+CREATE TABLE IF NOT EXISTS garden_seed_types (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  currency TEXT NOT NULL,       -- 'coin' | 'crystal'
+  price INTEGER NOT NULL,
+  grow_minutes INTEGER NOT NULL,
+  yield_coin INTEGER NOT NULL,
+  active INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS garden_plots (
+  user_id TEXT NOT NULL REFERENCES users(id),
+  slot_index INTEGER NOT NULL,
+  seed_type_id TEXT REFERENCES garden_seed_types(id),
+  planted_at TEXT,
+  ready_at TEXT,
+  PRIMARY KEY (user_id, slot_index)
+);
+
+INSERT OR IGNORE INTO garden_seed_types (id, name, currency, price, grow_minutes, yield_coin, active, created_at) VALUES
+  ('seed-mystic-basic', '[Örnek] Basit Tohum', 'coin', 50, 30, 80, 1, '2026-01-01T00:00:00.000Z'),
+  ('seed-mystic-silver', '[Örnek] Gümüş Tohum', 'coin', 150, 120, 260, 1, '2026-01-01T00:00:00.000Z'),
+  ('seed-mystic-crystal', '[Örnek] Kristal Tohum', 'crystal', 20, 240, 500, 1, '2026-01-01T00:00:00.000Z');
+
+INSERT OR IGNORE INTO achievement_definitions (id, category, name, description, tiers, created_at) VALUES
+  ('game_harvests', 'game', 'Bahçıvan', 'Kader Bahçesinde toplam hasat sayın.', '[{"tier":1,"threshold":1,"label":"1"},{"tier":2,"threshold":10,"label":"10"},{"tier":3,"threshold":50,"label":"50"},{"tier":4,"threshold":200,"label":"200"}]', '2026-01-01T00:00:00.000Z');
 
 CREATE TABLE IF NOT EXISTS comments (
   id TEXT PRIMARY KEY,

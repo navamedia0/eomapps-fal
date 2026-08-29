@@ -1,18 +1,28 @@
 import { useCallback, useState } from 'react';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import { View, Text, Image, Pressable, ScrollView, TextInput, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { Ionicons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, Image, Pressable, RefreshControl, ScrollView, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
+import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import type { TabScreenProps } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import { getStoredSession, signInWithGoogle } from '@/services/auth';
 import { getConversations, type Conversation } from '@/services/messages';
-import { getRooms, createRoom, type RoomSummary } from '@/services/rooms';
+import { getRooms, type RoomSummary } from '@/services/rooms';
+import { getGuides, getMyGuideApplication, applyForGuide, type Guide, type GuideApplication } from '@/services/guides';
 import AppleSignInButton from '@/components/AppleSignInButton';
+import CreateRoomModal from '@/components/CreateRoomModal';
 import { avatarColor } from '@/utils/avatarColor';
 import { relativeTime } from '@/utils/relativeTime';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = TabScreenProps;
+type SohbetTab = 'sesli' | 'uzmanlar';
+
+const APPLICATION_STATUS_LABEL: Record<GuideApplication['status'], string> = {
+  pending: 'Başvurun inceleniyor.',
+  approved: 'Fal uzmanısın — listede görünüyorsun.',
+  rejected: 'Başvurun reddedildi. Tekrar başvurabilirsin.',
+};
 
 function ConversationRow({ item, onPress }: { item: Conversation; onPress: () => void }) {
   return (
@@ -56,7 +66,7 @@ function RoomRow({ item, onPress }: { item: RoomSummary; onPress: () => void }) 
           {item.name}
         </Text>
         <Text style={styles.rowPreview} numberOfLines={1}>
-          {item.hostName} kurdu
+          {item.hostName} kurdu{item.topic ? ` · ${item.topic}` : ''}
         </Text>
       </View>
       <Text style={styles.roomSeatCount}>
@@ -66,16 +76,51 @@ function RoomRow({ item, onPress }: { item: RoomSummary; onPress: () => void }) 
   );
 }
 
+function GuideRow({ item, onMessage }: { item: Guide; onMessage: () => void }) {
+  return (
+    <View style={styles.row}>
+      {item.avatarUrl ? (
+        <Image source={{ uri: item.avatarUrl }} style={styles.avatar} />
+      ) : (
+        <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: avatarColor(item.id) }]}>
+          <Text style={styles.avatarFallbackText}>{item.displayName.charAt(0).toUpperCase()}</Text>
+        </View>
+      )}
+      <View style={styles.rowTextWrap}>
+        <Text style={styles.rowName} numberOfLines={1}>
+          {item.displayName}
+        </Text>
+        <Text style={styles.rowPreview} numberOfLines={2}>
+          {item.bio}
+        </Text>
+      </View>
+      <Pressable onPress={onMessage} style={styles.messageButton} hitSlop={8}>
+        <Ionicons name="chatbubble-outline" size={18} color={GOLD} />
+      </Pressable>
+    </View>
+  );
+}
+
 export default function SohbetScreen({ navigation }: Props) {
+  const [tab, setTab] = useState<SohbetTab>('sesli');
   const [signedIn, setSignedIn] = useState<boolean | undefined>(undefined);
   const [signingIn, setSigningIn] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loadingConversations, setLoadingConversations] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Sesli Sohbet sekmesi
   const [rooms, setRooms] = useState<RoomSummary[]>([]);
   const [loadingRooms, setLoadingRooms] = useState(true);
-  const [composerOpen, setComposerOpen] = useState(false);
-  const [roomName, setRoomName] = useState('');
-  const [creatingRoom, setCreatingRoom] = useState(false);
+  const [createRoomModalVisible, setCreateRoomModalVisible] = useState(false);
+
+  // Fal Uzmanları sekmesi
+  const [guides, setGuides] = useState<Guide[]>([]);
+  const [loadingGuides, setLoadingGuides] = useState(true);
+  const [application, setApplication] = useState<GuideApplication | null>(null);
+  const [loadingApplication, setLoadingApplication] = useState(true);
+  const [applyMessage, setApplyMessage] = useState('');
+  const [applying, setApplying] = useState(false);
 
   const refreshRooms = useCallback(() => {
     getRooms()
@@ -84,20 +129,38 @@ export default function SohbetScreen({ navigation }: Props) {
       .finally(() => setLoadingRooms(false));
   }, []);
 
+  const refreshGuides = useCallback((isSignedIn: boolean) => {
+    getGuides()
+      .then(setGuides)
+      .catch(() => setGuides([]))
+      .finally(() => setLoadingGuides(false));
+
+    if (!isSignedIn) {
+      setLoadingApplication(false);
+      return;
+    }
+    getMyGuideApplication()
+      .then(setApplication)
+      .catch(() => setApplication(null))
+      .finally(() => setLoadingApplication(false));
+  }, []);
+
   const refresh = useCallback(() => {
     getStoredSession().then((session) => {
-      setSignedIn(!!session);
-      if (!session) {
+      const isSignedIn = !!session;
+      setSignedIn(isSignedIn);
+      if (isSignedIn) {
+        getConversations()
+          .then(setConversations)
+          .catch(() => setConversations([]))
+          .finally(() => setLoadingConversations(false));
+      } else {
         setLoadingConversations(false);
-        return;
       }
-      getConversations()
-        .then(setConversations)
-        .catch(() => setConversations([]))
-        .finally(() => setLoadingConversations(false));
+      refreshGuides(isSignedIn);
     });
     refreshRooms();
-  }, [refreshRooms]);
+  }, [refreshRooms, refreshGuides]);
 
   useFocusEffect(
     useCallback(() => {
@@ -105,13 +168,29 @@ export default function SohbetScreen({ navigation }: Props) {
     }, [refresh]),
   );
 
+  // Keşfet'teki gibi: aşağı çekince yenile, arka planda periyodik bir
+  // zamanlayıcı yok, sadece bu jestte veya ekrana tekrar girildiğinde.
+  const handlePullRefresh = useCallback(async () => {
+    setRefreshing(true);
+    const session = await getStoredSession();
+    const isSignedIn = !!session;
+    setSignedIn(isSignedIn);
+    await Promise.allSettled([
+      isSignedIn ? getConversations().then(setConversations).catch(() => setConversations([])) : Promise.resolve(),
+      getRooms().then(setRooms).catch(() => setRooms([])),
+      getGuides().then(setGuides).catch(() => setGuides([])),
+      isSignedIn ? getMyGuideApplication().then(setApplication).catch(() => setApplication(null)) : Promise.resolve(),
+    ]);
+    setRefreshing(false);
+  }, []);
+
   const handleSignIn = useCallback(async () => {
     setSigningIn(true);
     try {
       await signInWithGoogle();
       refresh();
     } catch (err) {
-      Alert.alert('Giriş yapılamadı', err instanceof Error ? err.message : 'Bilinmeyen bir hata oluştu.');
+      showAlert('Giriş yapılamadı', err instanceof Error ? err.message : 'Bilinmeyen bir hata oluştu.');
     } finally {
       setSigningIn(false);
     }
@@ -131,25 +210,45 @@ export default function SohbetScreen({ navigation }: Props) {
     [navigation],
   );
 
-  const handleCreateRoom = useCallback(async () => {
-    if (!roomName.trim()) return;
-    setCreatingRoom(true);
-    try {
-      const room = await createRoom(roomName);
-      setRoomName('');
-      setComposerOpen(false);
+  const handleRoomCreated = useCallback(
+    (room: RoomSummary) => {
+      setCreateRoomModalVisible(false);
       refreshRooms();
       navigation.navigate('Room', { roomId: room.id, roomName: room.name });
+    },
+    [refreshRooms, navigation],
+  );
+
+  const handleApply = useCallback(async () => {
+    if (!applyMessage.trim()) return;
+    setApplying(true);
+    try {
+      const app = await applyForGuide(applyMessage);
+      setApplication(app);
+      setApplyMessage('');
     } catch (err) {
-      Alert.alert('Oluşturulamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+      showAlert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
     } finally {
-      setCreatingRoom(false);
+      setApplying(false);
     }
-  }, [roomName, refreshRooms, navigation]);
+  }, [applyMessage]);
+
+  const openGuideMessage = useCallback(
+    (guide: Guide) => {
+      navigation.navigate('DMThread', { userId: guide.id, displayName: guide.displayName, avatarUrl: guide.avatarUrl });
+    },
+    [navigation],
+  );
+
+  const canApply = !application || application.status === 'rejected';
 
   return (
     <MysticTableBackground>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handlePullRefresh} tintColor={GOLD} colors={[GOLD]} />}
+      >
         <View style={styles.header}>
           <Ionicons name="chatbubbles-outline" size={26} color={GOLD} />
           <Text style={styles.headerTitle}>Sohbet</Text>
@@ -166,7 +265,7 @@ export default function SohbetScreen({ navigation }: Props) {
               <Text style={styles.signInText}>{signingIn ? 'Giriş yapılıyor...' : 'Mesajlaşmak için Google ile giriş yap'}</Text>
               {signingIn && <ActivityIndicator color={GOLD} style={{ marginLeft: 6 }} />}
             </Pressable>
-            <AppleSignInButton onSuccess={refresh} onError={(message) => Alert.alert('Giriş yapılamadı', message)} />
+            <AppleSignInButton onSuccess={refresh} onError={(message) => showAlert('Giriş yapılamadı', message)} />
           </View>
         )}
 
@@ -189,48 +288,106 @@ export default function SohbetScreen({ navigation }: Props) {
           </>
         )}
 
-        <View style={styles.roomsHeaderRow}>
-          <Text style={[styles.sectionLabel, { marginBottom: 0 }]}>Sesli Odalar</Text>
-          <Pressable onPress={() => setComposerOpen((v) => !v)} hitSlop={8} style={styles.newRoomButton}>
-            <Ionicons name={composerOpen ? 'close' : 'add'} size={16} color={GOLD} />
-            <Text style={styles.newRoomButtonText}>{composerOpen ? 'Vazgeç' : 'Yeni Oda'}</Text>
+        <View style={styles.tabSwitchRow}>
+          <Pressable
+            onPress={() => setTab('sesli')}
+            style={[styles.tabSwitchButton, tab === 'sesli' && styles.tabSwitchButtonActive]}
+          >
+            <Ionicons name="mic-outline" size={16} color={tab === 'sesli' ? '#1a0d33' : GOLD} />
+            <Text style={[styles.tabSwitchText, tab === 'sesli' && styles.tabSwitchTextActive]}>Sesli Sohbet</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setTab('uzmanlar')}
+            style={[styles.tabSwitchButton, tab === 'uzmanlar' && styles.tabSwitchButtonActive]}
+          >
+            <MaterialCommunityIcons name="crystal-ball" size={17} color={tab === 'uzmanlar' ? '#1a0d33' : GOLD} />
+            <Text style={[styles.tabSwitchText, tab === 'uzmanlar' && styles.tabSwitchTextActive]}>Fal Uzmanları</Text>
           </Pressable>
         </View>
-        <Text style={styles.roomsHint}>Koltuğa oturup yazışabilirsin; sesli bağlantı LiveKit entegrasyonu tamamlanınca aktif olacak.</Text>
 
-        {composerOpen && (
-          <View style={styles.composer}>
-            <TextInput
-              value={roomName}
-              onChangeText={setRoomName}
-              placeholder="Oda adı (örn. Gece Sohbeti)"
-              placeholderTextColor={TEXT_MUTED}
-              style={styles.composerInput}
-              maxLength={60}
-              autoFocus
-            />
-            <Pressable
-              onPress={handleCreateRoom}
-              disabled={creatingRoom || !roomName.trim()}
-              style={[styles.composerSubmit, (creatingRoom || !roomName.trim()) && styles.composerSubmitDisabled]}
-            >
-              {creatingRoom ? <ActivityIndicator size="small" color="#1a0d33" /> : <Text style={styles.composerSubmitText}>Oluştur</Text>}
-            </Pressable>
-          </View>
-        )}
+        {tab === 'sesli' ? (
+          <>
+            <View style={styles.roomsHeaderRow}>
+              <Text style={[styles.sectionLabel, { marginBottom: 0 }]}>Sesli Odalar</Text>
+              <Pressable onPress={() => setCreateRoomModalVisible(true)} hitSlop={8} style={styles.newRoomButton}>
+                <Ionicons name="add" size={16} color={GOLD} />
+                <Text style={styles.newRoomButtonText}>Yeni Oda</Text>
+              </Pressable>
+            </View>
+            <Text style={styles.roomsHint}>Odaya girip yazışabilirsin; koltuğa oturan da sesli katılabilir.</Text>
 
-        {loadingRooms ? (
-          <ActivityIndicator color={GOLD} style={{ marginBottom: 20 }} />
-        ) : (
-          <View style={styles.list}>
-            {rooms.length === 0 ? (
-              <Text style={styles.emptyText}>Şu an açık oda yok — ilk odayı sen kur.</Text>
+            {loadingRooms ? (
+              <ActivityIndicator color={GOLD} style={{ marginBottom: 20 }} />
             ) : (
-              rooms.map((item) => <RoomRow key={item.id} item={item} onPress={() => openRoom(item)} />)
+              <View style={styles.list}>
+                {rooms.length === 0 ? (
+                  <Text style={styles.emptyText}>Şu an açık oda yok — ilk odayı sen kur.</Text>
+                ) : (
+                  rooms.map((item) => <RoomRow key={item.id} item={item} onPress={() => openRoom(item)} />)
+                )}
+              </View>
             )}
-          </View>
+          </>
+        ) : (
+          <>
+            {loadingGuides ? (
+              <ActivityIndicator color={GOLD} style={{ marginBottom: 20 }} />
+            ) : (
+              <View style={styles.list}>
+                {guides.length === 0 ? (
+                  <Text style={styles.emptyText}>Henüz onaylanmış fal uzmanı yok.</Text>
+                ) : (
+                  guides.map((item) => <GuideRow key={item.id} item={item} onMessage={() => openGuideMessage(item)} />)
+                )}
+              </View>
+            )}
+
+            <Text style={styles.sectionLabel}>Fal Uzmanı Ol</Text>
+
+            {signedIn && loadingApplication && <ActivityIndicator color={GOLD} style={{ marginBottom: 10 }} />}
+
+            {signedIn && !loadingApplication && (
+              <>
+                {application && (
+                  <View style={[styles.statusCard, application.status === 'approved' && styles.statusCardApproved]}>
+                    <Text style={styles.statusText}>{APPLICATION_STATUS_LABEL[application.status]}</Text>
+                  </View>
+                )}
+                {canApply && (
+                  <View style={styles.applyBox}>
+                    <TextInput
+                      value={applyMessage}
+                      onChangeText={setApplyMessage}
+                      placeholder="Kendinden ve uzmanlık alanından bahset (örn. tarot, kahve falı)..."
+                      placeholderTextColor={TEXT_MUTED}
+                      style={styles.applyInput}
+                      multiline
+                      maxLength={600}
+                    />
+                    <Pressable
+                      onPress={handleApply}
+                      disabled={applying || !applyMessage.trim()}
+                      style={[styles.applyButton, (applying || !applyMessage.trim()) && styles.applyButtonDisabled]}
+                    >
+                      {applying ? <ActivityIndicator size="small" color="#1a0d33" /> : <Text style={styles.applyButtonText}>Başvur</Text>}
+                    </Pressable>
+                  </View>
+                )}
+              </>
+            )}
+
+            {signedIn === false && (
+              <Text style={styles.emptyText}>Başvurmak için yukarıdan Google veya Apple ile giriş yap.</Text>
+            )}
+          </>
         )}
       </ScrollView>
+
+      <CreateRoomModal
+        visible={createRoomModalVisible}
+        onClose={() => setCreateRoomModalVisible(false)}
+        onCreated={handleRoomCreated}
+      />
     </MysticTableBackground>
   );
 }
@@ -285,6 +442,15 @@ const styles = StyleSheet.create({
   },
   unreadBadgeText: { fontSize: 10.5, fontWeight: '800', color: '#1a0d33' },
   roomSeatCount: { fontSize: 12, fontWeight: '700', color: GOLD },
+  messageButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1,
+    borderColor: GOLD,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   sectionLabel: {
     fontSize: 12.5,
     fontWeight: '700',
@@ -293,6 +459,28 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: 12,
   },
+  tabSwitchRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 20,
+  },
+  tabSwitchButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    borderWidth: 1.2,
+    borderColor: GOLD_SOFT,
+    borderRadius: 14,
+    paddingVertical: 11,
+  },
+  tabSwitchButtonActive: {
+    backgroundColor: GOLD,
+    borderColor: GOLD,
+  },
+  tabSwitchText: { fontSize: 12.5, fontWeight: '700', color: GOLD },
+  tabSwitchTextActive: { color: '#1a0d33' },
   roomsHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
   newRoomButton: {
     flexDirection: 'row',
@@ -306,19 +494,29 @@ const styles = StyleSheet.create({
   },
   newRoomButtonText: { fontSize: 11.5, fontWeight: '700', color: GOLD },
   roomsHint: { fontSize: 11, color: TEXT_MUTED, lineHeight: 16, marginBottom: 14 },
-  composer: { flexDirection: 'row', gap: 10, marginBottom: 16 },
-  composerInput: {
-    flex: 1,
+  statusCard: {
     backgroundColor: NIGHT_CARD,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    padding: 14,
+    marginBottom: 14,
+  },
+  statusCardApproved: { borderColor: GOLD },
+  statusText: { fontSize: 13, color: TEXT_PRIMARY, textAlign: 'center' },
+  applyBox: { gap: 10 },
+  applyInput: {
+    backgroundColor: NIGHT_CARD,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    padding: 14,
+    minHeight: 90,
+    textAlignVertical: 'top',
     fontSize: 13.5,
     color: TEXT_PRIMARY,
   },
-  composerSubmit: { backgroundColor: GOLD, borderRadius: 12, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center' },
-  composerSubmitDisabled: { opacity: 0.45 },
-  composerSubmitText: { fontSize: 12.5, fontWeight: '800', color: '#1a0d33' },
+  applyButton: { backgroundColor: GOLD, borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
+  applyButtonDisabled: { opacity: 0.45 },
+  applyButtonText: { fontSize: 13.5, fontWeight: '800', color: '#1a0d33' },
 });

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Animated } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -7,10 +7,12 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import ReelRevealFX from '@/components/effects/ReelRevealFX';
 import SparkleBurst from '@/components/effects/SparkleBurst';
+import ReadingCardStack from '@/components/ReadingCardStack';
+import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import visionData from '@/data/kara_ayna_vizyonlari.json';
 import { gazeIntoMirror, type ScryingVision } from '@/services/scryingEngine';
 import { interpretScryingReading } from '@/services/readings-ai';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -28,6 +30,7 @@ export default function ScryingScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
   const castKey = useRef(0);
 
   const mirrorGlow = useRef(new Animated.Value(0)).current;
@@ -67,7 +70,8 @@ export default function ScryingScreen({ navigation }: Props) {
       const interp = await interpretScryingReading(vision, focusText.trim(), targetMode);
       setResult(interp);
     } catch {
-      setError('Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin.');
+      await addCoins(cost);
+      setError(`Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin. (${cost} coin iade edildi.)`);
     } finally {
       setLoading(false);
     }
@@ -200,7 +204,7 @@ export default function ScryingScreen({ navigation }: Props) {
               />
             )}
 
-            {result && (
+            {result && !resultSections && (
               <View style={styles.resultCard}>
                 <View style={styles.badgeRow}>
                   <MaterialCommunityIcons name="crown" size={16} color={GOLD} />
@@ -213,6 +217,14 @@ export default function ScryingScreen({ navigation }: Props) {
           </View>
         )}
       </ScrollView>
+
+      {vision && result && resultSections && (
+        <ReadingCardStack
+          badge="Kara Ayna Durugörü Raporu"
+          sections={resultSections}
+          shareTextPrefix="Mistik Rehber - Kara Ayna Durugörü Yorumum"
+        />
+      )}
     </MysticTableBackground>
   );
 }

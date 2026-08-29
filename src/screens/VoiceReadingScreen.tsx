@@ -9,7 +9,7 @@ import { readAudioAsBase64 } from '@/utils/audioBase64';
 import { interpretVoiceReading } from '@/services/readings-ai';
 import { ApiRequestError } from '@/services/http';
 import { getCredits, spendCredit } from '@/services/credits';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { VOICE_READING_COIN_COST } from '@/constants/economy';
 import { saveReadingHistory } from '@/services/readingHistory';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
@@ -134,7 +134,12 @@ export default function VoiceReadingScreen({ navigation }: Props) {
       if (err instanceof ApiRequestError && err.congestion) {
         notifyCongested(err.retryAfterSeconds ?? 30);
       }
-      setError(err instanceof Error ? err.message : 'Sesin yorumlanırken bir sorun oluştu.');
+      let message = err instanceof Error ? err.message : 'Sesin yorumlanırken bir sorun oluştu.';
+      if (payWithCoins) {
+        await addCoins(VOICE_READING_COIN_COST);
+        message += ` (${VOICE_READING_COIN_COST} coin iade edildi.)`;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }

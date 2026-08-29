@@ -14,6 +14,7 @@ import {
 import { getCoins } from '@/services/coins';
 import CardPurchaseModal from '@/components/CardPurchaseModal';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import { showAlert } from '@/services/themedAlert';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CardDesigns'>;
@@ -50,13 +51,17 @@ export default function CardDesignsScreen({ navigation }: Props) {
 
   const buyWithCoins = useCallback(async () => {
     if (!purchaseTarget) return;
-    const success = await purchaseDesignWithCoins(purchaseTarget.id);
-    if (success) {
-      await selectDesign(purchaseTarget.id);
-      setFeedback(`${purchaseTarget.name} kilidi açıldı! ✨`);
-      setPurchaseTarget(null);
-      refresh();
-      setTimeout(() => setFeedback(null), 2500);
+    try {
+      const success = await purchaseDesignWithCoins(purchaseTarget.id);
+      if (success) {
+        await selectDesign(purchaseTarget.id);
+        setFeedback(`${purchaseTarget.name} kilidi açıldı! ✨`);
+        setPurchaseTarget(null);
+        refresh();
+        setTimeout(() => setFeedback(null), 2500);
+      }
+    } catch (err) {
+      showAlert('Alınamadı', err instanceof Error ? err.message : 'Bir sorun oluştu, coin iade edildi.');
     }
   }, [purchaseTarget, refresh]);
 

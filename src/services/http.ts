@@ -34,6 +34,16 @@ export async function postJson<T>(url: string, body: unknown, headers: Record<st
   return response.json() as Promise<T>;
 }
 
+export async function patchJson<T>(url: string, body: unknown, headers: Record<string, string>): Promise<T> {
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(body),
+  });
+  await ensureOk(response);
+  return response.json() as Promise<T>;
+}
+
 async function ensureOk(response: Response): Promise<void> {
   if (response.ok) return;
   let payload: { error?: string } | null = null;

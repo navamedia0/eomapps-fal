@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,9 +10,11 @@ import ReelRevealFX from '@/components/effects/ReelRevealFX';
 import SparkleBurst from '@/components/effects/SparkleBurst';
 import { tossCoins, getHexagramFromLines, getTransformedHexagram, type IChingLine, type Hexagram } from '@/services/ichingEngine';
 import { interpretIChingReading } from '@/services/readings-ai';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
+import ReadingCardStack from '@/components/ReadingCardStack';
+import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { GOLD, GOLD_SOFT, GOLD_DEEP, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'IChingReading'>;
@@ -108,6 +110,7 @@ export default function IChingScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
 
   const handleTossNextLine = () => {
     if (lines.length >= 6 || tossingLine) return;
@@ -145,7 +148,8 @@ export default function IChingScreen({ navigation }: Props) {
       const reading = await interpretIChingReading(hexagram, targetMode, transformedHexagram);
       setResult(reading);
     } catch {
-      setError('Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin.');
+      await addCoins(cost);
+      setError(`Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin. (${cost} coin iade edildi.)`);
     } finally {
       setLoading(false);
     }
@@ -295,7 +299,7 @@ export default function IChingScreen({ navigation }: Props) {
               />
             )}
 
-            {result && (
+            {result && !resultSections && (
               <View style={styles.resultCard}>
                 <View style={styles.badgeRow}>
                   <MaterialCommunityIcons name="crown" size={16} color={GOLD} />
@@ -313,6 +317,14 @@ export default function IChingScreen({ navigation }: Props) {
           </View>
         )}
       </ScrollView>
+
+      {result && resultSections && (
+        <ReadingCardStack
+          badge="I Ching Değişimler Kitabı Raporu"
+          sections={resultSections}
+          shareTextPrefix="Mistik Rehber - I Ching Kehanetim"
+        />
+      )}
     </MysticTableBackground>
   );
 }

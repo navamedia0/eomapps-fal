@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Animated } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Circle } from 'react-native-svg';
@@ -6,9 +6,11 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import ReadingCardStack from '@/components/ReadingCardStack';
+import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { analyzeAuraEnergy, type AuraAnalysis } from '@/services/auraEngine';
 import { interpretAuraReading } from '@/services/readings-ai';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -83,6 +85,7 @@ export default function AuraEnergyScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
 
   const scanPulse = useRef(new Animated.Value(1)).current;
   const pulseLoop = useRef<Animated.CompositeAnimation | null>(null);
@@ -169,7 +172,9 @@ export default function AuraEnergyScreen({ navigation }: Props) {
       const interp = await interpretAuraReading(aura, targetMode);
       setResult(interp);
     } catch {
-      setError('Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin.');
+      // Ücret alındı ama sonuç gelmediyse iade et.
+      await addCoins(cost);
+      setError(`Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin. (${cost} coin iade edildi.)`);
     } finally {
       setLoading(false);
     }
@@ -299,7 +304,7 @@ export default function AuraEnergyScreen({ navigation }: Props) {
               />
             )}
 
-            {result && (
+            {result && !resultSections && (
               <View style={styles.resultCard}>
                 <View style={styles.badgeRow}>
                   <MaterialCommunityIcons name="crown" size={16} color={GOLD} />
@@ -312,6 +317,14 @@ export default function AuraEnergyScreen({ navigation }: Props) {
           </View>
         )}
       </ScrollView>
+
+      {aura && result && resultSections && (
+        <ReadingCardStack
+          badge="Aura & Çakra Enerji Raporu"
+          sections={resultSections}
+          shareTextPrefix={`Mistik Rehber - Aura Raporum: ${aura.dominantAuraName}`}
+        />
+      )}
     </MysticTableBackground>
   );
 }

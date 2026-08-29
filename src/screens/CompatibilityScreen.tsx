@@ -15,7 +15,7 @@ import type { RootStackParamList } from '@/navigation/types';
 import { ZODIACS, type Zodiac } from '@/services/zodiac';
 import { ZODIAC_INFO } from '@/constants/zodiacInfo';
 import { interpretZodiacCompatibility } from '@/services/readings-ai';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { getClassicCompatibility, type ClassicCompatibility } from '@/services/zodiacCompatibilityData';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
@@ -193,7 +193,9 @@ export default function CompatibilityScreen({ navigation }: Props) {
 
       setDeepResult(reading);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Uyum analizi alınırken bir sorun oluştu.');
+      await addCoins(15);
+      const base = err instanceof Error ? err.message : 'Uyum analizi alınırken bir sorun oluştu.';
+      setError(`${base} (15 coin iade edildi.)`);
     } finally {
       if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
       setIsDeepLoading(false);

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -11,6 +10,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -70,7 +70,7 @@ export default function DMThreadScreen({ route }: Props) {
       const message = await sendMessage(userId, body);
       setMessages((prev) => [...prev, message]);
     } catch (err) {
-      Alert.alert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+      showAlert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
       setText(body);
     } finally {
       setSending(false);

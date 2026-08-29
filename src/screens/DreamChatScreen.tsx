@@ -17,7 +17,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import type { ChatTurn } from '@/services/gemini';
 import { interpretDreamChat } from '@/services/readings-ai';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import {
   getDreamModeStatus,
   unlockDreamLimitedVideo,
@@ -155,6 +155,8 @@ export default function DreamChatScreen({ navigation }: Props) {
       setError(null);
       setCoinFallback(null);
 
+      let spentAmount = 0; // AI çağrısı başarısız olursa iade edilecek tutar
+
       const currentQuota = await refreshQuota(selectedMode);
 
       // Sınırlı Mod Kontrolleri
@@ -177,6 +179,7 @@ export default function DreamChatScreen({ navigation }: Props) {
             setCoinFallback({ coins, cost: DREAM_MESSAGE_COIN_COST });
             return;
           }
+          spentAmount = DREAM_MESSAGE_COIN_COST;
         }
       }
 
@@ -195,6 +198,7 @@ export default function DreamChatScreen({ navigation }: Props) {
             setCoinFallback({ coins, cost: DEEP_DREAM_COIN_COST });
             return;
           }
+          spentAmount = DEEP_DREAM_COIN_COST;
           await markDeepDreamPurchased();
         } else if (currentQuota.status === 'coin_mode') {
           const coins = await getCoins();
@@ -209,6 +213,7 @@ export default function DreamChatScreen({ navigation }: Props) {
             setCoinFallback({ coins, cost: DREAM_MESSAGE_COIN_COST });
             return;
           }
+          spentAmount = DREAM_MESSAGE_COIN_COST;
         }
       }
 
@@ -229,8 +234,13 @@ export default function DreamChatScreen({ navigation }: Props) {
             refreshQuota('deep');
             setMessages([...history, { role: 'model', text: reply }]);
           })
-          .catch((err) => {
-            setError(err instanceof Error ? err.message : 'Rüya analiz edilirken bir sorun oluştu.');
+          .catch(async (err) => {
+            let message = err instanceof Error ? err.message : 'Rüya analiz edilirken bir sorun oluştu.';
+            if (spentAmount > 0) {
+              await addCoins(spentAmount);
+              message += ` (${spentAmount} coin iade edildi.)`;
+            }
+            setError(message);
           });
       } else if (selectedMode === 'deep' && lastMessageText.length >= 500) {
         await Promise.all([
@@ -242,8 +252,13 @@ export default function DreamChatScreen({ navigation }: Props) {
             refreshQuota('deep');
             setMessages([...history, { role: 'model', text: reply }]);
           })
-          .catch((err) => {
-            setError(err instanceof Error ? err.message : 'Rüya analiz edilirken bir sorun oluştu.');
+          .catch(async (err) => {
+            let message = err instanceof Error ? err.message : 'Rüya analiz edilirken bir sorun oluştu.';
+            if (spentAmount > 0) {
+              await addCoins(spentAmount);
+              message += ` (${spentAmount} coin iade edildi.)`;
+            }
+            setError(message);
           });
       } else {
         // Normal akış
@@ -253,7 +268,12 @@ export default function DreamChatScreen({ navigation }: Props) {
           await refreshQuota(selectedMode);
           setMessages([...history, { role: 'model', text: reply }]);
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Rüya yorumlanırken bir sorun oluştu.');
+          let message = err instanceof Error ? err.message : 'Rüya yorumlanırken bir sorun oluştu.';
+          if (spentAmount > 0) {
+            await addCoins(spentAmount);
+            message += ` (${spentAmount} coin iade edildi.)`;
+          }
+          setError(message);
         }
       }
 

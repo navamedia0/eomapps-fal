@@ -22,7 +22,7 @@ import {
 } from '@/services/astrology';
 import { interpretBirthChart } from '@/services/readings-ai';
 import { getCredits, spendCredit } from '@/services/credits';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DETAILED_BIRTH_CHART_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { resolveBirthDate } from '@/utils/resolveBirthDate';
@@ -208,6 +208,8 @@ export default function BirthChartScreen({ navigation }: Props) {
 
       setLoading(true);
 
+      let spentAmount = 0; // senkron olarak (arka plan işi tetiklenmeden önce) hata olursa iade edilecek
+
       try {
         if (mode === 'detailed') {
           // Detaylı analiz coin kontrolü
@@ -224,6 +226,7 @@ export default function BirthChartScreen({ navigation }: Props) {
             setLoading(false);
             return;
           }
+          spentAmount = DETAILED_BIRTH_CHART_COIN_COST;
 
           // 3 Dakikalık Özel Bekleme ve Arka Plan İşi Başlat
           setIsDetailedLoading(true);
@@ -244,6 +247,7 @@ export default function BirthChartScreen({ navigation }: Props) {
               setLoading(false);
               return;
             }
+            spentAmount = READING_COIN_COST;
           } else {
             const remaining = await getCredits();
             if (remaining < 1) {
@@ -279,7 +283,12 @@ export default function BirthChartScreen({ navigation }: Props) {
           setLoading(false);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Doğum haritası oluşturulurken bir sorun oluştu.');
+        let message = err instanceof Error ? err.message : 'Doğum haritası oluşturulurken bir sorun oluştu.';
+        if (spentAmount > 0) {
+          await addCoins(spentAmount);
+          message += ` (${spentAmount} coin iade edildi.)`;
+        }
+        setError(message);
         setLoading(false);
         setIsDetailedLoading(false);
       }

@@ -7,7 +7,7 @@ import { pickRandomKatinaCards, type KatinaCard } from '@/services/katina';
 import { interpretSolitaireSpread } from '@/services/readings-ai';
 import { ApiRequestError } from '@/services/http';
 import { getCredits, spendCredit } from '@/services/credits';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
 import { saveReadingHistory } from '@/services/readingHistory';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -72,7 +72,12 @@ export default function SolitaireScreen({ navigation }: Props) {
       if (err instanceof ApiRequestError && err.congestion) {
         notifyCongested(err.retryAfterSeconds ?? 30);
       }
-      setError(err instanceof Error ? err.message : 'Kartlar açılırken bir sorun oluştu.');
+      let message = err instanceof Error ? err.message : 'Kartlar açılırken bir sorun oluştu.';
+      if (payWithCoins) {
+        await addCoins(READING_COIN_COST);
+        message += ` (${READING_COIN_COST} coin iade edildi.)`;
+      }
+      setError(message);
       setPhase('error');
     }
   }, [cooldownRemaining, notifyCongested]);

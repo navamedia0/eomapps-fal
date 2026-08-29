@@ -7,12 +7,23 @@ import { useEffect } from 'react';
 registerGlobals();
 import { StatusBar } from 'expo-status-bar';
 import * as NavigationBar from 'expo-navigation-bar';
-import { Platform, StyleSheet, View, Pressable } from 'react-native';
-import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { LogBox, Platform, StyleSheet, View, Pressable } from 'react-native';
+
+// LiveKit'in sinyal soketi kapanırken (normal ayrılma dahil) kendi içinde
+// bazen yakalanmamış bir ret (rejection) üretiyor — işlevsel bir soruna
+// işaret etmiyor ama geliştirme ekranında kırmızı hata olarak görünüyor.
+// Sadece bu bilinen, zararsız deseni gizliyoruz — başka hiçbir hatayı
+// bastırmıyoruz ve bu sadece geliştirme modunda (LogBox) etkili, üretim
+// build'inde zaten görünmez.
+LogBox.ignoreLogs(['error reading from signal stream']);
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer, DarkTheme, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import type { RootStackParamList } from '@/navigation/types';
-import CoinBadge from '@/components/CoinBadge';
+import WalletBadge from '@/components/WalletBadge';
+import VoiceSessionBubble from '@/components/VoiceSessionBubble';
+import ThemedAlertHost from '@/components/ThemedAlertHost';
 import MainTabs from '@/navigation/MainTabs';
 import TarotSpreadScreen from '@/screens/TarotSpreadScreen';
 import TarotLayoutScreen from '@/screens/TarotLayoutScreen';
@@ -54,6 +65,7 @@ import BilgiMakaleScreen from '@/screens/BilgiMakaleScreen';
 import MatrixOfDestinyScreen from '@/screens/MatrixOfDestinyScreen';
 import RuneScreen from '@/screens/RuneScreen';
 import IChingScreen from '@/screens/IChingScreen';
+import TumFallarScreen from '@/screens/TumFallarScreen';
 import BaklaScreen from '@/screens/BaklaScreen';
 import WaxReadingScreen from '@/screens/WaxReadingScreen';
 import CelticTreeScreen from '@/screens/CelticTreeScreen';
@@ -68,12 +80,14 @@ import ShopScreen from '@/screens/ShopScreen';
 import VipTiersScreen from '@/screens/VipTiersScreen';
 import AchievementsScreen from '@/screens/AchievementsScreen';
 import PopularityScreen from '@/screens/PopularityScreen';
+import GardenScreen from '@/screens/GardenScreen';
 import bilgiMakaleleri from '@/data/bilgi_makaleleri.json';
 import { GOLD, NIGHT_DEEP, NIGHT_MID, TEXT_PRIMARY } from '@/theme/colors';
 
 const MAX_APP_WIDTH = 480;
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 const navigationTheme = {
   ...DarkTheme,
@@ -99,9 +113,10 @@ export default function App() {
   }, []);
 
   return (
+    <SafeAreaProvider>
     <View style={styles.root}>
       <View style={styles.appShell}>
-        <NavigationContainer theme={navigationTheme}>
+        <NavigationContainer ref={navigationRef} theme={navigationTheme}>
           <StatusBar hidden style="light" />
           <Stack.Navigator
             screenOptions={({ navigation }) => ({
@@ -125,10 +140,11 @@ export default function App() {
                   <Ionicons name="chevron-back" size={26} color={GOLD} />
                 </Pressable>
               ),
-              headerRight: () => <CoinBadge navigation={navigation} />,
+              headerRight: () => <WalletBadge navigation={navigation} />,
             })}
           >
             <Stack.Screen name="Home" component={MainTabs} options={{ headerShown: false }} />
+            <Stack.Screen name="TumFallar" component={TumFallarScreen} options={{ title: 'Tüm Fal Çeşitleri' }} />
             <Stack.Screen name="TarotSpread" component={TarotSpreadScreen} options={{ title: 'Tarot Falı' }} />
             <Stack.Screen name="TarotLayout" component={TarotLayoutScreen} options={{ title: 'Tarot Falı' }} />
             <Stack.Screen name="Tarot" component={TarotScreen} options={{ title: 'Tarot Falı' }} />
@@ -212,10 +228,14 @@ export default function App() {
             <Stack.Screen name="VipTiers" component={VipTiersScreen} options={{ title: 'VIP Kademeleri' }} />
             <Stack.Screen name="Achievements" component={AchievementsScreen} options={{ title: 'Başarımlar' }} />
             <Stack.Screen name="Popularity" component={PopularityScreen} options={{ title: 'Haftalık Popülerlik' }} />
+            <Stack.Screen name="Garden" component={GardenScreen} options={{ title: 'Kader Bahçesi' }} />
           </Stack.Navigator>
         </NavigationContainer>
+        <VoiceSessionBubble navigationRef={navigationRef} />
+        <ThemedAlertHost />
       </View>
     </View>
+    </SafeAreaProvider>
   );
 }
 

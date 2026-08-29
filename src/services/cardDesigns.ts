@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { ImageSourcePropType } from 'react-native';
 import { CARD_DESIGNS } from '@/constants/cardDesigns';
-import { spendCoins } from '@/services/coins';
+import { spendCoins, addCoins } from '@/services/coins';
 
 const OWNED_KEY = '@mistik-rehber/owned-card-designs';
 const SELECTED_KEY = '@mistik-rehber/selected-card-design';
@@ -43,7 +43,13 @@ export async function purchaseDesignWithCoins(id: string): Promise<boolean> {
   if (!design) return false;
   const success = await spendCoins(design.priceCoins);
   if (!success) return false;
-  await unlockDesign(id);
+  try {
+    await unlockDesign(id);
+  } catch (err) {
+    // Ücret alındı ama tasarım kaydedilemedi — iade et.
+    await addCoins(design.priceCoins);
+    throw err;
+  }
   return true;
 }
 

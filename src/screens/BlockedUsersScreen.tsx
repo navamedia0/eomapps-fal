@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -27,7 +28,7 @@ export default function BlockedUsersScreen() {
 
   const handleUnblock = useCallback(
     (user: BlockedUser) => {
-      Alert.alert('Engeli kaldır', `${user.displayName || 'Bu kullanıcının'} engelini kaldırmak istediğine emin misin?`, [
+      showAlert('Engeli kaldır', `${user.displayName || 'Bu kullanıcının'} engelini kaldırmak istediğine emin misin?`, [
         { text: 'Vazgeç', style: 'cancel' },
         {
           text: 'Engeli Kaldır',
@@ -36,7 +37,7 @@ export default function BlockedUsersScreen() {
               await unblockUser(user.id);
               setUsers((prev) => prev.filter((u) => u.id !== user.id));
             } catch (err) {
-              Alert.alert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+              showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
             }
           },
         },

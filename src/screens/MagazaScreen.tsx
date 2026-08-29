@@ -119,6 +119,21 @@ export default function MagazaScreen({ navigation }: Props) {
             <Ionicons name="chevron-forward" size={20} color={GOLD} />
           </Pressable>
         </View>
+
+        <Text style={styles.sectionLabel}>Oyunlar</Text>
+        <View style={styles.list}>
+          <Pressable
+            onPress={() => navigation.navigate('Garden')}
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+          >
+            <FeatureIcon fallback={<MaterialCommunityIcons name="flower-tulip-outline" size={22} color={GOLD} />} size={74} />
+            <View style={styles.cardTextWrap}>
+              <Text style={styles.cardTitle}>Kader Bahçesi</Text>
+              <Text style={styles.cardSubtitle}>Tohum ek, ay evresine göre büyüt, hasat et</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+          </Pressable>
+        </View>
       </ScrollView>
     </MysticTableBackground>
   );

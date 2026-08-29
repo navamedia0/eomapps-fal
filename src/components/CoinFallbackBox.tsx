@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { subscribeCoins } from '@/services/coins';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY } from '@/theme/colors';
 
 type Props = {
@@ -14,8 +16,22 @@ type Props = {
 // Shown once the daily free credit is used up, instead of a dead-end
 // "come back tomorrow" message — lets the user pay a coin to continue right
 // now, or top up if they're short.
+//
+// `coins` is only the balance at the moment this box first appeared — if the
+// user tops up on the Coin Shop and comes back without unmounting this
+// screen, that prop stays stale forever. Subscribing directly to the coin
+// store keeps the balance (and therefore the "Devam Et" vs "Coin Yükle"
+// button choice) live without the parent screen needing to do anything.
 export default function CoinFallbackBox({ cost, coins, onContinue, onBuyCoins, onDismiss, dismissLabel }: Props) {
-  const canAfford = coins >= cost;
+  const [liveCoins, setLiveCoins] = useState(coins);
+
+  useEffect(() => {
+    setLiveCoins(coins);
+  }, [coins]);
+
+  useEffect(() => subscribeCoins(setLiveCoins), []);
+
+  const canAfford = liveCoins >= cost;
 
   return (
     <View style={styles.box}>
@@ -23,8 +39,8 @@ export default function CoinFallbackBox({ cost, coins, onContinue, onBuyCoins, o
       <Text style={styles.text}>Bugünkü ücretsiz fal hakkın doldu.</Text>
       <Text style={styles.subText}>
         {canAfford
-          ? `${cost} coin karşılığında hemen devam edebilirsin. Bakiyen: ${coins} coin.`
-          : `Devam etmek için ${cost} coin gerekiyor. Bakiyen: ${coins} coin.`}
+          ? `${cost} coin karşılığında hemen devam edebilirsin. Bakiyen: ${liveCoins} coin.`
+          : `Devam etmek için ${cost} coin gerekiyor. Bakiyen: ${liveCoins} coin.`}
       </Text>
 
       {canAfford ? (

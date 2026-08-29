@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -18,6 +18,8 @@ import { Room, RoomEvent } from 'livekit-client';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import ConfirmModal from '@/components/ConfirmModal';
+import { showAlert } from '@/services/themedAlert';
 import { env } from '@/config/env';
 import { getStoredSession } from '@/services/auth';
 import {
@@ -27,18 +29,35 @@ import {
   getRoomMessages,
   sendRoomMessage,
   getRoomVoiceToken,
+  pingRoomViewer,
+  leaveRoomViewer,
+  updateRoom,
+  closeRoom,
+  clearRoomMessages,
+  banRoomUser,
+  muteRoomUser,
+  ROOM_TOPICS,
   type RoomDetail,
   type RoomMessage,
 } from '@/services/rooms';
+import {
+  subscribeVoiceSession,
+  getVoiceSession,
+  startVoiceSession,
+  updateVoiceSession,
+  endVoiceSession,
+  type VoiceSession,
+} from '@/services/voiceSession';
 import { avatarColor } from '@/utils/avatarColor';
 import { relativeTime } from '@/utils/relativeTime';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_MID, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, NIGHT_MID, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Room'>;
 
 const POLL_INTERVAL_MS = 4000;
 const MAX_MESSAGE_LENGTH = 500;
-type VoiceState = 'idle' | 'connecting' | 'connected' | 'error';
+type AttemptState = 'idle' | 'connecting' | 'error';
+type DisplayVoiceState = AttemptState | 'connected' | 'reconnecting';
 
 function Seat({ seat, isMe, onPress }: { seat: RoomDetail['seats'][number]; isMe: boolean; onPress: () => void }) {
   return (
@@ -65,7 +84,7 @@ function Seat({ seat, isMe, onPress }: { seat: RoomDetail['seats'][number]; isMe
   );
 }
 
-export default function RoomScreen({ route }: Props) {
+export default function RoomScreen({ route, navigation }: Props) {
   const { roomId } = route.params;
   const [detail, setDetail] = useState<RoomDetail | null>(null);
   const [messages, setMessages] = useState<RoomMessage[]>([]);
@@ -75,11 +94,24 @@ export default function RoomScreen({ route }: Props) {
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const [seatBusy, setSeatBusy] = useState(false);
-  const [voiceState, setVoiceState] = useState<VoiceState>('idle');
-  const [muted, setMuted] = useState(false);
+  const [attemptState, setAttemptState] = useState<AttemptState>('idle');
+  const [voiceSession, setVoiceSession] = useState<VoiceSession | null>(getVoiceSession());
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editTopic, setEditTopic] = useState<string | null>(null);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<'clear' | 'close' | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const wasSeatedRef = useRef(false);
-  const voiceRoomRef = useRef<Room | null>(null);
+
+  // Bu odaya ait aktif bir global sesli oturum varsa (bubble üzerinden geri
+  // dönülmüş olabilir) her mount bunu doğrudan store'dan okur — bağlantının
+  // kendisi ekran yaşam döngüsünden bağımsız, tek doğruluk kaynağı store.
+  const mine = voiceSession?.roomId === roomId ? voiceSession : null;
+  const displayVoiceState: DisplayVoiceState = mine ? mine.status : attemptState;
+  const muted = mine?.muted ?? false;
+
+  useEffect(() => subscribeVoiceSession(setVoiceSession), []);
 
   const load = useCallback((silent = false) => {
     if (!silent) setLoading(true);
@@ -101,52 +133,133 @@ export default function RoomScreen({ route }: Props) {
     getStoredSession().then((session) => setMeId(session?.user.id ?? null));
   }, []);
 
-  const disconnectVoice = useCallback(() => {
-    voiceRoomRef.current?.disconnect();
-    voiceRoomRef.current = null;
-    setVoiceState('idle');
-    setMuted(false);
-  }, []);
+  // Sesi VE koltuğu birlikte bırakır — "Ayrıl" butonu, kendi koltuğuna
+  // dokunma ve geri-git onayındaki "Evet" hepsi bunu kullanır. Sadece sesi
+  // kapatıp koltukta "hayalet" gibi oturmaya devam etmek istenen bir durum
+  // yok, bu yüzden ikisi hep birlikte yürüyor.
+  const leaveRoomCompletely = useCallback(async () => {
+    endVoiceSession();
+    try {
+      await leaveSeat(roomId);
+    } catch {
+      // Koltukta değilsek zaten hata normal, sessizce geç.
+    }
+    load(true);
+  }, [roomId, load]);
 
   const connectVoice = useCallback(async () => {
-    setVoiceState('connecting');
+    setAttemptState('connecting');
     try {
       const token = await getRoomVoiceToken(roomId);
       const room = new Room();
       room.on(RoomEvent.Disconnected, () => {
-        voiceRoomRef.current = null;
-        setVoiceState('idle');
-        setMuted(false);
+        endVoiceSession();
       });
+      // Ağ kısa süreliğine kesilirse (wifi/hücresel geçişi vb.) LiveKit
+      // kendi kendine yeniden bağlanmayı dener — bunu kullanıcıya "hata"
+      // gibi göstermek yerine geçici bir durum olarak belirtiyoruz.
+      room.on(RoomEvent.Reconnecting, () => updateVoiceSession({ status: 'reconnecting' }));
+      room.on(RoomEvent.Reconnected, () => updateVoiceSession({ status: 'connected' }));
       await room.connect(env.livekitUrl(), token);
       await room.localParticipant.setMicrophoneEnabled(true);
-      voiceRoomRef.current = room;
-      setVoiceState('connected');
+      startVoiceSession(roomId, detail?.room.name ?? route.params.roomName ?? 'Oda', room);
+      setAttemptState('idle');
     } catch (err) {
-      setVoiceState('error');
-      Alert.alert('Sese bağlanılamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+      setAttemptState('error');
+      showAlert('Sese bağlanılamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+    }
+  }, [roomId, detail, route.params.roomName]);
+
+  // "Sese Katıl" tek dokunuşla çalışmalı: koltukta değilsen önce boş bir
+  // koltuğa otur (görünür sırada ilk boşluk), sonra sese bağlan. Elle bir
+  // koltuk seçmek isteyen yine "+" işaretine dokunabilir.
+  const handleJoinVoice = useCallback(async () => {
+    const alreadySeated = detail?.seats.some((s) => s?.userId === meId) ?? false;
+    if (!alreadySeated) {
+      const emptyIndex = detail?.seats.findIndex((s) => s === null) ?? -1;
+      if (emptyIndex === -1) {
+        showAlert('Oda dolu', 'Konuşmak için boş koltuk yok.');
+        return;
+      }
+      try {
+        await takeSeat(roomId, emptyIndex);
+        load(true);
+      } catch (err) {
+        showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+        return;
+      }
+    }
+    await connectVoice();
+  }, [detail, meId, roomId, load, connectVoice]);
+
+  const toggleMute = useCallback(async () => {
+    const session = getVoiceSession();
+    if (!session || session.roomId !== roomId) return;
+    const next = !session.muted;
+    try {
+      await session.livekitRoom.localParticipant.setMicrophoneEnabled(!next);
+      updateVoiceSession({ muted: next });
+    } catch (err) {
+      showAlert('Olmadı', err instanceof Error ? err.message : 'Mikrofon değiştirilemedi.');
     }
   }, [roomId]);
 
-  const toggleMute = useCallback(async () => {
-    const room = voiceRoomRef.current;
-    if (!room) return;
-    const next = !muted;
-    await room.localParticipant.setMicrophoneEnabled(!next);
-    setMuted(next);
-  }, [muted]);
-
+  // Koltuğa oturmamış ama odayı açık tutanlar "dinleyici" olarak sayılıyor —
+  // gerçek zamanlı bir bağlantı olmadığı için düzenli aralıklarla "hâlâ
+  // buradayım" bildiriyoruz (heartbeat), ekrandan çıkınca kaydı siliyoruz.
+  // Ekrandan çıkarken (blur) sesli bağlantı hâlâ bu oda için canlıysa —
+  // yani kullanıcı "Arkaplanda Açık Kalsın" seçti — koltuğu/dinleyici
+  // kaydını SİLMİYORUZ, bağlantı bubble üzerinden açık kalıyor.
   useFocusEffect(
     useCallback(() => {
       load();
-      const interval = setInterval(() => load(true), POLL_INTERVAL_MS);
+      getStoredSession().then((session) => {
+        if (session) pingRoomViewer(roomId).catch(() => {});
+      });
+      const interval = setInterval(() => {
+        load(true);
+        getStoredSession().then((session) => {
+          if (session) pingRoomViewer(roomId).catch(() => {});
+        });
+      }, POLL_INTERVAL_MS);
       return () => {
         clearInterval(interval);
-        disconnectVoice();
-        if (wasSeatedRef.current) leaveSeat(roomId).catch(() => {});
+        const keepingInBackground = getVoiceSession()?.roomId === roomId;
+        if (!keepingInBackground) {
+          leaveRoomViewer(roomId).catch(() => {});
+          if (wasSeatedRef.current) leaveSeat(roomId).catch(() => {});
+        }
       };
-    }, [load, roomId, disconnectVoice]),
+    }, [load, roomId]),
   );
+
+  // Geri gitme (header butonu, donanım geri tuşu, kaydırma jesti) — sesli
+  // bağlıysan doğrudan çıkmak yerine soruyoruz: tamamen ayrıl, arkaplanda
+  // açık bırak, ya da vazgeç.
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      const session = getVoiceSession();
+      const isConnected = session?.roomId === roomId && (session.status === 'connected' || session.status === 'reconnecting');
+      if (!isConnected) return;
+      e.preventDefault();
+      showAlert('Odadan ayrılmak istiyor musun?', 'Sesli bağlantın açık. Ne yapmak istersin?', [
+        { text: 'Vazgeç', style: 'cancel' },
+        {
+          text: 'Arkaplanda Açık Kalsın',
+          onPress: () => navigation.dispatch(e.data.action),
+        },
+        {
+          text: 'Evet, Ayrıl',
+          style: 'destructive',
+          onPress: async () => {
+            await leaveRoomCompletely();
+            navigation.dispatch(e.data.action);
+          },
+        },
+      ]);
+    });
+    return unsubscribe;
+  }, [navigation, roomId, leaveRoomCompletely]);
 
   useEffect(() => {
     if (!detail || !meId) return;
@@ -157,27 +270,51 @@ export default function RoomScreen({ route }: Props) {
     scrollRef.current?.scrollToEnd({ animated: true });
   }, [messages.length]);
 
+  const isHost = !!detail && !!meId && detail.room.hostId === meId;
+
   const handleSeatPress = useCallback(
     async (seat: RoomDetail['seats'][number], index: number) => {
       if (seatBusy) return;
+      if (seat && seat.userId !== meId) {
+        // Host, dolu bir koltuğa (kendisi değil) dokununca moderasyon
+        // seçenekleri çıkıyor.
+        if (isHost) {
+          showAlert(seat.displayName, 'Bu kişi için ne yapmak istersin?', [
+            { text: 'Vazgeç', style: 'cancel' },
+            {
+              text: 'Sustur',
+              onPress: () =>
+                muteRoomUser(roomId, seat.userId)
+                  .then(() => load(true))
+                  .catch((err) => showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.')),
+            },
+            {
+              text: 'Yasakla',
+              style: 'destructive',
+              onPress: () =>
+                banRoomUser(roomId, seat.userId)
+                  .then(() => load(true))
+                  .catch((err) => showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.')),
+            },
+          ]);
+        }
+        return;
+      }
       setSeatBusy(true);
       try {
         if (seat?.userId === meId) {
-          disconnectVoice();
-          await leaveSeat(roomId);
+          await leaveRoomCompletely();
         } else if (!seat) {
           await takeSeat(roomId, index);
-        } else {
-          return;
+          load(true);
         }
-        load(true);
       } catch (err) {
-        Alert.alert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+        showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
       } finally {
         setSeatBusy(false);
       }
     },
-    [roomId, meId, seatBusy, load, disconnectVoice],
+    [roomId, meId, seatBusy, isHost, load, leaveRoomCompletely],
   );
 
   const handleSend = useCallback(async () => {
@@ -189,12 +326,58 @@ export default function RoomScreen({ route }: Props) {
       const message = await sendRoomMessage(roomId, body);
       setMessages((prev) => [...prev, message]);
     } catch (err) {
-      Alert.alert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+      showAlert('Gönderilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
       setText(body);
     } finally {
       setSending(false);
     }
   }, [roomId, text]);
+
+  const openSettings = useCallback(() => {
+    if (!detail) return;
+    setEditName(detail.room.name);
+    setEditTopic(detail.room.topic);
+    setSettingsOpen(true);
+  }, [detail]);
+
+  const handleSaveSettings = useCallback(async () => {
+    if (!editName.trim()) return;
+    setSavingSettings(true);
+    try {
+      await updateRoom(roomId, { name: editName.trim(), topic: editTopic });
+      setSettingsOpen(false);
+      load(true);
+    } catch (err) {
+      showAlert('Kaydedilemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+    } finally {
+      setSavingSettings(false);
+    }
+  }, [roomId, editName, editTopic, load]);
+
+  const handleConfirmAction = useCallback(async () => {
+    if (confirmAction === 'clear') {
+      try {
+        await clearRoomMessages(roomId);
+        setMessages([]);
+      } catch (err) {
+        showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+      } finally {
+        setConfirmAction(null);
+      }
+      return;
+    }
+    if (confirmAction === 'close') {
+      try {
+        await closeRoom(roomId);
+        setConfirmAction(null);
+        setSettingsOpen(false);
+        navigation.goBack();
+      } catch (err) {
+        setConfirmAction(null);
+        showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+      }
+    }
+  }, [confirmAction, roomId, navigation]);
 
   if (loading) {
     return (
@@ -217,14 +400,39 @@ export default function RoomScreen({ route }: Props) {
     );
   }
 
-  const iAmSeated = detail.seats.some((s) => s?.userId === meId);
+  const canWrite = !!meId && !detail.isBanned && !detail.isMuted;
 
   return (
     <MysticTableBackground>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
         <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContent}>
-          <Text style={styles.roomName}>{detail.room.name}</Text>
-          <Text style={styles.roomHost}>Kuran: {detail.room.hostName}</Text>
+          <View style={styles.roomHeaderRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.roomName}>{detail.room.name}</Text>
+              <Text style={styles.roomHost}>
+                Kuran: {detail.room.hostName}
+                {detail.room.topic ? ` · ${detail.room.topic}` : ''}
+              </Text>
+            </View>
+            {isHost && (
+              <Pressable onPress={openSettings} hitSlop={10} style={styles.settingsButton}>
+                <Ionicons name="settings-outline" size={20} color={GOLD} />
+              </Pressable>
+            )}
+          </View>
+
+          {detail.isBanned && (
+            <View style={styles.banBanner}>
+              <Ionicons name="ban-outline" size={16} color="#E08A8A" />
+              <Text style={styles.banBannerText}>Bu odadan yasaklandın — koltuğa oturamaz, mesaj yazamazsın.</Text>
+            </View>
+          )}
+          {!detail.isBanned && detail.isMuted && (
+            <View style={styles.muteBanner}>
+              <Ionicons name="mic-off-outline" size={16} color={GOLD_SOFT} />
+              <Text style={styles.muteBannerText}>Bu odada susturuldun — sadece dinleyebilirsin.</Text>
+            </View>
+          )}
 
           <View style={styles.seatGrid}>
             {detail.seats.map((seat, index) => (
@@ -232,31 +440,58 @@ export default function RoomScreen({ route }: Props) {
             ))}
           </View>
 
-          <View style={styles.voiceCallout}>
-            {!iAmSeated ? (
-              <Text style={styles.voiceCalloutText}>Bir koltuğa oturarak sesli sohbete katılabilirsin.</Text>
-            ) : voiceState === 'idle' || voiceState === 'error' ? (
-              <Pressable onPress={connectVoice} style={styles.voiceButton}>
-                <Ionicons name="mic-outline" size={18} color="#1a0d33" />
-                <Text style={styles.voiceButtonText}>Sese Katıl</Text>
-              </Pressable>
-            ) : voiceState === 'connecting' ? (
-              <View style={styles.voiceStatusRow}>
-                <ActivityIndicator color={GOLD} />
-                <Text style={styles.voiceCalloutText}>Bağlanıyor...</Text>
-              </View>
-            ) : (
-              <View style={styles.voiceConnectedRow}>
-                <Pressable onPress={toggleMute} style={[styles.voiceIconButton, muted && styles.voiceIconButtonMuted]}>
-                  <Ionicons name={muted ? 'mic-off-outline' : 'mic-outline'} size={18} color={muted ? TEXT_MUTED : GOLD} />
+          {!detail.isBanned && (
+            <View style={styles.voiceCallout}>
+              {displayVoiceState === 'idle' || displayVoiceState === 'error' ? (
+                <Pressable onPress={handleJoinVoice} style={styles.voiceButton}>
+                  <Ionicons name="mic-outline" size={18} color="#1a0d33" />
+                  <Text style={styles.voiceButtonText}>Sese Katıl</Text>
                 </Pressable>
-                <Text style={styles.voiceConnectedText}>{muted ? 'Mikrofon kapalı' : 'Sesli bağlısın'}</Text>
-                <Pressable onPress={disconnectVoice} style={styles.voiceLeaveButton}>
-                  <Text style={styles.voiceLeaveButtonText}>Ayrıl</Text>
-                </Pressable>
+              ) : displayVoiceState === 'connecting' ? (
+                <View style={styles.voiceStatusRow}>
+                  <ActivityIndicator color={GOLD} />
+                  <Text style={styles.voiceCalloutText}>Bağlanıyor...</Text>
+                </View>
+              ) : displayVoiceState === 'reconnecting' ? (
+                <View style={styles.voiceStatusRow}>
+                  <ActivityIndicator color={GOLD} />
+                  <Text style={styles.voiceCalloutText}>Bağlantı zayıfladı, yeniden bağlanıyor...</Text>
+                </View>
+              ) : (
+                <View style={styles.voiceConnectedRow}>
+                  <Pressable onPress={toggleMute} style={[styles.voiceIconButton, muted && styles.voiceIconButtonMuted]}>
+                    <Ionicons name={muted ? 'mic-off-outline' : 'mic-outline'} size={18} color={muted ? TEXT_MUTED : GOLD} />
+                  </Pressable>
+                  <Text style={styles.voiceConnectedText}>{muted ? 'Mikrofon kapalı' : 'Sesli bağlısın'}</Text>
+                  <Pressable onPress={leaveRoomCompletely} style={styles.voiceLeaveButton}>
+                    <Text style={styles.voiceLeaveButtonText}>Ayrıl</Text>
+                  </Pressable>
+                </View>
+              )}
+            </View>
+          )}
+
+          {detail.viewers.length > 0 && (
+            <View style={styles.listenersSection}>
+              <Text style={styles.listenersLabel}>Dinleyiciler ({detail.viewers.length})</Text>
+              <View style={styles.listenersRow}>
+                {detail.viewers.map((viewer) => (
+                  <View key={viewer.userId} style={styles.listenerChip}>
+                    {viewer.avatarUrl ? (
+                      <Image source={{ uri: viewer.avatarUrl }} style={styles.listenerAvatar} />
+                    ) : (
+                      <View style={[styles.listenerAvatar, styles.listenerAvatarFallback, { backgroundColor: avatarColor(viewer.userId) }]}>
+                        <Text style={styles.listenerAvatarText}>{viewer.displayName.charAt(0).toUpperCase()}</Text>
+                      </View>
+                    )}
+                    <Text style={styles.listenerName} numberOfLines={1}>
+                      {viewer.displayName}
+                    </Text>
+                  </View>
+                ))}
               </View>
-            )}
-          </View>
+            </View>
+          )}
 
           <View style={styles.chatDivider} />
 
@@ -272,7 +507,7 @@ export default function RoomScreen({ route }: Props) {
           ))}
         </ScrollView>
 
-        {iAmSeated ? (
+        {canWrite ? (
           <View style={styles.inputRow}>
             <TextInput
               value={text}
@@ -290,12 +525,76 @@ export default function RoomScreen({ route }: Props) {
               {sending ? <ActivityIndicator size="small" color="#1a0d33" /> : <Ionicons name="send" size={16} color="#1a0d33" />}
             </Pressable>
           </View>
-        ) : (
+        ) : !meId ? (
           <View style={styles.joinHint}>
-            <Text style={styles.joinHintText}>Yazmak için önce bir koltuğa oturmalısın.</Text>
+            <Text style={styles.joinHintText}>Yazmak için giriş yapmalısın.</Text>
           </View>
-        )}
+        ) : null}
       </KeyboardAvoidingView>
+
+      <Modal visible={settingsOpen} animationType="fade" transparent onRequestClose={() => setSettingsOpen(false)}>
+        <View style={styles.settingsBackdrop}>
+          <Pressable style={StyleSheet.absoluteFillObject} onPress={() => setSettingsOpen(false)} />
+          <View style={styles.settingsSheet}>
+            <Text style={styles.settingsTitle}>Oda Ayarları</Text>
+
+            <Text style={styles.settingsFieldLabel}>Oda Adı</Text>
+            <TextInput
+              value={editName}
+              onChangeText={setEditName}
+              placeholder="Oda adı"
+              placeholderTextColor={TEXT_MUTED}
+              style={styles.settingsInput}
+              maxLength={60}
+            />
+
+            <Text style={styles.settingsFieldLabel}>Oda Modu</Text>
+            <View style={styles.chipRow}>
+              {ROOM_TOPICS.map((t) => (
+                <Pressable
+                  key={t}
+                  onPress={() => setEditTopic(t)}
+                  style={[styles.chip, editTopic === t && styles.chipActive]}
+                >
+                  <Text style={[styles.chipText, editTopic === t && styles.chipTextActive]}>{t}</Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <Pressable
+              onPress={handleSaveSettings}
+              disabled={savingSettings || !editName.trim()}
+              style={[styles.settingsSaveButton, (savingSettings || !editName.trim()) && styles.settingsSaveButtonDisabled]}
+            >
+              {savingSettings ? <ActivityIndicator size="small" color="#1a0d33" /> : <Text style={styles.settingsSaveButtonText}>Kaydet</Text>}
+            </Pressable>
+
+            <View style={styles.settingsDivider} />
+
+            <Pressable onPress={() => setConfirmAction('clear')} style={styles.dangerRow}>
+              <Ionicons name="trash-outline" size={17} color={TEXT_MUTED} />
+              <Text style={styles.dangerRowText}>Sohbeti Temizle</Text>
+            </Pressable>
+            <Pressable onPress={() => setConfirmAction('close')} style={styles.dangerRow}>
+              <Ionicons name="close-circle-outline" size={17} color="#E08A8A" />
+              <Text style={[styles.dangerRowText, { color: '#E08A8A' }]}>Odayı Kalıcı Olarak Kapat</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      <ConfirmModal
+        visible={confirmAction !== null}
+        title={confirmAction === 'close' ? 'Odayı kalıcı olarak kapat' : 'Sohbeti temizle'}
+        message={
+          confirmAction === 'close'
+            ? 'Bu oda ve tüm mesajları kalıcı olarak silinecek. Bu işlem geri alınamaz.'
+            : 'Odadaki tüm mesajlar silinecek. Bu işlem geri alınamaz.'
+        }
+        confirmLabel={confirmAction === 'close' ? 'Kapat' : 'Temizle'}
+        onConfirm={handleConfirmAction}
+        onCancel={() => setConfirmAction(null)}
+      />
     </MysticTableBackground>
   );
 }
@@ -307,8 +606,42 @@ const styles = StyleSheet.create({
   retryButton: { borderWidth: 1, borderColor: GOLD_SOFT, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 18 },
   retryText: { fontSize: 12.5, fontWeight: '700', color: GOLD },
   scrollContent: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 20 },
+  roomHeaderRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 20 },
   roomName: { fontSize: 19, fontWeight: '800', color: GOLD, textAlign: 'center' },
-  roomHost: { fontSize: 12, color: TEXT_MUTED, textAlign: 'center', marginTop: 4, marginBottom: 20 },
+  roomHost: { fontSize: 12, color: TEXT_MUTED, textAlign: 'center', marginTop: 4 },
+  settingsButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  banBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(224, 138, 138, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(224, 138, 138, 0.4)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+  },
+  banBannerText: { flex: 1, fontSize: 12, color: '#E08A8A', lineHeight: 17 },
+  muteBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+  },
+  muteBannerText: { flex: 1, fontSize: 12, color: GOLD_SOFT, lineHeight: 17 },
   seatGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 14, marginBottom: 18 },
   seat: { width: 62, alignItems: 'center' },
   seatAvatar: { width: 50, height: 50, borderRadius: 25, marginBottom: 5 },
@@ -368,6 +701,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   voiceLeaveButtonText: { fontSize: 12, fontWeight: '700', color: TEXT_MUTED },
+  listenersSection: { marginBottom: 20 },
+  listenersLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: TEXT_MUTED,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  listenersRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 10 },
+  listenerChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: NIGHT_CARD,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    maxWidth: 140,
+  },
+  listenerAvatar: { width: 22, height: 22, borderRadius: 11 },
+  listenerAvatarFallback: { alignItems: 'center', justifyContent: 'center' },
+  listenerAvatarText: { fontSize: 10, fontWeight: '800', color: '#fff' },
+  listenerName: { fontSize: 11, color: TEXT_PRIMARY, flexShrink: 1 },
   chatDivider: { height: 1, backgroundColor: GOLD_SOFT, marginBottom: 16 },
   emptyText: { fontSize: 12.5, color: TEXT_MUTED, textAlign: 'center', marginTop: 10 },
   bubbleRow: { marginBottom: 10, maxWidth: '80%' },
@@ -407,4 +767,57 @@ const styles = StyleSheet.create({
   sendButtonDisabled: { opacity: 0.45 },
   joinHint: { paddingVertical: 14, borderTopWidth: 1, borderTopColor: GOLD_SOFT, backgroundColor: NIGHT_MID, alignItems: 'center' },
   joinHintText: { fontSize: 12, color: TEXT_MUTED },
+  settingsBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(2, 3, 12, 0.75)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  settingsSheet: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: NIGHT_DEEP,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    padding: 22,
+  },
+  settingsTitle: { fontSize: 16, fontWeight: '800', color: GOLD, textAlign: 'center', marginBottom: 16 },
+  settingsFieldLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: TEXT_MUTED,
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  settingsInput: {
+    backgroundColor: NIGHT_CARD,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 13.5,
+    color: TEXT_PRIMARY,
+    marginBottom: 16,
+  },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
+  chip: {
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    borderRadius: 999,
+    paddingVertical: 7,
+    paddingHorizontal: 13,
+  },
+  chipActive: { backgroundColor: GOLD, borderColor: GOLD },
+  chipText: { fontSize: 12, fontWeight: '600', color: TEXT_MUTED },
+  chipTextActive: { color: '#1a0d33', fontWeight: '800' },
+  settingsSaveButton: { backgroundColor: GOLD, borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
+  settingsSaveButtonDisabled: { opacity: 0.45 },
+  settingsSaveButtonText: { fontSize: 13, fontWeight: '800', color: '#1a0d33' },
+  settingsDivider: { height: 1, backgroundColor: GOLD_SOFT, marginVertical: 16, opacity: 0.4 },
+  dangerRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10 },
+  dangerRowText: { fontSize: 13, fontWeight: '600', color: TEXT_MUTED },
 });

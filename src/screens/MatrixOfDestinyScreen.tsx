@@ -1,13 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Animated } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
+import ReadingCardStack from '@/components/ReadingCardStack';
+import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { calculateDestinyMatrix, type ArcanaInfo, type DestinyMatrix } from '@/services/destinyMatrixEngine';
 import { interpretDestinyMatrix } from '@/services/readings-ai';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -71,6 +73,7 @@ export default function MatrixOfDestinyScreen({ navigation }: Props) {
   const [result, setResult] = useState<string | null>(null);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
 
   const handleCalculate = () => {
     const d = parseInt(day, 10);
@@ -104,8 +107,9 @@ export default function MatrixOfDestinyScreen({ navigation }: Props) {
     try {
       const reading = await interpretDestinyMatrix(matrix, targetMode);
       setResult(reading);
-    } catch (err) {
-      setError('Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin.');
+    } catch {
+      await addCoins(cost);
+      setError(`Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin. (${cost} coin iade edildi.)`);
     } finally {
       setLoading(false);
     }
@@ -294,7 +298,7 @@ export default function MatrixOfDestinyScreen({ navigation }: Props) {
               />
             )}
 
-            {result && (
+            {result && !resultSections && (
               <View style={styles.resultCard}>
                 <View style={styles.badgeRow}>
                   <MaterialCommunityIcons name="crown" size={16} color={GOLD} />
@@ -307,6 +311,14 @@ export default function MatrixOfDestinyScreen({ navigation }: Props) {
           </View>
         )}
       </ScrollView>
+
+      {matrix && result && resultSections && (
+        <ReadingCardStack
+          badge="Kader Matrisi Analiz Raporu"
+          sections={resultSections}
+          shareTextPrefix="Mistik Rehber - Kader Matrisi Raporum"
+        />
+      )}
     </MysticTableBackground>
   );
 }

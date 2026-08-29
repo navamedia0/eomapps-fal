@@ -7,7 +7,7 @@ import { findTarotCard, type TarotOrientation } from '@/services/tarot';
 import { findSpread } from '@/services/tarotSpreads';
 import { interpretTarotSpread } from '@/services/readings-ai';
 import { getCredits } from '@/services/credits';
-import { getCoins, spendCoins } from '@/services/coins';
+import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST } from '@/constants/economy';
 import { ApiRequestError } from '@/services/http';
 import { reportCongestion } from '@/services/aiQueue';
@@ -69,17 +69,24 @@ export default function TarotResultScreen({ route, navigation }: Props) {
     setCoinFallback(null);
     setQueueNotice(null);
 
+    let spentAmount = 0; // AI çağrısı başarısız olursa iade edilecek tutar
+
     try {
       // 5-7-10 Kartlık Özel Açılımlar (Doğrudan Coin ile limitsiz)
       if (spread.priceCoins > 0) {
-        const coins = await getCoins();
-        if (coins < spread.priceCoins) {
+        // Ücret AI çağrısından ÖNCE düşülüyor — diğer tüm fal ekranlarıyla
+        // aynı sıra. Eskiden burası tersti (önce AI'dan sonuç alınıp SONRA
+        // coin düşülüyordu), bu da uygulama çökerse/ağ kesilirse ücretsiz
+        // sonuç alınabilecek dar bir pencere bırakıyordu.
+        const spent = await spendCoins(spread.priceCoins);
+        if (!spent) {
+          const coins = await getCoins();
           setBlocked(`Bu açılım için ${spread.priceCoins} coin gerekiyor. Bakiyen: ${coins} coin.`);
           setLoading(false);
           return;
         }
+        spentAmount = spread.priceCoins;
         const interpretation = await interpretTarotSpread(cards, spread.positions, true);
-        await spendCoins(spread.priceCoins);
         setResult(interpretation);
         await saveReadingHistory({ type: 'tarot', title: `${spread.id} Kart Açılımı`, result: interpretation });
         return;
@@ -116,6 +123,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
           setLoading(false);
           return;
         }
+        spentAmount = READING_COIN_COST;
       }
 
       // Yoğunluk bildirim zamanlayıcısı
@@ -136,7 +144,14 @@ export default function TarotResultScreen({ route, navigation }: Props) {
       if (err instanceof ApiRequestError && err.congestion) {
         await reportCongestion(tarotReadingType(spread.id), err.retryAfterSeconds ?? 30);
       }
-      setError(err instanceof Error ? err.message : 'Kartlar okunurken bir sorun oluştu.');
+      // Ücret alınmış ama sonuç teslim edilememişse iade et — kullanıcı
+      // hem parasını hem falını kaybetmesin.
+      let message = err instanceof Error ? err.message : 'Kartlar okunurken bir sorun oluştu.';
+      if (spentAmount > 0) {
+        await addCoins(spentAmount);
+        message += ` (${spentAmount} coin iade edildi.)`;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
