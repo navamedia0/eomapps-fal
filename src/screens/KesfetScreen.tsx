@@ -367,7 +367,27 @@ function LikeOptionsModal({
   );
 }
 
-// FOTOĞRAFLI GÖNDERİ KARTI (Instagram Tarzı + Popüler Lüks Kozmik Çerçeve)
+// KÖŞE SÜSLEMELERİ (Ornate Filigree Corner Accents)
+function OrnateCorners() {
+  return (
+    <>
+      <View style={[styles.ornateCorner, styles.ornateCornerTL]}>
+        <MaterialCommunityIcons name="cards-diamond" size={14} color={GOLD} />
+      </View>
+      <View style={[styles.ornateCorner, styles.ornateCornerTR]}>
+        <MaterialCommunityIcons name="cards-diamond" size={14} color={GOLD} />
+      </View>
+      <View style={[styles.ornateCorner, styles.ornateCornerBL]}>
+        <MaterialCommunityIcons name="cards-diamond" size={14} color={GOLD} />
+      </View>
+      <View style={[styles.ornateCorner, styles.ornateCornerBR]}>
+        <MaterialCommunityIcons name="cards-diamond" size={14} color={GOLD} />
+      </View>
+    </>
+  );
+}
+
+// FOTOĞRAFLI GÖNDERİ KARTI (Instagram Tarzı + Popüler Lüks Kraliyet Çerçevesi)
 function PhotoPostCard({
   post,
   isPopular,
@@ -386,25 +406,33 @@ function PhotoPostCard({
   onPressAuthor: (userId: string) => void;
 }) {
   return (
-    <View style={[styles.photoCard, isPopular && styles.popularLuxuryFrame]}>
+    <View style={[styles.photoCard, isPopular && styles.popularRoyalOuterBox]}>
+      {isPopular && <OrnateCorners />}
+
       {/* Popüler Lüks Kozmik Rozet */}
       {isPopular && (
-        <View style={styles.popularLuxuryBadgeWrap}>
-          <MaterialCommunityIcons name="crown" size={15} color={GOLD} />
-          <Text style={styles.popularLuxuryBadgeText}>24 Saatin Efsanesi · Popüler Gönderi</Text>
+        <View style={styles.popularRoyalBanner}>
+          <View style={styles.royalCrownPill}>
+            <MaterialCommunityIcons name="crown" size={16} color="#1a0d33" />
+            <Text style={styles.royalCrownPillText}>EFSANE</Text>
+          </View>
+          <Text style={styles.popularRoyalTitle}>24 SAATİN ZİRVE GÖNDERİSİ</Text>
           <View style={{ flex: 1 }} />
-          <Ionicons name="sparkles" size={13} color={GOLD_SOFT} />
+          <Ionicons name="sparkles" size={15} color={GOLD} />
         </View>
       )}
 
       {/* Header */}
-      <View style={styles.postHeader}>
+      <View style={[styles.postHeader, isPopular && styles.royalHeader]}>
         <Pressable onPress={() => onPressAuthor(post.authorId)} style={styles.postAuthorPressable} hitSlop={4}>
           <View style={[styles.avatar, { backgroundColor: avatarColor(post.authorTag) }]}>
             <Text style={styles.avatarText}>{post.authorName.charAt(0).toUpperCase()}</Text>
           </View>
           <View style={styles.postAuthorWrap}>
-            <Text style={styles.postAuthorName}>{post.authorName}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={[styles.postAuthorName, isPopular && { color: GOLD }]}>{post.authorName}</Text>
+              {isPopular && <MaterialCommunityIcons name="check-decagram" size={14} color={GOLD} />}
+            </View>
             <Text style={styles.postMeta}>
               {post.authorTag} · {relativeTime(post.createdAt)}
             </Text>
@@ -423,7 +451,7 @@ function PhotoPostCard({
 
       {/* Large Photo */}
       {post.imageUri && (
-        <View style={styles.photoWrap}>
+        <View style={[styles.photoWrap, isPopular && styles.royalPhotoWrap]}>
           <Image source={{ uri: post.imageUri }} style={styles.photoImage} resizeMode="cover" />
         </View>
       )}
@@ -452,15 +480,24 @@ function PhotoPostCard({
       {/* Caption Text */}
       {post.text ? (
         <View style={styles.photoCaptionWrap}>
-          <Text style={styles.captionAuthor}>{post.authorName}{' '}</Text>
+          <Text style={[styles.captionAuthor, isPopular && { color: GOLD }]}>{post.authorName}{' '}</Text>
           <Text style={styles.captionText}>{post.text}</Text>
         </View>
       ) : null}
+
+      {/* Popüler Altın Şerit Alt Bilgi */}
+      {isPopular && (
+        <View style={styles.royalFooterPill}>
+          <Ionicons name="diamond" size={11} color={GOLD} />
+          <Text style={styles.royalFooterPillText}>Kalıcı Efsane Statüsü Kazanıldı</Text>
+          <Ionicons name="diamond" size={11} color={GOLD} />
+        </View>
+      )}
     </View>
   );
 }
 
-// METİN DURUM KARTI (Tweet / X Tarzı + Popüler Lüks Kozmik Çerçeve)
+// METİN DURUM KARTI (Tweet / X Tarzı + Popüler Lüks Kraliyet Çerçevesi)
 function TextStatusCard({
   post,
   isPopular,
@@ -479,24 +516,32 @@ function TextStatusCard({
   onPressAuthor: (userId: string) => void;
 }) {
   return (
-    <View style={[styles.statusCard, isPopular && styles.popularLuxuryFrame]}>
+    <View style={[styles.statusCard, isPopular && styles.popularRoyalOuterBox]}>
+      {isPopular && <OrnateCorners />}
+
       {/* Popüler Lüks Kozmik Rozet */}
       {isPopular && (
-        <View style={styles.popularLuxuryBadgeWrap}>
-          <MaterialCommunityIcons name="crown" size={15} color={GOLD} />
-          <Text style={styles.popularLuxuryBadgeText}>24 Saatin Efsanesi · Popüler Durum</Text>
+        <View style={styles.popularRoyalBanner}>
+          <View style={styles.royalCrownPill}>
+            <MaterialCommunityIcons name="crown" size={16} color="#1a0d33" />
+            <Text style={styles.royalCrownPillText}>EFSANE</Text>
+          </View>
+          <Text style={styles.popularRoyalTitle}>24 SAATİN ZİRVE DURUMU</Text>
           <View style={{ flex: 1 }} />
-          <Ionicons name="sparkles" size={13} color={GOLD_SOFT} />
+          <Ionicons name="sparkles" size={15} color={GOLD} />
         </View>
       )}
 
-      <View style={styles.postHeader}>
+      <View style={[styles.postHeader, isPopular && styles.royalHeader]}>
         <Pressable onPress={() => onPressAuthor(post.authorId)} style={styles.postAuthorPressable} hitSlop={4}>
           <View style={[styles.avatar, { backgroundColor: avatarColor(post.authorTag) }]}>
             <Text style={styles.avatarText}>{post.authorName.charAt(0).toUpperCase()}</Text>
           </View>
           <View style={styles.postAuthorWrap}>
-            <Text style={styles.postAuthorName}>{post.authorName}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={[styles.postAuthorName, isPopular && { color: GOLD }]}>{post.authorName}</Text>
+              {isPopular && <MaterialCommunityIcons name="check-decagram" size={14} color={GOLD} />}
+            </View>
             <Text style={styles.postMeta}>
               {post.authorTag} · {relativeTime(post.createdAt)}
             </Text>
@@ -513,7 +558,7 @@ function TextStatusCard({
         )}
       </View>
 
-      <Text style={styles.statusTextBody}>{post.text}</Text>
+      <Text style={[styles.statusTextBody, isPopular && styles.royalStatusTextBody]}>{post.text}</Text>
 
       <View style={styles.postActions}>
         <Pressable onPress={() => onOpenLikeOptions(post)} style={styles.actionButton} hitSlop={6}>
@@ -534,6 +579,15 @@ function TextStatusCard({
           <Ionicons name="share-social-outline" size={17} color={TEXT_MUTED} />
         </Pressable>
       </View>
+
+      {/* Popüler Altın Şerit Alt Bilgi */}
+      {isPopular && (
+        <View style={styles.royalFooterPill}>
+          <Ionicons name="diamond" size={11} color={GOLD} />
+          <Text style={styles.royalFooterPillText}>Kalıcı Efsane Statüsü Kazanıldı</Text>
+          <Ionicons name="diamond" size={11} color={GOLD} />
+        </View>
+      )}
     </View>
   );
 }
@@ -1164,31 +1218,93 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(242, 200, 121, 0.3)',
     padding: 16,
   },
-  popularLuxuryFrame: {
-    borderColor: '#E11D48',
-    borderWidth: 2,
-    backgroundColor: 'rgba(26, 14, 52, 0.98)',
-    shadowColor: '#E11D48',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 8,
+  popularRoyalOuterBox: {
+    borderColor: '#F59E0B',
+    borderWidth: 2.5,
+    borderRadius: 20,
+    backgroundColor: 'rgba(24, 10, 46, 0.98)',
+    position: 'relative',
+    overflow: 'hidden',
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.65,
+    shadowRadius: 14,
+    elevation: 12,
   },
-  popularLuxuryBadgeWrap: {
+  ornateCorner: {
+    position: 'absolute',
+    zIndex: 10,
+    width: 18,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ornateCornerTL: { top: 3, left: 3 },
+  ornateCornerTR: { top: 3, right: 3 },
+  ornateCornerBL: { bottom: 3, left: 3 },
+  ornateCornerBR: { bottom: 3, right: 3 },
+  popularRoyalBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(225, 29, 72, 0.95)',
-    paddingVertical: 5,
-    paddingHorizontal: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(242, 200, 121, 0.4)',
+    gap: 8,
+    backgroundColor: 'rgba(245, 158, 11, 0.18)',
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1.5,
+    borderBottomColor: '#F59E0B',
   },
-  popularLuxuryBadgeText: {
-    fontSize: 11.5,
-    fontWeight: '800',
+  royalCrownPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: '#F59E0B',
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+  },
+  royalCrownPillText: {
+    color: '#1a0d33',
+    fontWeight: '900',
+    fontSize: 10,
+    letterSpacing: 0.5,
+  },
+  popularRoyalTitle: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: '#F59E0B',
+    letterSpacing: 0.5,
+  },
+  royalHeader: {
+    backgroundColor: 'rgba(245, 158, 11, 0.06)',
+    paddingHorizontal: 14,
+  },
+  royalPhotoWrap: {
+    borderTopWidth: 1.5,
+    borderBottomWidth: 1.5,
+    borderColor: 'rgba(245, 158, 11, 0.35)',
+  },
+  royalStatusTextBody: {
     color: '#FFF',
-    letterSpacing: 0.4,
+    fontSize: 15.5,
+    fontWeight: '600',
+    lineHeight: 23,
+    paddingHorizontal: 4,
+  },
+  royalFooterPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 7,
+    backgroundColor: 'rgba(245, 158, 11, 0.14)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(245, 158, 11, 0.35)',
+  },
+  royalFooterPillText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#F59E0B',
+    letterSpacing: 0.3,
   },
   postHeader: {
     flexDirection: 'row',

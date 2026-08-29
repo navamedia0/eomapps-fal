@@ -169,21 +169,6 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
                 <Ionicons name="chevron-forward" size={16} color={GOLD} />
               </Pressable>
 
-              {/* El Çizgileri İlmi */}
-              <Pressable
-                onPress={() => handleNavigate('BilgiMakale', { topic: 'el_cizgileri_anlami' })}
-                style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
-              >
-                <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
-                  <MaterialCommunityIcons name="hand-back-right-outline" size={20} color="#34D399" />
-                </View>
-                <View style={styles.menuTextWrap}>
-                  <Text style={styles.menuItemTitle}>El Çizgileri ve Avuç İçi</Text>
-                  <Text style={styles.menuItemDesc}>Hayat, akıl ve kalp çizgisi yorumu</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={GOLD} />
-              </Pressable>
-
               {/* 7.500 Bilgi Kartı Ansiklopedisi */}
               <Pressable
                 onPress={() => handleNavigate('SozlerKosku')}
