@@ -1,8 +1,4 @@
-import {
-  saveSecureItem,
-  getSecureItem,
-  validateTransactionIntegrity,
-} from './secureEconomy';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const COINS_KEY = 'user_coins_balance';
 
@@ -20,41 +16,30 @@ export function subscribeCoins(listener: Listener): () => void {
   };
 }
 
-/**
- * Cryptographically verifies and retrieves user coin balance
- */
 export async function getCoins(): Promise<number> {
-  return await getSecureItem<number>(COINS_KEY, 0);
+  try {
+    const val = await AsyncStorage.getItem(COINS_KEY);
+    if (val === null) return 100; // Başlangıç hediyesi
+    const parsed = parseInt(val, 10);
+    return isNaN(parsed) ? 100 : parsed;
+  } catch {
+    return 100;
+  }
 }
 
-/**
- * Securely credits coins with transaction integrity validation and SHA-256 seal
- */
 export async function addCoins(amount: number): Promise<number> {
-  if (!validateTransactionIntegrity(amount, 'credit')) {
-    return await getCoins();
-  }
-
   const current = await getCoins();
-  const next = current + Math.floor(amount);
-  await saveSecureItem(COINS_KEY, next);
+  const next = Math.max(0, current + Math.floor(amount));
+  await AsyncStorage.setItem(COINS_KEY, String(next));
   notify(next);
   return next;
 }
 
-/**
- * Securely spends coins with validation and cryptographic signature update
- */
 export async function spendCoins(amount: number): Promise<boolean> {
-  if (!validateTransactionIntegrity(amount, 'debit')) {
-    return false;
-  }
-
   const current = await getCoins();
   if (current < amount) return false;
-
-  const next = current - Math.floor(amount);
-  await saveSecureItem(COINS_KEY, next);
+  const next = Math.max(0, current - Math.floor(amount));
+  await AsyncStorage.setItem(COINS_KEY, String(next));
   notify(next);
   return true;
 }
