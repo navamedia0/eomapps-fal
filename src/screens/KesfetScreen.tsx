@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   View,
   Text,
   Pressable,
   Image,
-  ImageBackground,
   RefreshControl,
   ScrollView,
   TextInput,
@@ -14,16 +13,9 @@ import {
 } from 'react-native';
 import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import type { TabScreenProps } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import FavoriteStarButton from '@/components/FavoriteStarButton';
-import ShareButton from '@/components/ShareButton';
-import ShareImageButton from '@/components/ShareImageButton';
-import PopularDetailModal from '@/components/PopularDetailModal';
-import quotes from '@/data/kesfet_sozleri.json';
-import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
 import { getFeed, addPost, deletePost, toggleLike, reportContent, type KesfetFeedPost } from '@/services/kesfetPosts';
 import CommentsModal from '@/components/CommentsModal';
 import { shareText } from '@/utils/share';
@@ -32,39 +24,13 @@ import { avatarColor } from '@/utils/avatarColor';
 import { promptReport } from '@/utils/reportPrompt';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
-const QUOTE_CARD_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
-
 type Props = TabScreenProps;
-type FeedRow = { type: 'post'; post: KesfetFeedPost } | { type: 'quote'; text: string };
+type KesfetTab = 'gonderi' | 'durum';
 
-const QUOTES: string[] = quotes;
-const QUOTE_EVERY = 5;
 const MAX_POST_LENGTH = 280;
 
-// 48 saatlik dönem mantığı, eski Keşfet akışıyla aynı — aynı gün herkese
-// aynı sözler gösterilsin diye sunucu olmadan da senkron kalıyor.
-function quotePool(): string[] {
-  if (QUOTES.length === 0) return [];
-  const now = new Date();
-  const epochMs = now.getTime() + 3 * 3600 * 1000 - 8 * 3600 * 1000;
-  const period = Math.floor(epochMs / (48 * 3600 * 1000));
-  const offset = (period * 11) % QUOTES.length;
-  return [...QUOTES.slice(offset), ...QUOTES.slice(0, offset)];
-}
-
-function buildRows(feed: KesfetFeedPost[]): FeedRow[] {
-  const pool = quotePool();
-  const rows: FeedRow[] = [];
-  feed.forEach((post, index) => {
-    rows.push({ type: 'post', post });
-    if ((index + 1) % QUOTE_EVERY === 0 && pool.length > 0) {
-      rows.push({ type: 'quote', text: pool[Math.floor(index / QUOTE_EVERY) % pool.length] });
-    }
-  });
-  return rows;
-}
-
-function Composer({ onPosted }: { onPosted: () => void }) {
+// GÖNDERİ COMPOSER (Instagram Tarzı - Fotoğraf Zorunlu + Açıklama)
+function PhotoPostComposer({ onPosted }: { onPosted: () => void }) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState('');
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -83,14 +49,20 @@ function Composer({ onPosted }: { onPosted: () => void }) {
       return;
     }
     const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.7 });
-    if (!res.canceled && res.assets[0]) setImageUri(res.assets[0].uri);
+    if (!res.canceled && res.assets[0]) {
+      setImageUri(res.assets[0].uri);
+      setOpen(true);
+    }
   }, []);
 
   const submit = useCallback(async () => {
-    if (!text.trim() && !imageUri) return;
+    if (!imageUri) {
+      showAlert('Fotoğraf Gerekli', 'Gönderi paylaşmak için lütfen bir fotoğraf seçin.');
+      return;
+    }
     setPosting(true);
     try {
-      await addPost(text, imageUri ?? undefined);
+      await addPost(text, imageUri);
       reset();
       onPosted();
     } catch (err) {
@@ -102,27 +74,21 @@ function Composer({ onPosted }: { onPosted: () => void }) {
 
   if (!open) {
     return (
-      <Pressable onPress={() => setOpen(true)} style={styles.composerCollapsed}>
+      <Pressable onPress={pickImage} style={styles.composerCollapsed}>
         <View style={[styles.avatar, { backgroundColor: avatarColor('@sen') }]}>
           <Text style={styles.avatarText}>S</Text>
         </View>
-        <Text style={styles.composerPlaceholder}>Bugün neler oluyor?</Text>
-        <Ionicons name="image-outline" size={20} color={GOLD} />
+        <Text style={styles.composerPlaceholder}>Fotoğraflı bir gönderi paylaş...</Text>
+        <View style={styles.cameraPill}>
+          <Ionicons name="camera" size={17} color={GOLD} />
+          <Text style={styles.cameraPillText}>Fotoğraf Seç</Text>
+        </View>
       </Pressable>
     );
   }
 
   return (
     <View style={styles.composerOpen}>
-      <TextInput
-        value={text}
-        onChangeText={(t) => setText(t.slice(0, MAX_POST_LENGTH))}
-        placeholder="Aklından geçeni, bir kart yorumunu ya da bugün yaşadığın bir işareti paylaş..."
-        placeholderTextColor={TEXT_MUTED}
-        multiline
-        autoFocus
-        style={styles.composerInput}
-      />
       {imageUri && (
         <View style={styles.composerImageWrap}>
           <Image source={{ uri: imageUri }} style={styles.composerImage} resizeMode="cover" />
@@ -131,6 +97,14 @@ function Composer({ onPosted }: { onPosted: () => void }) {
           </Pressable>
         </View>
       )}
+      <TextInput
+        value={text}
+        onChangeText={(t) => setText(t.slice(0, MAX_POST_LENGTH))}
+        placeholder="Fotoğrafın altına bir açıklama yaz..."
+        placeholderTextColor={TEXT_MUTED}
+        multiline
+        style={styles.composerInput}
+      />
       <View style={styles.composerFooter}>
         <Pressable onPress={pickImage} style={styles.composerIconButton} hitSlop={8}>
           <Ionicons name="image-outline" size={20} color={GOLD} />
@@ -142,8 +116,8 @@ function Composer({ onPosted }: { onPosted: () => void }) {
         </Pressable>
         <Pressable
           onPress={submit}
-          disabled={posting || (!text.trim() && !imageUri)}
-          style={[styles.composerSubmitButton, (posting || (!text.trim() && !imageUri)) && styles.composerSubmitDisabled]}
+          disabled={posting || !imageUri}
+          style={[styles.composerSubmitButton, (posting || !imageUri) && styles.composerSubmitDisabled]}
         >
           {posting ? <ActivityIndicator size="small" color="#1a0d33" /> : <Text style={styles.composerSubmitText}>Paylaş</Text>}
         </Pressable>
@@ -152,7 +126,74 @@ function Composer({ onPosted }: { onPosted: () => void }) {
   );
 }
 
-function PostCard({
+// DURUM COMPOSER (Tweet / X Tarzı - Sadece Metin, Asla Fotoğraf Yok)
+function TextStatusComposer({ onPosted }: { onPosted: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState('');
+  const [posting, setPosting] = useState(false);
+
+  const reset = () => {
+    setOpen(false);
+    setText('');
+  };
+
+  const submit = useCallback(async () => {
+    if (!text.trim()) return;
+    setPosting(true);
+    try {
+      await addPost(text);
+      reset();
+      onPosted();
+    } catch (err) {
+      showAlert('Paylaşılamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+    } finally {
+      setPosting(false);
+    }
+  }, [text, onPosted]);
+
+  if (!open) {
+    return (
+      <Pressable onPress={() => setOpen(true)} style={styles.composerCollapsed}>
+        <View style={[styles.avatar, { backgroundColor: avatarColor('@sen') }]}>
+          <Text style={styles.avatarText}>S</Text>
+        </View>
+        <Text style={styles.composerPlaceholder}>Aklından geçeni yaz, durum paylaş...</Text>
+        <Ionicons name="chatbox-ellipses-outline" size={20} color={GOLD} />
+      </Pressable>
+    );
+  }
+
+  return (
+    <View style={styles.composerOpen}>
+      <TextInput
+        value={text}
+        onChangeText={(t) => setText(t.slice(0, MAX_POST_LENGTH))}
+        placeholder="Aklından geçeni, hissettiğin bir işareti veya düşünceni tweet gibi paylaş..."
+        placeholderTextColor={TEXT_MUTED}
+        multiline
+        autoFocus
+        style={styles.composerInput}
+      />
+      <View style={styles.composerFooter}>
+        <Text style={styles.composerCounter}>{text.length}/{MAX_POST_LENGTH}</Text>
+        <View style={{ flex: 1 }} />
+        <Pressable onPress={reset} style={styles.composerCancelButton}>
+          <Text style={styles.composerCancelText}>Vazgeç</Text>
+        </Pressable>
+        <Pressable
+          onPress={submit}
+          disabled={posting || !text.trim()}
+          style={[styles.composerSubmitButton, (posting || !text.trim()) && styles.composerSubmitDisabled]}
+        >
+          {posting ? <ActivityIndicator size="small" color="#1a0d33" /> : <Text style={styles.composerSubmitText}>Durum Paylaş</Text>}
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+// FOTOĞRAFLI GÖNDERİ KARTI (Instagram Tarzı)
+function PhotoPostCard({
   post,
   onToggleLike,
   onDelete,
@@ -168,7 +209,8 @@ function PostCard({
   onPressAuthor: (userId: string) => void;
 }) {
   return (
-    <View style={styles.postCard}>
+    <View style={styles.photoCard}>
+      {/* Header */}
       <View style={styles.postHeader}>
         <Pressable onPress={() => onPressAuthor(post.authorId)} style={styles.postAuthorPressable} hitSlop={4}>
           <View style={[styles.avatar, { backgroundColor: avatarColor(post.authorTag) }]}>
@@ -182,18 +224,96 @@ function PostCard({
           </View>
         </Pressable>
         {post.isMe ? (
-          <Pressable onPress={() => onDelete(post.id)} hitSlop={10}>
-            <Ionicons name="trash-outline" size={18} color={TEXT_MUTED} />
+          <Pressable onPress={() => onDelete(post.id)} style={styles.postDeleteButton} hitSlop={8}>
+            <Ionicons name="trash-outline" size={17} color={TEXT_MUTED} />
           </Pressable>
         ) : (
-          <Pressable onPress={() => onReport(post.id)} hitSlop={10}>
-            <Ionicons name="flag-outline" size={17} color={TEXT_MUTED} />
+          <Pressable onPress={() => onReport(post.id)} style={styles.postDeleteButton} hitSlop={8}>
+            <Ionicons name="ellipsis-horizontal" size={17} color={TEXT_MUTED} />
           </Pressable>
         )}
       </View>
 
-      {!!post.text && <Text style={styles.postText}>{post.text}</Text>}
-      {post.imageUri && <Image source={{ uri: post.imageUri }} style={styles.postImage} resizeMode="cover" />}
+      {/* Large Photo */}
+      {post.imageUri && (
+        <View style={styles.photoWrap}>
+          <Image source={{ uri: post.imageUri }} style={styles.photoImage} resizeMode="cover" />
+        </View>
+      )}
+
+      {/* Actions */}
+      <View style={styles.postActions}>
+        <Pressable onPress={() => onToggleLike(post.id)} style={styles.actionButton} hitSlop={6}>
+          <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={20} color={post.liked ? '#E0708A' : TEXT_PRIMARY} />
+          <Text style={[styles.actionCount, post.liked && styles.actionCountLiked]}>{post.likeCount}</Text>
+        </Pressable>
+        <Pressable onPress={() => onOpenComments(post.id)} style={styles.actionButton} hitSlop={6}>
+          <Ionicons name="chatbubble-outline" size={19} color={TEXT_PRIMARY} />
+          <Text style={styles.actionCount}>{post.commentCount}</Text>
+        </Pressable>
+        <View style={{ flex: 1 }} />
+        <Pressable
+          onPress={() => shareText(`${post.authorName}: ${post.text || 'Görsel paylaştı'}\n\n— Mistik Rehber Keşfet —`)}
+          style={styles.actionButton}
+          hitSlop={6}
+        >
+          <Ionicons name="share-social-outline" size={19} color={TEXT_MUTED} />
+        </Pressable>
+      </View>
+
+      {/* Caption Text */}
+      {post.text ? (
+        <View style={styles.photoCaptionWrap}>
+          <Text style={styles.captionAuthor}>{post.authorName}{' '}</Text>
+          <Text style={styles.captionText}>{post.text}</Text>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+// METİN DURUM KARTI (Tweet / X Tarzı)
+function TextStatusCard({
+  post,
+  onToggleLike,
+  onDelete,
+  onOpenComments,
+  onReport,
+  onPressAuthor,
+}: {
+  post: KesfetFeedPost;
+  onToggleLike: (id: string) => void;
+  onDelete: (id: string) => void;
+  onOpenComments: (id: string) => void;
+  onReport: (id: string) => void;
+  onPressAuthor: (userId: string) => void;
+}) {
+  return (
+    <View style={styles.statusCard}>
+      <View style={styles.postHeader}>
+        <Pressable onPress={() => onPressAuthor(post.authorId)} style={styles.postAuthorPressable} hitSlop={4}>
+          <View style={[styles.avatar, { backgroundColor: avatarColor(post.authorTag) }]}>
+            <Text style={styles.avatarText}>{post.authorName.charAt(0).toUpperCase()}</Text>
+          </View>
+          <View style={styles.postAuthorWrap}>
+            <Text style={styles.postAuthorName}>{post.authorName}</Text>
+            <Text style={styles.postMeta}>
+              {post.authorTag} · {relativeTime(post.createdAt)}
+            </Text>
+          </View>
+        </Pressable>
+        {post.isMe ? (
+          <Pressable onPress={() => onDelete(post.id)} style={styles.postDeleteButton} hitSlop={8}>
+            <Ionicons name="trash-outline" size={17} color={TEXT_MUTED} />
+          </Pressable>
+        ) : (
+          <Pressable onPress={() => onReport(post.id)} style={styles.postDeleteButton} hitSlop={8}>
+            <Ionicons name="ellipsis-horizontal" size={17} color={TEXT_MUTED} />
+          </Pressable>
+        )}
+      </View>
+
+      <Text style={styles.statusTextBody}>{post.text}</Text>
 
       <View style={styles.postActions}>
         <Pressable onPress={() => onToggleLike(post.id)} style={styles.actionButton} hitSlop={6}>
@@ -206,7 +326,7 @@ function PostCard({
         </Pressable>
         <View style={{ flex: 1 }} />
         <Pressable
-          onPress={() => shareText(`${post.authorName}: ${post.text}\n\n— Mistik Rehber Keşfet —`)}
+          onPress={() => shareText(`${post.authorName}: ${post.text}\n\n— Mistik Rehber Durum —`)}
           style={styles.actionButton}
           hitSlop={6}
         >
@@ -218,12 +338,11 @@ function PostCard({
 }
 
 export default function KesfetScreen({ navigation }: Props) {
+  const [tab, setTab] = useState<KesfetTab>('gonderi');
   const [feed, setFeed] = useState<KesfetFeedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [feedError, setFeedError] = useState(false);
-  const [popular, setPopular] = useState<PopularFavorite[]>([]);
-  const [selectedPopular, setSelectedPopular] = useState<PopularFavorite | null>(null);
   const [commentsPostId, setCommentsPostId] = useState<string | null>(null);
 
   const refreshFeed = useCallback(() => {
@@ -245,9 +364,6 @@ export default function KesfetScreen({ navigation }: Props) {
     }, [refreshFeed]),
   );
 
-  // Aşağı çekince yenileme — Instagram tarzı; arka planda periyodik bir
-  // zamanlayıcı YOK, sadece bu jestte veya ekrana tekrar girildiğinde
-  // (useFocusEffect) yenileniyor.
   const handlePullRefresh = useCallback(() => {
     setRefreshing(true);
     getFeed()
@@ -259,38 +375,29 @@ export default function KesfetScreen({ navigation }: Props) {
       .finally(() => setRefreshing(false));
   }, []);
 
-  useEffect(() => {
-    getPopularFavorites().then((items) => {
-      setPopular(items.filter((item) => item.kind !== 'info' && !item.id.startsWith('info:')));
+  const handleToggleLike = useCallback((id: string) => {
+    setFeed((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, liked: !p.liked, likeCount: p.liked ? p.likeCount - 1 : p.likeCount + 1 } : p)),
+    );
+    toggleLike(id).catch((err) => {
+      showAlert('İşlem Başarısız', err instanceof Error ? err.message : 'Beğeni kaydedilemedi.');
+      refreshFeed();
     });
-  }, []);
-
-  const handleToggleLike = useCallback(
-    async (id: string) => {
-      try {
-        await toggleLike(id);
-        refreshFeed();
-      } catch (err) {
-        showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
-      }
-    },
-    [refreshFeed],
-  );
+  }, [refreshFeed]);
 
   const handleDelete = useCallback(
     (id: string) => {
-      showAlert('Gönderiyi sil', 'Bu gönderiyi silmek istediğine emin misin?', [
+      showAlert('Gönderiyi Sil', 'Bu paylaşımı silmek istediğine emin misin?', [
         { text: 'Vazgeç', style: 'cancel' },
         {
           text: 'Sil',
           style: 'destructive',
-          onPress: async () => {
-            try {
-              await deletePost(id);
-              refreshFeed();
-            } catch (err) {
+          onPress: () => {
+            setFeed((prev) => prev.filter((p) => p.id !== id));
+            deletePost(id).catch((err) => {
               showAlert('Silinemedi', err instanceof Error ? err.message : 'Bir sorun oluştu.');
-            }
+              refreshFeed();
+            });
           },
         },
       ]);
@@ -313,20 +420,9 @@ export default function KesfetScreen({ navigation }: Props) {
     });
   }, []);
 
-  const handleCloseComments = useCallback(() => {
-    setCommentsPostId(null);
-    refreshFeed();
-  }, [refreshFeed]);
-
-  const handleCommentAuthorPress = useCallback(
-    (userId: string) => {
-      setCommentsPostId(null);
-      navigation.navigate('UserProfile', { userId });
-    },
-    [navigation],
-  );
-
-  const rows = buildRows(feed);
+  // Fotoğraflı gönderiler ve metin durumlarını ayır
+  const photoPosts = feed.filter((p) => !!p.imageUri);
+  const textStatuses = feed.filter((p) => !p.imageUri);
 
   return (
     <MysticTableBackground>
@@ -337,94 +433,129 @@ export default function KesfetScreen({ navigation }: Props) {
           <RefreshControl refreshing={refreshing} onRefresh={handlePullRefresh} tintColor={GOLD} colors={[GOLD]} />
         }
       >
+        {/* Header */}
         <View style={styles.header}>
           <Ionicons name="compass-outline" size={26} color={GOLD} />
           <Text style={styles.headerTitle}>Keşfet</Text>
         </View>
 
-        {popular.length > 0 && (
-          <View style={styles.popularSection}>
-            <View style={styles.popularHeader}>
-              <Ionicons name="flame-outline" size={16} color={GOLD} />
-              <Text style={styles.popularTitle}>Haftanın En Sevilenleri</Text>
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.popularRow}>
-              {popular.map((item) => (
-                <Pressable
-                  key={item.id}
-                  onPress={() => setSelectedPopular(item)}
-                  style={({ pressed }) => [styles.popularCard, pressed && styles.popularCardPressed]}
-                >
-                  {item.title && <Text style={styles.popularCardTitle}>{item.title}</Text>}
-                  <Text style={styles.popularCardBody} numberOfLines={4}>
-                    {item.body}
-                  </Text>
-                  <View style={styles.popularCountRow}>
-                    <Ionicons name="star" size={11} color={GOLD} />
-                    <Text style={styles.popularCount}>{item.count}</Text>
-                  </View>
+        {/* Tab Switcher: Gönderi vs Durum */}
+        <View style={styles.tabSwitchRow}>
+          <Pressable
+            onPress={() => setTab('gonderi')}
+            style={[styles.tabSwitchButton, tab === 'gonderi' && styles.tabSwitchButtonActive]}
+          >
+            <Ionicons name="images-outline" size={16} color={tab === 'gonderi' ? '#1a0d33' : GOLD} />
+            <Text style={[styles.tabSwitchText, tab === 'gonderi' && styles.tabSwitchTextActive]}>
+              Gönderi ({photoPosts.length})
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setTab('durum')}
+            style={[styles.tabSwitchButton, tab === 'durum' && styles.tabSwitchButtonActive]}
+          >
+            <MaterialCommunityIcons
+              name="chat-processing-outline"
+              size={17}
+              color={tab === 'durum' ? '#1a0d33' : GOLD}
+            />
+            <Text style={[styles.tabSwitchText, tab === 'durum' && styles.tabSwitchTextActive]}>
+              Durum ({textStatuses.length})
+            </Text>
+          </Pressable>
+        </View>
+
+        {/* TAB 1: GÖNDERİLER (Instagram Tarzı Fotoğraflı) */}
+        {tab === 'gonderi' && (
+          <View style={styles.tabContent}>
+            <PhotoPostComposer onPosted={refreshFeed} />
+            <Text style={styles.retentionHint}>Gönderiler 3 gün sonra akıştan otomatik silinir.</Text>
+
+            {loading ? (
+              <ActivityIndicator color={GOLD} style={{ marginTop: 30 }} />
+            ) : feedError ? (
+              <View style={styles.feedErrorWrap}>
+                <Text style={styles.feedErrorText}>Akış yüklenemedi. İnternet bağlantını kontrol et.</Text>
+                <Pressable onPress={refreshFeed} style={styles.feedRetryButton}>
+                  <Text style={styles.feedRetryText}>Tekrar dene</Text>
                 </Pressable>
-              ))}
-            </ScrollView>
-          </View>
-        )}
-
-        <Composer onPosted={refreshFeed} />
-        <Text style={styles.retentionHint}>Gönderiler 3 gün sonra akıştan otomatik kalkar.</Text>
-
-        {loading ? (
-          <ActivityIndicator color={GOLD} style={{ marginTop: 30 }} />
-        ) : feedError ? (
-          <View style={styles.feedErrorWrap}>
-            <Text style={styles.feedErrorText}>Akış yüklenemedi. İnternet bağlantını kontrol et.</Text>
-            <Pressable onPress={refreshFeed} style={styles.feedRetryButton}>
-              <Text style={styles.feedRetryText}>Tekrar dene</Text>
-            </Pressable>
-          </View>
-        ) : (
-          <View style={styles.feed}>
-            {rows.map((row, index) => {
-              if (row.type === 'post') {
-                return (
-                  <PostCard
-                    key={row.post.id}
-                    post={row.post}
+              </View>
+            ) : photoPosts.length === 0 ? (
+              <View style={styles.emptyFeedWrap}>
+                <Ionicons name="images-outline" size={44} color={GOLD_SOFT} />
+                <Text style={styles.emptyFeedTitle}>Henüz fotoğraflı gönderi yok</Text>
+                <Text style={styles.emptyFeedSubtitle}>İlk görseli yukarıdan sen paylaş!</Text>
+              </View>
+            ) : (
+              <View style={styles.feed}>
+                {photoPosts.map((post) => (
+                  <PhotoPostCard
+                    key={post.id}
+                    post={post}
                     onToggleLike={handleToggleLike}
                     onDelete={handleDelete}
                     onOpenComments={setCommentsPostId}
                     onReport={handleReport}
                     onPressAuthor={handlePressAuthor}
                   />
-                );
-              }
-              return (
-                <ImageBackground
-                  key={`quote-${index}`}
-                  source={QUOTE_CARD_BG}
-                  style={styles.quoteCard}
-                  imageStyle={styles.quoteCardImage}
-                  resizeMode="cover"
-                >
-                  <LinearGradient
-                    colors={['rgba(11, 10, 31, 0.55)', 'rgba(11, 10, 31, 0.72)']}
-                    style={styles.quoteScrim}
-                    pointerEvents="none"
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* TAB 2: DURUMLAR (Tweet / X Tarzı Sadece Metin) */}
+        {tab === 'durum' && (
+          <View style={styles.tabContent}>
+            <TextStatusComposer onPosted={refreshFeed} />
+            <Text style={styles.retentionHint}>Durumlar 3 gün sonra akıştan otomatik silinir.</Text>
+
+            {loading ? (
+              <ActivityIndicator color={GOLD} style={{ marginTop: 30 }} />
+            ) : feedError ? (
+              <View style={styles.feedErrorWrap}>
+                <Text style={styles.feedErrorText}>Akış yüklenemedi. İnternet bağlantını kontrol et.</Text>
+                <Pressable onPress={refreshFeed} style={styles.feedRetryButton}>
+                  <Text style={styles.feedRetryText}>Tekrar dene</Text>
+                </Pressable>
+              </View>
+            ) : textStatuses.length === 0 ? (
+              <View style={styles.emptyFeedWrap}>
+                <MaterialCommunityIcons name="chat-outline" size={44} color={GOLD_SOFT} />
+                <Text style={styles.emptyFeedTitle}>Henüz durum paylaşılmadı</Text>
+                <Text style={styles.emptyFeedSubtitle}>Aklından geçenleri ilk sen paylaş!</Text>
+              </View>
+            ) : (
+              <View style={styles.feed}>
+                {textStatuses.map((post) => (
+                  <TextStatusCard
+                    key={post.id}
+                    post={post}
+                    onToggleLike={handleToggleLike}
+                    onDelete={handleDelete}
+                    onOpenComments={setCommentsPostId}
+                    onReport={handleReport}
+                    onPressAuthor={handlePressAuthor}
                   />
-                  <FavoriteStarButton id={`quote:${row.text}`} kind="quote" body={row.text} />
-                  <MaterialCommunityIcons name="star-crescent" size={16} color={GOLD} style={styles.quoteIcon} />
-                  <Text style={styles.quoteText}>{row.text}</Text>
-                  <View style={styles.quoteShareRow}>
-                    <ShareButton text={`Mistik Rehber\n\n"${row.text}"`} label="Paylaş" />
-                    <ShareImageButton text={row.text} label="Görsel Paylaş" />
-                  </View>
-                </ImageBackground>
-              );
-            })}
+                ))}
+              </View>
+            )}
           </View>
         )}
       </ScrollView>
-      <PopularDetailModal item={selectedPopular} onClose={() => setSelectedPopular(null)} />
-      <CommentsModal postId={commentsPostId} onClose={handleCloseComments} onPressAuthor={handleCommentAuthorPress} />
+
+      <CommentsModal
+        postId={commentsPostId}
+        onClose={() => {
+          setCommentsPostId(null);
+          refreshFeed();
+        }}
+        onPressAuthor={(userId) => {
+          setCommentsPostId(null);
+          navigation.navigate('UserProfile', { userId });
+        }}
+      />
     </MysticTableBackground>
   );
 }
@@ -432,225 +563,208 @@ export default function KesfetScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 24,
     paddingBottom: 48,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginBottom: 18,
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 16,
   },
   headerTitle: {
     fontSize: 22,
-    fontWeight: '700',
-    color: GOLD,
-  },
-  popularSection: {
-    marginBottom: 22,
-  },
-  popularHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 10,
-  },
-  popularTitle: {
-    fontSize: 12.5,
-    fontWeight: '700',
+    fontWeight: '900',
     color: GOLD,
     letterSpacing: 0.5,
-    textTransform: 'uppercase',
   },
-  popularRow: {
-    gap: 12,
-  },
-  popularCard: {
-    width: 180,
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+  tabSwitchRow: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(26, 16, 52, 0.9)',
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    padding: 14,
+    padding: 4,
+    marginBottom: 14,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    gap: 6,
   },
-  popularCardPressed: {
-    opacity: 0.82,
-    transform: [{ scale: 0.98 }],
-  },
-  popularCardTitle: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
-    marginBottom: 4,
-  },
-  popularCardBody: {
-    fontSize: 11.5,
-    lineHeight: 16,
-    color: TEXT_MUTED,
-    fontStyle: 'italic',
-  },
-  popularCountRow: {
+  tabSwitchButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginTop: 8,
-  },
-  popularCount: {
-    fontSize: 10.5,
-    fontWeight: '700',
-    color: GOLD,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
     justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    borderRadius: 12,
   },
-  avatarText: {
-    fontSize: 15,
+  tabSwitchButtonActive: {
+    backgroundColor: GOLD,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  tabSwitchText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: GOLD_SOFT,
+  },
+  tabSwitchTextActive: {
+    color: '#1a0d33',
     fontWeight: '800',
-    color: '#fff',
+  },
+  tabContent: {
+    width: '100%',
+  },
+  retentionHint: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+    marginBottom: 12,
   },
   composerCollapsed: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    backgroundColor: NIGHT_CARD,
+    backgroundColor: 'rgba(30, 20, 58, 0.9)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    padding: 14,
-    marginBottom: 20,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    padding: 12,
+    gap: 10,
+    marginBottom: 8,
   },
   composerPlaceholder: {
     flex: 1,
-    fontSize: 13.5,
+    fontSize: 13,
     color: TEXT_MUTED,
   },
+  cameraPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  cameraPillText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: GOLD,
+  },
   composerOpen: {
-    backgroundColor: NIGHT_CARD,
+    backgroundColor: 'rgba(30, 20, 58, 0.95)',
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: GOLD,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.4)',
     padding: 14,
-    marginBottom: 20,
+    marginBottom: 8,
+    gap: 10,
   },
   composerInput: {
     fontSize: 14,
     color: TEXT_PRIMARY,
-    minHeight: 70,
+    minHeight: 60,
     textAlignVertical: 'top',
   },
   composerImageWrap: {
     position: 'relative',
-    marginTop: 10,
+    borderRadius: 12,
+    overflow: 'hidden',
+    maxHeight: 220,
   },
   composerImage: {
     width: '100%',
-    height: 160,
-    borderRadius: 12,
+    height: 220,
   },
   composerImageRemove: {
     position: 'absolute',
     top: 8,
     right: 8,
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: 'rgba(11, 10, 31, 0.7)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 14,
+    padding: 4,
   },
   composerFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginTop: 10,
+    paddingTop: 6,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(242, 200, 121, 0.15)',
   },
   composerIconButton: {
     padding: 4,
   },
   composerCounter: {
-    fontSize: 10.5,
+    fontSize: 11,
     color: TEXT_MUTED,
   },
   composerCancelButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
   },
   composerCancelText: {
-    fontSize: 12.5,
+    fontSize: 12,
     color: TEXT_MUTED,
-    fontWeight: '600',
   },
   composerSubmitButton: {
     backgroundColor: GOLD,
-    borderRadius: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    minWidth: 72,
-    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 10,
   },
   composerSubmitDisabled: {
-    opacity: 0.45,
+    opacity: 0.4,
   },
   composerSubmitText: {
-    fontSize: 12.5,
+    fontSize: 12,
     fontWeight: '800',
     color: '#1a0d33',
   },
-  retentionHint: {
-    fontSize: 10.5,
-    color: TEXT_MUTED,
-    textAlign: 'center',
-    marginTop: -10,
-    marginBottom: 22,
-  },
   feed: {
-    gap: 14,
+    gap: 16,
   },
-  feedErrorWrap: {
-    alignItems: 'center',
-    paddingVertical: 30,
-    gap: 12,
-  },
-  feedErrorText: {
-    fontSize: 13,
-    color: TEXT_MUTED,
-    textAlign: 'center',
-  },
-  feedRetryButton: {
+  photoCard: {
+    backgroundColor: 'rgba(30, 20, 58, 0.92)',
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 18,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    overflow: 'hidden',
   },
-  feedRetryText: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    color: GOLD,
-  },
-  postCard: {
-    backgroundColor: NIGHT_CARD,
+  statusCard: {
+    backgroundColor: 'rgba(30, 20, 58, 0.92)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    padding: 14,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    padding: 16,
   },
   postHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginBottom: 10,
+    justifyContent: 'space-between',
+    padding: 12,
   },
   postAuthorPressable: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    flex: 1,
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: {
+    color: '#fff',
+    fontWeight: '800',
+    fontSize: 14,
   },
   postAuthorWrap: {
     flex: 1,
@@ -664,22 +778,47 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: TEXT_MUTED,
   },
-  postText: {
-    fontSize: 13.5,
-    lineHeight: 20,
-    color: TEXT_PRIMARY,
-    marginBottom: 10,
+  postDeleteButton: {
+    padding: 4,
   },
-  postImage: {
+  photoWrap: {
     width: '100%',
-    height: 220,
-    borderRadius: 12,
-    marginBottom: 10,
+    height: 340,
+    backgroundColor: '#0a0614',
+  },
+  photoImage: {
+    width: '100%',
+    height: '100%',
+  },
+  photoCaptionWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 14,
+    paddingBottom: 14,
+  },
+  captionAuthor: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: GOLD_SOFT,
+  },
+  captionText: {
+    fontSize: 13,
+    color: TEXT_PRIMARY,
+    lineHeight: 18,
+  },
+  statusTextBody: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: TEXT_PRIMARY,
+    fontWeight: '500',
+    marginVertical: 8,
   },
   postActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 20,
+    gap: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
   actionButton: {
     flexDirection: 'row',
@@ -693,43 +832,44 @@ const styles = StyleSheet.create({
   },
   actionCountLiked: {
     color: '#E0708A',
+    fontWeight: '700',
   },
-  quoteCard: {
-    position: 'relative',
-    borderRadius: 24,
-    overflow: 'hidden',
-    paddingVertical: 36,
-    paddingHorizontal: 28,
+  feedErrorWrap: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    gap: 12,
+  },
+  feedErrorText: {
+    fontSize: 13,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+  },
+  feedRetryButton: {
+    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    borderWidth: 1,
+    borderColor: GOLD,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+  },
+  feedRetryText: {
+    color: GOLD,
+    fontWeight: '700',
+    fontSize: 12,
+  },
+  emptyFeedWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 190,
+    paddingVertical: 40,
+    gap: 8,
   },
-  quoteCardImage: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 24,
+  emptyFeedTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: GOLD,
   },
-  quoteScrim: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: 24,
-  },
-  quoteIcon: {
-    marginBottom: 10,
-  },
-  quoteText: {
-    fontSize: 14.5,
-    lineHeight: 22,
-    color: TEXT_PRIMARY,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    marginBottom: 12,
-  },
-  quoteShareRow: {
-    flexDirection: 'row',
-    gap: 10,
-    width: '100%',
+  emptyFeedSubtitle: {
+    fontSize: 12,
+    color: TEXT_MUTED,
   },
 });

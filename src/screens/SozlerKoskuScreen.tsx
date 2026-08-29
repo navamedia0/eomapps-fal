@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   View,
@@ -8,6 +8,7 @@ import {
   ImageBackground,
   StyleSheet,
   RefreshControl,
+  TextInput,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -17,9 +18,9 @@ import CornerTicks from '@/components/CornerTicks';
 import FavoriteStarButton from '@/components/FavoriteStarButton';
 import ShareButton from '@/components/ShareButton';
 import ShareImageButton from '@/components/ShareImageButton';
-import FeatureIcon from '@/components/FeatureIcon';
 import PopularDetailModal from '@/components/PopularDetailModal';
-import quotes from '@/data/kesfet_sozleri.json';
+import quotesData from '@/data/kesfet_sozleri.json';
+import allInfoCards from '@/data/bilgi_kosesi_kartlari.json';
 import { getDailyInfoCards, type InfoCard, type InfoCategory } from '@/services/bilgiKosesiFeed';
 import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
 import {
@@ -39,11 +40,10 @@ const QUOTE_CARD_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
 type Props = NativeStackScreenProps<RootStackParamList, 'SozlerKosku'>;
 type SozlerKoskuTab = 'sozler' | 'bilgi';
 
-const ITEMS: Array<{
+const TOPIC_ARTICLES: Array<{
   key: string;
   title: string;
   subtitle: string;
-  iconKey?: string;
   icon: React.ReactNode;
   onPress: (navigation: Props['navigation']) => void;
 }> = [
@@ -51,7 +51,6 @@ const ITEMS: Array<{
     key: 'iskambil',
     title: 'İskambil Kartları ve Anlamları',
     subtitle: '52 kartın geleneksel fal anlamlarını keşfet',
-    iconKey: 'kartlarBadge',
     icon: <MaterialCommunityIcons name="cards-playing-outline" size={24} color={INFO_CREAM} />,
     onPress: (navigation) => navigation.navigate('KartAnlamlari', { deck: 'iskambil' }),
   },
@@ -59,7 +58,6 @@ const ITEMS: Array<{
     key: 'tarot',
     title: 'Tarot Kartları ve Anlamları',
     subtitle: '78 kartlık Rider-Waite destesinin tam rehberi',
-    iconKey: 'tarot',
     icon: <MaterialCommunityIcons name="cards-outline" size={24} color={INFO_CREAM} />,
     onPress: (navigation) => navigation.navigate('KartAnlamlari', { deck: 'tarot' }),
   },
@@ -67,7 +65,6 @@ const ITEMS: Array<{
     key: 'kahve',
     title: 'Kahve Falı Ne Zaman Bulundu?',
     subtitle: "Osmanlı'dan günümüze kahve falının hikayesi",
-    iconKey: 'coffee',
     icon: <MaterialCommunityIcons name="coffee-outline" size={24} color={INFO_CREAM} />,
     onPress: (navigation) => navigation.navigate('BilgiMakale', { topic: 'kahve_tarihi' }),
   },
@@ -75,7 +72,6 @@ const ITEMS: Array<{
     key: 'katina',
     title: 'Katina Falı Nedir?',
     subtitle: 'İskambil kartlarıyla fal bakma geleneği',
-    iconKey: 'katina',
     icon: <MaterialCommunityIcons name="cards-club-outline" size={24} color={INFO_CREAM} />,
     onPress: (navigation) => navigation.navigate('BilgiMakale', { topic: 'katina_nedir' }),
   },
@@ -83,7 +79,6 @@ const ITEMS: Array<{
     key: 'burc',
     title: 'Burçların Kökeni ve 4 Element',
     subtitle: "Zodyağın Babil'den günümüze yolculuğu",
-    iconKey: 'burclarBadge',
     icon: <MaterialCommunityIcons name="zodiac-leo" size={24} color={INFO_CREAM} />,
     onPress: (navigation) => navigation.navigate('BilgiMakale', { topic: 'burc_kokeni' }),
   },
@@ -103,42 +98,83 @@ const CATEGORY_LABEL: Record<InfoCategory, string> = {
   tarot: 'TAROT',
 };
 
-const QUOTES: string[] = quotes;
+const ALL_QUOTES: string[] = quotesData as string[];
+const ALL_INFO_CARDS: InfoCard[] = allInfoCards as InfoCard[];
 
-function quotePool(): string[] {
-  if (QUOTES.length === 0) return [];
-  const now = new Date();
-  const epochMs = now.getTime() + 3 * 3600 * 1000 - 8 * 3600 * 1000;
-  const period = Math.floor(epochMs / (48 * 3600 * 1000));
-  const offset = (period * 11) % QUOTES.length;
-  return [...QUOTES.slice(offset), ...QUOTES.slice(0, offset)];
-}
+const PAGE_SIZE = 25;
 
 export default function SozlerKoskuScreen({ navigation, route }: Props) {
   const [tab, setTab] = useState<SozlerKoskuTab>(route.params?.initialTab ?? 'sozler');
-  const [facts, setFacts] = useState<InfoCard[]>([]);
+  
+  // Sözler state
+  const [quotePage, setQuotePage] = useState(1);
+  const [quoteSearch, setQuoteSearch] = useState('');
+  
+  // Bilgi state
+  const [infoCategory, setInfoCategory] = useState<'all' | InfoCategory>('all');
+  const [infoPage, setInfoPage] = useState(1);
+  const [infoSearch, setInfoSearch] = useState('');
   const [popular, setPopular] = useState<PopularFavorite[]>([]);
   const [selectedPopular, setSelectedPopular] = useState<PopularFavorite | null>(null);
-  const [quoteList, setQuoteList] = useState<string[]>([]);
+  
   const [refreshing, setRefreshing] = useState(false);
 
-  const loadData = useCallback(() => {
-    setQuoteList(quotePool());
-    getDailyInfoCards().then(setFacts);
+  // Günlük dönen 365 günlük söz havuzu algoritması
+  const dailyRotatedQuotes = useMemo(() => {
+    if (ALL_QUOTES.length === 0) return [];
+    const now = new Date();
+    const epochMs = now.getTime() + 3 * 3600 * 1000 - 8 * 3600 * 1000;
+    const period = Math.floor(epochMs / (24 * 3600 * 1000));
+    const offset = (period * 37) % ALL_QUOTES.length;
+    return [...ALL_QUOTES.slice(offset), ...ALL_QUOTES.slice(0, offset)];
+  }, []);
+
+  // Filtrelenmiş sözler
+  const filteredQuotes = useMemo(() => {
+    let list = dailyRotatedQuotes;
+    if (quoteSearch.trim()) {
+      const q = quoteSearch.toLowerCase().trim();
+      list = list.filter((item) => item.toLowerCase().includes(q));
+    }
+    return list;
+  }, [dailyRotatedQuotes, quoteSearch]);
+
+  const visibleQuotes = useMemo(() => {
+    return filteredQuotes.slice(0, quotePage * PAGE_SIZE);
+  }, [filteredQuotes, quotePage]);
+
+  // Filtrelenmiş bilgi kartları
+  const filteredInfoCards = useMemo(() => {
+    let list = ALL_INFO_CARDS;
+    if (infoCategory !== 'all') {
+      list = list.filter((c) => c.category === infoCategory);
+    }
+    if (infoSearch.trim()) {
+      const q = infoSearch.toLowerCase().trim();
+      list = list.filter((c) => c.title.toLowerCase().includes(q) || c.body.toLowerCase().includes(q));
+    }
+    return list;
+  }, [infoCategory, infoSearch]);
+
+  const visibleInfoCards = useMemo(() => {
+    return filteredInfoCards.slice(0, infoPage * PAGE_SIZE);
+  }, [filteredInfoCards, infoPage]);
+
+  useEffect(() => {
     getPopularFavorites().then((items) => {
       setPopular(items.filter((item) => item.kind === 'info' || item.id.startsWith('info:')));
     });
   }, []);
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    loadData();
-    setTimeout(() => setRefreshing(false), 600);
-  }, [loadData]);
+    setQuotePage(1);
+    setInfoPage(1);
+    getPopularFavorites().then((items) => {
+      setPopular(items.filter((item) => item.kind === 'info' || item.id.startsWith('info:')));
+    });
+    setTimeout(() => setRefreshing(false), 500);
+  }, []);
 
   return (
     <MysticTableBackground>
@@ -166,7 +202,7 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
           >
             <Ionicons name="sparkles" size={16} color={tab === 'sozler' ? '#1a0d33' : GOLD} />
             <Text style={[styles.tabSwitchText, tab === 'sozler' && styles.tabSwitchTextActive]}>
-              Sözler Köşesi
+              Sözler Köşesi ({filteredQuotes.length})
             </Text>
           </Pressable>
 
@@ -180,21 +216,41 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
               color={tab === 'bilgi' ? '#1a0d33' : GOLD}
             />
             <Text style={[styles.tabSwitchText, tab === 'bilgi' && styles.tabSwitchTextActive]}>
-              Bilgi Köşesi
+              Bilgi Köşesi ({filteredInfoCards.length})
             </Text>
           </Pressable>
         </View>
 
         {/* TAB 1: SÖZLER KÖŞESİ */}
-        {tab === 'sozler' ? (
+        {tab === 'sozler' && (
           <View style={styles.tabContent}>
+            {/* Arama Çubuğu */}
+            <View style={styles.searchBarWrap}>
+              <Ionicons name="search" size={17} color={GOLD_SOFT} />
+              <TextInput
+                value={quoteSearch}
+                onChangeText={(t) => {
+                  setQuoteSearch(t);
+                  setQuotePage(1);
+                }}
+                placeholder="Mistik sözlerde ara..."
+                placeholderTextColor={TEXT_MUTED}
+                style={styles.searchInput}
+              />
+              {quoteSearch ? (
+                <Pressable onPress={() => setQuoteSearch('')} hitSlop={8}>
+                  <Ionicons name="close-circle" size={17} color={GOLD_SOFT} />
+                </Pressable>
+              ) : null}
+            </View>
+
             <View style={styles.sectionHeader}>
               <Ionicons name="sparkles-outline" size={16} color={GOLD} />
               <Text style={styles.sectionTitle}>Ruhunu Aydınlatan Günün Sözleri</Text>
             </View>
 
             <View style={styles.quotesFeed}>
-              {quoteList.map((quoteText, index) => (
+              {visibleQuotes.map((quoteText, index) => (
                 <ImageBackground
                   key={`quote-${index}`}
                   source={QUOTE_CARD_BG}
@@ -203,7 +259,7 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
                   resizeMode="cover"
                 >
                   <LinearGradient
-                    colors={['rgba(11, 10, 31, 0.55)', 'rgba(11, 10, 31, 0.72)']}
+                    colors={['rgba(11, 10, 31, 0.55)', 'rgba(11, 10, 31, 0.75)']}
                     style={styles.quoteScrim}
                     pointerEvents="none"
                   />
@@ -222,9 +278,22 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
                 </ImageBackground>
               ))}
             </View>
+
+            {/* Daha Fazla Yükle Butonu */}
+            {visibleQuotes.length < filteredQuotes.length && (
+              <Pressable
+                onPress={() => setQuotePage((p) => p + 1)}
+                style={({ pressed }) => [styles.loadMoreBtn, pressed && styles.loadMoreBtnPressed]}
+              >
+                <Ionicons name="chevron-down-circle-outline" size={18} color={GOLD} />
+                <Text style={styles.loadMoreBtnText}>Daha Fazla Söz Göster ({filteredQuotes.length - visibleQuotes.length} Kalan)</Text>
+              </Pressable>
+            )}
           </View>
-        ) : (
-          /* TAB 2: BİLGİ KÖŞESİ */
+        )}
+
+        {/* TAB 2: BİLGİ KÖŞESİ */}
+        {tab === 'bilgi' && (
           <View style={styles.tabContent}>
             {/* Popülerler Bölümü */}
             {popular.length > 0 && (
@@ -258,14 +327,70 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
               </View>
             )}
 
-            {/* Makale & Kategori Kartları */}
+            {/* Kategori Filtre Butonları */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoryPillsRow}
+            >
+              {[
+                { key: 'all', label: 'Tümü' },
+                { key: 'burc', label: 'Burçlar' },
+                { key: 'kart', label: 'Kartlar' },
+                { key: 'astroloji', label: 'Astroloji' },
+                { key: 'tarot', label: 'Tarot' },
+              ].map((c) => (
+                <Pressable
+                  key={c.key}
+                  onPress={() => {
+                    setInfoCategory(c.key as any);
+                    setInfoPage(1);
+                  }}
+                  style={[
+                    styles.categoryPill,
+                    infoCategory === c.key && styles.categoryPillActive,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.categoryPillText,
+                      infoCategory === c.key && styles.categoryPillTextActive,
+                    ]}
+                  >
+                    {c.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+
+            {/* Bilgi Arama Çubuğu */}
+            <View style={styles.searchBarWrap}>
+              <Ionicons name="search" size={17} color={GOLD_SOFT} />
+              <TextInput
+                value={infoSearch}
+                onChangeText={(t) => {
+                  setInfoSearch(t);
+                  setInfoPage(1);
+                }}
+                placeholder="Bilgi kartlarında ara..."
+                placeholderTextColor={TEXT_MUTED}
+                style={styles.searchInput}
+              />
+              {infoSearch ? (
+                <Pressable onPress={() => setInfoSearch('')} hitSlop={8}>
+                  <Ionicons name="close-circle" size={17} color={GOLD_SOFT} />
+                </Pressable>
+              ) : null}
+            </View>
+
+            {/* Ana Rehber & Makale Kartları */}
             <View style={styles.sectionHeader}>
               <MaterialCommunityIcons name="feather" size={16} color={GOLD} />
               <Text style={styles.sectionTitle}>Kadim Kehanet & Fal Ansiklopedisi</Text>
             </View>
 
             <View style={styles.topicsGrid}>
-              {ITEMS.map((item) => (
+              {TOPIC_ARTICLES.map((item) => (
                 <Pressable
                   key={item.key}
                   onPress={() => item.onPress(navigation)}
@@ -281,26 +406,26 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
               ))}
             </View>
 
-            {/* Günlük İlginç Bilgi Kartları */}
-            {facts.length > 0 && (
+            {/* İlginç Bilgi Kartları Feed */}
+            {visibleInfoCards.length > 0 && (
               <>
                 <View style={[styles.sectionHeader, { marginTop: 24 }]}>
                   <Ionicons name="bulb-outline" size={16} color={GOLD} />
-                  <Text style={styles.sectionTitle}>Bunları Biliyor muydunuz?</Text>
+                  <Text style={styles.sectionTitle}>Kadim Bilgi Kartları ({filteredInfoCards.length})</Text>
                 </View>
 
                 <View style={styles.factsFeed}>
-                  {facts.map((card) => (
+                  {visibleInfoCards.map((card) => (
                     <View key={card.id} style={styles.factCard}>
                       <CornerTicks />
                       <View style={styles.factHeader}>
                         <View style={styles.factCategoryBadge}>
                           <MaterialCommunityIcons
-                            name={CATEGORY_ICON[card.category]}
+                            name={CATEGORY_ICON[card.category] || 'information-outline'}
                             size={13}
                             color={GOLD}
                           />
-                          <Text style={styles.factCategoryText}>{CATEGORY_LABEL[card.category]}</Text>
+                          <Text style={styles.factCategoryText}>{CATEGORY_LABEL[card.category] || 'BİLGİ'}</Text>
                         </View>
                         <FavoriteStarButton id={card.id} kind="info" body={card.body} title={card.title} />
                       </View>
@@ -313,6 +438,17 @@ export default function SozlerKoskuScreen({ navigation, route }: Props) {
                     </View>
                   ))}
                 </View>
+
+                {/* Daha Fazla Bilgi Kartı Yükle */}
+                {visibleInfoCards.length < filteredInfoCards.length && (
+                  <Pressable
+                    onPress={() => setInfoPage((p) => p + 1)}
+                    style={({ pressed }) => [styles.loadMoreBtn, pressed && styles.loadMoreBtnPressed]}
+                  >
+                    <Ionicons name="chevron-down-circle-outline" size={18} color={GOLD} />
+                    <Text style={styles.loadMoreBtnText}>Daha Fazla Bilgi Kartı Göster ({filteredInfoCards.length - visibleInfoCards.length} Kalan)</Text>
+                  </Pressable>
+                )}
               </>
             )}
           </View>
@@ -336,13 +472,13 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 18,
     gap: 6,
   },
   headerIconCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 58,
+    height: 58,
+    borderRadius: 29,
     backgroundColor: 'rgba(242, 200, 121, 0.12)',
     borderWidth: 1.5,
     borderColor: 'rgba(242, 200, 121, 0.4)',
@@ -351,24 +487,24 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   headerTitle: {
-    fontSize: 23,
+    fontSize: 22,
     fontWeight: '900',
     color: GOLD,
     letterSpacing: 0.5,
   },
   headerSubtitle: {
-    fontSize: 13,
+    fontSize: 12.5,
     color: TEXT_MUTED,
     textAlign: 'center',
   },
   tabSwitchRow: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(26, 16, 52, 0.9)',
     borderRadius: 16,
     padding: 4,
-    marginBottom: 20,
+    marginBottom: 16,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(242, 200, 121, 0.3)',
     gap: 6,
   },
   tabSwitchButton: {
@@ -389,7 +525,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   tabSwitchText: {
-    fontSize: 13.5,
+    fontSize: 13,
     fontWeight: '700',
     color: GOLD_SOFT,
   },
@@ -400,6 +536,51 @@ const styles = StyleSheet.create({
   tabContent: {
     width: '100%',
   },
+  searchBarWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.25)',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    marginBottom: 16,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 13.5,
+    color: TEXT_PRIMARY,
+    paddingVertical: 0,
+  },
+  categoryPillsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+    paddingRight: 10,
+  },
+  categoryPill: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 12,
+    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.25)',
+  },
+  categoryPillActive: {
+    backgroundColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: GOLD,
+  },
+  categoryPillText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: TEXT_MUTED,
+  },
+  categoryPillTextActive: {
+    color: GOLD,
+    fontWeight: '800',
+  },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -407,7 +588,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 14.5,
+    fontSize: 14,
     fontWeight: '800',
     color: GOLD_SOFT,
     letterSpacing: 0.3,
@@ -444,8 +625,29 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 4,
   },
+  loadMoreBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderRadius: 14,
+    paddingVertical: 13,
+    marginTop: 20,
+  },
+  loadMoreBtnPressed: {
+    opacity: 0.85,
+    backgroundColor: 'rgba(36, 22, 70, 0.95)',
+  },
+  loadMoreBtnText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: GOLD,
+  },
   popularSection: {
-    marginBottom: 20,
+    marginBottom: 18,
   },
   popularHeader: {
     flexDirection: 'row',
@@ -454,7 +656,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   popularTitle: {
-    fontSize: 14,
+    fontSize: 13.5,
     fontWeight: '800',
     color: GOLD,
   },
@@ -514,7 +716,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topicTitle: {
-    fontSize: 14.5,
+    fontSize: 14,
     fontWeight: '700',
     color: TEXT_PRIMARY,
     marginBottom: 2,
@@ -556,7 +758,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   factTitle: {
-    fontSize: 15,
+    fontSize: 14.5,
     fontWeight: '800',
     color: GOLD_SOFT,
     marginBottom: 6,
