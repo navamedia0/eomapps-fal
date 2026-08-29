@@ -22,6 +22,7 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import ReadingCooldownNotice from '@/components/ReadingCooldownNotice';
 import FeatureIcon from '@/components/FeatureIcon';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
 import { FEATURE_ICONS } from '@/assets/icons';
 import { useReadingCooldown } from '@/hooks/useReadingCooldown';
 import PersonInfoModal from '@/components/PersonInfoModal';
@@ -107,6 +108,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
   const [adModalVisible, setAdModalVisible] = useState(false);
   const [adVideoIndex, setAdVideoIndex] = useState(1);
   const [adTotalNeeded, setAdTotalNeeded] = useState(1);
+  const [showSplash, setShowSplash] = useState(kind === 'coffee');
 
   const pulse = useRef(new Animated.Value(0)).current;
   const { remaining: cooldownRemaining, notifyCongested } = useReadingCooldown(
@@ -648,6 +650,19 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
           badge={copy.shareTitle}
           sections={resultSections}
           shareTextPrefix={`Mistik Rehber - ${copy.shareTitle}`}
+          cardBackgroundImage={
+            kind === 'coffee' ? require('@/assets/ekoller/osmanli_reading_card.jpg') : undefined
+          }
+        />
+      )}
+      {kind === 'coffee' && (
+        <EkolEntranceSplash
+          visible={showSplash}
+          figureSource={require('@/assets/ekoller/kahve_tulip_clean.png')}
+          title="Kahve Falı"
+          subtitle="Osmanlı Saray Kehaneti Başlıyor..."
+          accentColor="#38BDF8"
+          onFinish={() => setShowSplash(false)}
         />
       )}
       <PersonInfoModal

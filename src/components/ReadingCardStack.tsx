@@ -18,6 +18,7 @@ type Props = {
   badge: string;
   sections: ReadingSection[];
   shareTextPrefix: string;
+  cardBackgroundImage?: any;
 };
 
 const SWAP_MS = 150;
@@ -27,7 +28,7 @@ const SHRINK_MS = 180;
 // darkened modal, popping in with a scale+glow+sparkle burst (sandık açılışı
 // hissi). Tapping the backdrop shrinks the card down to a small pill instead
 // of dismissing it outright; tapping the pill replays the same reveal.
-export default function ReadingCardStack({ badge, sections, shareTextPrefix }: Props) {
+export default function ReadingCardStack({ badge, sections, shareTextPrefix, cardBackgroundImage }: Props) {
   const [index, setIndex] = useState(0);
   const [minimized, setMinimized] = useState(false);
   const [burstFlag, setBurstFlag] = useState(false);
@@ -65,9 +66,11 @@ export default function ReadingCardStack({ badge, sections, shareTextPrefix }: P
 
   const handleMinimize = () => {
     cardOpacity.value = withTiming(0, { duration: SHRINK_MS });
-    cardScale.value = withTiming(0.25, { duration: SHRINK_MS });
+    cardScale.value = withTiming(0.4, { duration: SHRINK_MS });
     if (pendingTimer.current) clearTimeout(pendingTimer.current);
-    pendingTimer.current = setTimeout(() => setMinimized(true), SHRINK_MS);
+    pendingTimer.current = setTimeout(() => {
+      setMinimized(true);
+    }, SHRINK_MS);
   };
 
   const cardStyle = useAnimatedStyle(() => ({
@@ -76,7 +79,7 @@ export default function ReadingCardStack({ badge, sections, shareTextPrefix }: P
   }));
 
   const glowStyle = useAnimatedStyle(() => ({
-    opacity: glow.value * 0.8,
+    opacity: glow.value * 0.7,
     transform: [{ scale: 0.8 + glow.value * 0.55 }],
   }));
 
@@ -95,6 +98,16 @@ export default function ReadingCardStack({ badge, sections, shareTextPrefix }: P
             <SparkleBurst active={burstFlag} count={14} radius={100} />
 
             <Animated.View style={[styles.card, cardStyle]}>
+              {cardBackgroundImage && (
+                <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+                  <Animated.Image
+                    source={cardBackgroundImage}
+                    style={styles.cardBgImage}
+                    resizeMode="cover"
+                  />
+                  <View style={styles.cardBgOverlay} />
+                </View>
+              )}
               <CornerTicks />
               <View style={styles.badgeRow}>
                 <Ionicons name="sparkles" size={14} color={GOLD} />
@@ -188,6 +201,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.35,
     shadowRadius: 24,
     elevation: 14,
+    overflow: 'hidden',
+  },
+  cardBgImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 20,
+  },
+  cardBgOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(12, 6, 26, 0.72)',
   },
   badgeRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
   badgeText: { fontSize: 12, fontWeight: '700', color: GOLD, letterSpacing: 0.3 },

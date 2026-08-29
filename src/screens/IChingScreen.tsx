@@ -14,6 +14,7 @@ import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import ReadingCardStack from '@/components/ReadingCardStack';
+import EkolEntranceSplash from '@/components/EkolEntranceSplash';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { GOLD, GOLD_SOFT, GOLD_DEEP, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
@@ -108,6 +109,7 @@ export default function IChingScreen({ navigation }: Props) {
   const [selectedMode, setSelectedMode] = useState<'standard' | 'deep'>('standard');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
@@ -323,8 +325,17 @@ export default function IChingScreen({ navigation }: Props) {
           badge="I Ching Değişimler Kitabı Raporu"
           sections={resultSections}
           shareTextPrefix="Mistik Rehber - I Ching Kehanetim"
+          cardBackgroundImage={require('@/assets/ekoller/cin_reading_card.jpg')}
         />
       )}
+      <EkolEntranceSplash
+        visible={showSplash}
+        figureSource={require('@/assets/ekoller/iching_crane_clean.png')}
+        title="Çin I Ching Falı"
+        subtitle="3000 Yıllık Taoist Değişimler Kitabı"
+        accentColor="#E11D48"
+        onFinish={() => setShowSplash(false)}
+      />
     </MysticTableBackground>
   );
 }

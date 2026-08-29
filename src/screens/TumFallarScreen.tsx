@@ -1,6 +1,5 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet, Image, ImageBackground } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -23,8 +22,7 @@ type Ekol = {
   title: string;
   sub: string;
   accent: string;
-  bgImage?: any;
-  buttonFrame?: any;
+  sectionFrame?: any;
   items: GridItem[];
 };
 
@@ -39,12 +37,10 @@ function chunkPairs<T>(items: T[]): T[][] {
 function EkolGridButton({
   item,
   accent,
-  buttonFrame,
   navigation,
 }: {
   item: GridItem;
   accent: string;
-  buttonFrame?: any;
   navigation: Props['navigation'];
 }) {
   return (
@@ -53,17 +49,9 @@ function EkolGridButton({
       style={({ pressed }) => [
         styles.gridButton,
         { borderColor: accent },
-        buttonFrame && styles.gridButtonWithFrame,
         pressed && styles.gridButtonPressed,
       ]}
     >
-      {buttonFrame && (
-        <Image
-          source={buttonFrame}
-          resizeMode="stretch"
-          style={styles.buttonFrameImage}
-        />
-      )}
       <View style={styles.buttonInnerContent}>
         {/* DO NOT TOUCH: FeatureIcon and symbols remain completely intact */}
         <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={50} />
@@ -85,8 +73,7 @@ export default function TumFallarScreen({ navigation }: Props) {
       title: 'Çin Ekolü',
       sub: 'Lake kırmızısı & imparatorluk altını',
       accent: '#E11D48',
-      bgImage: require('@/assets/ekoller/cin_section_bg.jpg'),
-      buttonFrame: require('@/assets/ekoller/cin_btn_frame.png'),
+      sectionFrame: require('@/assets/ekoller/cin_section_frame.png'),
       items: [
         {
           key: 'face',
@@ -109,8 +96,7 @@ export default function TumFallarScreen({ navigation }: Props) {
       title: 'Osmanlı & Anadolu Ekolü',
       sub: 'İznik turkuazı & pirinç & lale motifi',
       accent: '#0EA5E9',
-      bgImage: require('@/assets/ekoller/osmanli_section_bg.jpg'),
-      buttonFrame: require('@/assets/ekoller/osmanli_btn_frame.png'),
+      sectionFrame: require('@/assets/ekoller/osmanli_section_frame.png'),
       items: [
         {
           key: 'coffee',
@@ -285,10 +271,10 @@ export default function TumFallarScreen({ navigation }: Props) {
 
         <View style={styles.ekolList}>
           {ekoller.map((ekol) => {
-            const hasThemedFrame = !!ekol.bgImage;
+            const hasSectionFrame = !!ekol.sectionFrame;
 
             const content = (
-              <View style={[styles.ekolInnerPadding, hasThemedFrame && styles.ekolThemedPadding]}>
+              <View style={[styles.ekolInnerPadding, hasSectionFrame && styles.ekolThemedPadding]}>
                 <View style={[styles.ekolHeadBar, { backgroundColor: ekol.accent }]} />
                 <Text style={[styles.ekolTitle, { color: ekol.accent }]}>{ekol.title}</Text>
                 <Text style={styles.ekolSub}>{ekol.sub}</Text>
@@ -298,14 +284,12 @@ export default function TumFallarScreen({ navigation }: Props) {
                       <EkolGridButton
                         item={pair[0]}
                         accent={ekol.accent}
-                        buttonFrame={ekol.buttonFrame}
                         navigation={navigation}
                       />
                       {pair[1] ? (
                         <EkolGridButton
                           item={pair[1]}
                           accent={ekol.accent}
-                          buttonFrame={ekol.buttonFrame}
                           navigation={navigation}
                         />
                       ) : (
@@ -317,21 +301,18 @@ export default function TumFallarScreen({ navigation }: Props) {
               </View>
             );
 
-            if (hasThemedFrame) {
+            if (hasSectionFrame) {
               return (
                 <View
                   key={ekol.key}
                   style={[styles.ekolThemedContainer, { borderColor: ekol.accent }]}
                 >
-                  <ImageBackground
-                    source={ekol.bgImage}
-                    resizeMode="cover"
-                    style={StyleSheet.absoluteFillObject}
+                  <Image
+                    source={ekol.sectionFrame}
+                    resizeMode="stretch"
+                    style={styles.sectionFrameImage}
                   />
-                  <LinearGradient
-                    colors={['rgba(12, 6, 24, 0.82)', 'rgba(8, 4, 18, 0.92)']}
-                    style={StyleSheet.absoluteFillObject}
-                  />
+                  <View style={styles.sectionDarkBackdrop} />
                   {content}
                 </View>
               );
@@ -388,17 +369,28 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     overflow: 'hidden',
     borderWidth: 1.4,
+    backgroundColor: '#0F091E',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.5,
     shadowRadius: 12,
     elevation: 8,
   },
+  sectionFrameImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+  },
+  sectionDarkBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(10, 5, 20, 0.45)',
+  },
   ekolInnerPadding: {
     width: '100%',
   },
   ekolThemedPadding: {
-    padding: 14,
+    padding: 16,
+    zIndex: 2,
   },
   ekolHeadBar: {
     width: 36,
@@ -434,26 +426,15 @@ const styles = StyleSheet.create({
     borderWidth: 1.2,
     minHeight: 74,
     overflow: 'hidden',
-    position: 'relative',
     justifyContent: 'center',
-  },
-  gridButtonWithFrame: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-  buttonFrameImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: '100%',
-    height: '100%',
   },
   buttonInnerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingLeft: 8,
     paddingRight: 8,
-    zIndex: 2,
   },
   gridButtonPressed: {
     opacity: 0.85,
