@@ -193,7 +193,7 @@ function MyPostsSection() {
           <Ionicons name="newspaper-outline" size={18} color={GOLD} />
           <Text style={styles.myPostsTitle}>Paylaşılanlar ({posts.length})</Text>
         </View>
-        <Text style={styles.myPostsSubtitle}>3 gün sonra otomatik silinir</Text>
+        <Text style={styles.myPostsSubtitle}>24 saat sonra otomatik silinir</Text>
       </View>
 
       {loading ? (

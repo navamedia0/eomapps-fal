@@ -10,6 +10,7 @@ import {
   TextInput,
   StyleSheet,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
@@ -18,6 +19,8 @@ import type { TabScreenProps } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import { getFeed, addPost, deletePost, toggleLike, reportContent, type KesfetFeedPost } from '@/services/kesfetPosts';
 import CommentsModal from '@/components/CommentsModal';
+import { getWallet } from '@/services/shop';
+import { getCoins, spendCoins } from '@/services/coins';
 import { shareText } from '@/utils/share';
 import { relativeTime } from '@/utils/relativeTime';
 import { avatarColor } from '@/utils/avatarColor';
@@ -28,7 +31,10 @@ type Props = TabScreenProps;
 type KesfetTab = 'gonderi' | 'populerGonderi' | 'durum' | 'populerDurum';
 
 const MAX_POST_LENGTH = 280;
-const THREE_DAYS_MS = 3 * 24 * 3600 * 1000;
+const ONE_DAY_MS = 24 * 3600 * 1000; // 24 Saatlik Otomatik Temizlik
+
+const SUPER_LIKE_DIAMONDS = 15; // Süper Beğeni (x3) için Elmas
+const LUXURY_LIKE_DIAMONDS = 35; // Lüks Beğeni (x5) için Elmas
 
 // Spam-safe etkileşim puanı hesaplama:
 // Beğeni ağırlığı + spam olmayan tekil yorumlar
@@ -36,17 +42,17 @@ function calculateScore(p: KesfetFeedPost): number {
   return p.likeCount * 2 + Math.min(p.commentCount, 50);
 }
 
-// 3 günlük döngüde en yüksek etkileşim alan gönderileri kalıcı (hall-of-fame) yapar
+// 24 saatlik döngüde en yüksek etkileşim alan gönderileri kalıcı (hall-of-fame) yapar
 function processFeedPosts(feed: KesfetFeedPost[]) {
   const now = Date.now();
   
-  // 3 günlük dönem bloklarına göre grupla
+  // 24 saatlik dönem bloklarına göre grupla
   const photoCycleMap: Record<number, KesfetFeedPost> = {};
   const statusCycleMap: Record<number, KesfetFeedPost> = {};
 
   feed.forEach((p) => {
     const postTime = new Date(p.createdAt).getTime();
-    const cycle = Math.floor(postTime / THREE_DAYS_MS);
+    const cycle = Math.floor(postTime / ONE_DAY_MS);
     const score = calculateScore(p);
 
     if (p.imageUri) {
@@ -72,22 +78,32 @@ function processFeedPosts(feed: KesfetFeedPost[]) {
       .map((p) => p.id),
   );
 
-  // Normal gönderiler: 3 gün içindekiler
-  const activePhotos = feed.filter((p) => !!p.imageUri && now - new Date(p.createdAt).getTime() < THREE_DAYS_MS);
-  const activeStatuses = feed.filter((p) => !p.imageUri && now - new Date(p.createdAt).getTime() < THREE_DAYS_MS);
+  // Normal gönderiler: 24 saat içindekiler
+  const activePhotos = feed.filter((p) => !!p.imageUri && now - new Date(p.createdAt).getTime() < ONE_DAY_MS);
+  const activeStatuses = feed.filter((p) => !p.imageUri && now - new Date(p.createdAt).getTime() < ONE_DAY_MS);
 
-  // Popüler gönderiler: Her 3 günlük döngünün en çok sevilen kalıcıları (Kırmızı Çerçeveli)
-  const popularPhotos = feed.filter((p) => !!p.imageUri && popularPhotoIds.has(p.id));
-  const popularStatuses = feed.filter((p) => !p.imageUri && popularStatusIds.has(p.id));
+  // Popüler gönderiler: Her 24 saatlik döngünün en çok sevilen kalıcıları (Kırmızı Çerçeveli)
+  const rawPopularPhotos = feed.filter((p) => !!p.imageUri && popularPhotoIds.has(p.id));
+  const rawPopularStatuses = feed.filter((p) => !p.imageUri && popularStatusIds.has(p.id));
 
   return {
     activePhotos,
     activeStatuses,
-    popularPhotos,
-    popularStatuses,
+    rawPopularPhotos,
+    rawPopularStatuses,
     popularPhotoIds,
     popularStatusIds,
   };
+}
+
+// Dizi karıştırma (Fair Shuffle)
+function shuffleArray<T>(array: T[]): T[] {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 // GÖNDERİ COMPOSER (Instagram Tarzı - Fotoğraf Zorunlu + Açıklama)
@@ -253,11 +269,109 @@ function TextStatusComposer({ onPosted }: { onPosted: () => void }) {
   );
 }
 
+// BEĞENİ SEÇENEKLERİ MODALI
+function LikeOptionsModal({
+  visible,
+  post,
+  onClose,
+  onNormalLike,
+  onSuperLike,
+  onLuxuryLike,
+}: {
+  visible: boolean;
+  post: KesfetFeedPost | null;
+  onClose: () => void;
+  onNormalLike: (p: KesfetFeedPost) => void;
+  onSuperLike: (p: KesfetFeedPost) => void;
+  onLuxuryLike: (p: KesfetFeedPost) => void;
+}) {
+  if (!visible || !post) return null;
+
+  return (
+    <Modal visible={visible} transparent animationType="fade">
+      <Pressable onPress={onClose} style={styles.modalOverlay}>
+        <View style={styles.likeOptionsCard}>
+          <View style={styles.likeOptionsHeader}>
+            <Ionicons name="heart-circle" size={24} color="#EF4444" />
+            <Text style={styles.likeOptionsTitle}>Beğeni Türü Seç</Text>
+          </View>
+
+          {/* Normal Beğeni */}
+          <Pressable
+            onPress={() => {
+              onClose();
+              onNormalLike(post);
+            }}
+            style={styles.likeOptionRow}
+          >
+            <View style={[styles.likeOptionIconCircle, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
+              <Ionicons name="heart" size={20} color="#EF4444" />
+            </View>
+            <View style={styles.likeOptionTextWrap}>
+              <Text style={styles.likeOptionName}>Standart Beğeni</Text>
+              <Text style={styles.likeOptionDesc}>+1 Beğeni ekler</Text>
+            </View>
+            <View style={styles.likeOptionPriceBadge}>
+              <Text style={styles.likeOptionFreeText}>Ücretsiz</Text>
+            </View>
+          </Pressable>
+
+          {/* Süper Beğeni (x3) */}
+          <Pressable
+            onPress={() => {
+              onClose();
+              onSuperLike(post);
+            }}
+            style={[styles.likeOptionRow, styles.superLikeRow]}
+          >
+            <View style={[styles.likeOptionIconCircle, { backgroundColor: 'rgba(59, 130, 246, 0.18)' }]}>
+              <Ionicons name="sparkles" size={20} color="#3B82F6" />
+            </View>
+            <View style={styles.likeOptionTextWrap}>
+              <Text style={[styles.likeOptionName, { color: '#60A5FA' }]}>Süper Beğeni (x3)</Text>
+              <Text style={styles.likeOptionDesc}>+3 Beğeni ekler ve öne çıkarır</Text>
+            </View>
+            <View style={[styles.likeOptionPriceBadge, { backgroundColor: 'rgba(59, 130, 246, 0.2)' }]}>
+              <Ionicons name="diamond" size={13} color="#60A5FA" />
+              <Text style={[styles.likeOptionDiamondText, { color: '#60A5FA' }]}>{SUPER_LIKE_DIAMONDS} 💎</Text>
+            </View>
+          </Pressable>
+
+          {/* Lüks Beğeni (x5) */}
+          <Pressable
+            onPress={() => {
+              onClose();
+              onLuxuryLike(post);
+            }}
+            style={[styles.likeOptionRow, styles.luxuryLikeRow]}
+          >
+            <View style={[styles.likeOptionIconCircle, { backgroundColor: 'rgba(242, 200, 121, 0.2)' }]}>
+              <MaterialCommunityIcons name="crown" size={22} color={GOLD} />
+            </View>
+            <View style={styles.likeOptionTextWrap}>
+              <Text style={[styles.likeOptionName, { color: GOLD }]}>Lüks Beğeni (x5)</Text>
+              <Text style={styles.likeOptionDesc}>+5 Beğeni ekler, popülerliğe taşır</Text>
+            </View>
+            <View style={[styles.likeOptionPriceBadge, { backgroundColor: 'rgba(242, 200, 121, 0.22)' }]}>
+              <Ionicons name="diamond" size={13} color={GOLD} />
+              <Text style={[styles.likeOptionDiamondText, { color: GOLD }]}>{LUXURY_LIKE_DIAMONDS} 💎</Text>
+            </View>
+          </Pressable>
+
+          <Pressable onPress={onClose} style={styles.likeOptionsCloseBtn}>
+            <Text style={styles.likeOptionsCloseText}>Vazgeç</Text>
+          </Pressable>
+        </View>
+      </Pressable>
+    </Modal>
+  );
+}
+
 // FOTOĞRAFLI GÖNDERİ KARTI (Instagram Tarzı + Popüler Kırmızı Çerçeve)
 function PhotoPostCard({
   post,
   isPopular,
-  onToggleLike,
+  onOpenLikeOptions,
   onDelete,
   onOpenComments,
   onReport,
@@ -265,7 +379,7 @@ function PhotoPostCard({
 }: {
   post: KesfetFeedPost;
   isPopular?: boolean;
-  onToggleLike: (id: string) => void;
+  onOpenLikeOptions: (p: KesfetFeedPost) => void;
   onDelete: (id: string) => void;
   onOpenComments: (id: string) => void;
   onReport: (id: string) => void;
@@ -277,7 +391,7 @@ function PhotoPostCard({
       {isPopular && (
         <View style={styles.popularBadgeWrap}>
           <Ionicons name="flame" size={13} color="#FFF" />
-          <Text style={styles.popularBadgeText}>3 Günün Efsanesi · Popüler Gönderi</Text>
+          <Text style={styles.popularBadgeText}>24 Saatin Efsanesi · Popüler Gönderi</Text>
         </View>
       )}
 
@@ -314,9 +428,10 @@ function PhotoPostCard({
 
       {/* Actions */}
       <View style={styles.postActions}>
-        <Pressable onPress={() => onToggleLike(post.id)} style={styles.actionButton} hitSlop={6}>
+        <Pressable onPress={() => onOpenLikeOptions(post)} style={styles.actionButton} hitSlop={6}>
           <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={20} color={post.liked ? '#EF4444' : TEXT_PRIMARY} />
           <Text style={[styles.actionCount, post.liked && styles.actionCountLiked]}>{post.likeCount}</Text>
+          <Ionicons name="chevron-up" size={12} color={GOLD_SOFT} style={{ marginLeft: -2 }} />
         </Pressable>
         <Pressable onPress={() => onOpenComments(post.id)} style={styles.actionButton} hitSlop={6}>
           <Ionicons name="chatbubble-outline" size={19} color={TEXT_PRIMARY} />
@@ -347,7 +462,7 @@ function PhotoPostCard({
 function TextStatusCard({
   post,
   isPopular,
-  onToggleLike,
+  onOpenLikeOptions,
   onDelete,
   onOpenComments,
   onReport,
@@ -355,7 +470,7 @@ function TextStatusCard({
 }: {
   post: KesfetFeedPost;
   isPopular?: boolean;
-  onToggleLike: (id: string) => void;
+  onOpenLikeOptions: (p: KesfetFeedPost) => void;
   onDelete: (id: string) => void;
   onOpenComments: (id: string) => void;
   onReport: (id: string) => void;
@@ -367,7 +482,7 @@ function TextStatusCard({
       {isPopular && (
         <View style={styles.popularBadgeWrap}>
           <Ionicons name="flame" size={13} color="#FFF" />
-          <Text style={styles.popularBadgeText}>3 Günün Efsanesi · Popüler Durum</Text>
+          <Text style={styles.popularBadgeText}>24 Saatin Efsanesi · Popüler Durum</Text>
         </View>
       )}
 
@@ -397,9 +512,10 @@ function TextStatusCard({
       <Text style={styles.statusTextBody}>{post.text}</Text>
 
       <View style={styles.postActions}>
-        <Pressable onPress={() => onToggleLike(post.id)} style={styles.actionButton} hitSlop={6}>
+        <Pressable onPress={() => onOpenLikeOptions(post)} style={styles.actionButton} hitSlop={6}>
           <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={18} color={post.liked ? '#EF4444' : TEXT_MUTED} />
           <Text style={[styles.actionCount, post.liked && styles.actionCountLiked]}>{post.likeCount}</Text>
+          <Ionicons name="chevron-up" size={12} color={GOLD_SOFT} style={{ marginLeft: -2 }} />
         </Pressable>
         <Pressable onPress={() => onOpenComments(post.id)} style={styles.actionButton} hitSlop={6}>
           <Ionicons name="chatbubble-outline" size={17} color={TEXT_MUTED} />
@@ -425,6 +541,7 @@ export default function KesfetScreen({ navigation }: Props) {
   const [refreshing, setRefreshing] = useState(false);
   const [feedError, setFeedError] = useState(false);
   const [commentsPostId, setCommentsPostId] = useState<string | null>(null);
+  const [selectedPostForLikes, setSelectedPostForLikes] = useState<KesfetFeedPost | null>(null);
 
   const refreshFeed = useCallback(() => {
     getFeed()
@@ -456,15 +573,48 @@ export default function KesfetScreen({ navigation }: Props) {
       .finally(() => setRefreshing(false));
   }, []);
 
-  const handleToggleLike = useCallback((id: string) => {
+  // Standart Beğeni
+  const handleNormalLike = useCallback((p: KesfetFeedPost) => {
     setFeed((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, liked: !p.liked, likeCount: p.liked ? p.likeCount - 1 : p.likeCount + 1 } : p)),
+      prev.map((item) =>
+        item.id === p.id ? { ...item, liked: !item.liked, likeCount: item.liked ? item.likeCount - 1 : item.likeCount + 1 } : item,
+      ),
     );
-    toggleLike(id).catch((err) => {
+    toggleLike(p.id).catch((err) => {
       showAlert('İşlem Başarısız', err instanceof Error ? err.message : 'Beğeni kaydedilemedi.');
       refreshFeed();
     });
   }, [refreshFeed]);
+
+  // Süper Beğeni (x3 Beğeni - 15 Elmas)
+  const handleSuperLike = useCallback(async (p: KesfetFeedPost) => {
+    const success = await spendCoins(SUPER_LIKE_DIAMONDS);
+    if (!success) {
+      showAlert('Yetersiz Elmas', `Süper Beğeni (x3) göndermek için ${SUPER_LIKE_DIAMONDS} Elmas gereklidir.`);
+      return;
+    }
+
+    setFeed((prev) =>
+      prev.map((item) => (item.id === p.id ? { ...item, liked: true, likeCount: item.likeCount + 3 } : item)),
+    );
+    showAlert('✨ Süper Beğeni Gönderildi!', `Gönderiye +3 Beğeni eklendi ve öne çıkarıldı! (${SUPER_LIKE_DIAMONDS} Elmas 💎)`);
+    toggleLike(p.id).catch(() => {});
+  }, []);
+
+  // Lüks Beğeni (x5 Beğeni - 35 Elmas)
+  const handleLuxuryLike = useCallback(async (p: KesfetFeedPost) => {
+    const success = await spendCoins(LUXURY_LIKE_DIAMONDS);
+    if (!success) {
+      showAlert('Yetersiz Elmas', `Lüks Beğeni (x5) göndermek için ${LUXURY_LIKE_DIAMONDS} Elmas gereklidir.`);
+      return;
+    }
+
+    setFeed((prev) =>
+      prev.map((item) => (item.id === p.id ? { ...item, liked: true, likeCount: item.likeCount + 5 } : item)),
+    );
+    showAlert('👑 Lüks Beğeni Gönderildi!', `Gönderiye +5 Beğeni eklendi ve zirveye taşındı! (${LUXURY_LIKE_DIAMONDS} Elmas 💎)`);
+    toggleLike(p.id).catch(() => {});
+  }, []);
 
   const handleDelete = useCallback(
     (id: string) => {
@@ -501,15 +651,19 @@ export default function KesfetScreen({ navigation }: Props) {
     });
   }, []);
 
-  // Popüler & Normal akış listeleri
+  // Popüler & Normal akış listeleri (24 Saatlik Döngü)
   const {
     activePhotos,
     activeStatuses,
-    popularPhotos,
-    popularStatuses,
+    rawPopularPhotos,
+    rawPopularStatuses,
     popularPhotoIds,
     popularStatusIds,
   } = useMemo(() => processFeedPosts(feed), [feed]);
+
+  // Popüler gönderiler ve popüler durumlar RASTGELE sıralanır (Her girişte/sekmede adil rastgelelik)
+  const popularPhotos = useMemo(() => shuffleArray(rawPopularPhotos), [rawPopularPhotos, tab]);
+  const popularStatuses = useMemo(() => shuffleArray(rawPopularStatuses), [rawPopularStatuses, tab]);
 
   return (
     <MysticTableBackground>
@@ -601,12 +755,12 @@ export default function KesfetScreen({ navigation }: Props) {
           </View>
         </View>
 
-        {/* TAB 1: GÖNDERİLER (Son 3 Günlük Fotoğraflı) */}
+        {/* TAB 1: GÖNDERİLER (Son 24 Saatlik Fotoğraflı) */}
         {tab === 'gonderi' && (
           <View style={styles.tabContent}>
             <PhotoPostComposer onPosted={refreshFeed} />
             <Text style={styles.retentionHint}>
-              Gönderiler 3 gün sonra akıştan silinir. En çok etkileşim alan gönderi Popüler'e girip kalıcı olur!
+              Gönderiler 24 saat sonra silinir. En çok etkileşim alan gönderi Popüler'e girip kalıcı olur!
             </Text>
 
             {loading ? (
@@ -631,7 +785,7 @@ export default function KesfetScreen({ navigation }: Props) {
                     key={post.id}
                     post={post}
                     isPopular={popularPhotoIds.has(post.id)}
-                    onToggleLike={handleToggleLike}
+                    onOpenLikeOptions={setSelectedPostForLikes}
                     onDelete={handleDelete}
                     onOpenComments={setCommentsPostId}
                     onReport={handleReport}
@@ -643,13 +797,13 @@ export default function KesfetScreen({ navigation }: Props) {
           </View>
         )}
 
-        {/* TAB 2: POPÜLER GÖNDERİLER (Kırmızı Çerçeveli Efsaneler) */}
+        {/* TAB 2: POPÜLER GÖNDERİLER (Kırmızı Çerçeveli Efsaneler - Rastgele Sıralı) */}
         {tab === 'populerGonderi' && (
           <View style={styles.tabContent}>
             <View style={styles.popularInfoBanner}>
               <Ionicons name="flame" size={16} color="#EF4444" />
               <Text style={styles.popularInfoBannerText}>
-                3 günlük döngülerde en çok beğeni ve etkileşim alan gönderiler silinmez, kalıcı efsane olur.
+                24 saatlik döngülerde en çok etkileşim alan efsane gönderiler kalıcı olur ve rastgele sıralanır.
               </Text>
             </View>
 
@@ -668,7 +822,7 @@ export default function KesfetScreen({ navigation }: Props) {
                     key={post.id}
                     post={post}
                     isPopular={true}
-                    onToggleLike={handleToggleLike}
+                    onOpenLikeOptions={setSelectedPostForLikes}
                     onDelete={handleDelete}
                     onOpenComments={setCommentsPostId}
                     onReport={handleReport}
@@ -680,12 +834,12 @@ export default function KesfetScreen({ navigation }: Props) {
           </View>
         )}
 
-        {/* TAB 3: DURUMLAR (Son 3 Günlük Metinler) */}
+        {/* TAB 3: DURUMLAR (Son 24 Saatlik Metinler) */}
         {tab === 'durum' && (
           <View style={styles.tabContent}>
             <TextStatusComposer onPosted={refreshFeed} />
             <Text style={styles.retentionHint}>
-              Durumlar 3 gün sonra silinir. En çok sevilen durum Popüler'e girip kalıcı olur!
+              Durumlar 24 saat sonra silinir. En çok sevilen durum Popüler'e girip kalıcı olur!
             </Text>
 
             {loading ? (
@@ -710,7 +864,7 @@ export default function KesfetScreen({ navigation }: Props) {
                     key={post.id}
                     post={post}
                     isPopular={popularStatusIds.has(post.id)}
-                    onToggleLike={handleToggleLike}
+                    onOpenLikeOptions={setSelectedPostForLikes}
                     onDelete={handleDelete}
                     onOpenComments={setCommentsPostId}
                     onReport={handleReport}
@@ -722,13 +876,13 @@ export default function KesfetScreen({ navigation }: Props) {
           </View>
         )}
 
-        {/* TAB 4: POPÜLER DURUMLAR (Kırmızı Çerçeveli Efsane Sözler) */}
+        {/* TAB 4: POPÜLER DURUMLAR (Kırmızı Çerçeveli Efsaneler - Rastgele Sıralı) */}
         {tab === 'populerDurum' && (
           <View style={styles.tabContent}>
             <View style={styles.popularInfoBanner}>
               <MaterialCommunityIcons name="crown" size={16} color="#EF4444" />
               <Text style={styles.popularInfoBannerText}>
-                3 günlük döngülerde en çok etkileşim alan durumlar kalıcı olur ve silinmez.
+                24 saatlik döngülerde en çok etkileşim alan durumlar kalıcı olur ve rastgele sıralanır.
               </Text>
             </View>
 
@@ -747,7 +901,7 @@ export default function KesfetScreen({ navigation }: Props) {
                     key={post.id}
                     post={post}
                     isPopular={true}
-                    onToggleLike={handleToggleLike}
+                    onOpenLikeOptions={setSelectedPostForLikes}
                     onDelete={handleDelete}
                     onOpenComments={setCommentsPostId}
                     onReport={handleReport}
@@ -759,6 +913,16 @@ export default function KesfetScreen({ navigation }: Props) {
           </View>
         )}
       </ScrollView>
+
+      {/* Beğeni Seçenekleri Modalı (Normal, Süper x3, Lüks x5) */}
+      <LikeOptionsModal
+        visible={!!selectedPostForLikes}
+        post={selectedPostForLikes}
+        onClose={() => setSelectedPostForLikes(null)}
+        onNormalLike={handleNormalLike}
+        onSuperLike={handleSuperLike}
+        onLuxuryLike={handleLuxuryLike}
+      />
 
       <CommentsModal
         postId={commentsPostId}
@@ -1148,5 +1312,96 @@ const styles = StyleSheet.create({
   emptyFeedSubtitle: {
     fontSize: 12,
     color: TEXT_MUTED,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.65)',
+    justifyContent: 'flex-end',
+    padding: 16,
+    paddingBottom: 36,
+  },
+  likeOptionsCard: {
+    backgroundColor: 'rgba(26, 16, 52, 0.98)',
+    borderRadius: 22,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.35)',
+    padding: 18,
+    gap: 10,
+  },
+  likeOptionsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 6,
+  },
+  likeOptionsTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: GOLD,
+  },
+  likeOptionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(38, 24, 70, 0.85)',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.2)',
+    padding: 12,
+    gap: 12,
+  },
+  superLikeRow: {
+    borderColor: 'rgba(59, 130, 246, 0.4)',
+    backgroundColor: 'rgba(30, 38, 80, 0.9)',
+  },
+  luxuryLikeRow: {
+    borderColor: 'rgba(242, 200, 121, 0.5)',
+    backgroundColor: 'rgba(48, 32, 85, 0.92)',
+  },
+  likeOptionIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  likeOptionTextWrap: {
+    flex: 1,
+  },
+  likeOptionName: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+  },
+  likeOptionDesc: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+  },
+  likeOptionPriceBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  likeOptionFreeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: TEXT_MUTED,
+  },
+  likeOptionDiamondText: {
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  likeOptionsCloseBtn: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    marginTop: 4,
+  },
+  likeOptionsCloseText: {
+    fontSize: 13,
+    color: TEXT_MUTED,
+    fontWeight: '600',
   },
 });
