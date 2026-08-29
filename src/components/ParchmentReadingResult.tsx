@@ -20,7 +20,6 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ShareButton from '@/components/ShareButton';
 import type { ReadingSection } from '@/utils/parseNumberedSections';
-import { GOLD, NIGHT_CARD } from '@/theme/colors';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
@@ -57,7 +56,7 @@ export default function ParchmentReadingResult({
   const contentOpacity = useSharedValue(0);
   const contentScale = useSharedValue(0.96);
 
-  // Typewriter effect per section
+  // Slow, majestic typewriter effect per section
   useEffect(() => {
     if (!visible || !currentSection.body) return;
 
@@ -65,7 +64,7 @@ export default function ParchmentReadingResult({
 
     contentOpacity.value = 0;
     contentScale.value = 0.96;
-    contentOpacity.value = withTiming(1, { duration: 300, easing: Easing.out(Easing.cubic) });
+    contentOpacity.value = withTiming(1, { duration: 320, easing: Easing.out(Easing.cubic) });
     contentScale.value = withSpring(1, { damping: 14, stiffness: 120 });
 
     const fullBody = currentSection.body;
@@ -73,8 +72,8 @@ export default function ParchmentReadingResult({
     setIsTyping(true);
     setDisplayedText('');
 
-    // Stream text in chunks for smooth speed
-    const stepSize = Math.max(2, Math.floor(fullBody.length / 40));
+    // Smooth, slow majestic pace: 1-2 chars every 35ms
+    const stepSize = Math.max(1, Math.min(2, Math.floor(fullBody.length / 120)));
     typingTimer.current = setInterval(() => {
       charIndex += stepSize;
       if (charIndex >= fullBody.length) {
@@ -84,7 +83,7 @@ export default function ParchmentReadingResult({
       } else {
         setDisplayedText(fullBody.slice(0, charIndex));
       }
-    }, 25);
+    }, 32);
 
     return () => {
       if (typingTimer.current) clearInterval(typingTimer.current);
@@ -127,26 +126,26 @@ export default function ParchmentReadingResult({
         style={styles.bgImage}
         resizeMode="cover"
       >
-        <View style={[styles.container, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 12 }]}>
-          {/* Top VIP Header Navigation */}
+        <View style={[styles.container, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 10 }]}>
+          {/* Top VIP Navigation Bar */}
           <View style={styles.topBar}>
             <Pressable onPress={onHomePress} style={styles.homeBtn} hitSlop={10}>
-              <Ionicons name="home" size={18} color="#4A2E12" />
+              <Ionicons name="home" size={17} color="#451A03" />
               <Text style={styles.homeBtnText}>Ana Sayfa</Text>
             </Pressable>
 
             <View style={styles.badgePill}>
-              <MaterialCommunityIcons name="feather" size={14} color="#78350F" />
+              <MaterialCommunityIcons name="feather" size={15} color="#92400E" />
               <Text style={styles.badgePillText}>{badge}</Text>
             </View>
 
             <Pressable onPress={onNewReadingPress} style={styles.newReadingBtn} hitSlop={10}>
-              <Ionicons name="refresh" size={16} color="#4A2E12" />
+              <Ionicons name="refresh" size={16} color="#451A03" />
               <Text style={styles.newReadingBtnText}>Yeni Fal</Text>
             </Pressable>
           </View>
 
-          {/* Section Dots */}
+          {/* Section Indicator Dots */}
           {sections.length > 1 && (
             <View style={styles.dotsRow}>
               {sections.map((_, i) => (
@@ -182,41 +181,45 @@ export default function ParchmentReadingResult({
             </ScrollView>
           </Animated.View>
 
-          {/* Bottom Action Footer */}
+          {/* Bottom Action Footer with Highly Visible Prominent Buttons */}
           <View style={styles.bottomBar}>
-            {/* Back Button */}
+            {/* Back / Share Button */}
             {sectionIndex > 0 ? (
               <Pressable onPress={handlePrev} style={styles.prevBtn}>
-                <Ionicons name="chevron-back" size={18} color="#78350F" />
+                <Ionicons name="chevron-back" size={18} color="#451A03" />
                 <Text style={styles.prevBtnText}>Önceki</Text>
               </Pressable>
             ) : (
-              <ShareButton
-                text={`${shareTextPrefix}\n\n${currentSection.title}\n${currentSection.body}`}
-                label="Paylaş"
-              />
+              <View style={styles.shareWrap}>
+                <ShareButton
+                  text={`${shareTextPrefix}\n\n${currentSection.title}\n${currentSection.body}`}
+                  label="Bu Kartı Paylaş"
+                />
+              </View>
             )}
 
-            {/* Next / Finish Button */}
+            {/* Next / Full Share Button */}
             {!isLast ? (
               <Pressable
                 onPress={handleNext}
-                style={[styles.nextBtn, { backgroundColor: accentColor }]}
+                style={[styles.primaryActionBtn, { backgroundColor: accentColor }]}
               >
-                <Text style={styles.nextBtnText}>
+                <Text style={styles.primaryActionBtnText}>
                   {isTyping ? 'Tamamını Gör' : 'Devamını Gör'}
                 </Text>
                 <Ionicons
                   name={isTyping ? 'flash' : 'chevron-forward'}
-                  size={16}
+                  size={17}
                   color="#FFFBEB"
                 />
               </Pressable>
             ) : (
-              <ShareButton
-                text={`${shareTextPrefix}\n\n${fullReadingText}`}
-                label="Tümünü Paylaş"
-              />
+              <View style={styles.shareAllWrap}>
+                <ShareButton
+                  text={`${shareTextPrefix}\n\n${fullReadingText}`}
+                  label="🌟 Tümünü Paylaş"
+                />
+              </View>
             )}
           </View>
         </View>
@@ -232,46 +235,46 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     justifyContent: 'space-between',
   },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
     marginBottom: 4,
   },
   homeBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: 'rgba(254, 243, 199, 0.85)',
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 16,
-    borderWidth: 1,
+    paddingVertical: 8,
+    borderRadius: 18,
+    borderWidth: 1.5,
     borderColor: '#D97706',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 4,
   },
   homeBtnText: {
-    fontSize: 12,
+    fontSize: 12.5,
     fontWeight: '800',
-    color: '#4A2E12',
+    color: '#451A03',
   },
   badgePill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(254, 243, 199, 0.9)',
+    gap: 5,
+    backgroundColor: 'rgba(254, 243, 199, 0.95)',
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-    borderWidth: 1,
+    paddingVertical: 7,
+    borderRadius: 16,
+    borderWidth: 1.2,
     borderColor: '#B45309',
   },
   badgePillText: {
@@ -284,17 +287,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(254, 243, 199, 0.85)',
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderRadius: 16,
-    borderWidth: 1,
+    paddingVertical: 8,
+    borderRadius: 18,
+    borderWidth: 1.5,
     borderColor: '#D97706',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
   newReadingBtnText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#4A2E12',
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: '#451A03',
   },
   dotsRow: {
     flexDirection: 'row',
@@ -307,8 +315,8 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#D97706',
-    opacity: 0.4,
+    backgroundColor: '#B45309',
+    opacity: 0.35,
   },
   dotActive: {
     opacity: 1,
@@ -317,40 +325,40 @@ const styles = StyleSheet.create({
   },
   parchmentContentWrap: {
     flex: 1,
-    marginHorizontal: 18,
+    marginHorizontal: 14,
     marginVertical: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    backgroundColor: 'rgba(254, 243, 199, 0.25)',
-    borderRadius: 20,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    backgroundColor: 'rgba(255, 251, 235, 0.45)',
+    borderRadius: 24,
   },
   parchmentScroll: {
     flexGrow: 1,
-    paddingBottom: 20,
+    paddingBottom: 24,
   },
   sectionHeaderWrap: {
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 17,
+    fontSize: 17.5,
     fontWeight: '900',
-    color: '#3B1F04',
+    color: '#291402',
     textAlign: 'center',
     letterSpacing: 0.4,
-    lineHeight: 23,
+    lineHeight: 24,
   },
   titleUnderline: {
-    width: 48,
-    height: 2.5,
+    width: 52,
+    height: 3,
     borderRadius: 2,
     marginTop: 6,
   },
   parchmentBody: {
-    fontSize: 14.5,
-    color: '#261403',
-    lineHeight: 23,
-    fontWeight: '500',
+    fontSize: 15,
+    color: '#1C0D02',
+    lineHeight: 24,
+    fontWeight: '600',
     letterSpacing: 0.2,
     textAlign: 'justify',
   },
@@ -358,7 +366,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingTop: 8,
     gap: 10,
   },
@@ -366,36 +374,49 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(254, 243, 199, 0.9)',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 18,
-    borderWidth: 1,
+    backgroundColor: '#FEF3C7',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderWidth: 1.5,
     borderColor: '#D97706',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 4,
   },
   prevBtnText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#78350F',
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#451A03',
   },
-  nextBtn: {
+  shareWrap: {
+    flex: 1,
+  },
+  shareAllWrap: {
+    flex: 1,
+  },
+  primaryActionBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 12,
-    paddingHorizontal: 18,
-    borderRadius: 18,
+    gap: 8,
+    paddingVertical: 13,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#FDE68A',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.3,
     shadowRadius: 6,
-    elevation: 4,
+    elevation: 5,
   },
-  nextBtnText: {
-    fontSize: 14,
-    fontWeight: '800',
+  primaryActionBtnText: {
+    fontSize: 14.5,
+    fontWeight: '900',
     color: '#FFFBEB',
     letterSpacing: 0.4,
   },

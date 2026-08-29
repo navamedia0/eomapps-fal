@@ -6,11 +6,12 @@ import Animated, {
   withTiming,
   withSpring,
   withSequence,
+  withRepeat,
   Easing,
   runOnJS,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { GOLD, GOLD_SOFT, NIGHT_DEEP } from '@/theme/colors';
+import { GOLD } from '@/theme/colors';
 
 type Props = {
   visible: boolean;
@@ -30,43 +31,47 @@ export default function EkolEntranceSplash({
   onFinish,
 }: Props) {
   const opacity = useSharedValue(0);
-  const scale = useSharedValue(0.65);
-  const glowScale = useSharedValue(0.8);
+  const scale = useSharedValue(0.6);
+  const glowScale = useSharedValue(0.75);
   const textOpacity = useSharedValue(0);
-  const floatY = useSharedValue(15);
+  const floatY = useSharedValue(20);
 
   useEffect(() => {
     if (!visible) return;
 
-    // Reset
+    // Reset initial values
     opacity.value = 0;
-    scale.value = 0.65;
-    glowScale.value = 0.8;
+    scale.value = 0.6;
+    glowScale.value = 0.75;
     textOpacity.value = 0;
-    floatY.value = 15;
+    floatY.value = 20;
 
-    // 1. Fade in and spring scale the figure
-    opacity.value = withTiming(1, { duration: 320, easing: Easing.out(Easing.cubic) });
-    scale.value = withSpring(1.0, { damping: 12, stiffness: 100 });
-    floatY.value = withTiming(0, { duration: 400, easing: Easing.out(Easing.quad) });
+    // 1. Slow, majestic float-in (1.8 seconds)
+    opacity.value = withTiming(1, { duration: 1200, easing: Easing.out(Easing.cubic) });
+    scale.value = withSpring(1.0, { damping: 14, stiffness: 60 });
+    floatY.value = withTiming(0, { duration: 1600, easing: Easing.out(Easing.cubic) });
 
-    // 2. Glow pulse
-    glowScale.value = withSequence(
-      withTiming(1.25, { duration: 450, easing: Easing.inOut(Easing.sin) }),
-      withTiming(1.0, { duration: 450, easing: Easing.inOut(Easing.sin) }),
+    // 2. Slow breathing glow pulse
+    glowScale.value = withRepeat(
+      withSequence(
+        withTiming(1.3, { duration: 1400, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0.95, { duration: 1400, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+      true,
     );
 
-    // 3. Text fade in
-    textOpacity.value = withTiming(1, { duration: 350 });
+    // 3. Text fade in smoothly
+    textOpacity.value = withTiming(1, { duration: 1000, easing: Easing.out(Easing.quad) });
 
-    // 4. Hold briefly, then exit smoothly
+    // 4. Hold on screen for ~3.2 seconds so user enjoys the mascot, then smoothly fade out
     const timer = setTimeout(() => {
-      opacity.value = withTiming(0, { duration: 300, easing: Easing.in(Easing.cubic) }, (finished) => {
+      opacity.value = withTiming(0, { duration: 650, easing: Easing.in(Easing.cubic) }, (finished) => {
         if (finished) {
           runOnJS(onFinish)();
         }
       });
-    }, 1100);
+    }, 4500);
 
     return () => clearTimeout(timer);
   }, [visible, onFinish, opacity, scale, glowScale, textOpacity, floatY]);
@@ -77,7 +82,7 @@ export default function EkolEntranceSplash({
   }));
 
   const glowAnimStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value * 0.7,
+    opacity: opacity.value * 0.75,
     transform: [{ scale: glowScale.value }],
   }));
 
@@ -123,18 +128,18 @@ const styles = StyleSheet.create({
   },
   glowCircle: {
     position: 'absolute',
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    filter: [{ blur: 40 }],
-    opacity: 0.35,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    filter: [{ blur: 45 }],
+    opacity: 0.4,
   },
   figureWrap: {
-    width: 220,
-    height: 220,
+    width: 240,
+    height: 240,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: 26,
   },
   figureImage: {
     width: '100%',
@@ -142,23 +147,23 @@ const styles = StyleSheet.create({
   },
   textWrap: {
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '900',
     letterSpacing: 0.8,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 13,
-    color: '#E2E8F0',
+    fontSize: 13.5,
+    color: '#F1F5F9',
     textAlign: 'center',
     letterSpacing: 0.3,
   },
   accentLine: {
-    width: 40,
-    height: 2.5,
+    width: 48,
+    height: 3,
     borderRadius: 2,
     marginTop: 8,
   },

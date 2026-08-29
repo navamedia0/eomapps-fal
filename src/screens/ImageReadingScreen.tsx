@@ -652,7 +652,7 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
           badge={copy.shareTitle}
           sections={resultSections}
           shareTextPrefix={`Mistik Rehber - ${copy.shareTitle}`}
-          parchmentBg={require('@/assets/ekoller/osmanli_reading_card_cropped.jpg')}
+          parchmentBg={require('@/assets/ekoller/osmanli_reading_card_clean.jpg')}
           accentColor="#B45309"
           onHomePress={() => navigation.navigate('Home')}
           onNewReadingPress={resetAll}
