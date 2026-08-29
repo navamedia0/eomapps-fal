@@ -32,12 +32,12 @@ const TABLE_DECOR: Decor[] = [
   { icon: 'crystal-ball', size: 20, opacity: 0.3, top: '5%', left: '7%' },
 ];
 
-type Props = { children: ReactNode; variant?: BackgroundVariant; scrollY?: Animated.Value };
+type Props = { children: ReactNode; variant?: BackgroundVariant; customBackground?: any; scrollY?: Animated.Value };
 
-export default function MysticTableBackground({ children, variant = 'general', scrollY }: Props) {
+export default function MysticTableBackground({ children, variant = 'general', customBackground, scrollY }: Props) {
   return (
     <View style={styles.flex}>
-      <Image source={BACKGROUNDS[variant]} resizeMode="cover" style={styles.bgImage} />
+      <Image source={customBackground || BACKGROUNDS[variant]} resizeMode="cover" style={styles.bgImage} />
       <LinearGradient
         colors={['rgba(11, 10, 31, 0.45)', 'rgba(11, 10, 31, 0.75)', 'rgba(11, 10, 31, 0.94)']}
         style={StyleSheet.absoluteFillObject}

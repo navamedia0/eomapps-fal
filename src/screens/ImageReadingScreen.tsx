@@ -347,9 +347,10 @@ export default function ImageReadingScreen({ route, navigation }: Props) {
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.15] });
 
   const showPicker = !result && !loading && !validating && !coinFallback;
+  const customBg = route.params.kind === 'coffee' ? require('@/assets/ekoller/kahve_screen_bg.jpg') : undefined;
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={customBg}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {showPicker && (
           <View style={styles.pickWrap}>

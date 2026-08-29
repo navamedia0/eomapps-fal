@@ -1,5 +1,6 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, Image, ImageBackground } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -17,14 +18,13 @@ type GridItem = {
   onPress: (navigation: Props['navigation']) => void;
 };
 
-// Ekol renkleri, "Dünya Fal Atölyesi" prompt kütüphanesindeki grup paletleriyle
-// birebir eşleşiyor — gerçek görseller geldiğinde bu kutuların tasarımı
-// değişecek, ama vurgu rengi aynı kalarak görsel kimlik korunacak.
 type Ekol = {
   key: string;
   title: string;
   sub: string;
   accent: string;
+  bgImage?: any;
+  buttonFrame?: any;
   items: GridItem[];
 };
 
@@ -36,19 +36,44 @@ function chunkPairs<T>(items: T[]): T[][] {
   return pairs;
 }
 
-function EkolGridButton({ item, accent, navigation }: { item: GridItem; accent: string; navigation: Props['navigation'] }) {
+function EkolGridButton({
+  item,
+  accent,
+  buttonFrame,
+  navigation,
+}: {
+  item: GridItem;
+  accent: string;
+  buttonFrame?: any;
+  navigation: Props['navigation'];
+}) {
   return (
     <Pressable
       onPress={() => item.onPress(navigation)}
-      style={({ pressed }) => [styles.gridButton, { borderColor: accent }, pressed && styles.gridButtonPressed]}
+      style={({ pressed }) => [
+        styles.gridButton,
+        { borderColor: accent },
+        buttonFrame && styles.gridButtonWithFrame,
+        pressed && styles.gridButtonPressed,
+      ]}
     >
-      <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={52} />
-      <View style={styles.gridTextWrap}>
-        <Text style={styles.gridTitle} numberOfLines={2}>
-          {item.title}
-        </Text>
+      {buttonFrame && (
+        <Image
+          source={buttonFrame}
+          resizeMode="stretch"
+          style={styles.buttonFrameImage}
+        />
+      )}
+      <View style={styles.buttonInnerContent}>
+        {/* DO NOT TOUCH: FeatureIcon and symbols remain completely intact */}
+        <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={50} />
+        <View style={styles.gridTextWrap}>
+          <Text style={styles.gridTitle} numberOfLines={2}>
+            {item.title}
+          </Text>
+        </View>
+        <Ionicons name="chevron-forward" size={14} color={accent} style={styles.gridChevron} />
       </View>
-      <Ionicons name="chevron-forward" size={14} color={accent} style={styles.gridChevron} />
     </Pressable>
   );
 }
@@ -59,7 +84,9 @@ export default function TumFallarScreen({ navigation }: Props) {
       key: 'cin-ekolu',
       title: 'Çin Ekolü',
       sub: 'Lake kırmızısı & imparatorluk altını',
-      accent: '#C23B3B',
+      accent: '#E11D48',
+      bgImage: require('@/assets/ekoller/cin_section_bg.jpg'),
+      buttonFrame: require('@/assets/ekoller/cin_btn_frame.png'),
       items: [
         {
           key: 'face',
@@ -81,7 +108,9 @@ export default function TumFallarScreen({ navigation }: Props) {
       key: 'osmanli-ekolu',
       title: 'Osmanlı & Anadolu Ekolü',
       sub: 'İznik turkuazı & pirinç & lale motifi',
-      accent: '#1C6E8C',
+      accent: '#0EA5E9',
+      bgImage: require('@/assets/ekoller/osmanli_section_bg.jpg'),
+      buttonFrame: require('@/assets/ekoller/osmanli_btn_frame.png'),
       items: [
         {
           key: 'coffee',
@@ -196,48 +225,48 @@ export default function TumFallarScreen({ navigation }: Props) {
     {
       key: 'klasik-evrensel',
       title: 'Klasik & Evrensel Fallar',
-      sub: 'Henüz bölgesel tema tasarlanmadı',
+      sub: 'Geleneksel kehanet çeşitleri',
       accent: GOLD,
       items: [
         {
           key: 'tarot',
           title: 'Tarot Falı',
-          subtitle: 'Kartlar bugününü aydınlatsın',
-          icon: <MaterialCommunityIcons name="cards" size={26} color={GOLD} />,
+          subtitle: '78 kart ile kadim arketip açılımı',
+          icon: <MaterialCommunityIcons name="cards-playing-outline" size={26} color={GOLD} />,
           onPress: (nav) => nav.navigate('TarotSpread'),
         },
         {
           key: 'katina',
-          title: 'Katina Falı',
-          subtitle: 'İskambille geleceğe bak',
-          icon: <MaterialCommunityIcons name="cards-playing-outline" size={26} color={GOLD} />,
+          title: 'Katina Aşk Falı',
+          subtitle: 'Deste-i Katina 65 kartlık ilişki açılımı',
+          icon: <MaterialCommunityIcons name="cards-heart-outline" size={26} color={GOLD} />,
           onPress: (nav) => nav.navigate('Katina'),
         },
         {
           key: 'solitaire',
-          title: 'Solitaire Falı',
-          subtitle: 'Kartları aç, cevabını bul',
-          icon: <MaterialCommunityIcons name="cards-club-outline" size={26} color={GOLD} />,
+          title: 'İskambil Falı',
+          subtitle: '32 kartlık klasik kader açılımı',
+          icon: <MaterialCommunityIcons name="cards-spade" size={26} color={GOLD} />,
           onPress: (nav) => nav.navigate('Solitaire'),
         },
         {
           key: 'daisy',
           title: 'Papatya Falı',
-          subtitle: 'Seviyor mu, sevmiyor mu?',
-          icon: <Ionicons name="flower-outline" size={24} color={GOLD} />,
+          subtitle: 'Seviyor / sevmiyor interaktif fal',
+          icon: <MaterialCommunityIcons name="flower-tulip-outline" size={26} color={GOLD} />,
           onPress: (nav) => nav.navigate('Daisy'),
         },
         {
           key: 'dice',
           title: 'Zar Falı',
-          subtitle: 'Zarları at, şansına bak',
-          icon: <MaterialCommunityIcons name="dice-multiple-outline" size={26} color={GOLD} />,
+          subtitle: '3 kutsal zarın kombinasyon yorumu',
+          icon: <Ionicons name="dice-outline" size={24} color={GOLD} />,
           onPress: (nav) => nav.navigate('Dice'),
         },
         {
           key: 'voiceReading',
           title: 'Sesli Fal',
-          subtitle: 'Anlat, biz yorumlayalım',
+          subtitle: 'Anlat, yapay zeka yorumlasın',
           icon: <Ionicons name="mic-outline" size={24} color={GOLD} />,
           onPress: (nav) => nav.navigate('VoiceReading'),
         },
@@ -246,9 +275,6 @@ export default function TumFallarScreen({ navigation }: Props) {
   ];
 
   return (
-    // NOT: variant burada şimdilik 'general' — bu bölüme özel bir arkaplan
-    // görseli üretilince MysticTableBackground'a yeni bir variant eklenip
-    // burada seçilecek.
     <MysticTableBackground variant="general">
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
@@ -258,25 +284,65 @@ export default function TumFallarScreen({ navigation }: Props) {
         <Text style={styles.headerCaption}>Dünyanın dört bir yanından kadim kehanet ekolleri</Text>
 
         <View style={styles.ekolList}>
-          {ekoller.map((ekol) => (
-            <View key={ekol.key} style={styles.ekolSection}>
-              <View style={[styles.ekolHeadBar, { backgroundColor: ekol.accent }]} />
-              <Text style={[styles.ekolTitle, { color: ekol.accent }]}>{ekol.title}</Text>
-              <Text style={styles.ekolSub}>{ekol.sub}</Text>
-              <View style={styles.grid}>
-                {chunkPairs(ekol.items).map((pair, idx) => (
-                  <View key={`${ekol.key}-${idx}`} style={styles.gridRow}>
-                    <EkolGridButton item={pair[0]} accent={ekol.accent} navigation={navigation} />
-                    {pair[1] ? (
-                      <EkolGridButton item={pair[1]} accent={ekol.accent} navigation={navigation} />
-                    ) : (
-                      <View style={styles.gridPlaceholder} />
-                    )}
-                  </View>
-                ))}
+          {ekoller.map((ekol) => {
+            const hasThemedFrame = !!ekol.bgImage;
+
+            const content = (
+              <View style={[styles.ekolInnerPadding, hasThemedFrame && styles.ekolThemedPadding]}>
+                <View style={[styles.ekolHeadBar, { backgroundColor: ekol.accent }]} />
+                <Text style={[styles.ekolTitle, { color: ekol.accent }]}>{ekol.title}</Text>
+                <Text style={styles.ekolSub}>{ekol.sub}</Text>
+                <View style={styles.grid}>
+                  {chunkPairs(ekol.items).map((pair, idx) => (
+                    <View key={`${ekol.key}-${idx}`} style={styles.gridRow}>
+                      <EkolGridButton
+                        item={pair[0]}
+                        accent={ekol.accent}
+                        buttonFrame={ekol.buttonFrame}
+                        navigation={navigation}
+                      />
+                      {pair[1] ? (
+                        <EkolGridButton
+                          item={pair[1]}
+                          accent={ekol.accent}
+                          buttonFrame={ekol.buttonFrame}
+                          navigation={navigation}
+                        />
+                      ) : (
+                        <View style={styles.gridPlaceholder} />
+                      )}
+                    </View>
+                  ))}
+                </View>
               </View>
-            </View>
-          ))}
+            );
+
+            if (hasThemedFrame) {
+              return (
+                <View
+                  key={ekol.key}
+                  style={[styles.ekolThemedContainer, { borderColor: ekol.accent }]}
+                >
+                  <ImageBackground
+                    source={ekol.bgImage}
+                    resizeMode="cover"
+                    style={StyleSheet.absoluteFillObject}
+                  />
+                  <LinearGradient
+                    colors={['rgba(12, 6, 24, 0.82)', 'rgba(8, 4, 18, 0.92)']}
+                    style={StyleSheet.absoluteFillObject}
+                  />
+                  {content}
+                </View>
+              );
+            }
+
+            return (
+              <View key={ekol.key} style={styles.ekolSection}>
+                {content}
+              </View>
+            );
+          })}
         </View>
       </ScrollView>
     </MysticTableBackground>
@@ -305,34 +371,51 @@ const styles = StyleSheet.create({
   },
   headerCaption: {
     marginTop: 8,
-    marginBottom: 26,
+    marginBottom: 20,
     fontSize: 12.5,
     color: TEXT_MUTED,
     textAlign: 'center',
   },
   ekolList: {
     width: '100%',
-    gap: 30,
+    gap: 20,
   },
   ekolSection: {
     width: '100%',
   },
+  ekolThemedContainer: {
+    width: '100%',
+    borderRadius: 22,
+    overflow: 'hidden',
+    borderWidth: 1.4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  ekolInnerPadding: {
+    width: '100%',
+  },
+  ekolThemedPadding: {
+    padding: 14,
+  },
   ekolHeadBar: {
     width: 36,
-    height: 3,
+    height: 3.5,
     borderRadius: 2,
     marginBottom: 8,
   },
   ekolTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    letterSpacing: 0.6,
+    fontSize: 13.5,
+    fontWeight: '900',
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
   ekolSub: {
     fontSize: 11,
-    color: TEXT_MUTED,
-    marginTop: 3,
+    color: '#D1D5DB',
+    marginTop: 2,
     marginBottom: 12,
   },
   grid: {
@@ -346,16 +429,31 @@ const styles = StyleSheet.create({
   },
   gridButton: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 9,
     backgroundColor: NIGHT_CARD,
     borderRadius: 18,
     borderWidth: 1.2,
-    paddingVertical: 10,
-    paddingLeft: 8,
-    paddingRight: 6,
     minHeight: 74,
+    overflow: 'hidden',
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  gridButtonWithFrame: {
+    borderWidth: 0,
+    backgroundColor: 'transparent',
+  },
+  buttonFrameImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+  },
+  buttonInnerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 8,
+    paddingLeft: 8,
+    paddingRight: 8,
+    zIndex: 2,
   },
   gridButtonPressed: {
     opacity: 0.85,
@@ -369,14 +467,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   gridTitle: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: 13.5,
+    fontWeight: '800',
     color: TEXT_PRIMARY,
     lineHeight: 18,
     letterSpacing: 0.2,
   },
   gridChevron: {
-    opacity: 0.8,
+    opacity: 0.85,
     marginRight: 2,
   },
 });

@@ -165,7 +165,7 @@ export default function IChingScreen({ navigation }: Props) {
   };
 
   return (
-    <MysticTableBackground>
+    <MysticTableBackground customBackground={require('@/assets/ekoller/iching_screen_bg.jpg')}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <MaterialCommunityIcons name="yin-yang" size={42} color={GOLD} />
