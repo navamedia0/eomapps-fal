@@ -3,7 +3,7 @@ import type { ImageSourcePropType } from 'react-native';
 // "Cosmic Indigo" feature icons — self-contained square badge art (own
 // rounded frame + glow border baked in), sourced by the user. Keys match the
 // `key`/`iconKey` used on the corresponding HomeScreen/KesfetScreen/
-// MagazaScreen/ProfilScreen item.
+// MagazaScreen/ProfilScreen/TumFallarScreen item.
 export const FEATURE_ICONS: Partial<Record<string, ImageSourcePropType>> = {
   face: require('./yuz_fali.webp'),
   palm: require('./el_fali.webp'),
@@ -37,7 +37,18 @@ export const FEATURE_ICONS: Partial<Record<string, ImageSourcePropType>> = {
   dice: require('./zar_fali.webp'),
   dreamLibrary: require('./ruya_kitapligi.webp'),
 
-  // Profil / Mağaza / Coin — previously plain Ionicons, now custom art.
+  // Yeni Mistik Gold Mor Fal Simgeleri (Tüm Fallar & Ana Sayfa)
+  celticTree: require('./kelt_agaci_fali.png'),
+  matrix: require('./kader_matrisi.png'),
+  tea: require('./cay_fali.png'),
+  wax: require('./balmumu_fali.png'),
+  rune: require('./run_fali.png'),
+  bakla: require('./bakla_fali.png'),
+  iching: require('./iching_fali.png'),
+  aura: require('./aura_fali.png'),
+  scrying: require('./ayna_fali.png'),
+
+  // Profil / Mağaza / Coin
   favorites: require('./favorilerim.webp'),
   history: require('./gecmis.webp'),
   coinIcon: require('./coin_ikonu.png'),
@@ -45,16 +56,12 @@ export const FEATURE_ICONS: Partial<Record<string, ImageSourcePropType>> = {
   miniGames: require('./mini_oyunlar.webp'),
   suFal: require('./su_fali.webp'),
 
-  // Bilgi Köşesi rozetleri — sadece burç ve iskambil/kart konuları için
-  // özel rozet var; diğer konular (tarot/kahve/katina/astroloji) fallback
-  // Ionicons ile kalıyor.
+  // Bilgi Köşesi rozetleri
   burclarBadge: require('./burclar_rozeti.webp'),
   kartlarBadge: require('./kartlar_rozeti.webp'),
 };
 
-// Alt navigasyon barı ikonları — "mistik gold mor" setinden, solid gold
-// doldurma sayesinde küçük boyutta da önceki ince-çizgi versiyondan çok
-// daha net okunuyor.
+// Alt navigasyon barı ikonları
 export const NAV_ICONS = {
   AnaSayfa: require('./ana_sayfa.webp'),
   Kesfet: require('./kesfet.webp'),
