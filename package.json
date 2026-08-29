@@ -33,6 +33,7 @@
     "expo-linear-gradient": "~14.1.5",
     "expo-navigation-bar": "~4.2.8",
     "expo-notifications": "~0.31.5",
+    "expo-screen-capture": "~7.2.0",
     "expo-sharing": "~13.1.5",
     "expo-status-bar": "~2.2.3",
     "livekit-client": "^2.19.0",

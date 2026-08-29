@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   View,
@@ -25,9 +25,70 @@ import { promptReport } from '@/utils/reportPrompt';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = TabScreenProps;
-type KesfetTab = 'gonderi' | 'durum';
+type KesfetTab = 'gonderi' | 'populerGonderi' | 'durum' | 'populerDurum';
 
 const MAX_POST_LENGTH = 280;
+const THREE_DAYS_MS = 3 * 24 * 3600 * 1000;
+
+// Spam-safe etkileşim puanı hesaplama:
+// Beğeni ağırlığı + spam olmayan tekil yorumlar
+function calculateScore(p: KesfetFeedPost): number {
+  return p.likeCount * 2 + Math.min(p.commentCount, 50);
+}
+
+// 3 günlük döngüde en yüksek etkileşim alan gönderileri kalıcı (hall-of-fame) yapar
+function processFeedPosts(feed: KesfetFeedPost[]) {
+  const now = Date.now();
+  
+  // 3 günlük dönem bloklarına göre grupla
+  const photoCycleMap: Record<number, KesfetFeedPost> = {};
+  const statusCycleMap: Record<number, KesfetFeedPost> = {};
+
+  feed.forEach((p) => {
+    const postTime = new Date(p.createdAt).getTime();
+    const cycle = Math.floor(postTime / THREE_DAYS_MS);
+    const score = calculateScore(p);
+
+    if (p.imageUri) {
+      if (!photoCycleMap[cycle] || score > calculateScore(photoCycleMap[cycle])) {
+        photoCycleMap[cycle] = p;
+      }
+    } else {
+      if (!statusCycleMap[cycle] || score > calculateScore(statusCycleMap[cycle])) {
+        statusCycleMap[cycle] = p;
+      }
+    }
+  });
+
+  const popularPhotoIds = new Set(
+    Object.values(photoCycleMap)
+      .filter((p) => calculateScore(p) >= 1) // En az 1 etkileşim almış olmalı
+      .map((p) => p.id),
+  );
+
+  const popularStatusIds = new Set(
+    Object.values(statusCycleMap)
+      .filter((p) => calculateScore(p) >= 1)
+      .map((p) => p.id),
+  );
+
+  // Normal gönderiler: 3 gün içindekiler
+  const activePhotos = feed.filter((p) => !!p.imageUri && now - new Date(p.createdAt).getTime() < THREE_DAYS_MS);
+  const activeStatuses = feed.filter((p) => !p.imageUri && now - new Date(p.createdAt).getTime() < THREE_DAYS_MS);
+
+  // Popüler gönderiler: Her 3 günlük döngünün en çok sevilen kalıcıları (Kırmızı Çerçeveli)
+  const popularPhotos = feed.filter((p) => !!p.imageUri && popularPhotoIds.has(p.id));
+  const popularStatuses = feed.filter((p) => !p.imageUri && popularStatusIds.has(p.id));
+
+  return {
+    activePhotos,
+    activeStatuses,
+    popularPhotos,
+    popularStatuses,
+    popularPhotoIds,
+    popularStatusIds,
+  };
+}
 
 // GÖNDERİ COMPOSER (Instagram Tarzı - Fotoğraf Zorunlu + Açıklama)
 function PhotoPostComposer({ onPosted }: { onPosted: () => void }) {
@@ -168,7 +229,7 @@ function TextStatusComposer({ onPosted }: { onPosted: () => void }) {
       <TextInput
         value={text}
         onChangeText={(t) => setText(t.slice(0, MAX_POST_LENGTH))}
-        placeholder="Aklından geçeni, hissettiğin bir işareti veya düşünceni tweet gibi paylaş..."
+        placeholder="Aklından geçeni veya bir düşünceni tweet gibi paylaş..."
         placeholderTextColor={TEXT_MUTED}
         multiline
         autoFocus
@@ -192,9 +253,10 @@ function TextStatusComposer({ onPosted }: { onPosted: () => void }) {
   );
 }
 
-// FOTOĞRAFLI GÖNDERİ KARTI (Instagram Tarzı)
+// FOTOĞRAFLI GÖNDERİ KARTI (Instagram Tarzı + Popüler Kırmızı Çerçeve)
 function PhotoPostCard({
   post,
+  isPopular,
   onToggleLike,
   onDelete,
   onOpenComments,
@@ -202,6 +264,7 @@ function PhotoPostCard({
   onPressAuthor,
 }: {
   post: KesfetFeedPost;
+  isPopular?: boolean;
   onToggleLike: (id: string) => void;
   onDelete: (id: string) => void;
   onOpenComments: (id: string) => void;
@@ -209,7 +272,15 @@ function PhotoPostCard({
   onPressAuthor: (userId: string) => void;
 }) {
   return (
-    <View style={styles.photoCard}>
+    <View style={[styles.photoCard, isPopular && styles.popularRedBorder]}>
+      {/* Popüler Rozet */}
+      {isPopular && (
+        <View style={styles.popularBadgeWrap}>
+          <Ionicons name="flame" size={13} color="#FFF" />
+          <Text style={styles.popularBadgeText}>3 Günün Efsanesi · Popüler Gönderi</Text>
+        </View>
+      )}
+
       {/* Header */}
       <View style={styles.postHeader}>
         <Pressable onPress={() => onPressAuthor(post.authorId)} style={styles.postAuthorPressable} hitSlop={4}>
@@ -244,7 +315,7 @@ function PhotoPostCard({
       {/* Actions */}
       <View style={styles.postActions}>
         <Pressable onPress={() => onToggleLike(post.id)} style={styles.actionButton} hitSlop={6}>
-          <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={20} color={post.liked ? '#E0708A' : TEXT_PRIMARY} />
+          <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={20} color={post.liked ? '#EF4444' : TEXT_PRIMARY} />
           <Text style={[styles.actionCount, post.liked && styles.actionCountLiked]}>{post.likeCount}</Text>
         </Pressable>
         <Pressable onPress={() => onOpenComments(post.id)} style={styles.actionButton} hitSlop={6}>
@@ -272,9 +343,10 @@ function PhotoPostCard({
   );
 }
 
-// METİN DURUM KARTI (Tweet / X Tarzı)
+// METİN DURUM KARTI (Tweet / X Tarzı + Popüler Kırmızı Çerçeve)
 function TextStatusCard({
   post,
+  isPopular,
   onToggleLike,
   onDelete,
   onOpenComments,
@@ -282,6 +354,7 @@ function TextStatusCard({
   onPressAuthor,
 }: {
   post: KesfetFeedPost;
+  isPopular?: boolean;
   onToggleLike: (id: string) => void;
   onDelete: (id: string) => void;
   onOpenComments: (id: string) => void;
@@ -289,7 +362,15 @@ function TextStatusCard({
   onPressAuthor: (userId: string) => void;
 }) {
   return (
-    <View style={styles.statusCard}>
+    <View style={[styles.statusCard, isPopular && styles.popularRedBorder]}>
+      {/* Popüler Rozet */}
+      {isPopular && (
+        <View style={styles.popularBadgeWrap}>
+          <Ionicons name="flame" size={13} color="#FFF" />
+          <Text style={styles.popularBadgeText}>3 Günün Efsanesi · Popüler Durum</Text>
+        </View>
+      )}
+
       <View style={styles.postHeader}>
         <Pressable onPress={() => onPressAuthor(post.authorId)} style={styles.postAuthorPressable} hitSlop={4}>
           <View style={[styles.avatar, { backgroundColor: avatarColor(post.authorTag) }]}>
@@ -317,7 +398,7 @@ function TextStatusCard({
 
       <View style={styles.postActions}>
         <Pressable onPress={() => onToggleLike(post.id)} style={styles.actionButton} hitSlop={6}>
-          <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={18} color={post.liked ? '#E0708A' : TEXT_MUTED} />
+          <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={18} color={post.liked ? '#EF4444' : TEXT_MUTED} />
           <Text style={[styles.actionCount, post.liked && styles.actionCountLiked]}>{post.likeCount}</Text>
         </Pressable>
         <Pressable onPress={() => onOpenComments(post.id)} style={styles.actionButton} hitSlop={6}>
@@ -420,9 +501,15 @@ export default function KesfetScreen({ navigation }: Props) {
     });
   }, []);
 
-  // Fotoğraflı gönderiler ve metin durumlarını ayır
-  const photoPosts = feed.filter((p) => !!p.imageUri);
-  const textStatuses = feed.filter((p) => !p.imageUri);
+  // Popüler & Normal akış listeleri
+  const {
+    activePhotos,
+    activeStatuses,
+    popularPhotos,
+    popularStatuses,
+    popularPhotoIds,
+    popularStatusIds,
+  } = useMemo(() => processFeedPosts(feed), [feed]);
 
   return (
     <MysticTableBackground>
@@ -439,38 +526,88 @@ export default function KesfetScreen({ navigation }: Props) {
           <Text style={styles.headerTitle}>Keşfet</Text>
         </View>
 
-        {/* Tab Switcher: Gönderi vs Durum */}
-        <View style={styles.tabSwitchRow}>
-          <Pressable
-            onPress={() => setTab('gonderi')}
-            style={[styles.tabSwitchButton, tab === 'gonderi' && styles.tabSwitchButtonActive]}
-          >
-            <Ionicons name="images-outline" size={16} color={tab === 'gonderi' ? '#1a0d33' : GOLD} />
-            <Text style={[styles.tabSwitchText, tab === 'gonderi' && styles.tabSwitchTextActive]}>
-              Gönderi ({photoPosts.length})
-            </Text>
-          </Pressable>
+        {/* 4 Sekmeli Buton Alanı: Gönderi, Popüler Gönderiler, Durum, Popüler Durumlar */}
+        <View style={styles.tabSwitchGrid}>
+          <View style={styles.tabSwitchRow}>
+            <Pressable
+              onPress={() => setTab('gonderi')}
+              style={[styles.tabSwitchButton, tab === 'gonderi' && styles.tabSwitchButtonActive]}
+            >
+              <Ionicons name="images-outline" size={15} color={tab === 'gonderi' ? '#1a0d33' : GOLD} />
+              <Text style={[styles.tabSwitchText, tab === 'gonderi' && styles.tabSwitchTextActive]}>
+                Gönderi ({activePhotos.length})
+              </Text>
+            </Pressable>
 
-          <Pressable
-            onPress={() => setTab('durum')}
-            style={[styles.tabSwitchButton, tab === 'durum' && styles.tabSwitchButtonActive]}
-          >
-            <MaterialCommunityIcons
-              name="chat-processing-outline"
-              size={17}
-              color={tab === 'durum' ? '#1a0d33' : GOLD}
-            />
-            <Text style={[styles.tabSwitchText, tab === 'durum' && styles.tabSwitchTextActive]}>
-              Durum ({textStatuses.length})
-            </Text>
-          </Pressable>
+            <Pressable
+              onPress={() => setTab('populerGonderi')}
+              style={[
+                styles.tabSwitchButton,
+                styles.populerTabBtn,
+                tab === 'populerGonderi' && styles.populerTabBtnActive,
+              ]}
+            >
+              <Ionicons name="flame" size={15} color={tab === 'populerGonderi' ? '#FFF' : '#EF4444'} />
+              <Text
+                style={[
+                  styles.tabSwitchText,
+                  { color: '#EF4444' },
+                  tab === 'populerGonderi' && styles.populerTabBtnTextActive,
+                ]}
+              >
+                Popüler Gönderiler ({popularPhotos.length})
+              </Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.tabSwitchRow}>
+            <Pressable
+              onPress={() => setTab('durum')}
+              style={[styles.tabSwitchButton, tab === 'durum' && styles.tabSwitchButtonActive]}
+            >
+              <MaterialCommunityIcons
+                name="chat-processing-outline"
+                size={16}
+                color={tab === 'durum' ? '#1a0d33' : GOLD}
+              />
+              <Text style={[styles.tabSwitchText, tab === 'durum' && styles.tabSwitchTextActive]}>
+                Durum ({activeStatuses.length})
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => setTab('populerDurum')}
+              style={[
+                styles.tabSwitchButton,
+                styles.populerTabBtn,
+                tab === 'populerDurum' && styles.populerTabBtnActive,
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="crown"
+                size={16}
+                color={tab === 'populerDurum' ? '#FFF' : '#EF4444'}
+              />
+              <Text
+                style={[
+                  styles.tabSwitchText,
+                  { color: '#EF4444' },
+                  tab === 'populerDurum' && styles.populerTabBtnTextActive,
+                ]}
+              >
+                Popüler Durumlar ({popularStatuses.length})
+              </Text>
+            </Pressable>
+          </View>
         </View>
 
-        {/* TAB 1: GÖNDERİLER (Instagram Tarzı Fotoğraflı) */}
+        {/* TAB 1: GÖNDERİLER (Son 3 Günlük Fotoğraflı) */}
         {tab === 'gonderi' && (
           <View style={styles.tabContent}>
             <PhotoPostComposer onPosted={refreshFeed} />
-            <Text style={styles.retentionHint}>Gönderiler 3 gün sonra akıştan otomatik silinir.</Text>
+            <Text style={styles.retentionHint}>
+              Gönderiler 3 gün sonra akıştan silinir. En çok etkileşim alan gönderi Popüler'e girip kalıcı olur!
+            </Text>
 
             {loading ? (
               <ActivityIndicator color={GOLD} style={{ marginTop: 30 }} />
@@ -481,7 +618,7 @@ export default function KesfetScreen({ navigation }: Props) {
                   <Text style={styles.feedRetryText}>Tekrar dene</Text>
                 </Pressable>
               </View>
-            ) : photoPosts.length === 0 ? (
+            ) : activePhotos.length === 0 ? (
               <View style={styles.emptyFeedWrap}>
                 <Ionicons name="images-outline" size={44} color={GOLD_SOFT} />
                 <Text style={styles.emptyFeedTitle}>Henüz fotoğraflı gönderi yok</Text>
@@ -489,10 +626,11 @@ export default function KesfetScreen({ navigation }: Props) {
               </View>
             ) : (
               <View style={styles.feed}>
-                {photoPosts.map((post) => (
+                {activePhotos.map((post) => (
                   <PhotoPostCard
                     key={post.id}
                     post={post}
+                    isPopular={popularPhotoIds.has(post.id)}
                     onToggleLike={handleToggleLike}
                     onDelete={handleDelete}
                     onOpenComments={setCommentsPostId}
@@ -505,11 +643,50 @@ export default function KesfetScreen({ navigation }: Props) {
           </View>
         )}
 
-        {/* TAB 2: DURUMLAR (Tweet / X Tarzı Sadece Metin) */}
+        {/* TAB 2: POPÜLER GÖNDERİLER (Kırmızı Çerçeveli Efsaneler) */}
+        {tab === 'populerGonderi' && (
+          <View style={styles.tabContent}>
+            <View style={styles.popularInfoBanner}>
+              <Ionicons name="flame" size={16} color="#EF4444" />
+              <Text style={styles.popularInfoBannerText}>
+                3 günlük döngülerde en çok beğeni ve etkileşim alan gönderiler silinmez, kalıcı efsane olur.
+              </Text>
+            </View>
+
+            {loading ? (
+              <ActivityIndicator color="#EF4444" style={{ marginTop: 30 }} />
+            ) : popularPhotos.length === 0 ? (
+              <View style={styles.emptyFeedWrap}>
+                <Ionicons name="flame-outline" size={44} color="#EF4444" />
+                <Text style={[styles.emptyFeedTitle, { color: '#EF4444' }]}>Henüz popüler gönderi seçilmedi</Text>
+                <Text style={styles.emptyFeedSubtitle}>En yüksek etkileşimi toplayan gönderi burada kalıcı olur!</Text>
+              </View>
+            ) : (
+              <View style={styles.feed}>
+                {popularPhotos.map((post) => (
+                  <PhotoPostCard
+                    key={post.id}
+                    post={post}
+                    isPopular={true}
+                    onToggleLike={handleToggleLike}
+                    onDelete={handleDelete}
+                    onOpenComments={setCommentsPostId}
+                    onReport={handleReport}
+                    onPressAuthor={handlePressAuthor}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* TAB 3: DURUMLAR (Son 3 Günlük Metinler) */}
         {tab === 'durum' && (
           <View style={styles.tabContent}>
             <TextStatusComposer onPosted={refreshFeed} />
-            <Text style={styles.retentionHint}>Durumlar 3 gün sonra akıştan otomatik silinir.</Text>
+            <Text style={styles.retentionHint}>
+              Durumlar 3 gün sonra silinir. En çok sevilen durum Popüler'e girip kalıcı olur!
+            </Text>
 
             {loading ? (
               <ActivityIndicator color={GOLD} style={{ marginTop: 30 }} />
@@ -520,7 +697,7 @@ export default function KesfetScreen({ navigation }: Props) {
                   <Text style={styles.feedRetryText}>Tekrar dene</Text>
                 </Pressable>
               </View>
-            ) : textStatuses.length === 0 ? (
+            ) : activeStatuses.length === 0 ? (
               <View style={styles.emptyFeedWrap}>
                 <MaterialCommunityIcons name="chat-outline" size={44} color={GOLD_SOFT} />
                 <Text style={styles.emptyFeedTitle}>Henüz durum paylaşılmadı</Text>
@@ -528,10 +705,48 @@ export default function KesfetScreen({ navigation }: Props) {
               </View>
             ) : (
               <View style={styles.feed}>
-                {textStatuses.map((post) => (
+                {activeStatuses.map((post) => (
                   <TextStatusCard
                     key={post.id}
                     post={post}
+                    isPopular={popularStatusIds.has(post.id)}
+                    onToggleLike={handleToggleLike}
+                    onDelete={handleDelete}
+                    onOpenComments={setCommentsPostId}
+                    onReport={handleReport}
+                    onPressAuthor={handlePressAuthor}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* TAB 4: POPÜLER DURUMLAR (Kırmızı Çerçeveli Efsane Sözler) */}
+        {tab === 'populerDurum' && (
+          <View style={styles.tabContent}>
+            <View style={styles.popularInfoBanner}>
+              <MaterialCommunityIcons name="crown" size={16} color="#EF4444" />
+              <Text style={styles.popularInfoBannerText}>
+                3 günlük döngülerde en çok etkileşim alan durumlar kalıcı olur ve silinmez.
+              </Text>
+            </View>
+
+            {loading ? (
+              <ActivityIndicator color="#EF4444" style={{ marginTop: 30 }} />
+            ) : popularStatuses.length === 0 ? (
+              <View style={styles.emptyFeedWrap}>
+                <MaterialCommunityIcons name="crown-outline" size={44} color="#EF4444" />
+                <Text style={[styles.emptyFeedTitle, { color: '#EF4444' }]}>Henüz popüler durum seçilmedi</Text>
+                <Text style={styles.emptyFeedSubtitle}>En çok beğenilen durumlar burada ölümsüzleşir!</Text>
+              </View>
+            ) : (
+              <View style={styles.feed}>
+                {popularStatuses.map((post) => (
+                  <TextStatusCard
+                    key={post.id}
+                    post={post}
+                    isPopular={true}
                     onToggleLike={handleToggleLike}
                     onDelete={handleDelete}
                     onOpenComments={setCommentsPostId}
@@ -580,14 +795,17 @@ const styles = StyleSheet.create({
     color: GOLD,
     letterSpacing: 0.5,
   },
-  tabSwitchRow: {
-    flexDirection: 'row',
+  tabSwitchGrid: {
     backgroundColor: 'rgba(26, 16, 52, 0.9)',
     borderRadius: 16,
-    padding: 4,
+    padding: 6,
     marginBottom: 14,
     borderWidth: 1.2,
     borderColor: 'rgba(242, 200, 121, 0.3)',
+    gap: 6,
+  },
+  tabSwitchRow: {
+    flexDirection: 'row',
     gap: 6,
   },
   tabSwitchButton: {
@@ -595,9 +813,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 10,
-    borderRadius: 12,
+    gap: 5,
+    paddingVertical: 9,
+    borderRadius: 10,
   },
   tabSwitchButtonActive: {
     backgroundColor: GOLD,
@@ -607,8 +825,22 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  populerTabBtn: {
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.4)',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+  },
+  populerTabBtnActive: {
+    backgroundColor: '#EF4444',
+    borderColor: '#EF4444',
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 5,
+    elevation: 4,
+  },
   tabSwitchText: {
-    fontSize: 13,
+    fontSize: 11.5,
     fontWeight: '700',
     color: GOLD_SOFT,
   },
@@ -616,8 +848,30 @@ const styles = StyleSheet.create({
     color: '#1a0d33',
     fontWeight: '800',
   },
+  populerTabBtnTextActive: {
+    color: '#FFF',
+    fontWeight: '800',
+  },
   tabContent: {
     width: '100%',
+  },
+  popularInfoBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(239, 68, 68, 0.12)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.35)',
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    marginBottom: 14,
+  },
+  popularInfoBannerText: {
+    fontSize: 11.5,
+    color: '#FCA5A5',
+    flex: 1,
+    lineHeight: 16,
   },
   retentionHint: {
     fontSize: 11,
@@ -731,16 +985,39 @@ const styles = StyleSheet.create({
   photoCard: {
     backgroundColor: 'rgba(30, 20, 58, 0.92)',
     borderRadius: 18,
-    borderWidth: 1,
+    borderWidth: 1.2,
     borderColor: 'rgba(242, 200, 121, 0.3)',
     overflow: 'hidden',
   },
   statusCard: {
     backgroundColor: 'rgba(30, 20, 58, 0.92)',
     borderRadius: 16,
-    borderWidth: 1,
+    borderWidth: 1.2,
     borderColor: 'rgba(242, 200, 121, 0.3)',
     padding: 16,
+  },
+  popularRedBorder: {
+    borderColor: '#EF4444',
+    borderWidth: 2,
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  popularBadgeWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#EF4444',
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+  },
+  popularBadgeText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#FFF',
+    letterSpacing: 0.4,
   },
   postHeader: {
     flexDirection: 'row',
@@ -831,7 +1108,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   actionCountLiked: {
-    color: '#E0708A',
+    color: '#EF4444',
     fontWeight: '700',
   },
   feedErrorWrap: {

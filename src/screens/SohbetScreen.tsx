@@ -16,11 +16,11 @@ import { relativeTime } from '@/utils/relativeTime';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = TabScreenProps;
-type SohbetTab = 'sesli' | 'uzmanlar';
+type SohbetTab = 'mesajlar' | 'sesli' | 'yorumcular';
 
 const APPLICATION_STATUS_LABEL: Record<GuideApplication['status'], string> = {
   pending: 'Başvurun inceleniyor.',
-  approved: 'Fal uzmanısın — listede görünüyorsun.',
+  approved: 'Yorumcusun — listede görünüyorsun.',
   rejected: 'Başvurun reddedildi. Tekrar başvurabilirsin.',
 };
 
@@ -269,43 +269,78 @@ export default function SohbetScreen({ navigation }: Props) {
           </View>
         )}
 
-        {signedIn && (
+        {/* Tab Switcher: Üstte 2 Buton, Altta Tam Satır Yorumcular Butonu */}
+        <View style={styles.tabSwitchContainer}>
+          <View style={styles.tabSwitchTopRow}>
+            <Pressable
+              onPress={() => setTab('mesajlar')}
+              style={[styles.tabSwitchButton, tab === 'mesajlar' && styles.tabSwitchButtonActive]}
+            >
+              <Ionicons name="chatbubbles-outline" size={16} color={tab === 'mesajlar' ? '#1a0d33' : GOLD} />
+              <Text style={[styles.tabSwitchText, tab === 'mesajlar' && styles.tabSwitchTextActive]}>
+                Mesaj Kutum {conversations.some(c => c.unreadCount > 0) ? '•' : ''}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => setTab('sesli')}
+              style={[styles.tabSwitchButton, tab === 'sesli' && styles.tabSwitchButtonActive]}
+            >
+              <Ionicons name="mic-outline" size={16} color={tab === 'sesli' ? '#1a0d33' : GOLD} />
+              <Text style={[styles.tabSwitchText, tab === 'sesli' && styles.tabSwitchTextActive]}>
+                Sesli Sohbet
+              </Text>
+            </Pressable>
+          </View>
+
+          <Pressable
+            onPress={() => setTab('yorumcular')}
+            style={[styles.tabSwitchFullRow, tab === 'yorumcular' && styles.tabSwitchButtonActive]}
+          >
+            <MaterialCommunityIcons name="crystal-ball" size={18} color={tab === 'yorumcular' ? '#1a0d33' : GOLD} />
+            <Text style={[styles.tabSwitchText, tab === 'yorumcular' && styles.tabSwitchTextActive]}>
+              Yorumcular
+            </Text>
+          </Pressable>
+        </View>
+
+        {/* TAB 1: MESAJ KUTUM */}
+        {tab === 'mesajlar' && (
           <>
-            <Text style={styles.sectionLabel}>Mesajlar</Text>
-            {loadingConversations ? (
-              <ActivityIndicator color={GOLD} style={{ marginBottom: 20 }} />
-            ) : (
-              <View style={styles.list}>
-                {conversations.length === 0 ? (
-                  <Text style={styles.emptyText}>
-                    Henüz sohbetin yok. Keşfet'te bir gönderiye dokunup yazarın profiline gidince oradan mesaj gönderebilirsin.
-                  </Text>
+            <View style={styles.securityHintBox}>
+              <Ionicons name="shield-checkmark" size={14} color={GOLD} />
+              <Text style={styles.securityHintText}>
+                Birebir mesajlar 24 saat sonra her iki taraftan da otomatik silinir. Ekran görüntüsü alınamaz.
+              </Text>
+            </View>
+
+            {signedIn ? (
+              <>
+                <Text style={styles.sectionLabel}>Özel Sohbetler</Text>
+                {loadingConversations ? (
+                  <ActivityIndicator color={GOLD} style={{ marginBottom: 20 }} />
                 ) : (
-                  conversations.map((item) => <ConversationRow key={item.partnerId} item={item} onPress={() => openThread(item)} />)
+                  <View style={styles.list}>
+                    {conversations.length === 0 ? (
+                      <Text style={styles.emptyText}>
+                        Henüz sohbetin yok. Keşfet'te bir gönderiye dokunup yazarın profiline gidince oradan mesaj gönderebilirsin.
+                      </Text>
+                    ) : (
+                      conversations.map((item) => (
+                        <ConversationRow key={item.partnerId} item={item} onPress={() => openThread(item)} />
+                      ))
+                    )}
+                  </View>
                 )}
-              </View>
+              </>
+            ) : (
+              <Text style={styles.emptyText}>Mesajlarını görmek ve sohbet etmek için yukarıdan giriş yap.</Text>
             )}
           </>
         )}
 
-        <View style={styles.tabSwitchRow}>
-          <Pressable
-            onPress={() => setTab('sesli')}
-            style={[styles.tabSwitchButton, tab === 'sesli' && styles.tabSwitchButtonActive]}
-          >
-            <Ionicons name="mic-outline" size={16} color={tab === 'sesli' ? '#1a0d33' : GOLD} />
-            <Text style={[styles.tabSwitchText, tab === 'sesli' && styles.tabSwitchTextActive]}>Sesli Sohbet</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setTab('uzmanlar')}
-            style={[styles.tabSwitchButton, tab === 'uzmanlar' && styles.tabSwitchButtonActive]}
-          >
-            <MaterialCommunityIcons name="crystal-ball" size={17} color={tab === 'uzmanlar' ? '#1a0d33' : GOLD} />
-            <Text style={[styles.tabSwitchText, tab === 'uzmanlar' && styles.tabSwitchTextActive]}>Fal Uzmanları</Text>
-          </Pressable>
-        </View>
-
-        {tab === 'sesli' ? (
+        {/* TAB 2: SESLİ SOHBET */}
+        {tab === 'sesli' && (
           <>
             <View style={styles.roomsHeaderRow}>
               <Text style={[styles.sectionLabel, { marginBottom: 0 }]}>Sesli Odalar</Text>
@@ -328,21 +363,24 @@ export default function SohbetScreen({ navigation }: Props) {
               </View>
             )}
           </>
-        ) : (
+        )}
+
+        {/* TAB 3: YORUMCULAR */}
+        {tab === 'yorumcular' && (
           <>
             {loadingGuides ? (
               <ActivityIndicator color={GOLD} style={{ marginBottom: 20 }} />
             ) : (
               <View style={styles.list}>
                 {guides.length === 0 ? (
-                  <Text style={styles.emptyText}>Henüz onaylanmış fal uzmanı yok.</Text>
+                  <Text style={styles.emptyText}>Henüz onaylanmış yorumcu yok.</Text>
                 ) : (
                   guides.map((item) => <GuideRow key={item.id} item={item} onMessage={() => openGuideMessage(item)} />)
                 )}
               </View>
             )}
 
-            <Text style={styles.sectionLabel}>Fal Uzmanı Ol</Text>
+            <Text style={styles.sectionLabel}>Yorumcu Ol</Text>
 
             {signedIn && loadingApplication && <ActivityIndicator color={GOLD} style={{ marginBottom: 10 }} />}
 
@@ -459,28 +497,65 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: 12,
   },
-  tabSwitchRow: {
-    flexDirection: 'row',
-    gap: 10,
+  tabSwitchContainer: {
+    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    borderRadius: 18,
+    padding: 6,
     marginBottom: 20,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    gap: 6,
+  },
+  tabSwitchTopRow: {
+    flexDirection: 'row',
+    gap: 6,
   },
   tabSwitchButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 6,
+    borderRadius: 12,
+    paddingVertical: 10,
+  },
+  tabSwitchFullRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 7,
-    borderWidth: 1.2,
-    borderColor: GOLD_SOFT,
-    borderRadius: 14,
+    borderRadius: 12,
     paddingVertical: 11,
   },
   tabSwitchButtonActive: {
     backgroundColor: GOLD,
-    borderColor: GOLD,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  tabSwitchText: { fontSize: 12.5, fontWeight: '700', color: GOLD },
-  tabSwitchTextActive: { color: '#1a0d33' },
+  tabSwitchText: { fontSize: 13, fontWeight: '700', color: GOLD_SOFT },
+  tabSwitchTextActive: { color: '#1a0d33', fontWeight: '800' },
+  securityHintBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.25)',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 16,
+  },
+  securityHintText: {
+    fontSize: 11,
+    color: GOLD_SOFT,
+    textAlign: 'center',
+  },
   roomsHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
   newRoomButton: {
     flexDirection: 'row',
