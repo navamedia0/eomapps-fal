@@ -51,24 +51,24 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.drawerContent}>
-            {/* 1. SÖZLER KÖŞESİ */}
+            {/* 1. SÖZLER KÖŞKÜ (Müstakil Anlamlı Sözler Ekranı) */}
             <Pressable
-              onPress={() => handleNavigate('SozlerKosku', { initialTab: 'sozler' })}
+              onPress={() => handleNavigate('SozlerKosku')}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
               <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(242, 200, 121, 0.15)' }]}>
                 <MaterialCommunityIcons name="feather" size={20} color={GOLD} />
               </View>
               <View style={styles.menuTextWrap}>
-                <Text style={styles.menuItemTitle}>Sözler Köşesi</Text>
-                <Text style={styles.menuItemDesc}>Günün mistik sözü ve 365 günlük akış</Text>
+                <Text style={styles.menuItemTitle}>Sözler Köşkü</Text>
+                <Text style={styles.menuItemDesc}>Günün anlamlı sözleri ve popüler liste</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
-            {/* 2. BİLGİ KÖŞESİ */}
+            {/* 2. BİLGİ KÖŞESİ (Müstakil 7.500 Bilgi Kartı Ekranı) */}
             <Pressable
-              onPress={() => handleNavigate('SozlerKosku', { initialTab: 'bilgi' })}
+              onPress={() => handleNavigate('BilgiKosesi')}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
               <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.15)' }]}>
@@ -77,21 +77,6 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               <View style={styles.menuTextWrap}>
                 <Text style={styles.menuItemTitle}>Bilgi Köşesi</Text>
                 <Text style={styles.menuItemDesc}>7.500 kadim bilgi kartı ve arama</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color={GOLD} />
-            </Pressable>
-
-            {/* 3. HAFTANIN EN SEVİLENLERİ */}
-            <Pressable
-              onPress={() => handleNavigate('SozlerKosku', { initialTab: 'haftaninSevilenleri' })}
-              style={({ pressed }) => [styles.menuItem, styles.highlightMenuItem, pressed && styles.menuItemPressed]}
-            >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(239, 68, 68, 0.18)' }]}>
-                <Ionicons name="flame" size={20} color="#EF4444" />
-              </View>
-              <View style={styles.menuTextWrap}>
-                <Text style={[styles.menuItemTitle, { color: '#FCA5A5' }]}>Haftanın En Sevilenleri</Text>
-                <Text style={styles.menuItemDesc}>En çok sevilen sözler ve bilgi kartları</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
@@ -240,10 +225,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(242, 200, 121, 0.2)',
     padding: 11,
     gap: 10,
-  },
-  highlightMenuItem: {
-    backgroundColor: 'rgba(48, 22, 60, 0.95)',
-    borderColor: 'rgba(239, 68, 68, 0.45)',
   },
   menuItemPressed: {
     backgroundColor: 'rgba(58, 36, 106, 0.95)',

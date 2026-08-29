@@ -1,68 +1,37 @@
-import { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  RefreshControl,
+} from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
-import type { TabScreenProps } from '@/navigation/types';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CornerTicks from '@/components/CornerTicks';
 import FavoriteStarButton from '@/components/FavoriteStarButton';
-import FeatureIcon from '@/components/FeatureIcon';
+import ShareButton from '@/components/ShareButton';
+import ShareImageButton from '@/components/ShareImageButton';
 import PopularDetailModal from '@/components/PopularDetailModal';
-import { FEATURE_ICONS } from '@/assets/icons';
-import { getDailyInfoCards, type InfoCard, type InfoCategory } from '@/services/bilgiKosesiFeed';
+import allInfoCards from '@/data/bilgi_kosesi_kartlari.json';
+import { type InfoCard, type InfoCategory } from '@/services/bilgiKosesiFeed';
 import { getPopularFavorites, type PopularFavorite } from '@/services/popularFavorites';
-import { GOLD, GOLD_SOFT, INFO_PURPLE, INFO_PURPLE_SOFT, INFO_CREAM, INFO_MUTED, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import {
+  GOLD,
+  GOLD_SOFT,
+  TEXT_PRIMARY,
+  TEXT_MUTED,
+} from '@/theme/colors';
 
-type Props = TabScreenProps;
+type Props = NativeStackScreenProps<RootStackParamList, 'BilgiKosesi'>;
 
-const ITEMS: Array<{
-  key: string;
-  title: string;
-  subtitle: string;
-  iconKey?: string;
-  icon: React.ReactNode;
-  onPress: (navigation: Props['navigation']) => void;
-}> = [
-  {
-    key: 'iskambil',
-    title: 'İskambil Kartları ve Anlamları',
-    subtitle: '52 kartın geleneksel fal anlamlarını keşfet',
-    iconKey: 'kartlarBadge',
-    icon: <MaterialCommunityIcons name="cards-playing-outline" size={24} color={INFO_CREAM} />,
-    onPress: (navigation) => navigation.navigate('KartAnlamlari', { deck: 'iskambil' }),
-  },
-  {
-    key: 'tarot',
-    title: 'Tarot Kartları ve Anlamları',
-    subtitle: '78 kartlık Rider-Waite destesinin tam rehberi',
-    iconKey: 'tarot',
-    icon: <MaterialCommunityIcons name="cards-outline" size={24} color={INFO_CREAM} />,
-    onPress: (navigation) => navigation.navigate('KartAnlamlari', { deck: 'tarot' }),
-  },
-  {
-    key: 'kahve',
-    title: 'Kahve Falı Ne Zaman Bulundu?',
-    subtitle: 'Osmanlı\'dan günümüze kahve falının hikayesi',
-    iconKey: 'coffee',
-    icon: <MaterialCommunityIcons name="coffee-outline" size={24} color={INFO_CREAM} />,
-    onPress: (navigation) => navigation.navigate('BilgiMakale', { topic: 'kahve_tarihi' }),
-  },
-  {
-    key: 'katina',
-    title: 'Katina Falı Nedir?',
-    subtitle: 'İskambil kartlarıyla fal bakma geleneği',
-    iconKey: 'katina',
-    icon: <MaterialCommunityIcons name="cards-club-outline" size={24} color={INFO_CREAM} />,
-    onPress: (navigation) => navigation.navigate('BilgiMakale', { topic: 'katina_nedir' }),
-  },
-  {
-    key: 'burc',
-    title: 'Burçların Kökeni ve 4 Element',
-    subtitle: 'Zodyağın Babil\'den günümüze yolculuğu',
-    iconKey: 'burclarBadge',
-    icon: <MaterialCommunityIcons name="zodiac-leo" size={24} color={INFO_CREAM} />,
-    onPress: (navigation) => navigation.navigate('BilgiMakale', { topic: 'burc_kokeni' }),
-  },
-];
+const ALL_INFO_CARDS: InfoCard[] = allInfoCards as InfoCard[];
+const PAGE_SIZE = 25;
+const POPULAR_LIMIT = 15;
 
 const CATEGORY_ICON: Record<InfoCategory, keyof typeof MaterialCommunityIcons.glyphMap> = {
   burc: 'zodiac-leo',
@@ -78,59 +47,90 @@ const CATEGORY_LABEL: Record<InfoCategory, string> = {
   tarot: 'TAROT',
 };
 
-type FeedItem = { type: 'topic'; item: (typeof ITEMS)[number] } | { type: 'fact'; card: InfoCard };
-
 export default function BilgiKosesiScreen({ navigation }: Props) {
-  const [facts, setFacts] = useState<InfoCard[]>([]);
-  const [popular, setPopular] = useState<PopularFavorite[]>([]);
+  const [infoCategory, setInfoCategory] = useState<'all' | InfoCategory>('all');
+  const [infoPage, setInfoPage] = useState(1);
+  const [infoSearch, setInfoSearch] = useState('');
+  const [popularInfo, setPopularInfo] = useState<PopularFavorite[]>([]);
   const [selectedPopular, setSelectedPopular] = useState<PopularFavorite | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    getDailyInfoCards().then(setFacts);
+  // Filtrelenmiş bilgi kartları (7.500 Kart Havuzu)
+  const filteredInfoCards = useMemo(() => {
+    let list = ALL_INFO_CARDS;
+    if (infoCategory !== 'all') {
+      list = list.filter((c) => c.category === infoCategory);
+    }
+    if (infoSearch.trim()) {
+      const q = infoSearch.toLowerCase().trim();
+      list = list.filter(
+        (c) => c.title.toLowerCase().includes(q) || c.body.toLowerCase().includes(q),
+      );
+    }
+    return list;
+  }, [infoCategory, infoSearch]);
+
+  const visibleInfoCards = useMemo(() => {
+    return filteredInfoCards.slice(0, infoPage * PAGE_SIZE);
+  }, [filteredInfoCards, infoPage]);
+
+  const loadData = useCallback(() => {
     getPopularFavorites().then((items) => {
-      // Sadece Bilgi Köşesi (info) favorileri bu ekranda listelenir
-      setPopular(items.filter((item) => item.kind === 'info' || item.id.startsWith('info:')));
+      const popular = items
+        .filter((item) => item.kind === 'info' || item.id.startsWith('info:'))
+        .slice(0, POPULAR_LIMIT);
+      setPopularInfo(popular);
     });
   }, []);
 
-  const feed: FeedItem[] = [];
-  let topicCount = 0;
-  facts.forEach((card, index) => {
-    feed.push({ type: 'fact', card });
-    if ((index + 1) % 3 === 0 && topicCount < ITEMS.length) {
-      feed.push({ type: 'topic', item: ITEMS[topicCount] });
-      topicCount += 1;
-    }
-  });
-  while (topicCount < ITEMS.length) {
-    feed.push({ type: 'topic', item: ITEMS[topicCount] });
-    topicCount += 1;
-  }
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setInfoPage(1);
+    loadData();
+    setTimeout(() => setRefreshing(false), 500);
+  }, [loadData]);
 
   return (
     <MysticTableBackground>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={GOLD} colors={[GOLD]} />
+        }
+      >
+        {/* Header */}
         <View style={styles.header}>
-          <MaterialCommunityIcons name="star-crescent" size={26} color={GOLD} />
+          <Ionicons name="library" size={24} color={GOLD} />
           <Text style={styles.headerTitle}>Bilgi Köşesi</Text>
-          <Text style={styles.headerSubtitle}>Bunları biliyor muydunuz?</Text>
-          <Text style={styles.refreshNote}>Her Pazartesi saat 08:00'de yenilenir</Text>
+          <Text style={styles.headerSubtitle}>7.500 Kadim Bilgi Kartı & İlham Ansiklopedisi</Text>
         </View>
 
-        {/* Bilgi Köşesi - Haftanın En Sevilenleri */}
-        {popular.length > 0 && (
+        {/* 15 POPÜLER BİLGİ BÖLÜMÜ */}
+        {popularInfo.length > 0 && (
           <View style={styles.popularSection}>
             <View style={styles.popularHeader}>
-              <Ionicons name="flame-outline" size={16} color={GOLD} />
-              <Text style={styles.popularTitle}>Haftanın En Sevilenleri</Text>
+              <Ionicons name="flame" size={18} color={GOLD} />
+              <Text style={styles.popularTitle}>Haftanın En Sevilen 15 Kadim Bilgisi</Text>
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.popularRow}>
-              {popular.map((item) => (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.popularRow}
+            >
+              {popularInfo.map((item, idx) => (
                 <Pressable
-                  key={item.id}
+                  key={item.id || idx}
                   onPress={() => setSelectedPopular(item)}
                   style={({ pressed }) => [styles.popularCard, pressed && styles.popularCardPressed]}
                 >
+                  <View style={styles.popularRankBadge}>
+                    <Text style={styles.popularRankText}>#{idx + 1}</Text>
+                  </View>
                   {item.title ? (
                     <Text style={styles.popularCardTitle} numberOfLines={2}>
                       {item.title}
@@ -139,59 +139,119 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
                   <Text style={styles.popularCardBody} numberOfLines={4}>
                     {item.body}
                   </Text>
-                  <View style={styles.popularCountRow}>
-                    <Ionicons name="star" size={11} color={GOLD} />
-                    <Text style={styles.popularCount}>{item.count}</Text>
-                  </View>
                 </Pressable>
               ))}
             </ScrollView>
           </View>
         )}
 
-        <View style={styles.list}>
-          {feed.map((entry, index) => {
-            if (entry.type === 'topic') {
-              const item = entry.item;
-              return (
-                <Pressable
-                  key={`topic-${item.key}`}
-                  onPress={() => item.onPress(navigation)}
-                  style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-                >
-                  <CornerTicks />
-                  <FeatureIcon source={item.iconKey ? FEATURE_ICONS[item.iconKey] : undefined} fallback={item.icon} size={70} />
-                  <View style={styles.cardTextWrap}>
-                    <Text style={styles.cardTitle}>{item.title}</Text>
-                    <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={20} color={INFO_CREAM} />
-                </Pressable>
-              );
-            }
-            const { card } = entry;
-            return (
-              <View key={`fact-${card.id}-${index}`} style={styles.factCard}>
-                <CornerTicks />
-                <FavoriteStarButton
-                  id={`info:${card.id}`}
-                  kind="info"
-                  title={card.title}
-                  body={card.body}
-                  category={card.category}
-                />
-                <View style={styles.factHeader}>
-                  <MaterialCommunityIcons name={CATEGORY_ICON[card.category]} size={16} color={GOLD} />
-                  <Text style={styles.factCategory}>{CATEGORY_LABEL[card.category]}</Text>
-                </View>
-                <Text style={styles.factTitle}>{card.title}</Text>
-                <Text style={styles.factBody}>{card.body}</Text>
-              </View>
-            );
-          })}
+        {/* BİLGİ ARAMA ÇUBUĞU */}
+        <View style={styles.searchBarWrap}>
+          <Ionicons name="search" size={17} color={GOLD_SOFT} />
+          <TextInput
+            value={infoSearch}
+            onChangeText={(t) => {
+              setInfoSearch(t);
+              setInfoPage(1);
+            }}
+            placeholder="Kadim bilgi kartlarında ara..."
+            placeholderTextColor={TEXT_MUTED}
+            style={styles.searchInput}
+          />
+          {infoSearch ? (
+            <Pressable onPress={() => setInfoSearch('')} hitSlop={8}>
+              <Ionicons name="close-circle" size={17} color={GOLD_SOFT} />
+            </Pressable>
+          ) : null}
         </View>
+
+        {/* Kategori Filtre Butonları */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoryPillsRow}
+        >
+          {[
+            { key: 'all', label: 'Tümü' },
+            { key: 'burc', label: 'Burçlar' },
+            { key: 'kart', label: 'Kartlar' },
+            { key: 'astroloji', label: 'Astroloji' },
+            { key: 'tarot', label: 'Tarot' },
+          ].map((c) => (
+            <Pressable
+              key={c.key}
+              onPress={() => {
+                setInfoCategory(c.key as any);
+                setInfoPage(1);
+              }}
+              style={[
+                styles.categoryPill,
+                infoCategory === c.key && styles.categoryPillActive,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.categoryPillText,
+                  infoCategory === c.key && styles.categoryPillTextActive,
+                ]}
+              >
+                {c.label}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+
+        {/* Kadim Bilgi Kartları Feed */}
+        <View style={styles.sectionHeader}>
+          <Ionicons name="bulb-outline" size={16} color={GOLD} />
+          <Text style={styles.sectionTitle}>
+            Kadim Bilgi Kartları ({filteredInfoCards.length})
+          </Text>
+        </View>
+
+        <View style={styles.factsFeed}>
+          {visibleInfoCards.map((card) => (
+            <View key={card.id} style={styles.factCard}>
+              <CornerTicks />
+              <View style={styles.factHeader}>
+                <View style={styles.factCategoryBadge}>
+                  <MaterialCommunityIcons
+                    name={CATEGORY_ICON[card.category] || 'information-outline'}
+                    size={13}
+                    color={GOLD}
+                  />
+                  <Text style={styles.factCategoryText}>{CATEGORY_LABEL[card.category] || 'BİLGİ'}</Text>
+                </View>
+                <FavoriteStarButton id={card.id} kind="info" body={card.body} title={card.title} />
+              </View>
+              <Text style={styles.factTitle}>{card.title}</Text>
+              <Text style={styles.factBody}>{card.body}</Text>
+              <View style={styles.factFooter}>
+                <ShareButton text={`Mistik Rehber - ${card.title}\n\n${card.body}`} label="Paylaş" />
+                <ShareImageButton text={`${card.title}\n\n${card.body}`} label="Görsel Paylaş" />
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* Daha Fazla Bilgi Kartı Yükle */}
+        {visibleInfoCards.length < filteredInfoCards.length && (
+          <Pressable
+            onPress={() => setInfoPage((p) => p + 1)}
+            style={({ pressed }) => [styles.loadMoreBtn, pressed && styles.loadMoreBtnPressed]}
+          >
+            <Ionicons name="chevron-down-circle-outline" size={18} color={GOLD} />
+            <Text style={styles.loadMoreBtnText}>
+              Daha Fazla Bilgi Kartı Göster ({filteredInfoCards.length - visibleInfoCards.length} Kalan)
+            </Text>
+          </Pressable>
+        )}
       </ScrollView>
-      <PopularDetailModal item={selectedPopular} onClose={() => setSelectedPopular(null)} />
+
+      {/* Popüler Detay Modalı */}
+      {selectedPopular && (
+        <PopularDetailModal item={selectedPopular} onClose={() => setSelectedPopular(null)} />
+      )}
     </MysticTableBackground>
   );
 }
@@ -199,33 +259,28 @@ export default function BilgiKosesiScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 48,
+    paddingHorizontal: 18,
+    paddingTop: 18,
+    paddingBottom: 40,
   },
   header: {
     alignItems: 'center',
+    marginBottom: 16,
     gap: 4,
-    marginBottom: 20,
   },
   headerTitle: {
     fontSize: 22,
-    fontWeight: '700',
+    fontWeight: '900',
     color: GOLD,
-    marginTop: 8,
+    letterSpacing: 0.5,
   },
   headerSubtitle: {
-    fontSize: 13,
-    color: INFO_MUTED,
-    fontStyle: 'italic',
-  },
-  refreshNote: {
-    fontSize: 11,
-    color: INFO_MUTED,
-    marginTop: 4,
+    fontSize: 12,
+    color: TEXT_MUTED,
+    textAlign: 'center',
   },
   popularSection: {
-    marginBottom: 22,
+    marginBottom: 16,
   },
   popularHeader: {
     flexDirection: 'row',
@@ -234,110 +289,175 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   popularTitle: {
-    fontSize: 12.5,
-    fontWeight: '700',
+    fontSize: 13.5,
+    fontWeight: '800',
     color: GOLD,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
+    letterSpacing: 0.4,
   },
   popularRow: {
-    gap: 12,
+    gap: 10,
+    paddingRight: 10,
   },
   popularCard: {
-    width: 190,
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    padding: 14,
+    width: 240,
+    minHeight: 100,
+    backgroundColor: 'rgba(38, 20, 54, 0.95)',
+    borderRadius: 14,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.4)',
+    padding: 12,
+    justifyContent: 'center',
   },
   popularCardPressed: {
-    opacity: 0.82,
-    transform: [{ scale: 0.98 }],
-  },
-  popularCardTitle: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    color: INFO_CREAM,
-    marginBottom: 4,
-  },
-  popularCardBody: {
-    fontSize: 11.5,
-    lineHeight: 16,
-    color: INFO_MUTED,
-    fontStyle: 'italic',
-  },
-  popularCountRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginTop: 8,
-  },
-  popularCount: {
-    fontSize: 11,
-    color: GOLD,
-    fontWeight: '600',
-  },
-  list: {
-    gap: 14,
-  },
-  card: {
-    position: 'relative',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    backgroundColor: INFO_PURPLE,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: INFO_PURPLE_SOFT,
-    padding: 16,
-  },
-  cardPressed: {
     opacity: 0.85,
   },
-  cardTextWrap: {
+  popularRankBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 8,
+    backgroundColor: 'rgba(242, 200, 121, 0.25)',
+    borderRadius: 6,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+  },
+  popularRankText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: GOLD,
+  },
+  popularCardTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: GOLD,
+    marginBottom: 4,
+    paddingRight: 24,
+  },
+  popularCardBody: {
+    fontSize: 12,
+    lineHeight: 17,
+    color: TEXT_MUTED,
+  },
+  searchBarWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    borderRadius: 14,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    gap: 8,
+    marginBottom: 12,
+  },
+  searchInput: {
     flex: 1,
+    fontSize: 13.5,
+    color: TEXT_PRIMARY,
   },
-  cardTitle: {
-    fontSize: 14,
+  categoryPillsRow: {
+    gap: 8,
+    marginBottom: 16,
+    paddingRight: 10,
+  },
+  categoryPill: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.25)',
+  },
+  categoryPillActive: {
+    backgroundColor: GOLD,
+    borderColor: GOLD,
+  },
+  categoryPillText: {
+    fontSize: 12,
     fontWeight: '700',
-    color: INFO_CREAM,
-    marginBottom: 3,
+    color: GOLD_SOFT,
   },
-  cardSubtitle: {
-    fontSize: 11.5,
-    color: INFO_MUTED,
-    lineHeight: 16,
+  categoryPillTextActive: {
+    color: '#1a0d33',
+    fontWeight: '800',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: GOLD_SOFT,
+    letterSpacing: 0.5,
+  },
+  factsFeed: {
+    gap: 14,
   },
   factCard: {
     position: 'relative',
-    backgroundColor: 'rgba(245, 240, 255, 0.05)',
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: INFO_PURPLE_SOFT,
+    backgroundColor: 'rgba(26, 16, 52, 0.88)',
+    borderRadius: 16,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.28)',
     padding: 16,
   },
   factHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    justifyContent: 'space-between',
     marginBottom: 8,
   },
-  factCategory: {
-    fontSize: 10,
-    fontWeight: '700',
+  factCategoryBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  factCategoryText: {
+    fontSize: 10.5,
+    fontWeight: '800',
     color: GOLD,
-    letterSpacing: 1,
+    letterSpacing: 0.4,
   },
   factTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: INFO_CREAM,
-    marginBottom: 4,
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: GOLD_SOFT,
+    marginBottom: 6,
   },
   factBody: {
-    fontSize: 12,
-    lineHeight: 18,
-    color: INFO_MUTED,
+    fontSize: 13.5,
+    lineHeight: 20,
+    color: TEXT_PRIMARY,
+    marginBottom: 14,
+  },
+  factFooter: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  loadMoreBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    borderWidth: 1.2,
+    borderColor: GOLD,
+    borderRadius: 14,
+    paddingVertical: 12,
+    marginTop: 14,
+  },
+  loadMoreBtnPressed: {
+    backgroundColor: 'rgba(242, 200, 121, 0.2)',
+  },
+  loadMoreBtnText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: GOLD,
   },
 });
