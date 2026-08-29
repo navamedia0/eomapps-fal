@@ -16,7 +16,7 @@ import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import * as ScreenCapture from 'expo-screen-capture';
+import { enableScreenProtection, disableScreenProtection } from '@/services/screenProtection';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -47,11 +47,11 @@ export default function DMThreadScreen({ route, navigation }: Props) {
   
   const scrollRef = useRef<ScrollView>(null);
 
-  // Ekran görüntüsü (SS) ve kayıt engelleyici
+  // Ekran görüntüsü (SS) ve kayıt engelleyici (Güvenli Fallback ile)
   useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync().catch(() => {});
+    enableScreenProtection();
     return () => {
-      ScreenCapture.allowScreenCaptureAsync().catch(() => {});
+      disableScreenProtection();
     };
   }, []);
 
