@@ -88,7 +88,6 @@ import AchievementsScreen from '@/screens/AchievementsScreen';
 import PopularityScreen from '@/screens/PopularityScreen';
 import GardenScreen from '@/screens/GardenScreen';
 import KaderKasabasiScreen from '@/screens/KaderKasabasiScreen';
-import KaderKasabasiOdaScreen from '@/screens/KaderKasabasiOdaScreen';
 import KesifSalonuIntroScreen from '@/screens/KesifSalonuIntroScreen';
 import KesifSalonuGameScreen from '@/screens/KesifSalonuGameScreen';
 import bilgiMakaleleri from '@/data/bilgi_makaleleri.json';
@@ -240,11 +239,6 @@ export default function App() {
             <Stack.Screen name="Popularity" component={PopularityScreen} options={{ title: 'Haftalık Popülerlik' }} />
             <Stack.Screen name="Garden" component={GardenScreen} options={{ title: 'Kader Bahçesi' }} />
             <Stack.Screen name="KaderKasabasi" component={KaderKasabasiScreen} options={{ headerShown: false }} />
-            <Stack.Screen
-              name="KaderKasabasiOda"
-              component={KaderKasabasiOdaScreen}
-              options={({ route }) => ({ title: route.params.title })}
-            />
             <Stack.Screen name="KesifSalonu" component={KesifSalonuIntroScreen} options={{ title: 'Keşif Salonu' }} />
             <Stack.Screen name="KesifSalonuOyun" component={KesifSalonuGameScreen} options={{ headerShown: false }} />
           </Stack.Navigator>
