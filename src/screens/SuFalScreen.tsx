@@ -187,8 +187,8 @@ const styles = StyleSheet.create({
     maxWidth: 320,
   },
   resultText: {
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 15.5,
+    lineHeight: 25.5,
     color: TEXT_PRIMARY,
     textAlign: 'center',
     fontStyle: 'italic',

@@ -1709,8 +1709,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   reportCardBody: {
-    fontSize: 13.5,
-    lineHeight: 22,
+    fontSize: 15,
+    lineHeight: 24,
     color: TEXT_PRIMARY,
   },
   advancedSectionContainer: {
@@ -1719,7 +1719,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   advancedSectionHeader: {
-    fontSize: 13.5,
+    fontSize: 14,
     fontWeight: '900',
     color: GOLD,
     letterSpacing: 0.8,
@@ -1741,14 +1741,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   advCardTitle: {
-    fontSize: 15,
+    fontSize: 15.5,
     fontWeight: '800',
     color: GOLD,
   },
   advCardSubtitle: {
-    fontSize: 12.5,
+    fontSize: 13.5,
     color: TEXT_PRIMARY,
-    lineHeight: 18,
+    lineHeight: 20,
     marginBottom: 12,
   },
   soulmatesList: {
@@ -1792,13 +1792,13 @@ const styles = StyleSheet.create({
     color: '#F472B6',
   },
   soulmateBadgeLabel: {
-    fontSize: 11,
+    fontSize: 11.5,
     color: GOLD,
     fontWeight: '700',
   },
   soulmateReasonText: {
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: 13.5,
+    lineHeight: 20,
     color: TEXT_MUTED,
   },
   loveExtraRow: {
@@ -1815,19 +1815,19 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   loveExtraHeading: {
-    fontSize: 11,
+    fontSize: 11.5,
     fontWeight: '700',
     color: GOLD,
   },
   loveExtraValue: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '800',
     color: '#FFFFFF',
     marginVertical: 2,
   },
   loveExtraDesc: {
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 13,
+    lineHeight: 19,
     color: TEXT_MUTED,
   },
   rulerRow: {
@@ -1852,19 +1852,19 @@ const styles = StyleSheet.create({
     color: GOLD,
   },
   rulerHeading: {
-    fontSize: 9.5,
+    fontSize: 10,
     color: TEXT_MUTED,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
   rulerNameText: {
-    fontSize: 13.5,
+    fontSize: 14,
     fontWeight: '800',
     color: '#FFFFFF',
   },
   advNormalText: {
-    fontSize: 12.5,
-    lineHeight: 19,
+    fontSize: 14.5,
+    lineHeight: 23,
     color: TEXT_PRIMARY,
   },
   fortuneBadgeRow: {
@@ -1881,7 +1881,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   fortuneBadgeText: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '800',
     color: '#10B981',
   },
@@ -1894,30 +1894,30 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   nodeTagNorth: {
-    fontSize: 11,
+    fontSize: 11.5,
     fontWeight: '800',
     color: '#38BDF8',
     letterSpacing: 0.5,
   },
   nodeTagSouth: {
-    fontSize: 11,
+    fontSize: 11.5,
     fontWeight: '800',
     color: '#F59E0B',
     letterSpacing: 0.5,
   },
   nodeDesc: {
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 21,
     color: TEXT_PRIMARY,
   },
   careerLeadership: {
-    fontSize: 12.5,
-    lineHeight: 18,
+    fontSize: 14.5,
+    lineHeight: 22,
     color: TEXT_PRIMARY,
     marginBottom: 10,
   },
   careerFieldHeader: {
-    fontSize: 11.5,
+    fontSize: 12,
     fontWeight: '700',
     color: GOLD,
     marginBottom: 6,
@@ -1937,13 +1937,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   careerPillText: {
-    fontSize: 11,
+    fontSize: 11.5,
     fontWeight: '700',
     color: '#D8B4FE',
   },
   careerAdviceText: {
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 21,
     color: TEXT_MUTED,
   },
   actionsRow: {
@@ -1964,7 +1964,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(242, 200, 121, 0.08)',
   },
   resetButtonText: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '700',
     color: GOLD,
   },
@@ -1985,8 +1985,8 @@ const styles = StyleSheet.create({
     marginVertical: 18,
   },
   resultText: {
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 15.5,
+    lineHeight: 25,
     color: TEXT_PRIMARY,
   },
   upgradeBanner: {

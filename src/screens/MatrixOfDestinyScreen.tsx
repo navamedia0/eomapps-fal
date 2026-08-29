@@ -6,6 +6,7 @@ import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import ReadingCardStack from '@/components/ReadingCardStack';
+import DateFields from '@/components/DateFields';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { calculateDestinyMatrix, type ArcanaInfo, type DestinyMatrix } from '@/services/destinyMatrixEngine';
 import { interpretDestinyMatrix } from '@/services/readings-ai';
@@ -127,44 +128,14 @@ export default function MatrixOfDestinyScreen({ navigation }: Props) {
         {!matrix ? (
           <View style={styles.inputCard}>
             <Text style={styles.inputTitle}>Doğum Tarihini Girin</Text>
-            <View style={styles.dateRow}>
-              <View style={styles.inputWrap}>
-                <Text style={styles.label}>Gün</Text>
-                <TextInput
-                  value={day}
-                  onChangeText={setDay}
-                  placeholder="GG"
-                  placeholderTextColor={TEXT_MUTED}
-                  keyboardType="numeric"
-                  maxLength={2}
-                  style={styles.input}
-                />
-              </View>
-              <View style={styles.inputWrap}>
-                <Text style={styles.label}>Ay</Text>
-                <TextInput
-                  value={month}
-                  onChangeText={setMonth}
-                  placeholder="AA"
-                  placeholderTextColor={TEXT_MUTED}
-                  keyboardType="numeric"
-                  maxLength={2}
-                  style={styles.input}
-                />
-              </View>
-              <View style={styles.inputWrap}>
-                <Text style={styles.label}>Yıl</Text>
-                <TextInput
-                  value={year}
-                  onChangeText={setYear}
-                  placeholder="YYYY"
-                  placeholderTextColor={TEXT_MUTED}
-                  keyboardType="numeric"
-                  maxLength={4}
-                  style={styles.input}
-                />
-              </View>
-            </View>
+            <DateFields
+              day={day}
+              month={month}
+              year={year}
+              onDayChange={setDay}
+              onMonthChange={setMonth}
+              onYearChange={setYear}
+            />
 
             {error && <Text style={styles.errorText}>{error}</Text>}
 

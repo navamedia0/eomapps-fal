@@ -126,6 +126,11 @@ export async function leaveSeat(roomId: string): Promise<void> {
   await deleteRequest(`${env.socialApiUrl()}/rooms/${roomId}/seat`, headers);
 }
 
+export async function kickSeatUser(roomId: string, userId: string): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await deleteRequest(`${env.socialApiUrl()}/rooms/${roomId}/seats/user/${userId}`, headers);
+}
+
 export async function getRoomMessages(roomId: string): Promise<RoomMessage[]> {
   const headers = await optionalAuthHeaders();
   const { messages } = await getJson<{ messages: RoomMessage[] }>(`${env.socialApiUrl()}/rooms/${roomId}/messages`, headers);

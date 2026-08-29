@@ -725,14 +725,18 @@ export default {
         if (!me) return json({ error: 'oturum geçersiz' }, 401);
         const roomId = roomLeaveMatch[1];
         await env.DB.prepare('DELETE FROM room_seats WHERE room_id = ? AND user_id = ?').bind(roomId, me.id).run();
-        const remaining = await env.DB.prepare('SELECT COUNT(*) as c FROM room_seats WHERE room_id = ?').bind(roomId).first();
-        if (remaining.c === 0) {
-          await env.DB.batch([
-            env.DB.prepare('DELETE FROM room_messages WHERE room_id = ?').bind(roomId),
-            env.DB.prepare('DELETE FROM room_viewers WHERE room_id = ?').bind(roomId),
-            env.DB.prepare('DELETE FROM rooms WHERE id = ?').bind(roomId),
-          ]);
-        }
+        return json({ ok: true });
+      }
+
+      const hostKickSeatMatch = path.match(/^\/rooms\/([^/]+)\/seats\/user\/([^/]+)$/);
+      if (hostKickSeatMatch && request.method === 'DELETE') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const [, roomId, targetUserId] = hostKickSeatMatch;
+        const room = await env.DB.prepare('SELECT host_id FROM rooms WHERE id = ?').bind(roomId).first();
+        if (!room) return json({ error: 'oda bulunamadı' }, 404);
+        if (room.host_id !== me.id) return json({ error: 'sadece oda kurucusu koltuktan indirebilir' }, 403);
+        await env.DB.prepare('DELETE FROM room_seats WHERE room_id = ? AND user_id = ?').bind(roomId, targetUserId).run();
         return json({ ok: true });
       }
 
@@ -741,10 +745,6 @@ export default {
         const me = await getSessionUser(request, env);
         if (!me) return json({ error: 'oturum geçersiz' }, 401);
         const roomId = roomTokenMatch[1];
-        const seated = await env.DB.prepare('SELECT 1 FROM room_seats WHERE room_id = ? AND user_id = ?')
-          .bind(roomId, me.id)
-          .first();
-        if (!seated) return json({ error: 'ses akışına katılmak için koltuğa oturmalısın' }, 403);
         if (!env.LIVEKIT_API_KEY || !env.LIVEKIT_API_SECRET) return json({ error: 'LiveKit sunucuda tanımlı değil' }, 500);
         const token = await createLiveKitToken(env, roomId, me.id, me.display_name || 'Mistik Rehber Kullanıcısı');
         return json({ token });

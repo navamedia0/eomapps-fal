@@ -855,14 +855,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   bubbleTextUser: {
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: 14.5,
+    lineHeight: 22,
     color: '#F5F0FF',
     fontWeight: '500',
   },
   bubbleTextModel: {
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 15,
+    lineHeight: 24,
     color: TEXT_PRIMARY,
   },
   errorBox: {

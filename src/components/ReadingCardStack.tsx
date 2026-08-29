@@ -195,8 +195,8 @@ const styles = StyleSheet.create({
   dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: GOLD_SOFT },
   dotActive: { backgroundColor: GOLD, width: 18 },
   textScroll: { flexGrow: 0 },
-  sectionTitle: { fontSize: 15, fontWeight: '800', color: GOLD, marginBottom: 10, lineHeight: 21 },
-  sectionBody: { fontSize: 13.8, lineHeight: 22, color: TEXT_PRIMARY, paddingBottom: 4 },
+  sectionTitle: { fontSize: 16, fontWeight: '800', color: GOLD, marginBottom: 10, lineHeight: 23 },
+  sectionBody: { fontSize: 15.5, lineHeight: 25.5, color: TEXT_PRIMARY, paddingBottom: 4 },
   footerRow: { flexDirection: 'row', gap: 10, marginTop: 16 },
   nextButton: {
     flex: 1,

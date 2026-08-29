@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+import { AudioSession, AndroidAudioTypePresets } from '@livekit/react-native';
 import type { Room } from 'livekit-client';
 
 export type VoiceConnectionStatus = 'connected' | 'reconnecting';
@@ -8,6 +10,8 @@ export type VoiceSession = {
   livekitRoom: Room;
   status: VoiceConnectionStatus;
   muted: boolean;
+  isListener: boolean;
+  isSpeaker: boolean;
 };
 
 type Listener = (session: VoiceSession | null) => void;
@@ -19,12 +23,52 @@ function notify(): void {
   listeners.forEach((listener) => listener(current));
 }
 
-// Uygulama genelinde tek bir aktif sesli oda bağlantısı tutulur — RoomScreen
-// kapansa bile (kullanıcı "arkaplanda açık kalsın" seçtiğinde) bu bağlantı
-// canlı kalır ve VoiceSessionBubble her ekranın üzerinde onu gösterir. Tek
-// kaynak burası olduğu için RoomScreen'in farklı bir mount'undan (bubble'a
-// dokunup odaya geri dönünce) tekrar açılması da state'i doğru okur —
-// LiveKit event dinleyicileri hep bu store'u güncelliyor, ekrana özel değil.
+/**
+ * LiveKit ses oturumunu yapılandırır:
+ * - Varsayılan çıkışı Hoparlör (loudspeaker) yapar.
+ * - Uzak ses seviyesini maksimuma (%100) ayarlar.
+ * - İletişim modu ile mikrofon ve hoparlör dengesini optimize eder.
+ */
+export async function setupLiveKitAudio(enableSpeaker = true): Promise<void> {
+  try {
+    await AudioSession.configureAudio({
+      android: {
+        preferredOutputList: enableSpeaker
+          ? ['speaker', 'headset', 'bluetooth', 'earpiece']
+          : ['earpiece', 'headset', 'bluetooth', 'speaker'],
+        audioTypeOptions: AndroidAudioTypePresets.communication,
+      },
+      ios: {
+        defaultOutput: enableSpeaker ? 'speaker' : 'earpiece',
+      },
+    });
+    await AudioSession.startAudioSession();
+    await AudioSession.setDefaultRemoteAudioTrackVolume(1.0);
+    await switchAudioOutput(enableSpeaker);
+  } catch (err) {
+    console.warn('AudioSession setup warning:', err);
+  }
+}
+
+/**
+ * Hoparlör ve Ahize (Telefon) ses çıkışları arasında geçiş yapar.
+ */
+export async function switchAudioOutput(enableSpeaker: boolean): Promise<void> {
+  try {
+    if (Platform.OS === 'android') {
+      await AudioSession.selectAudioOutput(enableSpeaker ? 'speaker' : 'earpiece');
+    } else if (Platform.OS === 'ios') {
+      await AudioSession.selectAudioOutput(enableSpeaker ? 'force_speaker' : 'default');
+    }
+    if (current) {
+      current = { ...current, isSpeaker: enableSpeaker };
+      notify();
+    }
+  } catch (err) {
+    console.warn('switchAudioOutput warning:', err);
+  }
+}
+
 export function subscribeVoiceSession(listener: Listener): () => void {
   listeners.add(listener);
   return () => {
@@ -36,31 +80,41 @@ export function getVoiceSession(): VoiceSession | null {
   return current;
 }
 
-// İleride kuracağımız devasa oyun (Kader Bahçesi'nin büyütülmüş hali /
-// Keşif Salonu vb.) gibi ağır çok-oyunculu ekranlar, sunucu yükünü kontrol
-// altında tutmak için buraya bakıp aktif bir sesli bağlantı varsa girişi
-// engellemeli — herkesin sesli bağlıyken o ekrana girmesi sunucuları çökertir.
 export function hasActiveVoiceSession(): boolean {
   return current !== null;
 }
 
-export function startVoiceSession(roomId: string, roomName: string, livekitRoom: Room): void {
-  current = { roomId, roomName, livekitRoom, status: 'connected', muted: false };
+export function startVoiceSession(
+  roomId: string,
+  roomName: string,
+  livekitRoom: Room,
+  isListener = false,
+  isSpeaker = true,
+): void {
+  current = {
+    roomId,
+    roomName,
+    livekitRoom,
+    status: 'connected',
+    muted: isListener,
+    isListener,
+    isSpeaker,
+  };
   notify();
 }
 
-export function updateVoiceSession(patch: Partial<Pick<VoiceSession, 'status' | 'muted'>>): void {
+export function updateVoiceSession(
+  patch: Partial<Pick<VoiceSession, 'status' | 'muted' | 'isListener' | 'isSpeaker'>>,
+): void {
   if (!current) return;
   current = { ...current, ...patch };
   notify();
 }
 
-// Bağlantıyı gerçekten kapatır (LiveKit disconnect + global state temizliği).
-// Sadece kullanıcı odadan tamamen ayrılmak istediğinde ya da bubble'daki
-// çarpıya bastığında çağrılır — arkaplanda bırakmak isteyen için ÇAĞRILMAZ.
 export function endVoiceSession(): void {
   const session = current;
   current = null;
   notify();
   session?.livekitRoom.disconnect().catch(() => {});
+  AudioSession.stopAudioSession().catch(() => {});
 }

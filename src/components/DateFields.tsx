@@ -1,7 +1,28 @@
-import { View, TextInput, StyleSheet } from 'react-native';
-import { GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { useState } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import PickerModal from '@/components/PickerModal';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
-const numeric = (value: string) => value.replace(/[^0-9]/g, '');
+const MONTH_NAMES = [
+  '01 - Ocak',
+  '02 - Şubat',
+  '03 - Mart',
+  '04 - Nisan',
+  '05 - Mayıs',
+  '06 - Haziran',
+  '07 - Temmuz',
+  '08 - Ağustos',
+  '09 - Eylül',
+  '10 - Ekim',
+  '11 - Kasım',
+  '12 - Aralık',
+];
+
+const DAY_OPTIONS = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'));
+
+const currentYear = new Date().getFullYear();
+const YEAR_OPTIONS = Array.from({ length: currentYear - 1920 + 1 }, (_, i) => String(currentYear - i));
 
 type Props = {
   day: string;
@@ -13,36 +34,86 @@ type Props = {
 };
 
 export default function DateFields({ day, month, year, onDayChange, onMonthChange, onYearChange }: Props) {
+  const [modalType, setModalType] = useState<'day' | 'month' | 'year' | null>(null);
+
+  // Ay numarasını etiketle eşleştir (örn: "03" -> "03 - Mart")
+  const selectedMonthOption = month
+    ? MONTH_NAMES.find((m) => m.startsWith(month.padStart(2, '0'))) || month
+    : null;
+
   return (
     <View style={styles.wrap}>
       <View style={styles.row}>
-        <TextInput
-          value={day}
-          onChangeText={(v) => onDayChange(numeric(v).slice(0, 2))}
-          placeholder="GG"
-          placeholderTextColor={TEXT_MUTED}
-          keyboardType="number-pad"
-          maxLength={2}
-          style={[styles.input, styles.half]}
-        />
-        <TextInput
-          value={month}
-          onChangeText={(v) => onMonthChange(numeric(v).slice(0, 2))}
-          placeholder="AA"
-          placeholderTextColor={TEXT_MUTED}
-          keyboardType="number-pad"
-          maxLength={2}
-          style={[styles.input, styles.half]}
-        />
+        {/* GÜN SEÇİCİ */}
+        <View style={styles.col}>
+          <Text style={styles.label}>Gün</Text>
+          <Pressable onPress={() => setModalType('day')} style={styles.button}>
+            <Text style={[styles.buttonText, !day && styles.buttonPlaceholder]} numberOfLines={1}>
+              {day ? day.padStart(2, '0') : 'Gün'}
+            </Text>
+            <Ionicons name="chevron-down" size={14} color={GOLD} />
+          </Pressable>
+        </View>
+
+        {/* AY SEÇİCİ */}
+        <View style={[styles.col, styles.colMonth]}>
+          <Text style={styles.label}>Ay</Text>
+          <Pressable onPress={() => setModalType('month')} style={styles.button}>
+            <Text style={[styles.buttonText, !month && styles.buttonPlaceholder]} numberOfLines={1}>
+              {selectedMonthOption ?? 'Ay'}
+            </Text>
+            <Ionicons name="chevron-down" size={14} color={GOLD} />
+          </Pressable>
+        </View>
+
+        {/* YIL SEÇİCİ */}
+        <View style={styles.col}>
+          <Text style={styles.label}>Yıl</Text>
+          <Pressable onPress={() => setModalType('year')} style={styles.button}>
+            <Text style={[styles.buttonText, !year && styles.buttonPlaceholder]} numberOfLines={1}>
+              {year || 'Yıl'}
+            </Text>
+            <Ionicons name="chevron-down" size={14} color={GOLD} />
+          </Pressable>
+        </View>
       </View>
-      <TextInput
-        value={year}
-        onChangeText={(v) => onYearChange(numeric(v).slice(0, 4))}
-        placeholder="YYYY"
-        placeholderTextColor={TEXT_MUTED}
-        keyboardType="number-pad"
-        maxLength={4}
-        style={[styles.input, styles.full]}
+
+      {/* MODALLAR */}
+      <PickerModal
+        visible={modalType === 'day'}
+        title="Doğum Günü Seç"
+        options={DAY_OPTIONS}
+        selected={day ? day.padStart(2, '0') : null}
+        onSelect={(val) => {
+          onDayChange(val);
+          setModalType(null);
+        }}
+        onClose={() => setModalType(null)}
+      />
+
+      <PickerModal
+        visible={modalType === 'month'}
+        title="Doğum Ayı Seç"
+        options={MONTH_NAMES}
+        selected={selectedMonthOption}
+        onSelect={(val) => {
+          const monthNumber = val.slice(0, 2);
+          onMonthChange(monthNumber);
+          setModalType(null);
+        }}
+        onClose={() => setModalType(null)}
+      />
+
+      <PickerModal
+        visible={modalType === 'year'}
+        title="Doğum Yılı Seç"
+        options={YEAR_OPTIONS}
+        selected={year || null}
+        onSelect={(val) => {
+          onYearChange(val);
+          setModalType(null);
+        }}
+        onClose={() => setModalType(null)}
       />
     </View>
   );
@@ -51,27 +122,41 @@ export default function DateFields({ day, month, year, onDayChange, onMonthChang
 const styles = StyleSheet.create({
   wrap: {
     width: '100%',
-    gap: 10,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 8,
   },
-  input: {
+  col: {
+    flex: 1,
+  },
+  colMonth: {
+    flex: 1.4,
+  },
+  label: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+    marginBottom: 5,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: NIGHT_CARD,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
     borderRadius: 14,
-    paddingHorizontal: 14,
+    paddingHorizontal: 10,
     paddingVertical: 12,
-    fontSize: 14,
+  },
+  buttonText: {
+    fontSize: 13.5,
     color: TEXT_PRIMARY,
-    textAlign: 'center',
+    fontWeight: '500',
+    flexShrink: 1,
   },
-  half: {
-    width: '48%',
-  },
-  full: {
-    width: '100%',
+  buttonPlaceholder: {
+    color: TEXT_MUTED,
   },
 });

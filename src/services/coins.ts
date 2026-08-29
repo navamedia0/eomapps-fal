@@ -1,6 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  saveSecureItem,
+  getSecureItem,
+  validateTransactionIntegrity,
+} from './secureEconomy';
 
-const STORAGE_KEY = '@mistik-rehber/coins';
+const COINS_KEY = 'user_coins_balance';
 
 type Listener = (coins: number) => void;
 const listeners = new Set<Listener>();
@@ -9,10 +13,6 @@ function notify(coins: number): void {
   listeners.forEach((listener) => listener(coins));
 }
 
-// Lets UI (CoinBadge, shop screens) react immediately when the balance
-// changes anywhere in the app, instead of only refreshing on screen focus —
-// a screen that spent coins itself would otherwise show a stale balance
-// until the user navigated away and back.
 export function subscribeCoins(listener: Listener): () => void {
   listeners.add(listener);
   return () => {
@@ -20,24 +20,41 @@ export function subscribeCoins(listener: Listener): () => void {
   };
 }
 
+/**
+ * Cryptographically verifies and retrieves user coin balance
+ */
 export async function getCoins(): Promise<number> {
-  const raw = await AsyncStorage.getItem(STORAGE_KEY);
-  return raw ? Number(raw) : 0;
+  return await getSecureItem<number>(COINS_KEY, 0);
 }
 
+/**
+ * Securely credits coins with transaction integrity validation and SHA-256 seal
+ */
 export async function addCoins(amount: number): Promise<number> {
+  if (!validateTransactionIntegrity(amount, 'credit')) {
+    return await getCoins();
+  }
+
   const current = await getCoins();
-  const next = current + amount;
-  await AsyncStorage.setItem(STORAGE_KEY, String(next));
+  const next = current + Math.floor(amount);
+  await saveSecureItem(COINS_KEY, next);
   notify(next);
   return next;
 }
 
+/**
+ * Securely spends coins with validation and cryptographic signature update
+ */
 export async function spendCoins(amount: number): Promise<boolean> {
+  if (!validateTransactionIntegrity(amount, 'debit')) {
+    return false;
+  }
+
   const current = await getCoins();
   if (current < amount) return false;
-  const next = current - amount;
-  await AsyncStorage.setItem(STORAGE_KEY, String(next));
+
+  const next = current - Math.floor(amount);
+  await saveSecureItem(COINS_KEY, next);
   notify(next);
   return true;
 }

@@ -12,7 +12,24 @@ import { interpretCelticTreeReading } from '@/services/readings-ai';
 import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
+import PickerModal from '@/components/PickerModal';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+
+const MONTH_NAMES = [
+  '01 - Ocak',
+  '02 - Şubat',
+  '03 - Mart',
+  '04 - Nisan',
+  '05 - Mayıs',
+  '06 - Haziran',
+  '07 - Temmuz',
+  '08 - Ağustos',
+  '09 - Eylül',
+  '10 - Ekim',
+  '11 - Kasım',
+  '12 - Aralık',
+];
+const DAY_OPTIONS = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'));
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CelticTreeReading'>;
 
@@ -50,6 +67,7 @@ function TreeRevealCard({ tree }: { tree: CelticTree }) {
 export default function CelticTreeScreen({ navigation }: Props) {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
+  const [modalType, setModalType] = useState<'day' | 'month' | null>(null);
   const [tree, setTree] = useState<CelticTree | null>(null);
   const [selectedMode, setSelectedMode] = useState<'standard' | 'deep'>('standard');
   const [loading, setLoading] = useState(false);
@@ -108,33 +126,51 @@ export default function CelticTreeScreen({ navigation }: Props) {
 
         {!tree ? (
           <View style={styles.inputCard}>
-            <Text style={styles.inputTitle}>Doğum Gününü ve Ayını Girin</Text>
+            <Text style={styles.inputTitle}>Doğum Gününü ve Ayını Seçin</Text>
             <View style={styles.dateRow}>
               <View style={styles.inputWrap}>
                 <Text style={styles.label}>Gün</Text>
-                <TextInput
-                  value={day}
-                  onChangeText={setDay}
-                  placeholder="GG"
-                  placeholderTextColor={TEXT_MUTED}
-                  keyboardType="numeric"
-                  maxLength={2}
-                  style={styles.input}
-                />
+                <Pressable onPress={() => setModalType('day')} style={styles.pickerBtn}>
+                  <Text style={[styles.pickerBtnText, !day && styles.pickerBtnPlaceholder]}>
+                    {day ? day.padStart(2, '0') : 'Gün'}
+                  </Text>
+                  <Ionicons name="chevron-down" size={14} color={GOLD} />
+                </Pressable>
               </View>
-              <View style={styles.inputWrap}>
+              <View style={[styles.inputWrap, { flex: 1.4 }]}>
                 <Text style={styles.label}>Ay</Text>
-                <TextInput
-                  value={month}
-                  onChangeText={setMonth}
-                  placeholder="AA"
-                  placeholderTextColor={TEXT_MUTED}
-                  keyboardType="numeric"
-                  maxLength={2}
-                  style={styles.input}
-                />
+                <Pressable onPress={() => setModalType('month')} style={styles.pickerBtn}>
+                  <Text style={[styles.pickerBtnText, !month && styles.pickerBtnPlaceholder]} numberOfLines={1}>
+                    {month ? MONTH_NAMES.find((m) => m.startsWith(month.padStart(2, '0'))) || month : 'Ay'}
+                  </Text>
+                  <Ionicons name="chevron-down" size={14} color={GOLD} />
+                </Pressable>
               </View>
             </View>
+
+            <PickerModal
+              visible={modalType === 'day'}
+              title="Doğum Günü Seç"
+              options={DAY_OPTIONS}
+              selected={day ? day.padStart(2, '0') : null}
+              onSelect={(val) => {
+                setDay(val);
+                setModalType(null);
+              }}
+              onClose={() => setModalType(null)}
+            />
+
+            <PickerModal
+              visible={modalType === 'month'}
+              title="Doğum Ayı Seç"
+              options={MONTH_NAMES}
+              selected={month ? MONTH_NAMES.find((m) => m.startsWith(month.padStart(2, '0'))) : null}
+              onSelect={(val) => {
+                setMonth(val.slice(0, 2));
+                setModalType(null);
+              }}
+              onClose={() => setModalType(null)}
+            />
 
             {error && <Text style={styles.errorText}>{error}</Text>}
 
@@ -419,6 +455,25 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 18,
     gap: 14,
+  },
+  pickerBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: NIGHT_CARD,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+  },
+  pickerBtnText: {
+    fontSize: 14,
+    color: TEXT_PRIMARY,
+    fontWeight: '500',
+  },
+  pickerBtnPlaceholder: {
+    color: TEXT_MUTED,
   },
   badgeRow: {
     flexDirection: 'row',

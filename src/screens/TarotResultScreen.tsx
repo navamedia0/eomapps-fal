@@ -28,6 +28,7 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CardStoryModal from '@/components/tarot/CardStoryModal';
 import ShareButton from '@/components/ShareButton';
 import CornerTicks from '@/components/CornerTicks';
+import { getTarotKeywordList } from '@/services/tarotKeywords';
 import type { TarotCardDef } from '@/services/tarot';
 import {
   GOLD,
@@ -265,6 +266,13 @@ export default function TarotResultScreen({ route, navigation }: Props) {
                       <Ionicons name="book-outline" size={13} color={GOLD} />
                       <Text style={styles.storyButtonText}>Kartın Hikayesi</Text>
                     </Pressable>
+                    <View style={styles.conceptTagsRow}>
+                      {getTarotKeywordList(card.id, card.orientation).map((kw, i) => (
+                        <View key={i} style={styles.conceptChip}>
+                          <Text style={styles.conceptChipText}>{kw}</Text>
+                        </View>
+                      ))}
+                    </View>
                   </View>
                 </View>
                 {sections && (
@@ -493,9 +501,34 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: GOLD,
   },
+  conceptTagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 8,
+  },
+  conceptChip: {
+    backgroundColor: 'rgba(20, 12, 38, 0.95)',
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.45)',
+    borderRadius: 8,
+    paddingVertical: 3.5,
+    paddingHorizontal: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  conceptChipText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#F4DEB3',
+    letterSpacing: 0.2,
+  },
   interpretationText: {
-    fontSize: 14,
-    lineHeight: 23,
+    fontSize: 15.5,
+    lineHeight: 25.5,
     color: TEXT_PRIMARY,
   },
   resultHeader: {

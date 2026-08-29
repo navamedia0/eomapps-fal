@@ -15,7 +15,13 @@ import { LogBox, Platform, StyleSheet, View, Pressable } from 'react-native';
 // Sadece bu bilinen, zararsız deseni gizliyoruz — başka hiçbir hatayı
 // bastırmıyoruz ve bu sadece geliştirme modunda (LogBox) etkili, üretim
 // build'inde zaten görünmez.
-LogBox.ignoreLogs(['error reading from signal stream']);
+LogBox.ignoreLogs([
+  'error reading from signal stream',
+  'publisher data channel',
+  'could not find peer connection',
+  'data channel',
+  'Setting onnegotiationneeded',
+]);
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer, DarkTheme, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';

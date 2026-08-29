@@ -411,8 +411,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   resultText: {
-    fontSize: 14,
-    lineHeight: 23,
+    fontSize: 15.5,
+    lineHeight: 25.5,
     color: TEXT_PRIMARY,
   },
   actionsRow: {

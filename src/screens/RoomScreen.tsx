@@ -36,6 +36,8 @@ import {
   clearRoomMessages,
   banRoomUser,
   muteRoomUser,
+  unmuteRoomUser,
+  kickSeatUser,
   ROOM_TOPICS,
   type RoomDetail,
   type RoomMessage,
@@ -46,6 +48,8 @@ import {
   startVoiceSession,
   updateVoiceSession,
   endVoiceSession,
+  setupLiveKitAudio,
+  switchAudioOutput,
   type VoiceSession,
 } from '@/services/voiceSession';
 import { avatarColor } from '@/utils/avatarColor';
@@ -59,18 +63,35 @@ const MAX_MESSAGE_LENGTH = 500;
 type AttemptState = 'idle' | 'connecting' | 'error';
 type DisplayVoiceState = AttemptState | 'connected' | 'reconnecting';
 
-function Seat({ seat, isMe, onPress }: { seat: RoomDetail['seats'][number]; isMe: boolean; onPress: () => void }) {
+function Seat({
+  seat,
+  isMe,
+  isSpeaking,
+  onPress,
+}: {
+  seat: RoomDetail['seats'][number];
+  isMe: boolean;
+  isSpeaking: boolean;
+  onPress: () => void;
+}) {
   return (
     <Pressable onPress={onPress} style={styles.seat}>
       {seat ? (
         <>
-          {seat.avatarUrl ? (
-            <Image source={{ uri: seat.avatarUrl }} style={styles.seatAvatar} />
-          ) : (
-            <View style={[styles.seatAvatar, styles.seatAvatarFallback, { backgroundColor: avatarColor(seat.userId) }]}>
-              <Text style={styles.seatAvatarText}>{seat.displayName.charAt(0).toUpperCase()}</Text>
-            </View>
-          )}
+          <View style={[styles.seatAvatarWrap, isSpeaking && styles.seatAvatarSpeaking]}>
+            {seat.avatarUrl ? (
+              <Image source={{ uri: seat.avatarUrl }} style={styles.seatAvatar} />
+            ) : (
+              <View style={[styles.seatAvatar, styles.seatAvatarFallback, { backgroundColor: avatarColor(seat.userId) }]}>
+                <Text style={styles.seatAvatarText}>{seat.displayName.charAt(0).toUpperCase()}</Text>
+              </View>
+            )}
+            {isSpeaking && (
+              <View style={styles.speakingWaveBadge}>
+                <Ionicons name="volume-high" size={9} color="#fff" />
+              </View>
+            )}
+          </View>
           <Text style={[styles.seatName, isMe && styles.seatNameMine]} numberOfLines={1}>
             {isMe ? 'Sen' : seat.displayName}
           </Text>
@@ -96,22 +117,45 @@ export default function RoomScreen({ route, navigation }: Props) {
   const [seatBusy, setSeatBusy] = useState(false);
   const [attemptState, setAttemptState] = useState<AttemptState>('idle');
   const [voiceSession, setVoiceSession] = useState<VoiceSession | null>(getVoiceSession());
+  const [speakingUserIds, setSpeakingUserIds] = useState<Set<string>>(new Set());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [editName, setEditName] = useState('');
   const [editTopic, setEditTopic] = useState<string | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'clear' | 'close' | null>(null);
+  const [speakerOutput, setSpeakerOutput] = useState(true);
   const scrollRef = useRef<ScrollView>(null);
   const wasSeatedRef = useRef(false);
 
-  // Bu odaya ait aktif bir global sesli oturum varsa (bubble üzerinden geri
-  // dönülmüş olabilir) her mount bunu doğrudan store'dan okur — bağlantının
-  // kendisi ekran yaşam döngüsünden bağımsız, tek doğruluk kaynağı store.
   const mine = voiceSession?.roomId === roomId ? voiceSession : null;
+  const isSeated = detail?.seats.some((s) => s?.userId === meId) ?? false;
   const displayVoiceState: DisplayVoiceState = mine ? mine.status : attemptState;
   const muted = mine?.muted ?? false;
 
   useEffect(() => subscribeVoiceSession(setVoiceSession), []);
+
+  useEffect(() => {
+    const lkRoom = voiceSession?.livekitRoom;
+    if (!lkRoom || voiceSession.roomId !== roomId) return;
+
+    const handleSpeakersChanged = (speakers: { identity?: string; isSpeaking?: boolean }[]) => {
+      const activeIds = new Set<string>();
+      for (const s of speakers) {
+        if (s.isSpeaking && s.identity) {
+          activeIds.add(s.identity);
+        }
+      }
+      if (lkRoom.localParticipant.isSpeaking && meId) {
+        activeIds.add(meId);
+      }
+      setSpeakingUserIds(activeIds);
+    };
+
+    lkRoom.on(RoomEvent.ActiveSpeakersChanged, handleSpeakersChanged);
+    return () => {
+      lkRoom.off(RoomEvent.ActiveSpeakersChanged, handleSpeakersChanged);
+    };
+  }, [voiceSession?.livekitRoom, voiceSession?.roomId, roomId, meId]);
 
   const load = useCallback((silent = false) => {
     if (!silent) setLoading(true);
@@ -137,42 +181,88 @@ export default function RoomScreen({ route, navigation }: Props) {
   // dokunma ve geri-git onayındaki "Evet" hepsi bunu kullanır. Sadece sesi
   // kapatıp koltukta "hayalet" gibi oturmaya devam etmek istenen bir durum
   // yok, bu yüzden ikisi hep birlikte yürüyor.
+  // Sesi VE koltuğu birlikte bırakır — koltuğu anında boşaltıp dinleyicilere aktarır
   const leaveRoomCompletely = useCallback(async () => {
     endVoiceSession();
+    if (meId) {
+      setDetail((prev) => {
+        if (!prev) return prev;
+        const seat = prev.seats.find((s) => s?.userId === meId);
+        const nextSeats = prev.seats.map((s) => (s?.userId === meId ? null : s));
+        const nextViewers = prev.viewers.some((v) => v.userId === meId)
+          ? prev.viewers
+          : [...prev.viewers, { userId: meId, displayName: seat?.displayName || 'Sen', avatarUrl: seat?.avatarUrl || null }];
+        return { ...prev, seats: nextSeats, viewers: nextViewers };
+      });
+    }
     try {
       await leaveSeat(roomId);
     } catch {
       // Koltukta değilsek zaten hata normal, sessizce geç.
     }
     load(true);
-  }, [roomId, load]);
+  }, [roomId, meId, load]);
 
-  const connectVoice = useCallback(async () => {
-    setAttemptState('connecting');
-    try {
-      const token = await getRoomVoiceToken(roomId);
-      const room = new Room();
-      room.on(RoomEvent.Disconnected, () => {
-        endVoiceSession();
-      });
-      // Ağ kısa süreliğine kesilirse (wifi/hücresel geçişi vb.) LiveKit
-      // kendi kendine yeniden bağlanmayı dener — bunu kullanıcıya "hata"
-      // gibi göstermek yerine geçici bir durum olarak belirtiyoruz.
-      room.on(RoomEvent.Reconnecting, () => updateVoiceSession({ status: 'reconnecting' }));
-      room.on(RoomEvent.Reconnected, () => updateVoiceSession({ status: 'connected' }));
-      await room.connect(env.livekitUrl(), token);
-      await room.localParticipant.setMicrophoneEnabled(true);
-      startVoiceSession(roomId, detail?.room.name ?? route.params.roomName ?? 'Oda', room);
-      setAttemptState('idle');
-    } catch (err) {
-      setAttemptState('error');
-      showAlert('Sese bağlanılamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+  const connectVoice = useCallback(
+    async (asSpeaker = false) => {
+      const existing = getVoiceSession();
+      if (existing && existing.roomId === roomId) {
+        try {
+          await existing.livekitRoom.localParticipant.setMicrophoneEnabled(asSpeaker);
+          updateVoiceSession({ isListener: !asSpeaker, muted: !asSpeaker });
+        } catch (err) {
+          console.warn('Microphone update failed:', err);
+        }
+        return;
+      }
+
+      setAttemptState('connecting');
+      try {
+        await setupLiveKitAudio(speakerOutput);
+        const token = await getRoomVoiceToken(roomId);
+        const room = new Room();
+        room.on(RoomEvent.Disconnected, () => {
+          endVoiceSession();
+        });
+        room.on(RoomEvent.Reconnecting, () => updateVoiceSession({ status: 'reconnecting' }));
+        room.on(RoomEvent.Reconnected, () => updateVoiceSession({ status: 'connected' }));
+        await room.connect(env.livekitUrl(), token);
+        await room.localParticipant.setMicrophoneEnabled(asSpeaker);
+        startVoiceSession(
+          roomId,
+          detail?.room.name ?? route.params.roomName ?? 'Oda',
+          room,
+          !asSpeaker,
+          speakerOutput,
+        );
+        setAttemptState('idle');
+      } catch (err) {
+        setAttemptState('error');
+        // Dinleyici otomatik bağlantısında kullanıcıyı pop-up ile rahatsız etmeyelim
+        if (asSpeaker) {
+          showAlert('Sese bağlanılamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+        } else {
+          console.warn('Listener voice connect info:', err);
+        }
+      }
+    },
+    [roomId, detail, route.params.roomName, speakerOutput],
+  );
+
+  // Odaya girildiğinde dinleyicilerin odadaki sesleri duyması için
+  // otomatik olarak LiveKit'e bağlanıyoruz (dinleyici olarak mikrofon kapalı,
+  // hoparlör açık).
+  useEffect(() => {
+    if (!detail) return;
+    const session = getVoiceSession();
+    if (!session || session.roomId !== roomId) {
+      const isSeated = detail.seats.some((s) => s?.userId === meId);
+      connectVoice(isSeated);
     }
-  }, [roomId, detail, route.params.roomName]);
+  }, [detail, meId, roomId, connectVoice]);
 
-  // "Sese Katıl" tek dokunuşla çalışmalı: koltukta değilsen önce boş bir
-  // koltuğa otur (görünür sırada ilk boşluk), sonra sese bağlan. Elle bir
-  // koltuk seçmek isteyen yine "+" işaretine dokunabilir.
+  // "Sese Katıl" / "Koltuğa Otur": koltukta değilsen boş bir koltuğa otur ve
+  // sesini açarak konuşmacı ol.
   const handleJoinVoice = useCallback(async () => {
     const alreadySeated = detail?.seats.some((s) => s?.userId === meId) ?? false;
     if (!alreadySeated) {
@@ -181,15 +271,31 @@ export default function RoomScreen({ route, navigation }: Props) {
         showAlert('Oda dolu', 'Konuşmak için boş koltuk yok.');
         return;
       }
+      // Anlık iyimser güncelleme
+      if (meId) {
+        setDetail((prev) => {
+          if (!prev) return prev;
+          const nextSeats = [...prev.seats];
+          const myViewer = prev.viewers.find((v) => v.userId === meId);
+          nextSeats[emptyIndex] = {
+            index: emptyIndex,
+            userId: meId,
+            displayName: myViewer?.displayName || 'Sen',
+            avatarUrl: myViewer?.avatarUrl || null,
+          };
+          return { ...prev, seats: nextSeats, viewers: prev.viewers.filter((v) => v.userId !== meId) };
+        });
+      }
       try {
         await takeSeat(roomId, emptyIndex);
         load(true);
       } catch (err) {
         showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+        load(true);
         return;
       }
     }
-    await connectVoice();
+    await connectVoice(true);
   }, [detail, meId, roomId, load, connectVoice]);
 
   const toggleMute = useCallback(async () => {
@@ -203,6 +309,12 @@ export default function RoomScreen({ route, navigation }: Props) {
       showAlert('Olmadı', err instanceof Error ? err.message : 'Mikrofon değiştirilemedi.');
     }
   }, [roomId]);
+
+  const toggleSpeaker = useCallback(async () => {
+    const next = !speakerOutput;
+    setSpeakerOutput(next);
+    await switchAudioOutput(next);
+  }, [speakerOutput]);
 
   // Koltuğa oturmamış ama odayı açık tutanlar "dinleyici" olarak sayılıyor —
   // gerçek zamanlı bir bağlantı olmadığı için düzenli aralıklarla "hâlâ
@@ -276,24 +388,45 @@ export default function RoomScreen({ route, navigation }: Props) {
     async (seat: RoomDetail['seats'][number], index: number) => {
       if (seatBusy) return;
       if (seat && seat.userId !== meId) {
-        // Host, dolu bir koltuğa (kendisi değil) dokununca moderasyon
-        // seçenekleri çıkıyor.
+        // Host, dolu bir koltuğa (kendisi değil) dokununca moderasyon seçenekleri çıkıyor
         if (isHost) {
-          showAlert(seat.displayName, 'Bu kişi için ne yapmak istersin?', [
+          showAlert(seat.displayName, 'Bu katılımcı için ne yapmak istersin?', [
             { text: 'Vazgeç', style: 'cancel' },
             {
               text: 'Sustur',
               onPress: () =>
                 muteRoomUser(roomId, seat.userId)
-                  .then(() => load(true))
+                  .then(() => {
+                    showAlert('Başarılı', `${seat.displayName} susturuldu.`);
+                    load(true);
+                  })
                   .catch((err) => showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.')),
             },
             {
-              text: 'Yasakla',
+              text: 'Koltuktan İndir',
+              style: 'destructive',
+              onPress: () =>
+                kickSeatUser(roomId, seat.userId)
+                  .then(() => {
+                    setDetail((prev) => {
+                      if (!prev) return prev;
+                      const nextSeats = prev.seats.map((s) => (s?.userId === seat.userId ? null : s));
+                      return { ...prev, seats: nextSeats };
+                    });
+                    showAlert('Koltuktan İndirildi', `${seat.displayName} koltuktan indirildi.`);
+                    load(true);
+                  })
+                  .catch((err) => showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.')),
+            },
+            {
+              text: 'Odadan Yasakla',
               style: 'destructive',
               onPress: () =>
                 banRoomUser(roomId, seat.userId)
-                  .then(() => load(true))
+                  .then(() => {
+                    showAlert('Yasaklandı', `${seat.displayName} odadan uzaklaştırıldı.`);
+                    load(true);
+                  })
                   .catch((err) => showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.')),
             },
           ]);
@@ -303,18 +436,62 @@ export default function RoomScreen({ route, navigation }: Props) {
       setSeatBusy(true);
       try {
         if (seat?.userId === meId) {
-          await leaveRoomCompletely();
+          showAlert('Koltuktan Kalk', 'Koltuktan kalkıp dinleyiciler arasına geçmek istiyor musun?', [
+            { text: 'Vazgeç', style: 'cancel' },
+            {
+              text: 'Koltuktan Kalk',
+              style: 'destructive',
+              onPress: async () => {
+                if (meId) {
+                  setDetail((prev) => {
+                    if (!prev) return prev;
+                    const nextSeats = prev.seats.map((s) => (s?.userId === meId ? null : s));
+                    const nextViewers = prev.viewers.some((v) => v.userId === meId)
+                      ? prev.viewers
+                      : [...prev.viewers, { userId: meId, displayName: seat?.displayName || 'Sen', avatarUrl: seat?.avatarUrl || null }];
+                    return { ...prev, seats: nextSeats, viewers: nextViewers };
+                  });
+                }
+                try {
+                  await leaveSeat(roomId);
+                  await connectVoice(false);
+                  load(true);
+                } catch (err) {
+                  showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+                  load(true);
+                }
+              },
+            },
+          ]);
         } else if (!seat) {
-          await takeSeat(roomId, index);
-          load(true);
+          if (meId) {
+            setDetail((prev) => {
+              if (!prev) return prev;
+              const nextSeats = [...prev.seats];
+              const myViewer = prev.viewers.find((v) => v.userId === meId);
+              nextSeats[index] = {
+                index,
+                userId: meId,
+                displayName: myViewer?.displayName || 'Sen',
+                avatarUrl: myViewer?.avatarUrl || null,
+              };
+              return { ...prev, seats: nextSeats, viewers: prev.viewers.filter((v) => v.userId !== meId) };
+            });
+          }
+          try {
+            await takeSeat(roomId, index);
+            await connectVoice(true); // Koltuğa oturan kişinin sesi ve mikrofonu hemen açılır!
+            load(true);
+          } catch (err) {
+            showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+            load(true);
+          }
         }
-      } catch (err) {
-        showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
       } finally {
         setSeatBusy(false);
       }
     },
-    [roomId, meId, seatBusy, isHost, load, leaveRoomCompletely],
+    [roomId, meId, seatBusy, isHost, load, connectVoice],
   );
 
   const handleSend = useCallback(async () => {
@@ -436,35 +613,94 @@ export default function RoomScreen({ route, navigation }: Props) {
 
           <View style={styles.seatGrid}>
             {detail.seats.map((seat, index) => (
-              <Seat key={index} seat={seat} isMe={seat?.userId === meId} onPress={() => handleSeatPress(seat, index)} />
+              <Seat
+                key={index}
+                seat={seat}
+                isMe={seat?.userId === meId}
+                isSpeaking={!!seat && speakingUserIds.has(seat.userId)}
+                onPress={() => handleSeatPress(seat, index)}
+              />
             ))}
           </View>
 
           {!detail.isBanned && (
             <View style={styles.voiceCallout}>
-              {displayVoiceState === 'idle' || displayVoiceState === 'error' ? (
-                <Pressable onPress={handleJoinVoice} style={styles.voiceButton}>
-                  <Ionicons name="mic-outline" size={18} color="#1a0d33" />
-                  <Text style={styles.voiceButtonText}>Sese Katıl</Text>
+              <View style={styles.voiceCalloutTop}>
+                <Pressable
+                  onPress={toggleSpeaker}
+                  style={[styles.speakerToggleButton, speakerOutput && styles.speakerToggleButtonActive]}
+                >
+                  <Ionicons
+                    name={speakerOutput ? 'volume-high' : 'ear'}
+                    size={16}
+                    color={speakerOutput ? GOLD : TEXT_MUTED}
+                  />
+                  <Text style={[styles.speakerToggleText, speakerOutput && styles.speakerToggleTextActive]}>
+                    {speakerOutput ? 'Hoparlör Açık' : 'Ahize Modu'}
+                  </Text>
                 </Pressable>
-              ) : displayVoiceState === 'connecting' ? (
+
+                {isSeated ? (
+                  <View style={styles.badgeSpeaker}>
+                    <Ionicons name="mic" size={12} color="#10B981" />
+                    <Text style={styles.badgeSpeakerText}>Konuşmacısın</Text>
+                  </View>
+                ) : (
+                  <View style={styles.badgeListener}>
+                    <Ionicons name="headset" size={12} color={GOLD} />
+                    <Text style={styles.badgeListenerText}>Dinliyorsun</Text>
+                  </View>
+                )}
+              </View>
+
+              {displayVoiceState === 'connecting' ? (
                 <View style={styles.voiceStatusRow}>
-                  <ActivityIndicator color={GOLD} />
-                  <Text style={styles.voiceCalloutText}>Bağlanıyor...</Text>
+                  <ActivityIndicator color={GOLD} size="small" />
+                  <Text style={styles.voiceCalloutText}>Sese bağlanıyor...</Text>
                 </View>
               ) : displayVoiceState === 'reconnecting' ? (
                 <View style={styles.voiceStatusRow}>
-                  <ActivityIndicator color={GOLD} />
-                  <Text style={styles.voiceCalloutText}>Bağlantı zayıfladı, yeniden bağlanıyor...</Text>
+                  <ActivityIndicator color={GOLD} size="small" />
+                  <Text style={styles.voiceCalloutText}>Bağlantı yenileniyor...</Text>
                 </View>
-              ) : (
+              ) : isSeated ? (
                 <View style={styles.voiceConnectedRow}>
                   <Pressable onPress={toggleMute} style={[styles.voiceIconButton, muted && styles.voiceIconButtonMuted]}>
-                    <Ionicons name={muted ? 'mic-off-outline' : 'mic-outline'} size={18} color={muted ? TEXT_MUTED : GOLD} />
+                    <Ionicons name={muted ? 'mic-off' : 'mic'} size={18} color={muted ? '#E08A8A' : GOLD} />
                   </Pressable>
-                  <Text style={styles.voiceConnectedText}>{muted ? 'Mikrofon kapalı' : 'Sesli bağlısın'}</Text>
-                  <Pressable onPress={leaveRoomCompletely} style={styles.voiceLeaveButton}>
-                    <Text style={styles.voiceLeaveButtonText}>Ayrıl</Text>
+                  <Text style={styles.voiceConnectedText}>{muted ? 'Mikrofonun Kapalı' : 'Mikrofonun Açık'}</Text>
+                  <Pressable
+                    onPress={async () => {
+                      if (meId) {
+                        setDetail((prev) => {
+                          if (!prev) return prev;
+                          const nextSeats = prev.seats.map((s) => (s?.userId === meId ? null : s));
+                          const seat = prev.seats.find((s) => s?.userId === meId);
+                          const nextViewers = prev.viewers.some((v) => v.userId === meId)
+                            ? prev.viewers
+                            : [...prev.viewers, { userId: meId, displayName: seat?.displayName || 'Sen', avatarUrl: seat?.avatarUrl || null }];
+                          return { ...prev, seats: nextSeats, viewers: nextViewers };
+                        });
+                      }
+                      try {
+                        await leaveSeat(roomId);
+                        await connectVoice(false);
+                        load(true);
+                      } catch (err) {
+                        showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+                        load(true);
+                      }
+                    }}
+                    style={styles.voiceLeaveButton}
+                  >
+                    <Text style={styles.voiceLeaveButtonText}>Koltuktan Kalk</Text>
+                  </Pressable>
+                </View>
+              ) : (
+                <View style={styles.listenerActionRow}>
+                  <Pressable onPress={handleJoinVoice} style={styles.voiceButton}>
+                    <Ionicons name="mic-outline" size={18} color="#1a0d33" />
+                    <Text style={styles.voiceButtonText}>Koltuğa Otur & Konuş</Text>
                   </Pressable>
                 </View>
               )}
@@ -644,7 +880,40 @@ const styles = StyleSheet.create({
   muteBannerText: { flex: 1, fontSize: 12, color: GOLD_SOFT, lineHeight: 17 },
   seatGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 14, marginBottom: 18 },
   seat: { width: 62, alignItems: 'center' },
-  seatAvatar: { width: 50, height: 50, borderRadius: 25, marginBottom: 5 },
+  seatAvatarWrap: {
+    position: 'relative',
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 5,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  seatAvatarSpeaking: {
+    borderColor: '#22C55E',
+    shadowColor: '#22C55E',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
+    elevation: 10,
+    backgroundColor: 'rgba(34, 197, 94, 0.25)',
+  },
+  seatAvatar: { width: 46, height: 46, borderRadius: 23 },
+  speakingWaveBadge: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    backgroundColor: '#22C55E',
+    borderRadius: 9,
+    width: 18,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: NIGHT_DEEP,
+  },
   seatAvatarFallback: { alignItems: 'center', justifyContent: 'center' },
   seatAvatarText: { fontSize: 18, fontWeight: '800', color: '#fff' },
   seatEmpty: {
@@ -665,9 +934,80 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
-    padding: 16,
+    padding: 14,
     alignItems: 'center',
     marginBottom: 20,
+    width: '100%',
+  },
+  voiceCalloutTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(242, 200, 121, 0.15)',
+  },
+  speakerToggleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(11, 10, 31, 0.7)',
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  speakerToggleButtonActive: {
+    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    borderColor: GOLD,
+  },
+  speakerToggleText: {
+    fontSize: 12,
+    color: TEXT_MUTED,
+    fontWeight: '600',
+  },
+  speakerToggleTextActive: {
+    color: GOLD,
+  },
+  badgeSpeaker: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
+    borderRadius: 8,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+  },
+  badgeSpeakerText: {
+    fontSize: 11,
+    color: '#10B981',
+    fontWeight: '700',
+  },
+  badgeListener: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderRadius: 8,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+  },
+  badgeListenerText: {
+    fontSize: 11,
+    color: GOLD,
+    fontWeight: '700',
+  },
+  listenerActionRow: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
   },
   voiceCalloutText: { fontSize: 12, lineHeight: 18, color: TEXT_PRIMARY, textAlign: 'center' },
   voiceButton: {
@@ -680,8 +1020,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   voiceButtonText: { fontSize: 13.5, fontWeight: '800', color: '#1a0d33' },
-  voiceStatusRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  voiceConnectedRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  voiceStatusRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4 },
+  voiceConnectedRow: { flexDirection: 'row', alignItems: 'center', gap: 12, width: '100%', justifyContent: 'space-between' },
   voiceIconButton: {
     width: 38,
     height: 38,

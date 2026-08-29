@@ -877,8 +877,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   interpretationText: {
-    fontSize: 13.5,
-    lineHeight: 22,
+    fontSize: 15.5,
+    lineHeight: 25.5,
     color: TEXT_PRIMARY,
   },
   actionsRow: {

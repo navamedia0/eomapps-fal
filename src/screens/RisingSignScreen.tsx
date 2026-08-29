@@ -335,8 +335,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   readingCardText: {
-    fontSize: 13.5,
-    lineHeight: 21,
+    fontSize: 15.5,
+    lineHeight: 25,
     color: TEXT_PRIMARY,
   },
   readingCardActions: {

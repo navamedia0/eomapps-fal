@@ -904,8 +904,8 @@ const styles = StyleSheet.create({
     color: GOLD,
   },
   resultText: {
-    fontSize: 14,
-    lineHeight: 23,
+    fontSize: 15.5,
+    lineHeight: 25.5,
     color: TEXT_PRIMARY,
   },
   deepUpgradeCard: {
