@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { View, Text, Pressable, Image, ImageBackground, ScrollView, StyleSheet, ActivityIndicator, type StyleProp, type TextStyle } from 'react-native';
+import { View, Text, Pressable, Image, ImageBackground, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { showAlert } from '@/services/themedAlert';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -8,20 +8,11 @@ import { getCoins, addCoins, subscribeCoins } from '@/services/coins';
 import { getWallet, subscribeWallet, purchaseWalletBundle, WALLET_BUNDLES, type WalletBalances } from '@/services/shop';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CornerTicks from '@/components/CornerTicks';
-import { useAnimatedCounter } from '@/hooks/useAnimatedCounter';
+import AnimatedNumberText from '@/components/AnimatedNumberText';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 const COSMIC_CARD_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
 const COIN_IKONU = require('@/assets/icons/coin_ikonu.png');
-
-// Yüklenme anındaki gerçek değere (mount olur olmaz) hemen oturur, sadece
-// SONRAKİ değişikliklerde (satın alma vb.) ~4 saniyede sayarak yükselir —
-// bu yüzden bilerek ayrı bir bileşen: hook'un "ilk değer" mantığı sadece
-// bakiye gerçekten yüklendikten sonra mount edilince doğru çalışıyor.
-function AnimatedBalanceText({ value, style }: { value: number; style: StyleProp<TextStyle> }) {
-  const display = useAnimatedCounter(value);
-  return <Text style={style}>{display}</Text>;
-}
 
 export default function CoinShopScreen() {
   const [coins, setCoins] = useState(0);
@@ -66,6 +57,7 @@ export default function CoinShopScreen() {
       try {
         const balances = await purchaseWalletBundle(bundleId);
         setWallet(balances);
+        await addCoins(coinAmount);
         setFeedback(`+${coinAmount} Coin ve +${crystalAmount} Kristal eklendi! 💎`);
         setTimeout(() => setFeedback(null), 2500);
       } catch (err) {
@@ -92,7 +84,7 @@ export default function CoinShopScreen() {
               <Text style={styles.balanceText}>
                 Bakiyen:{' '}
                 {coinsLoaded ? (
-                  <AnimatedBalanceText value={coins} style={styles.balanceBold} />
+                  <AnimatedNumberText value={coins} style={styles.balanceBold} />
                 ) : (
                   <Text style={styles.balanceBold}>—</Text>
                 )}{' '}
@@ -104,7 +96,7 @@ export default function CoinShopScreen() {
               <Text style={styles.balanceText}>
                 Kristal:{' '}
                 {wallet ? (
-                  <AnimatedBalanceText value={wallet.crystal} style={[styles.balanceBold, { color: '#8FD8F2' }]} />
+                  <AnimatedNumberText value={wallet.crystal} style={[styles.balanceBold, { color: '#8FD8F2' }]} />
                 ) : (
                   <Text style={[styles.balanceBold, { color: '#8FD8F2' }]}>—</Text>
                 )}

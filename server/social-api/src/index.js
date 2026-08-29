@@ -1348,6 +1348,32 @@ export default {
         return json({ balances });
       }
 
+      const gameScoreMatch = path.match(/^\/games\/([^/]+)\/score$/);
+      if (gameScoreMatch && request.method === 'GET') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const row = await env.DB.prepare('SELECT best_score FROM game_scores WHERE user_id = ? AND game_key = ?')
+          .bind(me.id, gameScoreMatch[1])
+          .first();
+        return json({ bestScore: row?.best_score ?? 0 });
+      }
+      if (gameScoreMatch && request.method === 'POST') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const { score } = await request.json();
+        if (!Number.isInteger(score) || score < 0) return json({ error: 'geçersiz skor' }, 400);
+        await env.DB.prepare(
+          `INSERT INTO game_scores (user_id, game_key, best_score, updated_at) VALUES (?, ?, ?, ?)
+           ON CONFLICT(user_id, game_key) DO UPDATE SET best_score = MAX(best_score, excluded.best_score), updated_at = excluded.updated_at`,
+        )
+          .bind(me.id, gameScoreMatch[1], score, new Date().toISOString())
+          .run();
+        const row = await env.DB.prepare('SELECT best_score FROM game_scores WHERE user_id = ? AND game_key = ?')
+          .bind(me.id, gameScoreMatch[1])
+          .first();
+        return json({ bestScore: row.best_score });
+      }
+
       if (path === '/shop/items' && request.method === 'GET') {
         const me = await getSessionUser(request, env);
         const category = url.searchParams.get('category');

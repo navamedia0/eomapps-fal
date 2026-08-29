@@ -296,6 +296,18 @@ CREATE TABLE IF NOT EXISTS garden_plots (
   PRIMARY KEY (user_id, slot_index)
 );
 
+-- Kader Kasabası içindeki hyper-casual oyunların (Keşif Salonu vb.) en iyi
+-- skorları. game_key jenerik tutuldu (örn. 'kesif_salonu') — ileride eklenecek
+-- 5-6 farklı oyun aynı tabloyu paylaşabilsin diye. Sadece final sonuç
+-- yazılıyor (her vuruşta değil) — D1 yazma kotasını korumak için.
+CREATE TABLE IF NOT EXISTS game_scores (
+  user_id TEXT NOT NULL REFERENCES users(id),
+  game_key TEXT NOT NULL,
+  best_score INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL,
+  PRIMARY KEY (user_id, game_key)
+);
+
 INSERT OR IGNORE INTO garden_seed_types (id, name, currency, price, grow_minutes, yield_coin, active, created_at) VALUES
   ('seed-mystic-basic', '[Örnek] Basit Tohum', 'coin', 50, 30, 80, 1, '2026-01-01T00:00:00.000Z'),
   ('seed-mystic-silver', '[Örnek] Gümüş Tohum', 'coin', 150, 120, 260, 1, '2026-01-01T00:00:00.000Z'),

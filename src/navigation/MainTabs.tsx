@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,7 +8,6 @@ import type { RootStackParamList, MainTabParamList } from '@/navigation/types';
 import HomeScreen from '@/screens/HomeScreen';
 import KesfetScreen from '@/screens/KesfetScreen';
 import SohbetScreen from '@/screens/SohbetScreen';
-import GardenScreen from '@/screens/GardenScreen';
 import MagazaScreen from '@/screens/MagazaScreen';
 import ProfilScreen from '@/screens/ProfilScreen';
 import WalletBadge from '@/components/WalletBadge';
@@ -20,11 +19,14 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 type TabKey = keyof MainTabParamList;
 type TabRoute = { key: TabKey; title: string };
 
+// Kader Kasabası burada YOK — TabView'ın navigationState.routes'una girseydi
+// (renderScene null döndürse bile) yatay kaydırma onu boş bir sekme olarak
+// yine de gösterirdi. Ayrı, tam ekran bir "dünya" olduğu için sekme
+// çubuğunda ayrı, statik bir buton olarak render ediliyor (aşağıda).
 const ROUTES: TabRoute[] = [
   { key: 'AnaSayfa', title: 'Ana Sayfa' },
   { key: 'Kesfet', title: 'Keşfet' },
   { key: 'Sohbet', title: 'Sohbet' },
-  { key: 'Garden', title: 'Kader Bahçesi' },
   { key: 'Magaza', title: 'Mağaza' },
   { key: 'Profil', title: 'Profil' },
 ];
@@ -34,7 +36,6 @@ const ROUTES: TabRoute[] = [
 // bir geçici simge gösteriyoruz.
 const FALLBACK_TAB_ICONS: Partial<Record<TabKey, keyof typeof Ionicons.glyphMap>> = {
   Sohbet: 'chatbubbles-outline',
-  Garden: 'flower-outline',
 };
 
 export default function MainTabs({ navigation }: Props) {
@@ -62,8 +63,6 @@ export default function MainTabs({ navigation }: Props) {
               return <KesfetScreen navigation={navigation} />;
             case 'Sohbet':
               return <SohbetScreen navigation={navigation} />;
-            case 'Garden':
-              return <GardenScreen />;
             case 'Magaza':
               return <MagazaScreen navigation={navigation} />;
             case 'Profil':
@@ -77,27 +76,47 @@ export default function MainTabs({ navigation }: Props) {
             {navigationState.routes.map((route, routeIndex) => {
               const focused = navigationState.index === routeIndex;
               return (
-                <Pressable key={route.key} onPress={() => jumpTo(route.key)} style={styles.tabItem} hitSlop={4}>
-                  {/* Dış siyah kareleri kırparak sadece mor yuvarlak çerçeveyi ve büyütülmüş simgeyi gösterir */}
-                  <View style={[styles.tabIconClip, focused && styles.tabIconClipActive]}>
-                    {NAV_ICONS[route.key as keyof typeof NAV_ICONS] ? (
-                      <Image
-                        source={NAV_ICONS[route.key as keyof typeof NAV_ICONS]}
-                        style={[styles.tabIcon, { opacity: focused ? 1 : 0.65 }]}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <Ionicons
-                        name={FALLBACK_TAB_ICONS[route.key] ?? 'ellipse-outline'}
-                        size={26}
-                        color={focused ? GOLD : TEXT_MUTED}
-                      />
-                    )}
-                  </View>
-                  <Text style={[styles.tabLabel, { color: focused ? GOLD : TEXT_MUTED }]} numberOfLines={1}>
-                    {route.title}
-                  </Text>
-                </Pressable>
+                <Fragment key={route.key}>
+                  <Pressable onPress={() => jumpTo(route.key)} style={styles.tabItem} hitSlop={4}>
+                    {/* Dış siyah kareleri kırparak sadece mor yuvarlak çerçeveyi ve büyütülmüş simgeyi gösterir */}
+                    <View style={[styles.tabIconClip, focused && styles.tabIconClipActive]}>
+                      {NAV_ICONS[route.key as keyof typeof NAV_ICONS] ? (
+                        <Image
+                          source={NAV_ICONS[route.key as keyof typeof NAV_ICONS]}
+                          style={[styles.tabIcon, { opacity: focused ? 1 : 0.65 }]}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <Ionicons
+                          name={FALLBACK_TAB_ICONS[route.key] ?? 'ellipse-outline'}
+                          size={26}
+                          color={focused ? GOLD : TEXT_MUTED}
+                        />
+                      )}
+                    </View>
+                    <Text style={[styles.tabLabel, { color: focused ? GOLD : TEXT_MUTED }]} numberOfLines={1}>
+                      {route.title}
+                    </Text>
+                  </Pressable>
+                  {route.key === 'Sohbet' && (
+                    // Kader Kasabası: TabView'ın navigationState.routes'unun
+                    // DIŞINDA, bağımsız statik bir buton — bu yüzden yatay
+                    // kaydırmayla asla ulaşılamaz, sadece dokunarak stack
+                    // üzerinden tam ekran ayrı bir ekran olarak açılır.
+                    <Pressable
+                      onPress={() => navigation.navigate('KaderKasabasi')}
+                      style={styles.tabItem}
+                      hitSlop={4}
+                    >
+                      <View style={styles.tabIconClip}>
+                        <Ionicons name="business-outline" size={26} color={TEXT_MUTED} />
+                      </View>
+                      <Text style={[styles.tabLabel, { color: TEXT_MUTED }]} numberOfLines={1}>
+                        Kader Kas...
+                      </Text>
+                    </Pressable>
+                  )}
+                </Fragment>
               );
             })}
           </View>

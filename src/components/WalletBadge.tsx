@@ -5,6 +5,7 @@ import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
 import { getCoins, subscribeCoins } from '@/services/coins';
 import { getStoredSession } from '@/services/auth';
 import { getWallet, subscribeWallet } from '@/services/shop';
+import AnimatedNumberText from '@/components/AnimatedNumberText';
 import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD } from '@/theme/colors';
 
@@ -12,9 +13,13 @@ type Navigation = { navigate: (screen: 'CoinShop') => void };
 
 // Fal Coin (yerel, okuma açmak için harcanan) ile Kristal/Elmas (sunucudaki
 // sosyal cüzdan, mağaza/VIP için harcanan) iki ayrı bakiye — karıştırılmasın
-// diye aynı rozette ama net şekilde alt alta gösteriliyor.
+// diye aynı rozette ama net şekilde alt alta gösteriliyor. Bu rozet HER
+// ekranda görünen tek gerçek bakiye göstergesi olduğu için, satın alma
+// sonrası ~4 saniyede sayarak yükselen animasyon da (CoinShopScreen'deki
+// gibi) burada, doğrudan bu bileşende oynuyor.
 export default function WalletBadge({ navigation }: { navigation: Navigation }) {
   const [coins, setCoins] = useState(0);
+  const [coinsLoaded, setCoinsLoaded] = useState(false);
   const [crystal, setCrystal] = useState<number | null>(null);
 
   const refreshCrystal = useCallback(() => {
@@ -31,14 +36,23 @@ export default function WalletBadge({ navigation }: { navigation: Navigation }) 
 
   useFocusEffect(
     useCallback(() => {
-      getCoins().then(setCoins);
+      getCoins().then((c) => {
+        setCoins(c);
+        setCoinsLoaded(true);
+      });
       refreshCrystal();
     }, [refreshCrystal]),
   );
 
   useEffect(() => {
-    getCoins().then(setCoins);
-    return subscribeCoins(setCoins);
+    getCoins().then((c) => {
+      setCoins(c);
+      setCoinsLoaded(true);
+    });
+    return subscribeCoins((c) => {
+      setCoins(c);
+      setCoinsLoaded(true);
+    });
   }, []);
 
   useEffect(() => subscribeWallet((balances) => setCrystal(balances.crystal)), []);
@@ -52,12 +66,12 @@ export default function WalletBadge({ navigation }: { navigation: Navigation }) 
       <View style={styles.balancesCol}>
         <View style={styles.row}>
           <Image source={FEATURE_ICONS.coinIcon} style={styles.icon} resizeMode="contain" />
-          <Text style={styles.text}>{coins}</Text>
+          {coinsLoaded ? <AnimatedNumberText value={coins} style={styles.text} /> : <Text style={styles.text}>—</Text>}
         </View>
         {crystal !== null && (
           <View style={styles.row}>
             <Ionicons name="diamond" size={13} color="#8FD8F2" style={styles.crystalIcon} />
-            <Text style={styles.crystalText}>{crystal}</Text>
+            <AnimatedNumberText value={crystal} style={styles.crystalText} />
           </View>
         )}
       </View>

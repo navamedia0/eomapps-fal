@@ -63,13 +63,16 @@ export type RootStackParamList = {
   Achievements: undefined;
   Popularity: undefined;
   Garden: undefined;
+  KaderKasabasi: undefined;
+  KaderKasabasiOda: { title: string; subtitle: string; icon: string };
+  KesifSalonu: undefined;
+  KesifSalonuOyun: undefined;
 };
 
 export type MainTabParamList = {
   AnaSayfa: undefined;
   Kesfet: undefined;
   Sohbet: undefined;
-  Garden: undefined;
   Magaza: undefined;
   Profil: undefined;
 };
