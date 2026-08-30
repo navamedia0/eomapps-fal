@@ -48,19 +48,18 @@ function EkolGridButton({
       onPress={() => item.onPress(navigation)}
       style={({ pressed }) => [
         styles.gridButton,
-        { borderColor: accent },
         pressed && styles.gridButtonPressed,
       ]}
     >
       <View style={styles.buttonInnerContent}>
         {/* DO NOT TOUCH: FeatureIcon and symbols remain completely intact */}
-        <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={50} />
+        <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={52} />
         <View style={styles.gridTextWrap}>
           <Text style={styles.gridTitle} numberOfLines={2}>
             {item.title}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={14} color={accent} style={styles.gridChevron} />
+        <Ionicons name="chevron-forward" size={15} color={accent} style={styles.gridChevron} />
       </View>
     </Pressable>
   );
@@ -276,10 +275,7 @@ export default function TumFallarScreen({ navigation }: Props) {
         <View style={styles.ekolList}>
           {ekoller.map((ekol) => {
             return (
-              <View
-                key={ekol.key}
-                style={[styles.themedCardContainer, { borderColor: ekol.accent }]}
-              >
+              <View key={ekol.key} style={styles.themedCardContainer}>
                 <ImageBackground
                   source={ekol.sectionBg}
                   style={styles.themedCardBg}
@@ -358,7 +354,6 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 22,
     overflow: 'hidden',
-    borderWidth: 1.6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.45,
@@ -373,7 +368,7 @@ const styles = StyleSheet.create({
   },
   cardDarkScrim: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(6, 3, 14, 0.40)',
+    backgroundColor: 'rgba(6, 3, 14, 0.38)',
   },
   sectionInner: {
     width: '100%',
@@ -393,7 +388,7 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
-    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowColor: 'rgba(0, 0, 0, 0.95)',
     textShadowOffset: { width: 0, height: 1.5 },
     textShadowRadius: 4,
   },
@@ -403,7 +398,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginBottom: 10,
     fontWeight: '600',
-    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowColor: 'rgba(0, 0, 0, 0.95)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
@@ -418,31 +413,23 @@ const styles = StyleSheet.create({
   },
   gridButton: {
     flex: 1,
-    backgroundColor: 'rgba(10, 5, 22, 0.35)',
+    backgroundColor: 'transparent',
     borderRadius: 16,
-    borderWidth: 1.2,
-    borderColor: 'rgba(255, 255, 255, 0.22)',
     minHeight: 74,
     overflow: 'hidden',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 2,
   },
   buttonInnerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     paddingVertical: 10,
-    paddingLeft: 8,
-    paddingRight: 8,
+    paddingLeft: 4,
+    paddingRight: 4,
   },
   gridButtonPressed: {
-    opacity: 0.75,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    transform: [{ scale: 0.98 }],
+    opacity: 0.65,
+    transform: [{ scale: 0.96 }],
   },
   gridTextWrap: {
     flex: 1,
@@ -456,7 +443,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
   gridChevron: {
-    marginRight: 4,
+    marginRight: 2,
     opacity: 0.9,
   },
   gridPlaceholder: {
