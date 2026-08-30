@@ -1,318 +1,107 @@
+import React from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  ImageBackground,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet, ImageBackground } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import FeatureIcon from '@/components/FeatureIcon';
-import { FEATURE_ICONS } from '@/assets/icons';
-import { GOLD, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { EKOLLER_DATA, type EkolData } from '@/constants/ekollerData';
+import { GOLD, GOLD_SOFT, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'TumFallar'>;
 
-type GridItem = {
-  key: string;
-  title: string;
-  subtitle?: string;
-  icon: React.ReactNode;
-  onPress: (navigation: Props['navigation']) => void;
-};
-
-type Ekol = {
-  key: string;
-  title: string;
-  sub: string;
-  accent: string;
-  sectionBg: any;
-  items: GridItem[];
-};
-
-function chunkPairs<T>(items: T[]): T[][] {
-  const pairs: T[][] = [];
-  for (let i = 0; i < items.length; i += 2) {
-    pairs.push(items.slice(i, i + 2));
-  }
-  return pairs;
-}
-
-function EkolGridButton({
-  item,
-  accent,
-  navigation,
-}: {
-  item: GridItem;
-  accent: string;
-  navigation: Props['navigation'];
-}) {
-  return (
-    <Pressable
-      onPress={() => item.onPress(navigation)}
-      style={({ pressed }) => [
-        styles.gridButton,
-        pressed && styles.gridButtonPressed,
-      ]}
-    >
-      <View style={styles.buttonInnerContent}>
-        {/* DO NOT TOUCH: FeatureIcon and symbols remain completely intact */}
-        <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={52} />
-        <View style={styles.gridTextWrap}>
-          <Text style={styles.gridTitle} numberOfLines={2}>
-            {item.title}
-          </Text>
-        </View>
-        <Ionicons name="chevron-forward" size={15} color={accent} style={styles.gridChevron} />
-      </View>
-    </Pressable>
-  );
-}
-
 export default function TumFallarScreen({ navigation }: Props) {
-  const ekoller: Ekol[] = [
-    {
-      key: 'cin-ekolu',
-      title: 'Çin Ekolü',
-      sub: 'Lake kırmızısı & imparatorluk altını',
-      accent: '#E11D48',
-      sectionBg: require('@/assets/ekoller/ekol_bg_1_cin.jpg'),
-      items: [
-        {
-          key: 'face',
-          title: 'Yüz Falı',
-          subtitle: 'Sima ilmiyle kaderini keşfet',
-          icon: <MaterialCommunityIcons name="face-recognition" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('ImageReading', { kind: 'face' }),
-        },
-        {
-          key: 'iching',
-          title: 'Çin I Ching Falı',
-          subtitle: '3 sikke ile 64 heksagram',
-          icon: <MaterialCommunityIcons name="yin-yang" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('IChingReading'),
-        },
-      ],
-    },
-    {
-      key: 'osmanli-ekolu',
-      title: 'Osmanlı & Anadolu Ekolü',
-      sub: 'İznik turkuazı & pirinç & lale motifi',
-      accent: '#0EA5E9',
-      sectionBg: require('@/assets/ekoller/ekol_bg_2_osmanli.jpg'),
-      items: [
-        {
-          key: 'coffee',
-          title: 'Kahve Falı',
-          subtitle: 'Fincanındaki sırları çözelim',
-          icon: <MaterialCommunityIcons name="coffee" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('ImageReading', { kind: 'coffee' }),
-        },
-        {
-          key: 'bakla',
-          title: '41 Bakla Falı',
-          subtitle: '3 ocak remil kehaneti',
-          icon: <MaterialCommunityIcons name="dots-hexagon" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('BaklaReading'),
-        },
-      ],
-    },
-    {
-      key: 'nordik-kelt-ekolu',
-      title: 'Nordik & Kelt Ekolü',
-      sub: 'Kayrak grisi & yosun yeşili & bronz',
-      accent: '#10B981',
-      sectionBg: require('@/assets/ekoller/ekol_bg_3_nordik.jpg'),
-      items: [
-        {
-          key: 'rune',
-          title: 'Nordik Rün Falı',
-          subtitle: 'Vikinglerin kutsal taşları',
-          icon: <MaterialCommunityIcons name="triangle-outline" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('RuneReading'),
-        },
-        {
-          key: 'celticTree',
-          title: 'Kelt Ağaç Takvimi',
-          subtitle: 'Druidlerin kutsal 13 ağaç burcu',
-          icon: <MaterialCommunityIcons name="tree-outline" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('CelticTreeReading'),
-        },
-      ],
-    },
-    {
-      key: 'bati-ezoterik-ekolu',
-      title: 'Evrensel Batı Ezoterik Ekolü',
-      sub: 'Ametist moru & antika pirinç & mum ışığı',
-      accent: '#A855F7',
-      sectionBg: require('@/assets/ekoller/ekol_bg_4_bati_ezoterik.jpg'),
-      items: [
-        {
-          key: 'palm',
-          title: 'El Falı',
-          subtitle: 'Avucundaki çizgileri oku',
-          icon: <MaterialCommunityIcons name="hand-back-right-outline" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('ImageReading', { kind: 'palm' }),
-        },
-        {
-          key: 'tea',
-          title: 'Çay Falı',
-          subtitle: 'Tasseografi yaprak desenleri',
-          icon: <MaterialCommunityIcons name="leaf" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('ImageReading', { kind: 'tea' }),
-        },
-        {
-          key: 'wax',
-          title: 'Balmumu Falı',
-          subtitle: 'Alevin ve balmumunun aşk dili',
-          icon: <MaterialCommunityIcons name="candle" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('WaxReading'),
-        },
-        {
-          key: 'scrying',
-          title: 'Kara Ayna Durugörü',
-          subtitle: 'Obsidyen ayna ile sezgisel vizyon',
-          icon: <MaterialCommunityIcons name="mirror" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('ScryingReading'),
-        },
-        {
-          key: 'aura',
-          title: 'Aura & Çakra Falı',
-          subtitle: '7 çakra ve ışıltılı aura analizi',
-          icon: <MaterialCommunityIcons name="atom" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('AuraEnergy'),
-        },
-        {
-          key: 'matrix',
-          title: 'Kader Matrisi',
-          subtitle: '22 Arkana ve sekizgen haritan',
-          icon: <MaterialCommunityIcons name="octagram-outline" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('MatrixOfDestiny'),
-        },
-      ],
-    },
-    {
-      key: 'ruya-ekolu',
-      title: 'Bilinçaltı & Rüya Ekolü',
-      sub: 'Gece indigosu & aurora moru-turkuazı',
-      accent: '#6366F1',
-      sectionBg: require('@/assets/ekoller/ekol_bg_5_ruya.jpg'),
-      items: [
-        {
-          key: 'dream',
-          title: 'Rüya Yorumlama',
-          subtitle: 'Rüyanın sembollerini birlikte çöz',
-          icon: <Ionicons name="moon" size={24} color={GOLD} />,
-          onPress: (nav) => nav.navigate('DreamChat'),
-        },
-        {
-          key: 'dreamLibrary',
-          title: 'Rüya Kitaplığı',
-          subtitle: 'Geçmiş rüyalarını sakla, ara',
-          icon: <Ionicons name="library-outline" size={24} color={GOLD} />,
-          onPress: (nav) => nav.navigate('RuyaKitapligi'),
-        },
-      ],
-    },
-    {
-      key: 'klasik-evrensel',
-      title: 'Klasik & Evrensel Fallar',
-      sub: 'Geleneksel kehanet çeşitleri',
-      accent: '#F59E0B',
-      sectionBg: require('@/assets/ekoller/ekol_bg_6_klasik.jpg'),
-      items: [
-        {
-          key: 'tarot',
-          title: 'Tarot Falı',
-          subtitle: '78 kart ile kadim arketip açılımı',
-          icon: <MaterialCommunityIcons name="cards-playing-outline" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('TarotSpread'),
-        },
-        {
-          key: 'katina',
-          title: 'Katina Aşk Falı',
-          subtitle: 'Deste-i Katina 65 kartlık ilişki açılımı',
-          icon: <MaterialCommunityIcons name="cards-heart-outline" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('Katina'),
-        },
-        {
-          key: 'solitaire',
-          title: 'İskambil Falı',
-          subtitle: '32 kartlık klasik kader açılımı',
-          icon: <MaterialCommunityIcons name="cards-spade" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('Solitaire'),
-        },
-        {
-          key: 'daisy',
-          title: 'Papatya Falı',
-          subtitle: 'Seviyor / sevmiyor interaktif fal',
-          icon: <MaterialCommunityIcons name="flower-tulip-outline" size={26} color={GOLD} />,
-          onPress: (nav) => nav.navigate('Daisy'),
-        },
-        {
-          key: 'dice',
-          title: 'Zar Falı',
-          subtitle: '3 kutsal zarın kombinasyon yorumu',
-          icon: <Ionicons name="dice-outline" size={24} color={GOLD} />,
-          onPress: (nav) => nav.navigate('Dice'),
-        },
-        {
-          key: 'voiceReading',
-          title: 'Sesli Fal',
-          subtitle: 'Anlat, yapay zeka yorumlasın',
-          icon: <Ionicons name="mic-outline" size={24} color={GOLD} />,
-          onPress: (nav) => nav.navigate('VoiceReading'),
-        },
-      ],
-    },
-  ];
-
   return (
     <MysticTableBackground variant="general">
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
         <View style={styles.header}>
           <MaterialCommunityIcons name="earth" size={22} color={GOLD} />
           <Text style={styles.headerTitle}>Tüm Fal Çeşitleri</Text>
         </View>
-        <Text style={styles.headerCaption}>Dünyanın dört bir yanından kadim kehanet ekolleri</Text>
+        <Text style={styles.headerCaption}>
+          Dünyanın dört bir yanından kadim kehanet ekolleri vitrini
+        </Text>
 
+        {/* 6 Standart Boyutlu Görsel Ekol Vitrin Kartı */}
         <View style={styles.ekolList}>
-          {ekoller.map((ekol) => {
-            return (
-              <View key={ekol.key} style={styles.themedCardContainer}>
-                <ImageBackground
-                  source={ekol.sectionBg}
-                  style={styles.themedCardBg}
-                  imageStyle={styles.themedCardImage}
-                  resizeMode="cover"
-                >
-                  <View style={styles.cardDarkScrim} />
-                  <View style={[styles.sectionInner, styles.themedSectionInner]}>
-                    <View style={[styles.ekolHeadBar, { backgroundColor: ekol.accent }]} />
-                    <Text style={[styles.ekolTitle, { color: ekol.accent }]}>{ekol.title}</Text>
-                    <Text style={styles.ekolSub}>{ekol.sub}</Text>
+          {EKOLLER_DATA.map((ekol) => (
+            <Pressable
+              key={ekol.key}
+              onPress={() => navigation.navigate('EkolDetay', { ekolKey: ekol.key })}
+              style={({ pressed }) => [
+                styles.showcaseCard,
+                pressed && styles.showcaseCardPressed,
+              ]}
+            >
+              <ImageBackground
+                source={ekol.sectionBg}
+                style={styles.showcaseBg}
+                imageStyle={styles.showcaseImage}
+                resizeMode="cover"
+              >
+                {/* Mistik Karartma Gradient */}
+                <LinearGradient
+                  colors={[
+                    'rgba(8, 4, 18, 0.45)',
+                    'rgba(8, 4, 18, 0.65)',
+                    'rgba(8, 4, 18, 0.88)',
+                  ]}
+                  style={StyleSheet.absoluteFillObject}
+                />
 
-                    <View style={styles.grid}>
-                      {chunkPairs(ekol.items).map((pair, idx) => (
-                        <View key={`${ekol.key}-${idx}`} style={styles.gridRow}>
-                          <EkolGridButton
-                            item={pair[0]}
-                            accent={ekol.accent}
-                            navigation={navigation}
-                          />
-                          {pair[1] ? (
-                            <EkolGridButton
-                              item={pair[1]}
-                              accent={ekol.accent}
-                              navigation={navigation}
-                            />
-                          ) : (
-                            <View style={styles.gridPlaceholder} />
-                          )}
-                        </View>
-                      ))}
+                {/* Kart İçeriği */}
+                <View style={styles.showcaseContent}>
+                  {/* Üst Başlık & Çizgi */}
+                  <View style={styles.topRow}>
+                    <View style={styles.titleWrap}>
+                      <View style={[styles.headBar, { backgroundColor: ekol.accent }]} />
+                      <Text style={[styles.ekolTitle, { color: ekol.accent }]}>
+                        {ekol.title}
+                      </Text>
+                    </View>
+                    <View style={[styles.chevronWrap, { backgroundColor: ekol.accent + '25', borderColor: ekol.accent + '66' }]}>
+                      <Ionicons name="chevron-forward" size={18} color={ekol.accent} />
                     </View>
                   </View>
-                </ImageBackground>
-              </View>
-            );
-          })}
+
+                  {/* Açıklama */}
+                  <Text style={styles.ekolSub} numberOfLines={2}>
+                    {ekol.sub}
+                  </Text>
+
+                  {/* Alt Ekol Keşfet Buton Şeridi */}
+                  <View style={styles.bottomRow}>
+                    <View
+                      style={[
+                        styles.explorePill,
+                        {
+                          backgroundColor: ekol.accent + '22',
+                          borderColor: ekol.accent + '66',
+                        },
+                      ]}
+                    >
+                      <MaterialCommunityIcons name="cards-playing-outline" size={14} color={ekol.accent} />
+                      <Text style={[styles.explorePillText, { color: ekol.accent }]}>
+                        {ekol.items.length} Fal Çeşidi · İncele
+                      </Text>
+                      <Ionicons name="arrow-forward" size={13} color={ekol.accent} />
+                    </View>
+                  </View>
+                </View>
+              </ImageBackground>
+            </Pressable>
+          ))}
         </View>
       </ScrollView>
     </MysticTableBackground>
@@ -325,7 +114,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 20,
     paddingBottom: 48,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
   },
   header: {
     flexDirection: 'row',
@@ -340,7 +129,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   headerCaption: {
-    marginTop: 8,
+    marginTop: 6,
     marginBottom: 20,
     fontSize: 12.5,
     color: TEXT_MUTED,
@@ -348,105 +137,94 @@ const styles = StyleSheet.create({
   },
   ekolList: {
     width: '100%',
-    gap: 20,
+    gap: 18,
   },
-  themedCardContainer: {
+  showcaseCard: {
     width: '100%',
+    height: 235, // %50 artırılmış standart vitrin kartı boyutu
     borderRadius: 22,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.45,
+    shadowOpacity: 0.5,
     shadowRadius: 10,
-    elevation: 6,
+    elevation: 7,
   },
-  themedCardBg: {
+  showcaseCardPressed: {
+    opacity: 0.88,
+    transform: [{ scale: 0.985 }],
+  },
+  showcaseBg: {
     width: '100%',
+    height: '100%',
   },
-  themedCardImage: {
+  showcaseImage: {
     borderRadius: 22,
   },
-  cardDarkScrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(6, 3, 14, 0.38)',
-  },
-  sectionInner: {
-    width: '100%',
-  },
-  themedSectionInner: {
-    padding: 14,
+  showcaseContent: {
+    flex: 1,
+    padding: 16,
+    justifyContent: 'space-between',
     zIndex: 2,
   },
-  ekolHeadBar: {
-    width: 36,
-    height: 3.5,
-    borderRadius: 2,
-    marginBottom: 6,
-  },
-  ekolTitle: {
-    fontSize: 13.5,
-    fontWeight: '900',
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-    textShadowColor: 'rgba(0, 0, 0, 0.95)',
-    textShadowOffset: { width: 0, height: 1.5 },
-    textShadowRadius: 4,
-  },
-  ekolSub: {
-    fontSize: 11,
-    color: '#F1F5F9',
-    marginTop: 2,
-    marginBottom: 10,
-    fontWeight: '600',
-    textShadowColor: 'rgba(0, 0, 0, 0.95)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
-  },
-  grid: {
-    width: '100%',
-    gap: 8,
-  },
-  gridRow: {
-    flexDirection: 'row',
-    gap: 8,
-    width: '100%',
-  },
-  gridButton: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    borderRadius: 16,
-    minHeight: 74,
-    overflow: 'hidden',
-    justifyContent: 'center',
-  },
-  buttonInnerContent: {
+  topRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingVertical: 10,
-    paddingLeft: 4,
-    paddingRight: 4,
+    justifyContent: 'space-between',
   },
-  gridButtonPressed: {
-    opacity: 0.65,
-    transform: [{ scale: 0.96 }],
-  },
-  gridTextWrap: {
+  titleWrap: {
     flex: 1,
+    gap: 4,
   },
-  gridTitle: {
-    fontSize: 13.5,
-    fontWeight: '800',
-    color: '#FFFFFF',
+  headBar: {
+    width: 38,
+    height: 3.5,
+    borderRadius: 2,
+  },
+  ekolTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
     textShadowColor: 'rgba(0, 0, 0, 0.95)',
-    textShadowOffset: { width: 0, height: 1.5 },
+    textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
-  gridChevron: {
-    marginRight: 2,
-    opacity: 0.9,
+  chevronWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  gridPlaceholder: {
-    flex: 1,
+  ekolSub: {
+    fontSize: 13,
+    color: '#F1F5F9',
+    fontWeight: '600',
+    lineHeight: 19,
+    marginVertical: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.95)',
+    textShadowOffset: { width: 0, height: 1.5 },
+    textShadowRadius: 3,
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  explorePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 1.2,
+    borderRadius: 12,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+  },
+  explorePillText: {
+    fontSize: 12.5,
+    fontWeight: '800',
+    letterSpacing: 0.3,
   },
 });

@@ -56,6 +56,7 @@ export type RootStackParamList = {
   BilgiKosesi: undefined;
   SozlerKosku: undefined;
   HaftaninSevilenleri: undefined;
+  EkolDetay: { ekolKey: string };
   UserProfile: { userId: string };
   BlockedUsers: undefined;
   DMThread: { userId: string; displayName?: string | null; avatarUrl?: string | null };

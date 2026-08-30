@@ -80,6 +80,7 @@ import ScryingScreen from '@/screens/ScryingScreen';
 import BilgiKosesiScreen from '@/screens/BilgiKosesiScreen';
 import SozlerKoskuScreen from '@/screens/SozlerKoskuScreen';
 import HaftaninSevilenleriScreen from '@/screens/HaftaninSevilenleriScreen';
+import EkolDetayScreen from '@/screens/EkolDetayScreen';
 import UserProfileScreen from '@/screens/UserProfileScreen';
 import BlockedUsersScreen from '@/screens/BlockedUsersScreen';
 import DMThreadScreen from '@/screens/DMThreadScreen';
@@ -225,6 +226,7 @@ export default function App() {
             <Stack.Screen name="BilgiKosesi" component={BilgiKosesiScreen} options={{ title: 'Bilgi Köşesi' }} />
             <Stack.Screen name="SozlerKosku" component={SozlerKoskuScreen} options={{ title: 'Sözler Köşkü' }} />
             <Stack.Screen name="HaftaninSevilenleri" component={HaftaninSevilenleriScreen} options={{ title: 'Haftanın En Sevilenleri' }} />
+            <Stack.Screen name="EkolDetay" component={EkolDetayScreen} options={{ headerShown: false }} />
             <Stack.Screen name="UserProfile" component={UserProfileScreen} options={{ title: 'Profil' }} />
             <Stack.Screen name="BlockedUsers" component={BlockedUsersScreen} options={{ title: 'Engellenen Kullanıcılar' }} />
             <Stack.Screen
