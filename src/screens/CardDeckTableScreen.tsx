@@ -2434,6 +2434,32 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                       })}
                     </View>
                   </View>
+                ) : drawnCards.length === 9 ? (
+                  /* 9 KARTLIK 3x3 KUTU DİZİLİMİ (Lenormand Kutu Açılımı / Rün
+                     Yggdrasil) — satırlar anlamsal katmanlardır (ör. Geçmiş/
+                     Şimdi/Gelecek), bu yüzden 3'erli sıra halinde, sırayla
+                     dizilmeli; genel sarmalayan (flexWrap) düzen konteyner
+                     genişliğine göre 4+4+1 gibi yanlış gruplar oluşturuyordu. */
+                  <View style={styles.boxRitualBoard}>
+                    {[0, 3, 6].map((rowStart) => (
+                      <View key={`box-row-${rowStart}`} style={styles.boxRitualRow}>
+                        {[0, 1, 2].map((col) => {
+                          const idx = rowStart + col;
+                          const card = drawnCards[idx];
+                          if (!card) return null;
+                          return (
+                            <RitualSlotItem
+                              key={`box-${idx}`}
+                              card={card}
+                              index={idx}
+                              deck={deck}
+                              onPress={() => setInspectedCard(card)}
+                            />
+                          );
+                        })}
+                      </View>
+                    ))}
+                  </View>
                 ) : (
                   /* 1 VEYA 3 KARTLIK KLASİK DİZİLİM */
                   <View style={styles.generalRitualRow}>
@@ -4040,6 +4066,17 @@ const styles = StyleSheet.create({
   generalRitualRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 12,
+  },
+
+  // 9 Kart 3x3 Kutu Geometrisi (Lenormand Kutu Açılımı / Rün Yggdrasil)
+  boxRitualBoard: {
+    width: '100%',
+    gap: 14,
+  },
+  boxRitualRow: {
+    flexDirection: 'row',
     justifyContent: 'center',
     gap: 12,
   },

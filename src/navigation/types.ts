@@ -96,7 +96,7 @@ export type RootStackParamList = {
   // kullanılacağını belirten spreadType yeterli.
   RuneResult: {
     picks: { id: string; orientation: 'upright' | 'reversed' }[];
-    spreadType: 'single' | 'norn' | 'cross';
+    spreadType: 'single' | 'norn' | 'cross' | 'yggdrasil';
   };
 };
 

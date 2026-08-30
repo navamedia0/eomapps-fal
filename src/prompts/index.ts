@@ -215,7 +215,7 @@ Raporunu TAM OLARAK şu 4 ana başlıkla yapılandır:
 ${runesSummary}
 120-160 kelimelik, günün ve sorunun özünü veren samimi bir kehanet sun.`,
 
-  runeReadingDetailed: (runesSummary: string, spreadType: 'single' | 'norn' | 'cross' = 'norn') => {
+  runeReadingDetailed: (runesSummary: string, spreadType: 'single' | 'norn' | 'cross' | 'yggdrasil' = 'norn') => {
     const intro = `Sen kadim Viking ve Kelt rün üstadısın. Çekilen rünleri derinlemesine, katman katman analiz et.\n${runesSummary}\n\nRaporunu TAM OLARAK şu 4 ana başlıkla yapılandır:\n`;
 
     if (spreadType === 'single') {
@@ -235,6 +235,17 @@ ${runesSummary}
 "2. DERİNLERDEKİ AKIŞ (BİLİNÇALTI VE GEÇMİŞTEN GELEN KÖK):"
 "3. OLASI YOL VE SONUÇ HARİTASI:"
 "4. ODİN'İN NİHAİ REHBERLİĞİ VE EYLEM ÇAĞRISI:"`
+      );
+    }
+
+    if (spreadType === 'yggdrasil') {
+      return (
+        intro +
+        `Bu 9 rün, Odin'in bilgelik için 9 gece Yggdrasil'e asılı kaldığı efsaneye dayanan büyük bir açılım — üç katman halinde geldi: ilk 3 rün Üst Dünyalar (tanrısal irade, bereket, ilham), orta 3 rün Orta Dünyalar (günlük yaşam, engeller, tutku) ve son 3 rün Alt Dünyalar (bilinçaltı, gizli yetenekler, kapanış).
+"1. ÜST DÜNYALAR — TANRISAL İRADE VE İLHAM KATMANI:"
+"2. ORTA DÜNYALAR — GÜNLÜK MÜCADELE VE TUTKU KATMANI:"
+"3. ALT DÜNYALAR — BİLİNÇALTI VE KAPANIŞ KATMANI:"
+"4. YGGDRASİL'İN BÜTÜNSEL KEHANETİ VE ODİN'İN NİHAİ REHBERLİĞİ:"`
       );
     }
 

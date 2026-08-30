@@ -13,7 +13,15 @@ import RuneSpreadLayout from '@/components/RuneSpreadLayout';
 import EkolEntranceSplash from '@/components/EkolEntranceSplash';
 import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
-import { drawRandomRunes, getAllRunes, type Rune } from '@/services/runeEngine';
+import {
+  drawRandomRunes,
+  getAllRunes,
+  RUNE_SPREAD_TYPES,
+  RUNE_SPREAD_POSITIONS,
+  RUNE_SPREAD_INFO,
+  type Rune,
+  type RuneSpreadType,
+} from '@/services/runeEngine';
 import { interpretRuneReading } from '@/services/readings-ai';
 import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
@@ -23,37 +31,24 @@ import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } fro
 const ALL_RUNE_SYMBOLS = getAllRunes().map((r) => r.symbol);
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RuneReading'>;
-type SpreadType = 'single' | 'norn' | 'cross';
+type SpreadType = RuneSpreadType;
 
-const SPREADS: Record<SpreadType, { count: number; label: string; desc: string; icon: keyof typeof MaterialCommunityIcons.glyphMap; positions: string[] }> = {
-  single: {
-    count: 1,
-    label: 'Tek Rün (Günün Rehberi)',
-    desc: 'Gününe yön veren tek bir kadim işaret',
-    icon: 'star-outline',
-    positions: ['Günün Rehber Rünü'],
-  },
-  norn: {
-    count: 3,
-    label: '3 Taşlı Norn Açılımı',
-    desc: 'Geçmiş - Şimdi - Gelecek akışı',
-    icon: 'triangle-outline',
-    positions: ['1. Urd (Geçmiş / Kökler)', '2. Verdandi (Şimdi / Ateş)', '3. Skuld (Gelecek / Kehanet)'],
-  },
-  cross: {
-    count: 5,
-    label: '5 Taşlı Norse Haçı',
-    desc: 'Durumun özü, gizli etkenler ve olası sonuç',
-    icon: 'compass-outline',
-    positions: [
-      '1. Merkez (Durumun Özü)',
-      '2. Üst (Görünen Etken)',
-      '3. Alt (Gizli / Bilinçaltı Etken)',
-      '4. Sol (Geçmişten Gelen Kök)',
-      '5. Sağ (Olası Yol / Sonuç)',
-    ],
-  },
-};
+// "Kendi Kartlarınla Fal Bak" (CardDeckTableScreen) ile TEK ortak kaynaktan
+// (services/runeEngine.ts) besleniyor — açılım eklendiğinde/değiştiğinde tek
+// yerden güncellenir, iki ekran birbirinden asla sapmaz.
+const SPREADS: Record<SpreadType, { count: number; label: string; desc: string; icon: keyof typeof MaterialCommunityIcons.glyphMap; positions: string[] }> =
+  Object.fromEntries(
+    RUNE_SPREAD_TYPES.map((type) => [
+      type,
+      {
+        count: RUNE_SPREAD_POSITIONS[type].length,
+        label: RUNE_SPREAD_INFO[type].label,
+        desc: RUNE_SPREAD_INFO[type].desc,
+        icon: RUNE_SPREAD_INFO[type].icon as keyof typeof MaterialCommunityIcons.glyphMap,
+        positions: RUNE_SPREAD_POSITIONS[type],
+      },
+    ]),
+  ) as Record<SpreadType, { count: number; label: string; desc: string; icon: keyof typeof MaterialCommunityIcons.glyphMap; positions: string[] }>;
 
 const ELEMENT_COLORS: Array<{ match: string; color: string }> = [
   { match: 'Ateş', color: '#FF7A4D' },
@@ -228,6 +223,28 @@ export default function RuneScreen({ navigation }: Props) {
                   <View style={styles.crossSlot}>{renderStone(runes[2], 2)}</View>
                   <View style={styles.crossSlot} />
                 </View>
+              </View>
+            ) : spreadType === 'yggdrasil' ? (
+              // 9 taş — üç katman (Üst/Orta/Alt dünyalar), 3'erli sıra
+              // halinde. Düz bir listeye/wrap'e bırakılırsa katmanlar
+              // görsel olarak birbirine karışır.
+              <View style={styles.yggdrasilTiers}>
+                {[
+                  { label: 'Üst Dünyalar', start: 0 },
+                  { label: 'Orta Dünyalar', start: 3 },
+                  { label: 'Alt Dünyalar', start: 6 },
+                ].map((tier) => (
+                  <View key={tier.label} style={styles.yggdrasilTier}>
+                    <Text style={styles.yggdrasilTierLabel}>{tier.label}</Text>
+                    <View style={styles.yggdrasilTierRow}>
+                      {[0, 1, 2].map((offset) => (
+                        <View key={offset} style={styles.yggdrasilTierSlot}>
+                          {renderStone(runes[tier.start + offset], tier.start + offset)}
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                ))}
               </View>
             ) : (
               <View style={styles.stonesRow}>{runes.map((rune, i) => renderStone(rune, i))}</View>
@@ -453,6 +470,30 @@ const styles = StyleSheet.create({
   },
   stonesRow: {
     gap: 12,
+  },
+  yggdrasilTiers: {
+    gap: 12,
+  },
+  yggdrasilTier: {
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    borderRadius: 16,
+    padding: 10,
+    gap: 8,
+  },
+  yggdrasilTierLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: GOLD_SOFT,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  yggdrasilTierRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  yggdrasilTierSlot: {
+    flex: 1,
   },
   stoneCard: {
     backgroundColor: 'rgba(26, 16, 52, 0.8)',

@@ -60,6 +60,31 @@ function NorthernCrossLayout({ runes, positions, accentColor }: Props) {
   );
 }
 
+// Yggdrasil'in 9 Dünyası — üç katman (Üst/Orta/Alt dünyalar), her katmanda 3
+// dünya. RUNE_SPREAD_POSITIONS.yggdrasil zaten bu sırayla (0-2 üst, 3-5 orta,
+// 6-8 alt) tanımlı — flexWrap'e bırakılırsa konteyner genişliğine göre
+// 4+4+1 gibi anlamsız gruplar oluşur, bu yüzden 3'erli satırlar zorunlu.
+function YggdrasilLayout({ runes, positions, accentColor }: Props) {
+  const tiers = [runes.slice(0, 3), runes.slice(3, 6), runes.slice(6, 9)];
+  const tierLabels = ['Üst Dünyalar', 'Orta Dünyalar', 'Alt Dünyalar'];
+  return (
+    <View style={styles.treeWrap}>
+      {tiers.map((tier, tierIdx) => (
+        <View key={tierIdx} style={styles.treeTier}>
+          <Text style={[styles.treeTierLabel, { color: accentColor }]}>{tierLabels[tierIdx]}</Text>
+          <View style={styles.treeTierRunes}>
+            {tier.map((rune, colIdx) => {
+              const posIdx = tierIdx * 3 + colIdx;
+              const shortLabel = positions[posIdx]?.split('—')[0]?.replace(/^\d+\.\s*/, '').trim();
+              return <MiniRune key={`${rune.id}-${posIdx}`} rune={rune} label={shortLabel || `${posIdx + 1}`} accentColor={accentColor} />;
+            })}
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 function SingleLayout({ runes, positions, accentColor }: Props) {
   const rune = runes[0];
   if (!rune) return null;
@@ -79,6 +104,8 @@ export default function RuneSpreadLayout({ runes, positions, accentColor }: Prop
         <SingleLayout runes={runes} positions={positions} accentColor={accentColor} />
       ) : runes.length === 5 ? (
         <NorthernCrossLayout runes={runes} positions={positions} accentColor={accentColor} />
+      ) : runes.length === 9 ? (
+        <YggdrasilLayout runes={runes} positions={positions} accentColor={accentColor} />
       ) : (
         <RowLayout runes={runes} positions={positions} accentColor={accentColor} />
       )}
@@ -116,4 +143,8 @@ const styles = StyleSheet.create({
   miniName: { fontSize: 9, color: TEXT_PRIMARY, marginTop: 4, textAlign: 'center', fontWeight: '600' },
   crossWrap: { alignItems: 'center', gap: 8, width: '100%', paddingVertical: 4 },
   crossMidRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+  treeWrap: { width: '100%', gap: 10 },
+  treeTier: { alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 14, padding: 8 },
+  treeTierLabel: { fontSize: 10, fontWeight: '800', marginBottom: 6, letterSpacing: 0.5, textTransform: 'uppercase' },
+  treeTierRunes: { flexDirection: 'row', justifyContent: 'center', gap: 8 },
 });

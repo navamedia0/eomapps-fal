@@ -40,7 +40,7 @@ export function getRuneById(id: string): Rune | undefined {
 // "Kendi Kartlarınla Fal Bak" (CardDeckTableScreen) ve Anasayfa'daki Rün Falı
 // (RuneScreen) TEK bir açılım kataloğunu paylaşır — tek fark kartların kapalı
 // usül mü (Anasayfa) yoksa bizzat seçilerek mi (kendi kartların) çekildiği.
-export const RUNE_SPREAD_TYPES = ['single', 'norn', 'cross'] as const;
+export const RUNE_SPREAD_TYPES = ['single', 'norn', 'cross', 'yggdrasil'] as const;
 export type RuneSpreadType = (typeof RUNE_SPREAD_TYPES)[number];
 
 export const RUNE_SPREAD_POSITIONS: Record<RuneSpreadType, string[]> = {
@@ -53,18 +53,38 @@ export const RUNE_SPREAD_POSITIONS: Record<RuneSpreadType, string[]> = {
     '4. Sol (Geçmişten Gelen Kök)',
     '5. Sağ (Olası Yol / Sonuç)',
   ],
+  // Odin'in bilgeliği kazanmak için 9 gece Yggdrasil'e asılı kaldığı efsaneye
+  // dayanan büyük açılım — 9, Nordik mitolojide Tarot'un 10'u gibi kutsal bir
+  // sayıdır (9 dünya, 9 gece). Üç katman: Üst/Orta/Alt dünyalar.
+  yggdrasil: [
+    '1. Asgard — Tanrısal İrade & Kimlik',
+    '2. Vanaheim — Bereket & Duygusal Zenginlik',
+    '3. Ljusalfheim — İlham & Aydınlanma',
+    '4. Midgard — Günlük Yaşam & Somut Gerçeklik',
+    '5. Jotunheim — Karşılaşılan Dev Engeller',
+    '6. Muspelheim — Tutku, Arzu & Dönüştürücü Ateş',
+    '7. Niflheim — Bilinçaltı Korkular & Buzul Sessizlik',
+    '8. Svartalfheim — Gizli Yetenekler & El Emeği Çaba',
+    '9. Helheim — Kapanış, Miras & Bırakılması Gereken',
+  ],
 };
 
-export const RUNE_SPREAD_INFO: Record<RuneSpreadType, { label: string; desc: string }> = {
-  single: { label: 'Tek Rün (Günün Rehberi)', desc: 'Gününe yön veren tek bir kadim işaret' },
-  norn: { label: '3 Taşlı Norn Açılımı', desc: 'Geçmiş - Şimdi - Gelecek akışı' },
-  cross: { label: '5 Taşlı Norse Haçı', desc: 'Durumun özü, gizli etkenler ve olası sonuç' },
+export const RUNE_SPREAD_INFO: Record<RuneSpreadType, { label: string; desc: string; icon: string }> = {
+  single: { label: 'Tek Rün (Günün Rehberi)', desc: 'Gününe yön veren tek bir kadim işaret', icon: 'star-outline' },
+  norn: { label: '3 Taşlı Norn Açılımı', desc: 'Geçmiş - Şimdi - Gelecek akışı', icon: 'triangle-outline' },
+  cross: { label: '5 Taşlı Norse Haçı', desc: 'Durumun özü, gizli etkenler ve olası sonuç', icon: 'compass-outline' },
+  yggdrasil: {
+    label: "9 Taşlı Yggdrasil Açılımı",
+    desc: "Odin'in bilgelik için asılı kaldığı 9 dünyanın büyük kehaneti",
+    icon: 'tree-outline',
+  },
 };
 
 export function spreadTypeForCount(count: number): RuneSpreadType {
   if (count <= 1) return 'single';
   if (count <= 3) return 'norn';
-  return 'cross';
+  if (count <= 5) return 'cross';
+  return 'yggdrasil';
 }
 
 export function drawRandomRunes(count: number = 1): Rune[] {

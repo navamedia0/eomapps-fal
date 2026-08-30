@@ -11,6 +11,7 @@ import { getTarotMeaning } from '@/services/tarotMeanings';
 import type { KatinaCard } from '@/services/katina';
 import { getKatinaMeaning } from '@/services/katinaMeanings';
 import { getLenormandMeaning } from '@/services/lenormandMeanings';
+import { RUNE_SPREAD_POSITIONS, type Rune as RuneForReading, type RuneSpreadType } from '@/services/runeEngine';
 import { findDreamMatches } from '@/services/dreamMeanings';
 import { getCoffeeSymbolGlossary } from '@/services/coffeeSymbols';
 import { getTeaLeafSymbolGlossary } from '@/services/teaLeafSymbols';
@@ -438,21 +439,9 @@ export async function interpretDestinyMatrix(
   ]);
 }
 
-const RUNE_SPREAD_POSITIONS: Record<'single' | 'norn' | 'cross', string[]> = {
-  single: ['Günün Rehber Rünü'],
-  norn: ['1. Urd (Geçmiş / Kökler)', '2. Verdandi (Şimdi / Ateş)', '3. Skuld (Gelecek / Kehanet)'],
-  cross: [
-    '1. Merkez (Durumun Özü)',
-    '2. Üst (Görünen / Yüzeydeki Etken)',
-    '3. Alt (Gizli / Bilinçaltı Etken)',
-    '4. Sol (Geçmişten Gelen Kök)',
-    '5. Sağ (Olası Yol / Sonuç)',
-  ],
-};
-
 export async function interpretRuneReading(
-  runes: import('@/services/runeEngine').Rune[],
-  spreadType: 'single' | 'norn' | 'cross' = 'norn',
+  runes: RuneForReading[],
+  spreadType: RuneSpreadType = 'norn',
   mode: 'standard' | 'deep' = 'standard',
 ): Promise<string> {
   const positions = RUNE_SPREAD_POSITIONS[spreadType];
