@@ -11,6 +11,7 @@ import { addCoins } from '@/services/coins';
 import { saveReadingHistory } from '@/services/readingHistory';
 import ShareButton from '@/components/ShareButton';
 import CornerTicks from '@/components/CornerTicks';
+import LenormandSpreadLayout from '@/components/LenormandSpreadLayout';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LenormandResult'>;
@@ -114,6 +115,8 @@ export default function LenormandResultScreen({ route, navigation }: Props) {
 
         {!loading && !error && (
           <View style={styles.cardsList}>
+            <LenormandSpreadLayout cards={picks} positions={positions} accentColor={ACCENT} />
+
             {cards.map((card, index) => (
               <View key={`${card.id}-${index}`} style={styles.cardBlock}>
                 <CornerTicks />
