@@ -51,7 +51,7 @@ export const FORTUNE_THEMES: Record<string, FortuneTheme> = {
     key: 'rune',
     splashTitle: 'Nordik Rün Falı',
     splashSubtitle: 'Vikinglerin Kutsal 24 Taşının Bilgeliği',
-    accentColor: '#5B8266',
+    accentColor: '#38BDF8',
     figure: require('@/assets/themes/figures/rune.png'),
     background: require('@/assets/themes/backgrounds/rune.jpg'),
     resultBg: require('@/assets/themes/results/rune.jpg'),

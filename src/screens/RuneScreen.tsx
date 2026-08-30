@@ -1,21 +1,19 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
-import ReelRevealFX from '@/components/effects/ReelRevealFX';
-import SparkleBurst from '@/components/effects/SparkleBurst';
-import ReadingCardStack from '@/components/ReadingCardStack';
 import ParchmentReadingResult from '@/components/ParchmentReadingResult';
 import RuneSpreadLayout from '@/components/RuneSpreadLayout';
+import RunePouchExperience from '@/components/runes/RunePouchExperience';
+import RuneInspectModal from '@/components/runes/RuneInspectModal';
 import EkolEntranceSplash from '@/components/EkolEntranceSplash';
 import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import {
   drawRandomRunes,
-  getAllRunes,
   RUNE_SPREAD_TYPES,
   RUNE_SPREAD_POSITIONS,
   RUNE_SPREAD_INFO,
@@ -26,94 +24,29 @@ import { interpretRuneReading } from '@/services/readings-ai';
 import { getCoins, spendCoins, addCoins } from '@/services/coins';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
-
-const ALL_RUNE_SYMBOLS = getAllRunes().map((r) => r.symbol);
+import { GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RuneReading'>;
 type SpreadType = RuneSpreadType;
 
-// "Kendi Kartlarınla Fal Bak" (CardDeckTableScreen) ile TEK ortak kaynaktan
-// (services/runeEngine.ts) besleniyor — açılım eklendiğinde/değiştiğinde tek
-// yerden güncellenir, iki ekran birbirinden asla sapmaz.
-const SPREADS: Record<SpreadType, { count: number; label: string; desc: string; icon: keyof typeof MaterialCommunityIcons.glyphMap; positions: string[] }> =
-  Object.fromEntries(
-    RUNE_SPREAD_TYPES.map((type) => [
-      type,
-      {
-        count: RUNE_SPREAD_POSITIONS[type].length,
-        label: RUNE_SPREAD_INFO[type].label,
-        desc: RUNE_SPREAD_INFO[type].desc,
-        icon: RUNE_SPREAD_INFO[type].icon as keyof typeof MaterialCommunityIcons.glyphMap,
-        positions: RUNE_SPREAD_POSITIONS[type],
-      },
-    ]),
-  ) as Record<SpreadType, { count: number; label: string; desc: string; icon: keyof typeof MaterialCommunityIcons.glyphMap; positions: string[] }>;
-
-const ELEMENT_COLORS: Array<{ match: string; color: string }> = [
-  { match: 'Ateş', color: '#FF7A4D' },
-  { match: 'Buz', color: '#6FD8E8' },
-  { match: 'Su', color: '#4FA8E0' },
-  { match: 'Toprak', color: '#8BC24A' },
-  { match: 'Hava', color: '#B9A6F2' },
-  { match: 'Tüm Elementler', color: GOLD },
-];
-
-function elementColor(element: string): string {
-  const found = ELEMENT_COLORS.find((e) => element.includes(e.match));
-  return found ? found.color : GOLD;
-}
-
-function RuneStoneCard({ rune, positionLabel, delay }: { rune: Rune; positionLabel: string; delay: number }) {
-  const [settled, setSettled] = useState(false);
-  const accent = elementColor(rune.element);
-  const glyphColor = rune.isReversed ? '#F2A65A' : accent;
-
-  return (
-    <View style={styles.stoneCard}>
-      <Text style={styles.stonePosition}>{positionLabel}</Text>
-
-      <View style={styles.reelStage}>
-        <SparkleBurst active={settled} color={accent} />
-        <ReelRevealFX
-          finalSymbol={rune.symbol}
-          spinPool={ALL_RUNE_SYMBOLS}
-          delay={delay}
-          glowColor={accent}
-          onSettled={() => setSettled(true)}
-          renderSymbol={(symbol, isSettled) => (
-            <View
-              style={[
-                styles.runeStoneVisual,
-                { borderColor: isSettled ? accent : 'rgba(242, 200, 121, 0.4)' },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.runeRuneGlyph,
-                  isSettled && rune.isReversed && styles.runeGlyphReversed,
-                  { color: isSettled ? glyphColor : GOLD_SOFT },
-                ]}
-              >
-                {symbol}
-              </Text>
-            </View>
-          )}
-        />
-      </View>
-
-      {settled && (
-        <>
-          <Text style={styles.runeStoneName}>
-            {rune.name} {rune.isReversed ? '(TERS)' : ''}
-          </Text>
-          <Text style={styles.runeStoneElement}>Element: {rune.element}</Text>
-          <Text style={styles.runeStoneMeaning}>{rune.isReversed ? rune.reversed : rune.upright}</Text>
-        </>
-      )}
-    </View>
-  );
-}
+const SPREADS: Record<
+  SpreadType,
+  { count: number; label: string; desc: string; icon: keyof typeof MaterialCommunityIcons.glyphMap; positions: string[] }
+> = Object.fromEntries(
+  RUNE_SPREAD_TYPES.map((type) => [
+    type,
+    {
+      count: RUNE_SPREAD_POSITIONS[type].length,
+      label: RUNE_SPREAD_INFO[type].label,
+      desc: RUNE_SPREAD_INFO[type].desc,
+      icon: RUNE_SPREAD_INFO[type].icon as keyof typeof MaterialCommunityIcons.glyphMap,
+      positions: RUNE_SPREAD_POSITIONS[type],
+    },
+  ]),
+) as Record<
+  SpreadType,
+  { count: number; label: string; desc: string; icon: keyof typeof MaterialCommunityIcons.glyphMap; positions: string[] }
+>;
 
 export default function RuneScreen({ navigation }: Props) {
   const [spreadType, setSpreadType] = useState<SpreadType>('norn');
@@ -124,9 +57,13 @@ export default function RuneScreen({ navigation }: Props) {
   const [coinFallback, setCoinFallback] = useState<{ coins: number; cost: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showSplash, setShowSplash] = useState(true);
+
+  // Inspect Modal State
+  const [inspectModal, setInspectModal] = useState<{ rune: Rune; label: string } | null>(null);
+
   const resultSections = useMemo(() => (result ? parseNumberedSections(result) : null), [result]);
 
-  const handleDrawRunes = () => {
+  const handleStartDraw = () => {
     const drawn = drawRandomRunes(SPREADS[spreadType].count);
     setRunes(drawn);
     setResult(null);
@@ -158,25 +95,25 @@ export default function RuneScreen({ navigation }: Props) {
     }
   };
 
-  const renderStone = (rune: Rune | undefined, i: number) => {
-    if (!rune) return null;
-    return (
-      <RuneStoneCard key={i} rune={rune} positionLabel={SPREADS[spreadType].positions[i]} delay={i * 220} />
-    );
-  };
-
   return (
     <MysticTableBackground customBackground={FORTUNE_THEMES.rune.background}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Screen Header */}
         <View style={styles.header}>
           <Text style={styles.runeBigSymbol}>ᚱ</Text>
           <Text style={styles.title}>Nordik Runik Taş Falı</Text>
           <Text style={styles.subtitle}>Odin'in ve Nornların Kadim Viking Kehanet Taşları</Text>
         </View>
 
+        {/* Initial Setup: Açılım Türü Seçimi */}
         {runes.length === 0 ? (
           <View style={styles.setupCard}>
+            <View style={styles.setupBadgeHeader}>
+              <MaterialCommunityIcons name="bag-personal-outline" size={20} color="#38BDF8" />
+              <Text style={styles.setupBadgeTitle}>Kutsal Kese Dökümü</Text>
+            </View>
             <Text style={styles.cardTitle}>Açılım Türünü Seç</Text>
+
             <View style={styles.spreadTypeRow}>
               {(Object.keys(SPREADS) as SpreadType[]).map((key) => {
                 const spread = SPREADS[key];
@@ -187,10 +124,14 @@ export default function RuneScreen({ navigation }: Props) {
                     onPress={() => setSpreadType(key)}
                     style={[styles.spreadTypeBtn, active && styles.spreadTypeBtnActive]}
                   >
-                    <MaterialCommunityIcons name={spread.icon} size={20} color={active ? GOLD : TEXT_MUTED} />
+                    <MaterialCommunityIcons
+                      name={spread.icon}
+                      size={20}
+                      color={active ? '#38BDF8' : TEXT_MUTED}
+                    />
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.spreadTypeBtnText, active && styles.spreadTypeBtnTextActive]}>
-                        {spread.label}
+                        {spread.label} ({spread.count} Taş)
                       </Text>
                       <Text style={styles.spreadTypeBtnDesc}>{spread.desc}</Text>
                     </View>
@@ -199,57 +140,24 @@ export default function RuneScreen({ navigation }: Props) {
               })}
             </View>
 
-            <Pressable onPress={handleDrawRunes} style={({ pressed }) => [styles.primaryBtn, pressed && styles.btnPressed]}>
-              <MaterialCommunityIcons name="hand-back-left" size={22} color={NIGHT_CARD} />
+            <Pressable
+              onPress={handleStartDraw}
+              style={({ pressed }) => [styles.primaryBtn, pressed && styles.btnPressed]}
+            >
+              <MaterialCommunityIcons name="bag-personal-outline" size={22} color={NIGHT_CARD} />
               <Text style={styles.primaryBtnText}>Kutsal Keseden Taşları Çek</Text>
             </Pressable>
           </View>
         ) : (
+          /* Active Experience: Kutsal Kese Dökümü ve Açılım */
           <View style={styles.runesWrap}>
-            {spreadType === 'cross' ? (
-              <View style={styles.crossGrid}>
-                <View style={styles.crossRow}>
-                  <View style={styles.crossSlot} />
-                  <View style={styles.crossSlot}>{renderStone(runes[1], 1)}</View>
-                  <View style={styles.crossSlot} />
-                </View>
-                <View style={styles.crossRow}>
-                  <View style={styles.crossSlot}>{renderStone(runes[3], 3)}</View>
-                  <View style={styles.crossSlot}>{renderStone(runes[0], 0)}</View>
-                  <View style={styles.crossSlot}>{renderStone(runes[4], 4)}</View>
-                </View>
-                <View style={styles.crossRow}>
-                  <View style={styles.crossSlot} />
-                  <View style={styles.crossSlot}>{renderStone(runes[2], 2)}</View>
-                  <View style={styles.crossSlot} />
-                </View>
-              </View>
-            ) : spreadType === 'yggdrasil' ? (
-              // 9 taş — üç katman (Üst/Orta/Alt dünyalar), 3'erli sıra
-              // halinde. Düz bir listeye/wrap'e bırakılırsa katmanlar
-              // görsel olarak birbirine karışır.
-              <View style={styles.yggdrasilTiers}>
-                {[
-                  { label: 'Üst Dünyalar', start: 0 },
-                  { label: 'Orta Dünyalar', start: 3 },
-                  { label: 'Alt Dünyalar', start: 6 },
-                ].map((tier) => (
-                  <View key={tier.label} style={styles.yggdrasilTier}>
-                    <Text style={styles.yggdrasilTierLabel}>{tier.label}</Text>
-                    <View style={styles.yggdrasilTierRow}>
-                      {[0, 1, 2].map((offset) => (
-                        <View key={offset} style={styles.yggdrasilTierSlot}>
-                          {renderStone(runes[tier.start + offset], tier.start + offset)}
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                ))}
-              </View>
-            ) : (
-              <View style={styles.stonesRow}>{runes.map((rune, i) => renderStone(rune, i))}</View>
-            )}
+            <RunePouchExperience
+              runes={runes}
+              positions={SPREADS[spreadType].positions}
+              onInspectRune={(rune, label) => setInspectModal({ rune, label })}
+            />
 
+            {/* Interpretation Mode Selection */}
             {!result && !loading && (
               <View style={styles.modeSection}>
                 <Text style={styles.modeTitle}>Rün Yorum Seviyesi:</Text>
@@ -258,7 +166,11 @@ export default function RuneScreen({ navigation }: Props) {
                     onPress={() => setSelectedMode('standard')}
                     style={[styles.modeCard, selectedMode === 'standard' && styles.modeCardActive]}
                   >
-                    <MaterialCommunityIcons name="star-crescent" size={18} color={selectedMode === 'standard' ? GOLD : TEXT_MUTED} />
+                    <MaterialCommunityIcons
+                      name="star-crescent"
+                      size={18}
+                      color={selectedMode === 'standard' ? '#38BDF8' : TEXT_MUTED}
+                    />
                     <Text style={styles.modeCardTitle}>Standart Yorum</Text>
                     <Text style={styles.modeCardDesc}>Rün özeti ve rehberliği (15 Coin)</Text>
                   </Pressable>
@@ -267,19 +179,29 @@ export default function RuneScreen({ navigation }: Props) {
                     onPress={() => setSelectedMode('deep')}
                     style={[styles.modeCard, styles.modeCardDeep, selectedMode === 'deep' && styles.modeCardDeepActive]}
                   >
-                    <MaterialCommunityIcons name="crown" size={18} color={GOLD} />
-                    <Text style={[styles.modeCardTitle, { color: '#F5C862' }]}>Kapsamlı Derin</Text>
+                    <MaterialCommunityIcons name="crown" size={18} color="#38BDF8" />
+                    <Text style={[styles.modeCardTitle, { color: '#7DD3FC' }]}>Kapsamlı Derin</Text>
                     <Text style={styles.modeCardDesc}>4 Boyutlu derin kehanet (20 Coin)</Text>
                   </Pressable>
                 </View>
 
                 <Pressable
                   onPress={() => handleInterpret(selectedMode)}
-                  style={({ pressed }) => [styles.primaryBtn, selectedMode === 'deep' && styles.btnDeep, pressed && styles.btnPressed]}
+                  style={({ pressed }) => [
+                    styles.primaryBtn,
+                    selectedMode === 'deep' && styles.btnDeep,
+                    pressed && styles.btnPressed,
+                  ]}
                 >
-                  <MaterialCommunityIcons name={selectedMode === 'deep' ? 'crown' : 'star-crescent'} size={20} color={NIGHT_CARD} />
+                  <MaterialCommunityIcons
+                    name={selectedMode === 'deep' ? 'crown' : 'star-crescent'}
+                    size={20}
+                    color={NIGHT_CARD}
+                  />
                   <Text style={styles.primaryBtnText}>
-                    {selectedMode === 'deep' ? 'Kapsamlı Rün Raporunu Çözümle (20 Coin)' : 'Rünleri Yorumla (15 Coin)'}
+                    {selectedMode === 'deep'
+                      ? 'Kapsamlı Rün Raporunu Çözümle (20 Coin)'
+                      : 'Rünleri Yorumla (15 Coin)'}
                   </Text>
                 </Pressable>
               </View>
@@ -287,7 +209,7 @@ export default function RuneScreen({ navigation }: Props) {
 
             {loading && (
               <View style={styles.loadingBox}>
-                <MaterialCommunityIcons name="shield-sword-outline" size={36} color={GOLD} />
+                <MaterialCommunityIcons name="shield-sword-outline" size={36} color="#38BDF8" />
                 <Text style={styles.loadingText}>Kadim Futhark glifleri ve Norn kehaneti okunuyor...</Text>
               </View>
             )}
@@ -305,7 +227,7 @@ export default function RuneScreen({ navigation }: Props) {
             {result && !resultSections && (
               <View style={styles.resultCard}>
                 <View style={styles.badgeRow}>
-                  <MaterialCommunityIcons name="crown" size={16} color={GOLD} />
+                  <MaterialCommunityIcons name="crown" size={16} color="#38BDF8" />
                   <Text style={styles.badgeText}>Nordik Rün Kehaneti Raporu</Text>
                 </View>
                 <Text style={styles.resultText}>{result}</Text>
@@ -314,13 +236,14 @@ export default function RuneScreen({ navigation }: Props) {
             )}
 
             <Pressable onPress={() => setRunes([])} style={styles.resetBtn}>
-              <Ionicons name="refresh" size={16} color={GOLD_SOFT} />
+              <Ionicons name="refresh" size={16} color="#7DD3FC" />
               <Text style={styles.resetBtnText}>Yeniden Rün Çek</Text>
             </Pressable>
           </View>
         )}
       </ScrollView>
 
+      {/* Result Parchment Sheet */}
       {runes.length > 0 && result && resultSections ? (
         <ParchmentReadingResult
           visible={true}
@@ -328,28 +251,39 @@ export default function RuneScreen({ navigation }: Props) {
           sections={resultSections}
           shareTextPrefix="Mistik Rehber - Runik Taş Kehanetim"
           parchmentBg={FORTUNE_THEMES.rune.resultBg}
-          accentColor={FORTUNE_THEMES.rune.accentColor}
+          accentColor="#38BDF8"
           onHomePress={() => navigation.navigate('Home')}
           onNewReadingPress={() => setRunes([])}
           spreadLayoutModalContent={
             <RuneSpreadLayout
               runes={runes.map((r) => ({ id: r.id, orientation: r.isReversed ? 'reversed' : 'upright' }))}
               positions={SPREADS[spreadType].positions}
-              accentColor={FORTUNE_THEMES.rune.accentColor}
+              accentColor="#38BDF8"
+              onInspectRune={(rune, label) => setInspectModal({ rune, label })}
             />
           }
         />
       ) : null}
+
+      {/* Splash Modal */}
       {FORTUNE_THEMES.rune.figure && (
         <EkolEntranceSplash
           visible={showSplash}
           figureSource={FORTUNE_THEMES.rune.figure}
           title={FORTUNE_THEMES.rune.splashTitle}
           subtitle={FORTUNE_THEMES.rune.splashSubtitle}
-          accentColor={FORTUNE_THEMES.rune.accentColor}
+          accentColor="#38BDF8"
           onFinish={() => setShowSplash(false)}
         />
       )}
+
+      {/* Rune Detail Inspection Modal */}
+      <RuneInspectModal
+        visible={!!inspectModal}
+        rune={inspectModal?.rune ?? null}
+        positionLabel={inspectModal?.label}
+        onClose={() => setInspectModal(null)}
+      />
     </MysticTableBackground>
   );
 }
@@ -368,13 +302,16 @@ const styles = StyleSheet.create({
   },
   runeBigSymbol: {
     fontSize: 42,
-    color: GOLD,
+    color: '#38BDF8',
     fontWeight: '700',
+    textShadowColor: '#38BDF8',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12,
   },
   title: {
     fontSize: 22,
     fontWeight: '800',
-    color: GOLD,
+    color: '#F0F9FF',
     textAlign: 'center',
   },
   subtitle: {
@@ -386,17 +323,35 @@ const styles = StyleSheet.create({
   },
   setupCard: {
     width: '100%',
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(15, 23, 42, 0.88)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
-    borderRadius: 18,
+    borderColor: 'rgba(56, 189, 248, 0.35)',
+    borderRadius: 20,
     padding: 20,
     gap: 16,
   },
+  setupBadgeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(56, 189, 248, 0.12)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(56, 189, 248, 0.3)',
+  },
+  setupBadgeTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#38BDF8',
+    letterSpacing: 0.5,
+  },
   cardTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: GOLD_SOFT,
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: '#E0F2FE',
     textAlign: 'center',
   },
   spreadTypeRow: {
@@ -406,15 +361,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: 'rgba(15, 8, 35, 0.75)',
+    backgroundColor: 'rgba(15, 23, 42, 0.75)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(56, 189, 248, 0.25)',
     borderRadius: 14,
     padding: 14,
   },
   spreadTypeBtnActive: {
-    borderColor: GOLD,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    borderColor: '#38BDF8',
+    backgroundColor: 'rgba(56, 189, 248, 0.14)',
   },
   spreadTypeBtnText: {
     fontSize: 13,
@@ -423,132 +378,43 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   spreadTypeBtnTextActive: {
-    color: GOLD,
-    fontWeight: '700',
+    color: '#38BDF8',
+    fontWeight: '800',
   },
   spreadTypeBtnDesc: {
     fontSize: 10.5,
     color: TEXT_MUTED,
     marginTop: 2,
   },
-  crossGrid: {
-    width: '100%',
-    gap: 10,
-  },
-  crossRow: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  crossSlot: {
-    flex: 1,
-    alignItems: 'center',
-  },
   primaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: GOLD,
+    backgroundColor: '#38BDF8',
     borderRadius: 14,
     paddingVertical: 14,
     marginTop: 6,
+    shadowColor: '#38BDF8',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 6,
   },
   btnDeep: {
-    backgroundColor: '#F5C862',
+    backgroundColor: '#7DD3FC',
   },
   btnPressed: {
     opacity: 0.85,
   },
   primaryBtnText: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
     color: NIGHT_CARD,
   },
   runesWrap: {
     width: '100%',
     gap: 16,
-  },
-  stonesRow: {
-    gap: 12,
-  },
-  yggdrasilTiers: {
-    gap: 12,
-  },
-  yggdrasilTier: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    borderRadius: 16,
-    padding: 10,
-    gap: 8,
-  },
-  yggdrasilTierLabel: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: GOLD_SOFT,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-    textAlign: 'center',
-  },
-  yggdrasilTierRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  yggdrasilTierSlot: {
-    flex: 1,
-  },
-  stoneCard: {
-    backgroundColor: 'rgba(26, 16, 52, 0.8)',
-    borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    gap: 6,
-  },
-  stonePosition: {
-    fontSize: 11.5,
-    fontWeight: '700',
-    color: GOLD_SOFT,
-  },
-  reelStage: {
-    width: 72,
-    height: 72,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 4,
-  },
-  runeStoneVisual: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(38, 22, 75, 0.95)',
-    borderWidth: 1.5,
-    borderColor: GOLD,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  runeRuneGlyph: {
-    fontSize: 32,
-    color: GOLD,
-    fontWeight: '700',
-  },
-  runeGlyphReversed: {
-    transform: [{ rotate: '180deg' }],
-    color: '#F2A65A',
-  },
-  runeStoneName: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: TEXT_PRIMARY,
-  },
-  runeStoneElement: {
-    fontSize: 11,
-    color: TEXT_MUTED,
-  },
-  runeStoneMeaning: {
-    fontSize: 12,
-    color: TEXT_PRIMARY,
-    textAlign: 'center',
-    lineHeight: 17,
   },
   modeSection: {
     gap: 10,
@@ -557,7 +423,7 @@ const styles = StyleSheet.create({
   modeTitle: {
     fontSize: 12.5,
     fontWeight: '700',
-    color: GOLD_SOFT,
+    color: '#7DD3FC',
   },
   modeCardsRow: {
     flexDirection: 'row',
@@ -565,23 +431,23 @@ const styles = StyleSheet.create({
   },
   modeCard: {
     flex: 1,
-    backgroundColor: 'rgba(26, 16, 52, 0.75)',
+    backgroundColor: 'rgba(15, 23, 42, 0.75)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(56, 189, 248, 0.25)',
     borderRadius: 14,
     padding: 12,
     gap: 4,
   },
   modeCardActive: {
-    borderColor: GOLD,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    borderColor: '#38BDF8',
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
   },
   modeCardDeep: {
-    backgroundColor: 'rgba(35, 20, 70, 0.85)',
+    backgroundColor: 'rgba(14, 30, 56, 0.85)',
   },
   modeCardDeepActive: {
-    borderColor: '#F5C862',
-    backgroundColor: 'rgba(245, 200, 98, 0.16)',
+    borderColor: '#7DD3FC',
+    backgroundColor: 'rgba(56, 189, 248, 0.22)',
   },
   modeCardTitle: {
     fontSize: 12.5,
@@ -600,14 +466,14 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 13,
-    color: GOLD_SOFT,
+    color: '#7DD3FC',
     fontStyle: 'italic',
     textAlign: 'center',
   },
   resultCard: {
     backgroundColor: NIGHT_CARD,
     borderWidth: 1.2,
-    borderColor: GOLD_SOFT,
+    borderColor: 'rgba(56, 189, 248, 0.4)',
     borderRadius: 18,
     padding: 18,
     gap: 14,
@@ -620,7 +486,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 12.5,
     fontWeight: '700',
-    color: GOLD,
+    color: '#38BDF8',
   },
   resultText: {
     fontSize: 14,
@@ -636,6 +502,6 @@ const styles = StyleSheet.create({
   },
   resetBtnText: {
     fontSize: 12.5,
-    color: GOLD_SOFT,
+    color: '#7DD3FC',
   },
 });

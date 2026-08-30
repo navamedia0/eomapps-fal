@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Animated, View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -44,7 +44,7 @@ function chunkPairs<T>(items: T[]): T[][] {
   return pairs;
 }
 
-function GridButton({ item }: { item: GridItem }) {
+const GridButton = React.memo(function GridButton({ item }: { item: GridItem }) {
   return (
     <Pressable
       onPress={item.onPress}
@@ -59,7 +59,7 @@ function GridButton({ item }: { item: GridItem }) {
       <Ionicons name="chevron-forward" size={14} color={GOLD} style={styles.gridChevron} />
     </Pressable>
   );
-}
+});
 
 export default function HomeScreen({ navigation }: Props) {
   const [checkinInfo, setCheckinInfo] = useState<CheckinStatus | null>(null);
@@ -73,7 +73,7 @@ export default function HomeScreen({ navigation }: Props) {
 
   const goToTasks = () => navigation.navigate('Tasks');
 
-  const categories: Category[] = [
+  const categories: Category[] = useMemo(() => [
     {
       key: 'fallar',
       title: 'Fallar',
@@ -264,7 +264,7 @@ export default function HomeScreen({ navigation }: Props) {
         },
       ],
     },
-  ];
+  ], [navigation]);
 
   return (
     <MysticTableBackground scrollY={scrollY}>

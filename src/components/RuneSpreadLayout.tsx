@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { getRuneById, isSymmetricRune } from '@/services/runeEngine';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { getRuneById, isSymmetricRune, type Rune } from '@/services/runeEngine';
+import RuneStoneItem from '@/components/runes/RuneStoneItem';
 import CornerTicks from '@/components/CornerTicks';
 import { GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY } from '@/theme/colors';
 
@@ -9,64 +10,91 @@ type Props = {
   runes: RunePick[];
   positions: string[];
   accentColor: string;
+  onInspectRune?: (rune: Rune, label: string) => void;
 };
 
-const MINI_SIZE = 46;
-
-function MiniRune({ rune, label, accentColor }: { rune: RunePick; label: string; accentColor: string }) {
+function MiniRune({
+  rune,
+  label,
+  accentColor,
+  onPress,
+}: {
+  rune: RunePick;
+  label: string;
+  accentColor: string;
+  onPress?: () => void;
+}) {
   const meaning = getRuneById(rune.id);
   const symmetric = isSymmetricRune(rune.id);
-  const showReversed = rune.orientation === 'reversed' && !symmetric;
+  const isReversed = rune.orientation === 'reversed' && !symmetric;
+
+  const fullRune: Rune | undefined = meaning ? { ...meaning, isReversed } : undefined;
+
   return (
-    <View style={styles.miniItem}>
-      <Text style={[styles.miniLabel, { color: accentColor }]} numberOfLines={3}>
+    <Pressable onPress={onPress} style={styles.miniItem}>
+      <Text style={[styles.miniLabel, { color: accentColor }]} numberOfLines={2}>
         {label}
       </Text>
-      <View style={[styles.miniBadge, { borderColor: accentColor }, showReversed && styles.miniBadgeReversed]}>
-        <Text style={[styles.miniBadgeSymbol, { color: accentColor }]}>{meaning?.symbol ?? '?'}</Text>
-      </View>
+      <RuneStoneItem rune={fullRune} size="sm" revealed={true} isReversed={isReversed} glowColor={accentColor} />
       <Text style={styles.miniName} numberOfLines={1}>
         {meaning?.name ?? rune.id}
       </Text>
-    </View>
+    </Pressable>
   );
 }
 
-function RowLayout({ runes, positions, accentColor }: Props) {
+function RowLayout({ runes, positions, accentColor, onInspectRune }: Props) {
   return (
     <View style={styles.rowWrap}>
-      {runes.map((rune, index) => (
-        <MiniRune key={`${rune.id}-${index}`} rune={rune} label={positions[index] || `${index + 1}. Rün`} accentColor={accentColor} />
-      ))}
+      {runes.map((rune, index) => {
+        const meaning = getRuneById(rune.id);
+        const isReversed = rune.orientation === 'reversed' && !isSymmetricRune(rune.id);
+        const full = meaning ? { ...meaning, isReversed } : undefined;
+        return (
+          <MiniRune
+            key={`${rune.id}-${index}`}
+            rune={rune}
+            label={positions[index] || `${index + 1}. Rün`}
+            accentColor={accentColor}
+            onPress={() => full && onInspectRune?.(full, positions[index] || '')}
+          />
+        );
+      })}
     </View>
   );
 }
 
-// Kuzey Haçı (5 Rün) — Merkez / Üst / Alt / Sol / Sağ, RUNE_SPREADS'teki
-// pozisyon sırasıyla birebir eşleşir (services/runeSpreads.ts).
-function NorthernCrossLayout({ runes, positions, accentColor }: Props) {
+function NorthernCrossLayout({ runes, positions, accentColor, onInspectRune }: Props) {
   const [center, top, bottom, left, right] = runes;
-  if (!center || !top || !bottom || !left || !right) return <RowLayout runes={runes} positions={positions} accentColor={accentColor} />;
+  if (!center || !top || !bottom || !left || !right) return <RowLayout runes={runes} positions={positions} accentColor={accentColor} onInspectRune={onInspectRune} />;
+  
+  const getFull = (pick: RunePick) => {
+    const m = getRuneById(pick.id);
+    return m ? { ...m, isReversed: pick.orientation === 'reversed' && !isSymmetricRune(pick.id) } : undefined;
+  };
+
   return (
     <View style={styles.crossWrap}>
-      <MiniRune rune={top} label={positions[1]} accentColor={accentColor} />
+      <MiniRune rune={top} label={positions[1]} accentColor={accentColor} onPress={() => { const f = getFull(top); if (f) onInspectRune?.(f, positions[1]); }} />
       <View style={styles.crossMidRow}>
-        <MiniRune rune={left} label={positions[3]} accentColor={accentColor} />
-        <MiniRune rune={center} label={positions[0]} accentColor={accentColor} />
-        <MiniRune rune={right} label={positions[4]} accentColor={accentColor} />
+        <MiniRune rune={left} label={positions[3]} accentColor={accentColor} onPress={() => { const f = getFull(left); if (f) onInspectRune?.(f, positions[3]); }} />
+        <MiniRune rune={center} label={positions[0]} accentColor={accentColor} onPress={() => { const f = getFull(center); if (f) onInspectRune?.(f, positions[0]); }} />
+        <MiniRune rune={right} label={positions[4]} accentColor={accentColor} onPress={() => { const f = getFull(right); if (f) onInspectRune?.(f, positions[4]); }} />
       </View>
-      <MiniRune rune={bottom} label={positions[2]} accentColor={accentColor} />
+      <MiniRune rune={bottom} label={positions[2]} accentColor={accentColor} onPress={() => { const f = getFull(bottom); if (f) onInspectRune?.(f, positions[2]); }} />
     </View>
   );
 }
 
-// Yggdrasil'in 9 Dünyası — üç katman (Üst/Orta/Alt dünyalar), her katmanda 3
-// dünya. RUNE_SPREAD_POSITIONS.yggdrasil zaten bu sırayla (0-2 üst, 3-5 orta,
-// 6-8 alt) tanımlı — flexWrap'e bırakılırsa konteyner genişliğine göre
-// 4+4+1 gibi anlamsız gruplar oluşur, bu yüzden 3'erli satırlar zorunlu.
-function YggdrasilLayout({ runes, positions, accentColor }: Props) {
+function YggdrasilLayout({ runes, positions, accentColor, onInspectRune }: Props) {
   const tiers = [runes.slice(0, 3), runes.slice(3, 6), runes.slice(6, 9)];
   const tierLabels = ['Üst Dünyalar', 'Orta Dünyalar', 'Alt Dünyalar'];
+
+  const getFull = (pick: RunePick) => {
+    const m = getRuneById(pick.id);
+    return m ? { ...m, isReversed: pick.orientation === 'reversed' && !isSymmetricRune(pick.id) } : undefined;
+  };
+
   return (
     <View style={styles.treeWrap}>
       {tiers.map((tier, tierIdx) => (
@@ -76,7 +104,16 @@ function YggdrasilLayout({ runes, positions, accentColor }: Props) {
             {tier.map((rune, colIdx) => {
               const posIdx = tierIdx * 3 + colIdx;
               const shortLabel = positions[posIdx]?.split('—')[0]?.replace(/^\d+\.\s*/, '').trim();
-              return <MiniRune key={`${rune.id}-${posIdx}`} rune={rune} label={shortLabel || `${posIdx + 1}`} accentColor={accentColor} />;
+              const full = getFull(rune);
+              return (
+                <MiniRune
+                  key={`${rune.id}-${posIdx}`}
+                  rune={rune}
+                  label={shortLabel || `${posIdx + 1}`}
+                  accentColor={accentColor}
+                  onPress={() => full && onInspectRune?.(full, positions[posIdx] || '')}
+                />
+              );
             })}
           </View>
         </View>
@@ -85,29 +122,37 @@ function YggdrasilLayout({ runes, positions, accentColor }: Props) {
   );
 }
 
-function SingleLayout({ runes, positions, accentColor }: Props) {
+function SingleLayout({ runes, positions, accentColor, onInspectRune }: Props) {
   const rune = runes[0];
   if (!rune) return null;
+  const m = getRuneById(rune.id);
+  const full = m ? { ...m, isReversed: rune.orientation === 'reversed' && !isSymmetricRune(rune.id) } : undefined;
+
   return (
     <View style={styles.singleWrap}>
-      <MiniRune rune={rune} label={positions[0] || "Odin'in Rünü"} accentColor={accentColor} />
+      <MiniRune
+        rune={rune}
+        label={positions[0] || "Odin'in Rünü"}
+        accentColor={accentColor}
+        onPress={() => full && onInspectRune?.(full, positions[0] || '')}
+      />
     </View>
   );
 }
 
-export default function RuneSpreadLayout({ runes, positions, accentColor }: Props) {
+export default function RuneSpreadLayout({ runes, positions, accentColor, onInspectRune }: Props) {
   return (
     <View style={styles.card}>
       <CornerTicks />
       <Text style={[styles.title, { color: accentColor }]}>Açılımın Taş Dizilimi</Text>
       {runes.length === 1 ? (
-        <SingleLayout runes={runes} positions={positions} accentColor={accentColor} />
+        <SingleLayout runes={runes} positions={positions} accentColor={accentColor} onInspectRune={onInspectRune} />
       ) : runes.length === 5 ? (
-        <NorthernCrossLayout runes={runes} positions={positions} accentColor={accentColor} />
+        <NorthernCrossLayout runes={runes} positions={positions} accentColor={accentColor} onInspectRune={onInspectRune} />
       ) : runes.length === 9 ? (
-        <YggdrasilLayout runes={runes} positions={positions} accentColor={accentColor} />
+        <YggdrasilLayout runes={runes} positions={positions} accentColor={accentColor} onInspectRune={onInspectRune} />
       ) : (
-        <RowLayout runes={runes} positions={positions} accentColor={accentColor} />
+        <RowLayout runes={runes} positions={positions} accentColor={accentColor} onInspectRune={onInspectRune} />
       )}
     </View>
   );
@@ -127,20 +172,9 @@ const styles = StyleSheet.create({
   title: { fontSize: 12, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 16 },
   singleWrap: { alignItems: 'center' },
   rowWrap: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12 },
-  miniItem: { alignItems: 'center', width: MINI_SIZE + 30 },
-  miniLabel: { fontSize: 9, fontWeight: '700', textAlign: 'center', marginBottom: 5, minHeight: 22 },
-  miniBadge: {
-    width: MINI_SIZE,
-    height: MINI_SIZE,
-    borderRadius: 10,
-    borderWidth: 1.4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.25)',
-  },
-  miniBadgeReversed: { transform: [{ rotate: '180deg' }] },
-  miniBadgeSymbol: { fontSize: 22, fontWeight: '900' },
-  miniName: { fontSize: 9, color: TEXT_PRIMARY, marginTop: 4, textAlign: 'center', fontWeight: '600' },
+  miniItem: { alignItems: 'center', width: 72, gap: 4 },
+  miniLabel: { fontSize: 9.5, fontWeight: '700', textAlign: 'center', marginBottom: 2, minHeight: 20 },
+  miniName: { fontSize: 9.5, color: TEXT_PRIMARY, marginTop: 2, textAlign: 'center', fontWeight: '700' },
   crossWrap: { alignItems: 'center', gap: 8, width: '100%', paddingVertical: 4 },
   crossMidRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
   treeWrap: { width: '100%', gap: 10 },

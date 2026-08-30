@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 
 type Star = {
@@ -6,75 +6,70 @@ type Star = {
   top: string;
   left: string;
   size: number;
-  duration: number;
-  delay: number;
+  phase: 'a' | 'b';
 };
 
-function randomStars(count: number): Star[] {
+function generateFixedStars(count: number): Star[] {
   return Array.from({ length: count }, (_, key) => ({
     key,
-    top: `${Math.round(Math.random() * 100)}%`,
-    left: `${Math.round(Math.random() * 100)}%`,
-    size: 1 + Math.random() * 1.6,
-    duration: 1800 + Math.random() * 2400,
-    delay: Math.random() * 3000,
+    top: `${Math.round((key * 137.5) % 96 + 2)}%`,
+    left: `${Math.round((key * 223.1) % 94 + 3)}%`,
+    size: 1 + (key % 3) * 0.7,
+    phase: key % 2 === 0 ? 'a' : 'b',
   }));
 }
 
-function TwinklingStar({ star }: { star: Star }) {
-  const opacity = useRef(new Animated.Value(0.15 + Math.random() * 0.3)).current;
+export default function Starfield({ count = 14 }: { count?: number }) {
+  const phaseA = useRef(new Animated.Value(0.2)).current;
+  const phaseB = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
-    const loop = Animated.loop(
+    const loopA = Animated.loop(
       Animated.sequence([
-        Animated.timing(opacity, {
-          toValue: 0.9,
-          duration: star.duration,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-          delay: star.delay,
-        }),
-        Animated.timing(opacity, {
-          toValue: 0.15,
-          duration: star.duration,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
+        Animated.timing(phaseA, { toValue: 0.95, duration: 2400, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(phaseA, { toValue: 0.2, duration: 2400, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
       ]),
     );
-    loop.start();
-    return () => loop.stop();
-  }, [opacity, star.delay, star.duration]);
 
-  return (
-    <Animated.View
-      style={[
-        styles.star,
-        {
-          top: star.top as any,
-          left: star.left as any,
-          width: star.size,
-          height: star.size,
-          borderRadius: star.size,
-          opacity,
-        },
-      ]}
-    />
-  );
-}
+    const loopB = Animated.loop(
+      Animated.sequence([
+        Animated.timing(phaseB, { toValue: 0.15, duration: 2900, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(phaseB, { toValue: 0.85, duration: 2900, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      ]),
+    );
 
-type Props = { count?: number };
+    loopA.start();
+    loopB.start();
 
-// Lightweight decorative twinkle layer — a handful of opacity-only Animated
-// loops (native-driver, no layout thrashing), safe to drop behind any screen.
-export default function Starfield({ count = 16 }: Props) {
-  const stars = useMemo(() => randomStars(count), [count]);
+    return () => {
+      loopA.stop();
+      loopB.stop();
+    };
+  }, [phaseA, phaseB]);
+
+  const stars = useMemo(() => generateFixedStars(count), [count]);
 
   return (
     <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
-      {stars.map((star) => (
-        <TwinklingStar key={star.key} star={star} />
-      ))}
+      {stars.map((star) => {
+        const opacity = star.phase === 'a' ? phaseA : phaseB;
+        return (
+          <Animated.View
+            key={star.key}
+            style={[
+              styles.star,
+              {
+                top: star.top as any,
+                left: star.left as any,
+                width: star.size,
+                height: star.size,
+                borderRadius: star.size / 2,
+                opacity,
+              },
+            ]}
+          />
+        );
+      })}
     </View>
   );
 }

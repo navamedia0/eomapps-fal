@@ -34,6 +34,9 @@ import katinaData from '@/data/katina_meanings.json';
 import { getLenormandMeaning } from '@/services/lenormandMeanings';
 import { LENORMAND_SPREADS } from '@/services/lenormandSpreads';
 import { getAllRunes, isSymmetricRune, RUNE_SPREAD_TYPES, RUNE_SPREAD_POSITIONS, RUNE_SPREAD_INFO, spreadTypeForCount } from '@/services/runeEngine';
+import { RUNE_DETAILED_INSIGHTS } from '@/services/runeMeaningsDetails';
+import RuneStoneItem from '@/components/runes/RuneStoneItem';
+import RuneCastingClothExperience from '@/components/runes/RuneCastingClothExperience';
 import RelationshipSpreadTable from '@/components/RelationshipSpreadTable';
 import { analyzeRelationshipSpread } from '@/utils/relationshipCompatibilityEngine';
 import CornerTicks from '@/components/CornerTicks';
@@ -878,23 +881,26 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
       }
     }
 
-    // 2. Runes — otantik 24 Elder Futhark anlamı (simetrik rünlerde "tersi
-    // yoktur" ayrımı korunarak; aşk/anahtar kelimeler her rün için jenerik
-    // bir kalıp yerine kendi element/anlamından türetiliyor)
+    // 2. Runes — 24 Elder Futhark otantik mitolojik hikaye, aşk ve kariyer anlamları
     if (deck.id === 'rune') {
       const rune = getAllRunes().find((r) => r.id === cardId);
+      const detailInfo = RUNE_DETAILED_INSIGHTS[cardId];
       if (rune) {
         const symmetric = isSymmetricRune(cardId);
+        const isReversed = !symmetric && inspectedCard?.isReversed;
+        const loveText = isReversed ? (detailInfo?.loveReversed || rune.reversed) : (detailInfo?.loveUpright || rune.upright);
+        const careerText = isReversed ? (detailInfo?.careerReversed || rune.reversed) : (detailInfo?.careerUpright || rune.upright);
+
         return {
           upright: rune.upright,
           reversed: rune.reversed,
           love: isRelationship
-            ? `${targetName}'e söyle: '${rune.meaning} enerjisi ilişkinizde belirgin — ${rune.upright}'`
-            : `${rune.meaning} enerjisinin aşk hayatındaki yansıması: ${rune.upright}`,
-          career: `${rune.meaning} — ${rune.upright}`,
+            ? `${targetName}'e söyle: '${loveText}'`
+            : loveText,
+          career: careerText,
           advice: isRelationship ? `🗣️ Rehberlik: 'Ona de ki: ${rune.advice}'` : rune.advice,
-          story: `Elder Futhark alfabesinde ${rune.name} rünü (${rune.element} elementi), Viking bilgeliğinde kaderin dokusunu değiştiren kadim kozmik güçleri simgeler.${symmetric ? ' Bu rün simetriktir — ters gelse bile anlamı değişmez, sadece dengeye dikkat çeker.' : ''}`,
-          keywords: [...rune.meaning.split(',').map((s) => s.trim()), rune.element],
+          story: detailInfo?.story || `Elder Futhark alfabesinde ${rune.name} rünü (${rune.element} elementi), Viking bilgeliğinde kaderin dokusunu değiştiren kadim kozmik güçleri simgeler.${symmetric ? ' Bu rün simetriktir — ters gelse bile anlamı değişmez, sadece dengeye dikkat çeker.' : ''}`,
+          keywords: detailInfo?.keywords || [...rune.meaning.split(',').map((s) => s.trim()), rune.element],
         };
       }
     }
@@ -1299,7 +1305,9 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
             )}
 
             {/* 2. Açılım Tipi Seçimi */}
-            <Text style={styles.sectionLabel}>2. AÇILIM VE KART SAYISINI SEÇ</Text>
+            <Text style={styles.sectionLabel}>
+              {deck.id === 'rune' ? '2. AÇILIM VE TAŞ SAYISINI SEÇ' : '2. AÇILIM VE KART SAYISINI SEÇ'}
+            </Text>
             <View style={styles.spreadList}>
               {(deck.id === 'lenormand'
                 ? LENORMAND_SPREAD_OPTIONS
@@ -1324,7 +1332,7 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                       <View style={styles.spreadTitleRow}>
                         <View style={[styles.spreadCountPill, { backgroundColor: deck.accent + '25' }]}>
                           <Text style={[styles.spreadCountText, { color: deck.accent }]}>
-                            {spread.cardCount} Kart
+                            {spread.cardCount} {deck.id === 'rune' ? 'Taş' : 'Kart'}
                           </Text>
                         </View>
                         <Text style={[styles.spreadName, isSelected && { color: deck.accent }]}>
@@ -1339,40 +1347,44 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
               })}
             </View>
 
-            {/* 3. Kart Dizilim Düzeni */}
-            <Text style={styles.sectionLabel}>3. KART DİZİLİM DÜZENİ</Text>
-            <View style={styles.layoutOptionsGrid}>
-              {LAYOUT_OPTIONS.map((lo) => {
-                const isSelected = selectedLayout === lo.id;
-                return (
-                  <Pressable
-                    key={lo.id}
-                    onPress={() => setSelectedLayout(lo.id)}
-                    style={[
-                      styles.layoutOptionButton,
-                      isSelected && [styles.layoutOptionActive, { borderColor: deck.accent }],
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name={lo.icon}
-                      size={22}
-                      color={isSelected ? deck.accent : TEXT_MUTED}
-                    />
-                    <Text
-                      style={[
-                        styles.layoutOptionTitle,
-                        isSelected && { color: deck.accent, fontWeight: '800' },
-                      ]}
-                    >
-                      {lo.title}
-                    </Text>
-                    <Text style={styles.layoutOptionDesc} numberOfLines={1}>
-                      {lo.desc}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
+            {/* 3. Kart Dizilim Düzeni (Sadece kart desteleri için) */}
+            {deck.id !== 'rune' && (
+              <>
+                <Text style={styles.sectionLabel}>3. KART DİZİLİM DÜZENİ</Text>
+                <View style={styles.layoutOptionsGrid}>
+                  {LAYOUT_OPTIONS.map((lo) => {
+                    const isSelected = selectedLayout === lo.id;
+                    return (
+                      <Pressable
+                        key={lo.id}
+                        onPress={() => setSelectedLayout(lo.id)}
+                        style={[
+                          styles.layoutOptionButton,
+                          isSelected && [styles.layoutOptionActive, { borderColor: deck.accent }],
+                        ]}
+                      >
+                        <MaterialCommunityIcons
+                          name={lo.icon}
+                          size={22}
+                          color={isSelected ? deck.accent : TEXT_MUTED}
+                        />
+                        <Text
+                          style={[
+                            styles.layoutOptionTitle,
+                            isSelected && { color: deck.accent, fontWeight: '800' },
+                          ]}
+                        >
+                          {lo.title}
+                        </Text>
+                        <Text style={styles.layoutOptionDesc} numberOfLines={1}>
+                          {lo.desc}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </>
+            )}
 
             {/* Masaya Aç Butonu */}
             <Pressable
@@ -1383,19 +1395,29 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                 pressed && styles.btnPressed,
               ]}
             >
-              <MaterialCommunityIcons name="cards-playing-outline" size={22} color={NIGHT_CARD} />
-              <Text style={styles.startBtnText}>Desteyi Karıştır ve Masaya Aç ({deckPool.length} Kart)</Text>
+              <MaterialCommunityIcons
+                name={deck.id === 'rune' ? 'hand-back-left' : 'cards-playing-outline'}
+                size={22}
+                color={NIGHT_CARD}
+              />
+              <Text style={styles.startBtnText}>
+                {deck.id === 'rune'
+                  ? `Taşları Hazırla ve Masaya Ser (${deckPool.length} Taş)`
+                  : `Desteyi Karıştır ve Masaya Aç (${deckPool.length} Kart)`}
+              </Text>
               <Ionicons name="arrow-forward" size={18} color={NIGHT_CARD} />
             </Pressable>
           </View>
         )}
 
-        {/* PHASE 2: SHUFFLING & PICKING (KARIŞTIRMA VE KART SEÇİMİ) */}
+        {/* PHASE 2: SHUFFLING & PICKING (KARIŞTIRMA VE SEÇİM) */}
         {(phase === 'shuffling' || phase === 'picking') && (
           <View style={styles.pickContainer}>
             <Text style={[styles.pickHeaderTitle, { color: deck.accent }]}>
               {phase === 'shuffling'
-                ? 'Deste Karıştırılıyor & Enerjiler Arınıyor...'
+                ? deck.id === 'rune'
+                  ? 'Kutsal Taşlar Arındırılıyor & Enerjiler Açılıyor...'
+                  : 'Deste Karıştırılıyor & Enerjiler Arınıyor...'
                 : readingMode === 'relationship'
                 ? relTurn === 'p1'
                   ? `✨ 1. TUR: ${p1Name} 3 Kart Seçiyor (${p1DrawnCards.length}/3)`
@@ -1404,7 +1426,7 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                   : relTurn === 'p2'
                   ? `✨ 2. TUR: ${p2Name} 3 Kart Seçiyor (${p2DrawnCards.length}/3)`
                   : `🔮 ORTAK TUR: Kadersel Köprü Kartını Seçin`
-                : `Niyetine odaklan ve ${selectedSpread.cardCount - drawnCards.length} kart seç`}
+                : `Niyetine odaklan ve ${selectedSpread.cardCount - drawnCards.length} ${deck.id === 'rune' ? 'taş seç' : 'kart seç'}`}
             </Text>
             <Text style={styles.pickHeaderSubtitle}>
               {readingMode === 'relationship'
@@ -1414,20 +1436,21 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                   ? `Sırayla: ${['1. Zihin & Düşünce', '2. Kalp & Hisler', '3. Beklenti & Gelecek'][p2DrawnCards.length] || 'Hazır'}`
                   : relTurn === 'transition'
                   ? `Şimdi telefonu ${p2Name}'e verin`
-                  : 'Ortak Kadersel Kesişim Kartı'
-                : `${drawnCards.length} / ${selectedSpread.cardCount} Kart Seçildi · (Deste: ${deckPool.length} Kart)`}
+                  : 'Ortak Kadersel Kesişim'
+                : `${drawnCards.length} / ${selectedSpread.cardCount} ${deck.id === 'rune' ? 'Taş' : 'Kart'} Seçildi · (${deck.id === 'rune' ? 'Taş Seti' : 'Deste'}: ${deckPool.length} ${deck.id === 'rune' ? 'Taş' : 'Kart'})`}
             </Text>
 
             {phase === 'shuffling' ? (
               <Animated.View
                 style={[
                   styles.shuffleWrap,
+                  deck.id === 'rune' && { backgroundColor: 'transparent', borderWidth: 0 },
                   {
                     transform: [{ rotate: shuffleSpin }, { scale: shuffleScale }],
                   },
                 ]}
               >
-                <Image source={deck.cardBackImage} style={styles.shuffleCardBack} resizeMode="cover" />
+                <Image source={deck.cardBackImage} style={styles.shuffleCardBack} resizeMode="contain" />
               </Animated.View>
             ) : (
               <View style={styles.pickingArea}>
@@ -1472,206 +1495,251 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                   </View>
                 )}
 
-                {/* Hızlı Otomatik Seçim Butonu */}
-                {((readingMode === 'relationship' && relTurn !== 'transition' && relTurn !== 'completed') || (readingMode === 'self' && drawnCards.length < selectedSpread.cardCount)) && (
-                  <Pressable
-                    onPress={handleAutoPickRemaining}
-                    style={[styles.autoPickBtn, { borderColor: deck.accent }]}
-                  >
-                    <Ionicons name="sparkles" size={16} color={deck.accent} />
-                    <Text style={[styles.autoPickBtnText, { color: deck.accent }]}>
-                      {readingMode === 'relationship'
-                        ? relTurn === 'p1'
-                          ? `${p1Name.trim() || '1. Kişi'} İçin Kalan Kartları Rastgele Çek 🎲`
-                          : relTurn === 'p2'
-                          ? `${p2Name.trim() || '2. Kişi'} İçin Kalan Kartları Rastgele Çek 🎲`
-                          : 'Köprü Kartını Rastgele Çek 🎲'
-                        : `Kalan ${selectedSpread.cardCount - drawnCards.length} Kartı Rastgele Çek 🎲`}
-                    </Text>
-                  </Pressable>
-                )}
+                {deck.id === 'rune' && readingMode === 'self' ? (
+                  <RuneCastingClothExperience
+                    requiredCount={selectedSpread.cardCount}
+                    positions={selectedSpread.positions}
+                    accentColor={deck.accent}
+                    onSelectionComplete={(selectedRunes) => {
+                      const drawn: DrawnCard[] = selectedRunes.map((r, idx) => ({
+                        id: r.id,
+                        name: r.name,
+                        suitSymbol: r.symbol,
+                        themeColor: deck.accent,
+                        isReversed: !!r.isReversed,
+                        isRevealed: true,
+                        positionName: selectedSpread.positions[idx] || `${idx + 1}. Taş`,
+                        flipAnim: new Animated.Value(1),
+                        dealAnim: new Animated.Value(1),
+                      }));
+                      setDrawnCards(drawn);
+                      setPhase('table');
+                    }}
+                    onInspectRune={(rune, label) => {
+                      setInspectedCard({
+                        id: rune.id,
+                        name: rune.name,
+                        suitSymbol: rune.symbol,
+                        themeColor: deck.accent,
+                        isReversed: !!rune.isReversed,
+                        positionName: label,
+                        isRevealed: true,
+                        flipAnim: new Animated.Value(1),
+                        dealAnim: new Animated.Value(1),
+                      });
+                    }}
+                  />
+                ) : (
+                  <>
+                    {/* Hızlı Otomatik Seçim Butonu */}
+                    {((readingMode === 'relationship' && relTurn !== 'transition' && relTurn !== 'completed') || (readingMode === 'self' && drawnCards.length < selectedSpread.cardCount)) && (
+                      <Pressable
+                        onPress={handleAutoPickRemaining}
+                        style={[styles.autoPickBtn, { borderColor: deck.accent }]}
+                      >
+                        <Ionicons name="sparkles" size={16} color={deck.accent} />
+                        <Text style={[styles.autoPickBtnText, { color: deck.accent }]}>
+                          {readingMode === 'relationship'
+                            ? relTurn === 'p1'
+                              ? `${p1Name.trim() || '1. Kişi'} İçin Kalan Kartları Rastgele Çek 🎲`
+                              : relTurn === 'p2'
+                              ? `${p2Name.trim() || '2. Kişi'} İçin Kalan Kartları Rastgele Çek 🎲`
+                              : 'Köprü Kartını Rastgele Çek 🎲'
+                            : `Kalan ${selectedSpread.cardCount - drawnCards.length} ${deck.id === 'rune' ? 'Taşı' : 'Kartı'} Rastgele Çek 🎲`}
+                        </Text>
+                      </Pressable>
+                    )}
 
-                {/* 1. DİZİLİM: BÜYÜK MASA IZGARASI (GENİŞ VE FERAH DÜZEN) */}
-                {selectedLayout === 'fullgrid' && (
-                  <View style={styles.fullGridBoard}>
-                    <Text style={styles.fullGridNotice}>Kartlar geniş masaya dizildi, hissettiğine dokun:</Text>
-                    <View style={styles.fullGridWrap}>
-                      {deckPool.map((item, index) => {
-                        const cardsPerPerson =
-                          readingMode === 'relationship'
-                            ? selectedSpread.id === 'rel_cosmic_20'
-                              ? 10
-                              : selectedSpread.id === 'rel_mirror_10'
-                              ? 5
-                              : 3
-                            : selectedSpread.cardCount;
+                    {/* 1. DİZİLİM: BÜYÜK MASA IZGARASI (GENİŞ VE FERAH DÜZEN) */}
+                    {selectedLayout === 'fullgrid' && (
+                      <View style={styles.fullGridBoard}>
+                        <Text style={styles.fullGridNotice}>
+                          {deck.id === 'rune'
+                            ? 'Kutsal taşlar döküm bezine dizildi, hissettiğin taşa dokun:'
+                            : 'Kartlar geniş masaya dizildi, hissettiğine dokun:'}
+                        </Text>
+                        <View style={styles.fullGridWrap}>
+                          {deckPool.map((item, index) => {
+                            const cardsPerPerson =
+                              readingMode === 'relationship'
+                                ? selectedSpread.id === 'rel_cosmic_20'
+                                  ? 10
+                                  : selectedSpread.id === 'rel_mirror_10'
+                                  ? 5
+                                  : 3
+                                : selectedSpread.cardCount;
 
-                        const isPicked =
-                          readingMode === 'relationship'
-                            ? p1DrawnCards.some((d) => d.id === item.id) ||
-                              p2DrawnCards.some((d) => d.id === item.id) ||
-                              bridgeDrawnCard?.id === item.id
-                            : drawnCards.some((d) => d.id === item.id);
+                            const isPicked =
+                              readingMode === 'relationship'
+                                ? p1DrawnCards.some((d) => d.id === item.id) ||
+                                  p2DrawnCards.some((d) => d.id === item.id) ||
+                                  bridgeDrawnCard?.id === item.id
+                                : drawnCards.some((d) => d.id === item.id);
 
-                        const isDisabled =
-                          isPicked ||
-                          (readingMode === 'relationship'
-                            ? relTurn === 'transition' ||
-                              (relTurn === 'p1' && p1DrawnCards.length >= cardsPerPerson) ||
-                              (relTurn === 'p2' && p2DrawnCards.length >= cardsPerPerson) ||
-                              (relTurn === 'bridge' && bridgeDrawnCard !== null)
-                            : drawnCards.length >= selectedSpread.cardCount);
+                            const isDisabled =
+                              isPicked ||
+                              (readingMode === 'relationship'
+                                ? relTurn === 'transition' ||
+                                  (relTurn === 'p1' && p1DrawnCards.length >= cardsPerPerson) ||
+                                  (relTurn === 'p2' && p2DrawnCards.length >= cardsPerPerson) ||
+                                  (relTurn === 'bridge' && bridgeDrawnCard !== null)
+                                : drawnCards.length >= selectedSpread.cardCount);
 
-                        return (
-                          <Pressable
-                            key={`${item.id}-${index}`}
-                            disabled={isDisabled}
-                            onPress={() => handlePickCard(item)}
-                            style={[
-                              styles.fullGridCardTile,
-                              isPicked && styles.fullGridTilePicked,
-                              { borderColor: isPicked ? GOLD : 'rgba(242, 200, 121, 0.3)' },
-                            ]}
-                          >
-                            <Image source={deck.cardBackImage} style={styles.fullGridTileImg} resizeMode="cover" />
-                            {isPicked && (
-                              <View style={styles.fullGridOverlay}>
-                                <Ionicons name="checkmark" size={12} color={GOLD} />
+                            return (
+                              <Pressable
+                                key={`${item.id}-${index}`}
+                                disabled={isDisabled}
+                                onPress={() => handlePickCard(item)}
+                                style={[
+                                  styles.fullGridCardTile,
+                                  deck.id === 'rune' && { backgroundColor: 'transparent', borderWidth: 0 },
+                                  isPicked && styles.fullGridTilePicked,
+                                  { borderColor: isPicked ? GOLD : 'rgba(242, 200, 121, 0.3)' },
+                                ]}
+                              >
+                                <Image source={deck.cardBackImage} style={styles.fullGridTileImg} resizeMode="contain" />
+                                {isPicked && (
+                                  <View style={styles.fullGridOverlay}>
+                                    <Ionicons name="checkmark" size={12} color={GOLD} />
+                                  </View>
+                                )}
+                              </Pressable>
+                            );
+                          })}
+                        </View>
+                      </View>
+                    )}
+
+                    {/* 2. DİZİLİM: KLASİK MASA IZGARASI (GRID) */}
+                    {selectedLayout === 'grid' && (
+                      <View style={styles.classicGridWrap}>
+                        {deckPool.map((item, index) => {
+                          const cardsPerPerson =
+                            readingMode === 'relationship'
+                              ? selectedSpread.id === 'rel_cosmic_20'
+                                ? 10
+                                : selectedSpread.id === 'rel_mirror_10'
+                                ? 5
+                                : 3
+                              : selectedSpread.cardCount;
+
+                          const isPicked =
+                            readingMode === 'relationship'
+                              ? p1DrawnCards.some((d) => d.id === item.id) ||
+                                p2DrawnCards.some((d) => d.id === item.id) ||
+                                bridgeDrawnCard?.id === item.id
+                              : drawnCards.some((d) => d.id === item.id);
+
+                          const isDisabled =
+                            isPicked ||
+                            (readingMode === 'relationship'
+                              ? relTurn === 'transition' ||
+                                (relTurn === 'p1' && p1DrawnCards.length >= cardsPerPerson) ||
+                                (relTurn === 'p2' && p2DrawnCards.length >= cardsPerPerson) ||
+                                (relTurn === 'bridge' && bridgeDrawnCard !== null)
+                              : drawnCards.length >= selectedSpread.cardCount);
+
+                          return (
+                            <Pressable
+                              key={`${item.id}-${index}`}
+                              disabled={isDisabled}
+                              onPress={() => handlePickCard(item)}
+                              style={[
+                                styles.classicGridCard,
+                                deck.id === 'rune' && { backgroundColor: 'transparent', borderWidth: 0 },
+                                isPicked && styles.fanCardPicked,
+                              ]}
+                            >
+                              <Image source={deck.cardBackImage} style={styles.fanCardImg} resizeMode="contain" />
+                              <View style={styles.fanCardIndexBadge}>
+                                <Text style={styles.fanCardIndexText}>{index + 1}</Text>
                               </View>
-                            )}
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                  </View>
-                )}
+                              {isPicked && (
+                                <View style={styles.fanCardOverlay}>
+                                  <Ionicons name="checkmark-circle" size={24} color={GOLD} />
+                                </View>
+                              )}
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    )}
 
-                {/* 2. DİZİLİM: KLASİK MASA IZGARASI (GRID) */}
-                {selectedLayout === 'grid' && (
-                  <View style={styles.classicGridWrap}>
-                    {deckPool.map((item, index) => {
-                      const cardsPerPerson =
-                        readingMode === 'relationship'
-                          ? selectedSpread.id === 'rel_cosmic_20'
-                            ? 10
-                            : selectedSpread.id === 'rel_mirror_10'
-                            ? 5
-                            : 3
-                          : selectedSpread.cardCount;
+                    {/* 3. DİZİLİM: DALGA ŞEKLİ DİZİLİM & ÇEMBER (FAN & RADIAL) */}
+                    {(selectedLayout === 'fan' || selectedLayout === 'radial') && (
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.cardFanScroll}
+                      >
+                        {deckPool.map((item, index) => {
+                          const cardsPerPerson =
+                            readingMode === 'relationship'
+                              ? selectedSpread.id === 'rel_cosmic_20'
+                                ? 10
+                                : selectedSpread.id === 'rel_mirror_10'
+                                ? 5
+                                : 3
+                              : selectedSpread.cardCount;
 
-                      const isPicked =
-                        readingMode === 'relationship'
-                          ? p1DrawnCards.some((d) => d.id === item.id) ||
-                            p2DrawnCards.some((d) => d.id === item.id) ||
-                            bridgeDrawnCard?.id === item.id
-                          : drawnCards.some((d) => d.id === item.id);
+                          const isPicked =
+                            readingMode === 'relationship'
+                              ? p1DrawnCards.some((d) => d.id === item.id) ||
+                                p2DrawnCards.some((d) => d.id === item.id) ||
+                                bridgeDrawnCard?.id === item.id
+                              : drawnCards.some((d) => d.id === item.id);
 
-                      const isDisabled =
-                        isPicked ||
-                        (readingMode === 'relationship'
-                          ? relTurn === 'transition' ||
-                            (relTurn === 'p1' && p1DrawnCards.length >= cardsPerPerson) ||
-                            (relTurn === 'p2' && p2DrawnCards.length >= cardsPerPerson) ||
-                            (relTurn === 'bridge' && bridgeDrawnCard !== null)
-                          : drawnCards.length >= selectedSpread.cardCount);
+                          const isDisabled =
+                            isPicked ||
+                            (readingMode === 'relationship'
+                              ? relTurn === 'transition' ||
+                                (relTurn === 'p1' && p1DrawnCards.length >= cardsPerPerson) ||
+                                (relTurn === 'p2' && p2DrawnCards.length >= cardsPerPerson) ||
+                                (relTurn === 'bridge' && bridgeDrawnCard !== null)
+                              : drawnCards.length >= selectedSpread.cardCount);
 
-                      return (
-                        <Pressable
-                          key={`${item.id}-${index}`}
-                          disabled={isDisabled}
-                          onPress={() => handlePickCard(item)}
-                          style={[
-                            styles.classicGridCard,
-                            isPicked && styles.fanCardPicked,
-                          ]}
-                        >
-                          <Image source={deck.cardBackImage} style={styles.fanCardImg} resizeMode="cover" />
-                          <View style={styles.fanCardIndexBadge}>
-                            <Text style={styles.fanCardIndexText}>{index + 1}</Text>
-                          </View>
-                          {isPicked && (
-                            <View style={styles.fanCardOverlay}>
-                              <Ionicons name="checkmark-circle" size={24} color={GOLD} />
-                            </View>
-                          )}
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                )}
+                          // Otantik Sinüzoidal Dalga Eğrisi Hesaplaması (Tarot Dalgası)
+                          const WAVE_PERIOD_CARDS = 10;
+                          const FREQUENCY = (2 * Math.PI) / WAVE_PERIOD_CARDS;
+                          const MAX_ANGLE = 16;
+                          const MAX_RISE = 22;
 
-                {/* 3. DİZİLİM: DALGA ŞEKLİ DİZİLİM & ÇEMBER (FAN & RADIAL) */}
-                {(selectedLayout === 'fan' || selectedLayout === 'radial') && (
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.cardFanScroll}
-                  >
-                    {deckPool.map((item, index) => {
-                      const cardsPerPerson =
-                        readingMode === 'relationship'
-                          ? selectedSpread.id === 'rel_cosmic_20'
-                            ? 10
-                            : selectedSpread.id === 'rel_mirror_10'
-                            ? 5
-                            : 3
-                          : selectedSpread.cardCount;
+                          const wavePhase = index * FREQUENCY;
+                          const angle = Math.sin(wavePhase) * MAX_ANGLE;
+                          const rise = -Math.cos(wavePhase) * MAX_RISE;
 
-                      const isPicked =
-                        readingMode === 'relationship'
-                          ? p1DrawnCards.some((d) => d.id === item.id) ||
-                            p2DrawnCards.some((d) => d.id === item.id) ||
-                            bridgeDrawnCard?.id === item.id
-                          : drawnCards.some((d) => d.id === item.id);
-
-                      const isDisabled =
-                        isPicked ||
-                        (readingMode === 'relationship'
-                          ? relTurn === 'transition' ||
-                            (relTurn === 'p1' && p1DrawnCards.length >= cardsPerPerson) ||
-                            (relTurn === 'p2' && p2DrawnCards.length >= cardsPerPerson) ||
-                            (relTurn === 'bridge' && bridgeDrawnCard !== null)
-                          : drawnCards.length >= selectedSpread.cardCount);
-
-                      // Otantik Sinüzoidal Dalga Eğrisi Hesaplaması (Tarot Dalgası)
-                      const WAVE_PERIOD_CARDS = 10;
-                      const FREQUENCY = (2 * Math.PI) / WAVE_PERIOD_CARDS;
-                      const MAX_ANGLE = 16;
-                      const MAX_RISE = 22;
-
-                      const wavePhase = index * FREQUENCY;
-                      const angle = Math.sin(wavePhase) * MAX_ANGLE;
-                      const rise = -Math.cos(wavePhase) * MAX_RISE;
-
-                      return (
-                        <Pressable
-                          key={`${item.id}-${index}`}
-                          disabled={isDisabled}
-                          onPress={() => handlePickCard(item)}
-                          style={({ pressed }) => [
-                            styles.fanCard,
-                            selectedLayout === 'fan' && {
-                              transform: [{ translateY: rise }, { rotate: `${angle}deg` }],
-                              marginLeft: index === 0 ? 12 : -22,
-                              zIndex: index + 1,
-                            },
-                            isPicked && styles.fanCardPicked,
-                            pressed && styles.fanCardPressed,
-                          ]}
-                        >
-                          <Image source={deck.cardBackImage} style={styles.fanCardImg} resizeMode="cover" />
-                          <View style={styles.fanCardIndexBadge}>
-                            <Text style={styles.fanCardIndexText}>{index + 1}</Text>
-                          </View>
-                          {isPicked && (
-                            <View style={styles.fanCardOverlay}>
-                              <Ionicons name="checkmark-circle" size={28} color={GOLD} />
-                            </View>
-                          )}
-                        </Pressable>
-                      );
-                    })}
-                  </ScrollView>
+                          return (
+                            <Pressable
+                              key={`${item.id}-${index}`}
+                              disabled={isDisabled}
+                              onPress={() => handlePickCard(item)}
+                              style={({ pressed }) => [
+                                styles.fanCard,
+                                deck.id === 'rune' && { backgroundColor: 'transparent', borderWidth: 0 },
+                                selectedLayout === 'fan' && {
+                                  transform: [{ translateY: rise }, { rotate: `${angle}deg` }],
+                                  marginLeft: index === 0 ? 12 : -22,
+                                  zIndex: index + 1,
+                                },
+                                isPicked && styles.fanCardPicked,
+                                pressed && styles.fanCardPressed,
+                              ]}
+                            >
+                              <Image source={deck.cardBackImage} style={styles.fanCardImg} resizeMode="contain" />
+                              <View style={styles.fanCardIndexBadge}>
+                                <Text style={styles.fanCardIndexText}>{index + 1}</Text>
+                              </View>
+                              {isPicked && (
+                                <View style={styles.fanCardOverlay}>
+                                  <Ionicons name="checkmark-circle" size={28} color={GOLD} />
+                                </View>
+                              )}
+                            </Pressable>
+                          );
+                        })}
+                      </ScrollView>
+                    )}
+                  </>
                 )}
               </View>
             )}
@@ -1724,7 +1792,9 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
             <View style={styles.tableBanner}>
               <MaterialCommunityIcons name="star-face" size={20} color={deck.accent} />
               <Text style={[styles.tableBannerText, { color: deck.accent }]}>
-                Kartların üzerine dokunarak çevir ve detaylı incele
+                {deck.id === 'rune'
+                  ? 'Taşların üzerine dokunarak çevir ve detaylı incele'
+                  : 'Kartların üzerine dokunarak çevir ve detaylı incele'}
               </Text>
             </View>
 
@@ -1732,11 +1802,13 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
             {!allRevealed && (
               <Pressable onPress={revealAllCards} style={[styles.revealAllBtn, { borderColor: deck.accent }]}>
                 <Ionicons name="eye-outline" size={15} color={deck.accent} />
-                <Text style={[styles.revealAllBtnText, { color: deck.accent }]}>Tüm Kartları Çevir & Aç</Text>
+                <Text style={[styles.revealAllBtnText, { color: deck.accent }]}>
+                  {deck.id === 'rune' ? 'Tüm Taşları Çevir & Aç' : 'Tüm Kartları Çevir & Aç'}
+                </Text>
               </Pressable>
             )}
 
-            {/* Kart Yuvaları */}
+            {/* Kart / Taş Yuvaları */}
             <View style={styles.spreadSlotsContainer}>
               {drawnCards.map((card, idx) => {
                 const rotateY = card.flipAnim.interpolate({
@@ -1744,8 +1816,10 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                   outputRange: ['0deg', '180deg'],
                 });
 
+                const isRune = deck.id === 'rune';
+
                 return (
-                  <View key={`${card.id}-${idx}`} style={styles.slotCardWrap}>
+                  <View key={`${card.id}-${idx}`} style={[styles.slotCardWrap, isRune && { width: (SCREEN_WIDTH - 64) / 2, maxWidth: 170 }]}>
                     <Text style={[styles.slotPositionTitle, { color: deck.accent }]}>
                       {card.positionName}
                     </Text>
@@ -1758,49 +1832,64 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                           setInspectedCard(card);
                         }
                       }}
-                      style={styles.cardFlipBox}
+                      style={[styles.cardFlipBox, isRune && { width: 110, height: 125, alignItems: 'center', justifyContent: 'center' }]}
                     >
-                      <Animated.View
-                        style={[
-                          styles.cardFaceBox,
-                          {
-                            borderColor: deck.accent,
-                            transform: [{ rotateY }],
-                          },
-                        ]}
-                      >
-                        {card.isRevealed ? (
-                          <View
-                            style={[
-                              styles.cardFrontContent,
-                              card.isReversed && { transform: [{ rotate: '180deg' }] },
-                            ]}
-                          >
-                            {card.image ? (
-                              <Image source={card.image} style={styles.cardRealImg} resizeMode="cover" />
-                            ) : (
-                              <LinearGradient
-                                colors={['rgba(36, 20, 68, 0.95)', 'rgba(18, 9, 36, 0.98)']}
-                                style={styles.cardGraphicBox}
-                              >
-                                <Text style={[styles.cardSuitSymbol, { color: card.themeColor || deck.accent }]}>
-                                  {card.suitSymbol}
-                                </Text>
-                                <Text style={[styles.cardRankLabel, { color: deck.accent }]}>
-                                  {card.name}
-                                </Text>
-                              </LinearGradient>
-                            )}
-                          </View>
-                        ) : (
-                          <Image source={deck.cardBackImage} style={styles.cardRealImg} resizeMode="cover" />
-                        )}
-                      </Animated.View>
+                      {isRune ? (
+                        <RuneStoneItem
+                          rune={{
+                            id: card.id,
+                            symbol: card.suitSymbol || 'ᚱ',
+                            name: card.name,
+                            isReversed: card.isReversed,
+                          }}
+                          size="md"
+                          revealed={card.isRevealed}
+                          isReversed={card.isReversed}
+                          glowColor={deck.accent}
+                        />
+                      ) : (
+                        <Animated.View
+                          style={[
+                            styles.cardFaceBox,
+                            {
+                              borderColor: deck.accent,
+                              transform: [{ rotateY }],
+                            },
+                          ]}
+                        >
+                          {card.isRevealed ? (
+                            <View
+                              style={[
+                                styles.cardFrontContent,
+                                card.isReversed && { transform: [{ rotate: '180deg' }] },
+                              ]}
+                            >
+                              {card.image ? (
+                                <Image source={card.image} style={styles.cardRealImg} resizeMode="cover" />
+                              ) : (
+                                <LinearGradient
+                                  colors={['rgba(36, 20, 68, 0.95)', 'rgba(18, 9, 36, 0.98)']}
+                                  style={styles.cardGraphicBox}
+                                >
+                                  <Text style={[styles.cardSuitSymbol, { color: card.themeColor || deck.accent }]}>
+                                    {card.suitSymbol}
+                                  </Text>
+                                  <Text style={[styles.cardRankLabel, { color: deck.accent }]}>
+                                    {card.name}
+                                  </Text>
+                                </LinearGradient>
+                              )}
+                            </View>
+                          ) : (
+                            <Image source={deck.cardBackImage} style={styles.cardRealImg} resizeMode="cover" />
+                          )}
+                        </Animated.View>
+                      )}
                     </Pressable>
 
-                    {/* Kart İsmi & Durumu */}
+                    {/* Kart / Taş İsmi & Durumu */}
                     <Text style={styles.cardBottomName} numberOfLines={2}>
-                      {card.isRevealed ? card.name : 'Açmak için dokun'}
+                      {card.isRevealed ? card.name : (isRune ? 'Taşı Açmak İçin Dokun' : 'Açmak için dokun')}
                     </Text>
                     {card.isRevealed && (
                       <View
@@ -2756,25 +2845,42 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                 {inspectedCard.isReversed ? '⚡ Ters Açıldı' : '✨ Düz Doğrudan Enerji'}
               </Text>
 
-              {/* Kart Görseli */}
-              <View
-                style={[
-                  styles.inspectImgWrap,
-                  { borderColor: deck.accent },
-                  inspectedCard.isReversed && { transform: [{ rotate: '180deg' }] },
-                ]}
-              >
-                {inspectedCard.image ? (
-                  <Image source={inspectedCard.image} style={styles.inspectImg} resizeMode="cover" />
-                ) : (
-                  <View style={styles.inspectPlaceholder}>
-                    <Text style={[styles.inspectSuit, { color: inspectedCard.themeColor || deck.accent }]}>
-                      {inspectedCard.suitSymbol}
-                    </Text>
-                    <Text style={styles.inspectPlaceholderText}>{inspectedCard.name}</Text>
-                  </View>
-                )}
-              </View>
+              {/* Kart / Taş Görseli */}
+              {deck.id === 'rune' ? (
+                <View style={{ alignItems: 'center', justifyContent: 'center', marginVertical: 8 }}>
+                  <RuneStoneItem
+                    rune={{
+                      id: inspectedCard.id,
+                      symbol: inspectedCard.suitSymbol || 'ᚱ',
+                      name: inspectedCard.name,
+                      isReversed: inspectedCard.isReversed,
+                    }}
+                    size="lg"
+                    revealed={true}
+                    isReversed={inspectedCard.isReversed}
+                    glowColor={deck.accent}
+                  />
+                </View>
+              ) : (
+                <View
+                  style={[
+                    styles.inspectImgWrap,
+                    { borderColor: deck.accent },
+                    inspectedCard.isReversed && { transform: [{ rotate: '180deg' }] },
+                  ]}
+                >
+                  {inspectedCard.image ? (
+                    <Image source={inspectedCard.image} style={styles.inspectImg} resizeMode="cover" />
+                  ) : (
+                    <View style={styles.inspectPlaceholder}>
+                      <Text style={[styles.inspectSuit, { color: inspectedCard.themeColor || deck.accent }]}>
+                        {inspectedCard.suitSymbol}
+                      </Text>
+                      <Text style={styles.inspectPlaceholderText}>{inspectedCard.name}</Text>
+                    </View>
+                  )}
+                </View>
+              )}
 
               {/* Açıklamalı İçerik vs Görsel Kısıtlaması */}
               {tier === 'explained' ? (
@@ -2784,8 +2890,8 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                     return (
                       <Text style={styles.inspectDesc}>
                         {inspectedCard.isReversed
-                          ? 'Bu kart ters konumda engelleri ve içsel dönüşümü işaret ediyor.'
-                          : 'Bu kart düz konumda doğrudan enerjiyi ve açık fırsatları simgeliyor.'}
+                          ? `Bu ${deck.id === 'rune' ? 'taş' : 'kart'} ters konumda engelleri ve içsel dönüşümü işaret ediyor.`
+                          : `Bu ${deck.id === 'rune' ? 'taş' : 'kart'} düz konumda doğrudan enerjiyi ve açık fırsatları simgeliyor.`}
                       </Text>
                     );
                   }
@@ -2812,7 +2918,7 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                         </View>
                       )}
 
-                      {/* 2. KARTIN HİKAYESİ VE MİTOLOJİSİ (BUTON HALİNDE) */}
+                      {/* 2. TAŞIN / KARTIN HİKAYESİ VE MİTOLOJİSİ (BUTON HALİNDE) */}
                       {details.story && (
                         <View style={styles.storyCardBox}>
                           <Pressable
@@ -2821,7 +2927,9 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                           >
                             <View style={styles.storyToggleLeft}>
                               <Ionicons name="book-outline" size={16} color={GOLD} />
-                              <Text style={styles.storyToggleTitle}>Kartın Hikayesi & Arketipi</Text>
+                              <Text style={styles.storyToggleTitle}>
+                                {deck.id === 'rune' ? 'Taşın Hikayesi & Mitolojisi' : 'Kartın Hikayesi & Arketipi'}
+                              </Text>
                             </View>
                             <Ionicons
                               name={showStoryDetail ? 'chevron-up' : 'chevron-down'}
@@ -2878,7 +2986,7 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                   <MaterialCommunityIcons name="book-lock-outline" size={32} color={GOLD} />
                   <Text style={styles.lockedTitle}>Açıklamalı Sürüm Gerekli</Text>
                   <Text style={styles.lockedDesc}>
-                    Bu kartın Kavramlarını, Mitolojik Hikayesini, Aşk/Kariyer ve Falcı Repliklerini görmek için Açıklamalı Sürüme yükseltin.
+                    Bu {deck.id === 'rune' ? 'taşın' : 'kartın'} Kavramlarını, Mitolojik Hikayesini, Aşk/Kariyer ve Falcı Repliklerini görmek için Açıklamalı Sürüme yükseltin.
                   </Text>
                   <Pressable
                     onPress={() => {
@@ -3026,7 +3134,7 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
 }
 
 // Ritüel Masasındaki Animasyonlu Kart Yuvası Bileşeni
-function RitualSlotItem({
+const RitualSlotItem = React.memo(function RitualSlotItem({
   card,
   index,
   deck,
@@ -3066,24 +3174,41 @@ function RitualSlotItem({
         <View style={[styles.ritualIndexBadge, { backgroundColor: deck.accent }]}>
           <Text style={styles.ritualIndexBadgeText}>{index + 1}</Text>
         </View>
-        <View
-          style={[
-            styles.ritualMiniCardBox,
-            { borderColor: deck.accent },
-            card.isReversed && { transform: [{ rotate: '180deg' }] },
-          ]}
-        >
-          {card.image ? (
-            <Image source={card.image} style={styles.ritualMiniCardImg} resizeMode="cover" />
-          ) : (
-            <View style={styles.ritualMiniPlaceholder}>
-              <Text style={styles.ritualMiniPlaceholderSymbol}>{card.suitSymbol}</Text>
-              <Text style={styles.ritualMiniPlaceholderName} numberOfLines={1}>
-                {card.name}
-              </Text>
-            </View>
-          )}
-        </View>
+        {deck.id === 'rune' ? (
+          <View style={{ alignItems: 'center', justifyContent: 'center', minWidth: 56, minHeight: 64 }}>
+            <RuneStoneItem
+              rune={{
+                id: card.id,
+                symbol: card.suitSymbol || 'ᚱ',
+                name: card.name,
+                isReversed: card.isReversed,
+              }}
+              size="sm"
+              revealed={true}
+              isReversed={card.isReversed}
+              glowColor={deck.accent}
+            />
+          </View>
+        ) : (
+          <View
+            style={[
+              styles.ritualMiniCardBox,
+              { borderColor: deck.accent },
+              card.isReversed && { transform: [{ rotate: '180deg' }] },
+            ]}
+          >
+            {card.image ? (
+              <Image source={card.image} style={styles.ritualMiniCardImg} resizeMode="cover" />
+            ) : (
+              <View style={styles.ritualMiniPlaceholder}>
+                <Text style={styles.ritualMiniPlaceholderSymbol}>{card.suitSymbol}</Text>
+                <Text style={styles.ritualMiniPlaceholderName} numberOfLines={1}>
+                  {card.name}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
       </Pressable>
       <Text style={styles.ritualCardNameText} numberOfLines={1}>
         {card.name}
@@ -3093,7 +3218,7 @@ function RitualSlotItem({
       </Text>
     </Animated.View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   rootContainer: {
