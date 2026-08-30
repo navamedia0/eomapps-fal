@@ -27,6 +27,8 @@ import { avatarColor } from '@/utils/avatarColor';
 import { promptReport } from '@/utils/reportPrompt';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
+const ROYAL_FRAME_IMG = require('@/assets/icons/royal_post_frame.jpg');
+
 type Props = TabScreenProps;
 type KesfetTab = 'gonderi' | 'populerGonderi' | 'durum' | 'populerDurum';
 
@@ -412,13 +414,14 @@ function PhotoPostCard({
       {/* Popüler Lüks Kozmik Rozet */}
       {isPopular && (
         <View style={styles.popularRoyalBanner}>
+          <Image source={ROYAL_FRAME_IMG} style={styles.royalCrownImage} resizeMode="cover" />
           <View style={styles.royalCrownPill}>
-            <MaterialCommunityIcons name="crown" size={16} color="#1a0d33" />
+            <MaterialCommunityIcons name="crown" size={14} color="#1a0d33" />
             <Text style={styles.royalCrownPillText}>EFSANE</Text>
           </View>
           <Text style={styles.popularRoyalTitle}>24 SAATİN ZİRVE GÖNDERİSİ</Text>
           <View style={{ flex: 1 }} />
-          <Ionicons name="sparkles" size={15} color={GOLD} />
+          <Ionicons name="sparkles" size={16} color={GOLD} />
         </View>
       )}
 
@@ -522,13 +525,14 @@ function TextStatusCard({
       {/* Popüler Lüks Kozmik Rozet */}
       {isPopular && (
         <View style={styles.popularRoyalBanner}>
+          <Image source={ROYAL_FRAME_IMG} style={styles.royalCrownImage} resizeMode="cover" />
           <View style={styles.royalCrownPill}>
-            <MaterialCommunityIcons name="crown" size={16} color="#1a0d33" />
+            <MaterialCommunityIcons name="crown" size={14} color="#1a0d33" />
             <Text style={styles.royalCrownPillText}>EFSANE</Text>
           </View>
           <Text style={styles.popularRoyalTitle}>24 SAATİN ZİRVE DURUMU</Text>
           <View style={{ flex: 1 }} />
-          <Ionicons name="sparkles" size={15} color={GOLD} />
+          <Ionicons name="sparkles" size={16} color={GOLD} />
         </View>
       )}
 
@@ -1252,6 +1256,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderBottomWidth: 1.5,
     borderBottomColor: '#F59E0B',
+  },
+  royalCrownImage: {
+    width: 26,
+    height: 26,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#F59E0B',
   },
   royalCrownPill: {
     flexDirection: 'row',

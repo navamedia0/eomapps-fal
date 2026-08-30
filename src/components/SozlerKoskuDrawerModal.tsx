@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { GOLD, GOLD_SOFT, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, TEXT_PRIMARY } from '@/theme/colors';
 
 const { width } = Dimensions.get('window');
-const DRAWER_WIDTH = Math.min(width * 0.85, 340);
+const DRAWER_WIDTH = Math.min(width * 0.85, 320);
 
 type Props = {
   visible: boolean;
@@ -38,11 +38,11 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
         <Pressable style={styles.backdrop} onPress={onClose} />
 
         {/* Slide-in Drawer Container */}
-        <View style={[styles.drawer, { paddingTop: insets.top + 14, paddingBottom: insets.bottom + 16 }]}>
+        <View style={[styles.drawer, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 14 }]}>
           {/* Header */}
           <View style={styles.drawerHeader}>
             <View style={styles.drawerTitleRow}>
-              <MaterialCommunityIcons name="book-open-page-variant" size={24} color={GOLD} />
+              <MaterialCommunityIcons name="book-open-page-variant" size={22} color={GOLD} />
               <Text style={styles.drawerTitle}>Mistik Menü</Text>
             </View>
             <Pressable onPress={onClose} style={styles.closeBtn} hitSlop={10}>
@@ -57,10 +57,10 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
               <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(242, 200, 121, 0.18)' }]}>
-                <MaterialCommunityIcons name="feather" size={22} color={GOLD} />
+                <MaterialCommunityIcons name="feather" size={20} color={GOLD} />
               </View>
               <Text style={styles.menuItemTitle}>Sözler Köşkü</Text>
-              <Ionicons name="chevron-forward" size={18} color={GOLD} />
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
             {/* 2. BİLGİ KÖŞESİ */}
@@ -69,10 +69,10 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
               <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.18)' }]}>
-                <Ionicons name="library-outline" size={22} color="#C084FC" />
+                <Ionicons name="library-outline" size={20} color="#C084FC" />
               </View>
               <Text style={styles.menuItemTitle}>Bilgi Köşesi</Text>
-              <Ionicons name="chevron-forward" size={18} color={GOLD} />
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
             {/* 3. HAFTANIN EN SEVİLENLERİ */}
@@ -81,10 +81,10 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               style={({ pressed }) => [styles.menuItem, styles.highlightMenuItem, pressed && styles.menuItemPressed]}
             >
               <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
-                <Ionicons name="flame" size={22} color="#EF4444" />
+                <Ionicons name="flame" size={20} color="#EF4444" />
               </View>
               <Text style={[styles.menuItemTitle, { color: '#FCA5A5' }]}>Haftanın En Sevilenleri</Text>
-              <Ionicons name="chevron-forward" size={18} color={GOLD} />
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
             <View style={styles.divider} />
@@ -98,10 +98,10 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
               <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.18)' }]}>
-                <MaterialCommunityIcons name="cards-outline" size={22} color="#C084FC" />
+                <MaterialCommunityIcons name="cards-outline" size={20} color="#C084FC" />
               </View>
-              <Text style={styles.menuItemTitle}>Tarot Kartları ve Anlamları</Text>
-              <Ionicons name="chevron-forward" size={18} color={GOLD} />
+              <Text style={styles.menuItemTitle}>Tarot Kartları</Text>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
             {/* İskambil Kartları */}
@@ -110,10 +110,10 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
               <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(59, 130, 246, 0.18)' }]}>
-                <MaterialCommunityIcons name="cards-playing-outline" size={22} color="#60A5FA" />
+                <MaterialCommunityIcons name="cards-playing-outline" size={20} color="#60A5FA" />
               </View>
-              <Text style={styles.menuItemTitle}>İskambil Kartları Dili</Text>
-              <Ionicons name="chevron-forward" size={18} color={GOLD} />
+              <Text style={styles.menuItemTitle}>İskambil Kartları</Text>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
             {/* Burçların Kökeni ve 4 Element */}
@@ -122,10 +122,10 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
               <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(245, 158, 11, 0.18)' }]}>
-                <MaterialCommunityIcons name="zodiac-leo" size={22} color="#FBBF24" />
+                <MaterialCommunityIcons name="zodiac-leo" size={20} color="#FBBF24" />
               </View>
-              <Text style={styles.menuItemTitle}>Burçların Kökeni & 4 Element</Text>
-              <Ionicons name="chevron-forward" size={18} color={GOLD} />
+              <Text style={styles.menuItemTitle}>Burçlar & 4 Element</Text>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
             {/* Kahve Falı Tarihi */}
@@ -134,10 +134,10 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
               <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(180, 83, 9, 0.18)' }]}>
-                <MaterialCommunityIcons name="coffee-outline" size={22} color="#F59E0B" />
+                <MaterialCommunityIcons name="coffee-outline" size={20} color="#F59E0B" />
               </View>
-              <Text style={styles.menuItemTitle}>Kahve Telvesinin Tarihi</Text>
-              <Ionicons name="chevron-forward" size={18} color={GOLD} />
+              <Text style={styles.menuItemTitle}>Kahve Falı Tarihi</Text>
+              <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
           </ScrollView>
         </View>
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(22, 12, 42, 0.98)',
     borderRightWidth: 1.5,
     borderRightColor: 'rgba(242, 200, 121, 0.35)',
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     shadowColor: '#000',
     shadowOffset: { width: 4, height: 0 },
     shadowOpacity: 0.5,
@@ -172,10 +172,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingBottom: 14,
+    paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(242, 200, 121, 0.2)',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   drawerTitleRow: {
     flexDirection: 'row',
@@ -183,28 +183,28 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   drawerTitle: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '900',
     color: GOLD,
-    letterSpacing: 0.4,
+    letterSpacing: 0.3,
   },
   closeBtn: {
     padding: 4,
   },
   drawerContent: {
-    paddingVertical: 8,
-    gap: 12,
+    paddingVertical: 6,
+    gap: 9,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(38, 24, 70, 0.88)',
-    borderRadius: 16,
+    borderRadius: 13,
     borderWidth: 1.2,
     borderColor: 'rgba(242, 200, 121, 0.22)',
-    paddingVertical: 13,
-    paddingHorizontal: 14,
-    gap: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    gap: 10,
   },
   highlightMenuItem: {
     backgroundColor: 'rgba(48, 20, 58, 0.95)',
@@ -215,15 +215,15 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   menuIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   menuItemTitle: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 14.5,
     fontWeight: '800',
     color: TEXT_PRIMARY,
     letterSpacing: 0.2,
@@ -234,11 +234,11 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   sectionHeading: {
-    fontSize: 11.5,
+    fontSize: 11,
     fontWeight: '900',
     color: GOLD_SOFT,
     letterSpacing: 0.8,
-    marginTop: 4,
-    marginBottom: 2,
+    marginTop: 2,
+    marginBottom: 1,
   },
 });

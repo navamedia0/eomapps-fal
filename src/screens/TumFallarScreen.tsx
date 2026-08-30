@@ -274,7 +274,7 @@ export default function TumFallarScreen({ navigation }: Props) {
             const hasBg = !!ekol.sectionBg;
 
             const innerContent = (
-              <View style={[styles.sectionInner, hasBg && styles.themedSectionInner]}>
+              <View style={[styles.sectionInner, styles.themedSectionInner]}>
                 <View style={[styles.ekolHeadBar, { backgroundColor: ekol.accent }]} />
                 <Text style={[styles.ekolTitle, { color: ekol.accent }]}>{ekol.title}</Text>
                 <Text style={styles.ekolSub}>{ekol.sub}</Text>
@@ -322,7 +322,14 @@ export default function TumFallarScreen({ navigation }: Props) {
             }
 
             return (
-              <View key={ekol.key} style={styles.standardSection}>
+              <View
+                key={ekol.key}
+                style={[
+                  styles.themedCardContainer,
+                  styles.standardThemedContainer,
+                  { borderColor: ekol.accent },
+                ]}
+              >
                 {innerContent}
               </View>
             );
@@ -371,12 +378,16 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 22,
     overflow: 'hidden',
-    borderWidth: 1.4,
+    borderWidth: 1.6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.45,
     shadowRadius: 10,
     elevation: 6,
+  },
+  standardThemedContainer: {
+    backgroundColor: 'rgba(23, 13, 44, 0.94)',
+    borderWidth: 1.6,
   },
   themedCardBg: {
     width: '100%',
