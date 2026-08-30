@@ -51,69 +51,57 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.drawerContent}>
-            {/* 1. SÖZLER KÖŞKÜ (Müstakil Anlamlı Sözler Ekranı) */}
+            {/* 1. SÖZLER KÖŞKÜ */}
             <Pressable
               onPress={() => handleNavigate('SozlerKosku')}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(242, 200, 121, 0.15)' }]}>
-                <MaterialCommunityIcons name="feather" size={20} color={GOLD} />
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(242, 200, 121, 0.18)' }]}>
+                <MaterialCommunityIcons name="feather" size={22} color={GOLD} />
               </View>
-              <View style={styles.menuTextWrap}>
-                <Text style={styles.menuItemTitle}>Sözler Köşkü</Text>
-                <Text style={styles.menuItemDesc}>Günün anlamlı sözleri ve popüler liste</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+              <Text style={styles.menuItemTitle}>Sözler Köşkü</Text>
+              <Ionicons name="chevron-forward" size={18} color={GOLD} />
             </Pressable>
 
-            {/* 2. BİLGİ KÖŞESİ (Müstakil 7.500 Bilgi Kartı Ekranı) */}
+            {/* 2. BİLGİ KÖŞESİ */}
             <Pressable
               onPress={() => handleNavigate('BilgiKosesi')}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.15)' }]}>
-                <Ionicons name="library-outline" size={20} color="#C084FC" />
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.18)' }]}>
+                <Ionicons name="library-outline" size={22} color="#C084FC" />
               </View>
-              <View style={styles.menuTextWrap}>
-                <Text style={styles.menuItemTitle}>Bilgi Köşesi</Text>
-                <Text style={styles.menuItemDesc}>7.500 kadim bilgi kartı ve arama</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+              <Text style={styles.menuItemTitle}>Bilgi Köşesi</Text>
+              <Ionicons name="chevron-forward" size={18} color={GOLD} />
             </Pressable>
 
-            {/* 3. HAFTANIN EN SEVİLENLERİ (Sözler & Bilgiler - Pazartesi 08:00) */}
+            {/* 3. HAFTANIN EN SEVİLENLERİ */}
             <Pressable
               onPress={() => handleNavigate('HaftaninSevilenleri')}
               style={({ pressed }) => [styles.menuItem, styles.highlightMenuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(239, 68, 68, 0.18)' }]}>
-                <Ionicons name="flame" size={20} color="#EF4444" />
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
+                <Ionicons name="flame" size={22} color="#EF4444" />
               </View>
-              <View style={styles.menuTextWrap}>
-                <Text style={[styles.menuItemTitle, { color: '#FCA5A5' }]}>Haftanın En Sevilenleri</Text>
-                <Text style={styles.menuItemDesc}>Haftalık 15 popüler söz ve bilgi kartı</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+              <Text style={[styles.menuItemTitle, { color: '#FCA5A5' }]}>Haftanın En Sevilenleri</Text>
+              <Ionicons name="chevron-forward" size={18} color={GOLD} />
             </Pressable>
 
             <View style={styles.divider} />
 
             {/* KADİM BİLGİ KARTLARI & REHBERLER */}
-            <Text style={styles.sectionHeading}>KADİM KART & REHBER DETAYLARI</Text>
+            <Text style={styles.sectionHeading}>KADİM KART & REHBERLER</Text>
 
             {/* Tarot Kartları */}
             <Pressable
               onPress={() => handleNavigate('KartAnlamlari', { deck: 'tarot' })}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.15)' }]}>
-                <MaterialCommunityIcons name="cards-outline" size={20} color="#C084FC" />
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.18)' }]}>
+                <MaterialCommunityIcons name="cards-outline" size={22} color="#C084FC" />
               </View>
-              <View style={styles.menuTextWrap}>
-                <Text style={styles.menuItemTitle}>Tarot Kartları ve Anlamları</Text>
-                <Text style={styles.menuItemDesc}>78 kartlık Rider-Waite destesi</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+              <Text style={styles.menuItemTitle}>Tarot Kartları ve Anlamları</Text>
+              <Ionicons name="chevron-forward" size={18} color={GOLD} />
             </Pressable>
 
             {/* İskambil Kartları */}
@@ -121,14 +109,11 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               onPress={() => handleNavigate('KartAnlamlari', { deck: 'iskambil' })}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-                <MaterialCommunityIcons name="cards-playing-outline" size={20} color="#60A5FA" />
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(59, 130, 246, 0.18)' }]}>
+                <MaterialCommunityIcons name="cards-playing-outline" size={22} color="#60A5FA" />
               </View>
-              <View style={styles.menuTextWrap}>
-                <Text style={styles.menuItemTitle}>İskambil Kartları Dili</Text>
-                <Text style={styles.menuItemDesc}>52 kartın kadim fal anlamları</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+              <Text style={styles.menuItemTitle}>İskambil Kartları Dili</Text>
+              <Ionicons name="chevron-forward" size={18} color={GOLD} />
             </Pressable>
 
             {/* Burçların Kökeni ve 4 Element */}
@@ -136,14 +121,11 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               onPress={() => handleNavigate('BilgiMakale', { topic: 'burc_kokeni' })}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
-                <MaterialCommunityIcons name="zodiac-leo" size={20} color="#FBBF24" />
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(245, 158, 11, 0.18)' }]}>
+                <MaterialCommunityIcons name="zodiac-leo" size={22} color="#FBBF24" />
               </View>
-              <View style={styles.menuTextWrap}>
-                <Text style={styles.menuItemTitle}>Burçların Kökeni & 4 Element</Text>
-                <Text style={styles.menuItemDesc}>Zodyak tarihi ve element döngüsü</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+              <Text style={styles.menuItemTitle}>Burçların Kökeni & 4 Element</Text>
+              <Ionicons name="chevron-forward" size={18} color={GOLD} />
             </Pressable>
 
             {/* Kahve Falı Tarihi */}
@@ -151,14 +133,11 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               onPress={() => handleNavigate('BilgiMakale', { topic: 'kahve_tarihi' })}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(180, 83, 9, 0.15)' }]}>
-                <MaterialCommunityIcons name="coffee-outline" size={20} color="#F59E0B" />
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(180, 83, 9, 0.18)' }]}>
+                <MaterialCommunityIcons name="coffee-outline" size={22} color="#F59E0B" />
               </View>
-              <View style={styles.menuTextWrap}>
-                <Text style={styles.menuItemTitle}>Kahve Telvesinin Tarihi</Text>
-                <Text style={styles.menuItemDesc}>Osmanlı'dan günümüze fal geleneği</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color={GOLD} />
+              <Text style={styles.menuItemTitle}>Kahve Telvesinin Tarihi</Text>
+              <Ionicons name="chevron-forward" size={18} color={GOLD} />
             </Pressable>
           </ScrollView>
         </View>
@@ -204,27 +183,28 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   drawerTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '900',
     color: GOLD,
-    letterSpacing: 0.3,
+    letterSpacing: 0.4,
   },
   closeBtn: {
     padding: 4,
   },
   drawerContent: {
     paddingVertical: 8,
-    gap: 10,
+    gap: 12,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(38, 24, 70, 0.85)',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
-    padding: 11,
-    gap: 10,
+    backgroundColor: 'rgba(38, 24, 70, 0.88)',
+    borderRadius: 16,
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.22)',
+    paddingVertical: 13,
+    paddingHorizontal: 14,
+    gap: 12,
   },
   highlightMenuItem: {
     backgroundColor: 'rgba(48, 20, 58, 0.95)',
@@ -235,24 +215,18 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   menuIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  menuTextWrap: {
-    flex: 1,
-  },
   menuItemTitle: {
-    fontSize: 13,
-    fontWeight: '700',
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '800',
     color: TEXT_PRIMARY,
-  },
-  menuItemDesc: {
-    fontSize: 10.5,
-    color: TEXT_MUTED,
-    marginTop: 1,
+    letterSpacing: 0.2,
   },
   divider: {
     height: 1,
@@ -260,10 +234,11 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   sectionHeading: {
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: 11.5,
+    fontWeight: '900',
     color: GOLD_SOFT,
-    letterSpacing: 0.6,
+    letterSpacing: 0.8,
+    marginTop: 4,
     marginBottom: 2,
   },
 });

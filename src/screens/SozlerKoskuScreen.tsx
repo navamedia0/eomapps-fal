@@ -230,13 +230,13 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   quoteText: {
-    fontSize: 14.5,
-    lineHeight: 22,
+    fontSize: 16.5,
+    lineHeight: 25,
     color: '#fff',
     fontWeight: '600',
     fontStyle: 'italic',
     paddingTop: 18,
-    paddingBottom: 12,
+    paddingBottom: 14,
     paddingHorizontal: 6,
   },
   quoteShareRow: {
