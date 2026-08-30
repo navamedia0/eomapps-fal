@@ -46,9 +46,13 @@ export function parseSpreadReading(text: string, positions: string[]): string[] 
     const searchVariants = getSearchVariants(position);
     for (const variant of searchVariants) {
       const normVariant = trNormalize(variant);
-      // Look for optional number prefix e.g. "1. ", "1- ", followed by title and colon/dash
+      // Look for optional number prefix e.g. "1. ", "1- ", followed by title and colon/dash.
+      // The gap before the colon/dash is intentionally NOT restricted to whitespace only —
+      // position labels like "6. Yaklaşan Gelecek (Sağ)" get their parenthetical part
+      // reproduced by the AI right before the colon (e.g. "...GELECEK (SAĞ):"), and a
+      // \s*-only gap would never match that, silently dropping the section.
       const pattern = new RegExp(
-        `(?:^|\\n)\\s*(?:\\d+[\\.\\-\\)]\\s*)?${escapeRegExp(normVariant)}\\s*[:\\-]`,
+        `(?:^|\\n)\\s*(?:\\d+[\\.\\-\\)]\\s*)?${escapeRegExp(normVariant)}[^\\n]*?[:\\-]`,
         'i'
       );
       const match = pattern.exec(normalized);
@@ -63,32 +67,35 @@ export function parseSpreadReading(text: string, positions: string[]): string[] 
     .filter((m): m is { index: number; length: number; posIdx: number } => m !== null)
     .sort((a, b) => a.index - b.index);
 
-  // If we matched at least 2 headers or most headers, split by found markers
-  if (validMarkers.length >= Math.min(2, positions.length)) {
+  // Only commit to this strategy if EVERY position found its own header — a partial
+  // match used to get "rescued" with an identical canned sentence for the missing
+  // slots (indistinguishable from a real answer, but repeated verbatim across cards).
+  // Falling through to Strategy 2 instead gives every remaining position a real,
+  // if less precisely bounded, chunk of the actual AI text.
+  if (validMarkers.length === positions.length) {
     const sections = new Array<string>(positions.length).fill('');
     validMarkers.forEach((marker, i) => {
       const start = marker.index + marker.length;
       const end = i + 1 < validMarkers.length ? validMarkers[i + 1].index : cleanText.length;
       sections[marker.posIdx] = cleanText.slice(start, end).trim();
     });
-
-    // Fill any missing section with fallback text from neighboring content or general body
-    return sections.map((s, idx) => s || `Bu kartın enerjisi açılımın geneliyle ve kadersel akışla uyum içinde rezone ediyor.`);
+    return sections;
   }
 
-  // Strategy 2: Split by numbered headers (1., 2., 3., 4., etc.)
+  // Strategy 2: Split by numbered headers (1., 2., 3., 4., etc.) — generic, doesn't
+  // care what each header's text says, so it's immune to the parenthetical-mismatch
+  // bug above. Same "all or nothing" rule: a partial match here would otherwise repeat
+  // the same 300-char slice of raw text across every unmatched card.
   const numberedPattern = /(?:^|\n)\s*(\d+)[\.\-\)]\s*([^:\n]+)[:\-]\s*/g;
   const numMatches = [...cleanText.matchAll(numberedPattern)];
-  if (numMatches.length >= Math.min(2, positions.length)) {
+  if (numMatches.length === positions.length) {
     const sections = new Array<string>(positions.length).fill('');
     numMatches.forEach((match, i) => {
-      if (i < positions.length) {
-        const start = (match.index ?? 0) + match[0].length;
-        const end = i + 1 < numMatches.length ? numMatches[i + 1].index ?? cleanText.length : cleanText.length;
-        sections[i] = cleanText.slice(start, end).trim();
-      }
+      const start = (match.index ?? 0) + match[0].length;
+      const end = i + 1 < numMatches.length ? numMatches[i + 1].index ?? cleanText.length : cleanText.length;
+      sections[i] = cleanText.slice(start, end).trim();
     });
-    return sections.map((s) => s || cleanText.slice(0, 300).trim());
+    return sections;
   }
 
   // Strategy 3: Paragraph splitting fallback (always guarantee valid string[] with length === positions.length)

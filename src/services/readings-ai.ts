@@ -10,6 +10,7 @@ import type { TarotCard } from '@/services/tarot';
 import { getTarotMeaning } from '@/services/tarotMeanings';
 import type { KatinaCard } from '@/services/katina';
 import { getKatinaMeaning } from '@/services/katinaMeanings';
+import { getLenormandMeaning } from '@/services/lenormandMeanings';
 import { findDreamMatches } from '@/services/dreamMeanings';
 import { getCoffeeSymbolGlossary } from '@/services/coffeeSymbols';
 import { getTeaLeafSymbolGlossary } from '@/services/teaLeafSymbols';
@@ -142,6 +143,38 @@ export async function interpretKatinaSpread(
   const prompt = `${prompts.katinaSpread(positions, toneHint)}\n${formatInstruction}\n\nKartlar:\n${cardText}${mysticBlock}${profileBlock}`;
   return withFallbackChain([
     () => askGemini(prompt, undefined, 'katina', isPaid),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+}
+
+export type LenormandPick = { id: string; name: string; orientation: 'upright' | 'reversed' };
+
+export async function interpretLenormandSpread(
+  cards: LenormandPick[],
+  positions: string[],
+  readingTechnique: string,
+  isPaid = false,
+): Promise<string> {
+  const cardText = cards
+    .map((card, index) => {
+      const meaning = getLenormandMeaning(card.id);
+      const orientationLabel = card.orientation === 'reversed' ? 'ters (enerjisi zayıf/gecikmeli)' : 'düz';
+      const referenceLine = meaning
+        ? `\n   Klasik anlamı (esin için, birebir kopyalama): ${meaning.meaning}\n   Kombinasyon ipucu: ${meaning.combination}`
+        : '';
+      return `${positions[index] || `${index + 1}. Kart`}: ${card.name} (${orientationLabel})${referenceLine}`;
+    })
+    .join('\n');
+
+  const headerList = [...positions.map((position) => `"${turkishUpperCase(position)}:"`), '"GENEL YORUM & KARTLARIN BİRLEŞİK MESAJI:"'].join(', ');
+  const formatInstruction = `Yanıtını ${positions.length + 1} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" ve "kombinasyon ipucu" satırlarını doğrudan kopyalama; onları ilham kaynağı olarak kullanıp kendi akıcı üslubunla yeniden anlat, komşu kartlarla ilişkilendirerek somutlaştır. Son bölüm olan "GENEL YORUM & KARTLARIN BİRLEŞİK MESAJI:", tüm kartların birlikte kurduğu tek bir Lenormand "cümlesini/hikayesini" 3-4 cümlede özetlemeli.`;
+
+  const profileBlock = await buildProfileBlock();
+  const prompt = `${prompts.lenormandSpread(positions, readingTechnique)}\n${formatInstruction}\n\nKartlar:\n${cardText}${profileBlock}`;
+  return withFallbackChain([
+    () => askGemini(prompt, undefined, tarotReadingType(cards.length), isPaid),
     () => askCloudflare(prompt),
     () => askOpenRouter(prompt),
     () => askHuggingFace(prompt),

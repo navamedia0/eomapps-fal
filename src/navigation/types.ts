@@ -19,6 +19,12 @@ export type RootStackParamList = {
     p1Name?: string;
     p2Name?: string;
     relFocus?: string;
+    // "Kendi Kartlarınla Fal Bak" (CardDeckTableScreen) kendi ayrı açılım
+    // katalogunu kullanıyor — spreadId sadece kart sayısı, findSpread()'in
+    // ürettiği pozisyonlar bu katalogla eşleşmeyebilir (özellikle 5/7/10 kart
+    // ve karşılıklı uyum açılımlarında). Verildiğinde bu, kullanıcının
+    // gerçekten seçtiği pozisyon etiketlerinin üzerine yazılır.
+    positions?: string[];
   };
   DreamChat: undefined;
   ProfileChat: undefined;
@@ -79,6 +85,11 @@ export type RootStackParamList = {
   KesifSalonuOyun: undefined;
   CardDeckHub: undefined;
   CardDeckTable: { deckId: string };
+  LenormandResult: {
+    picks: { id: string; orientation: 'upright' | 'reversed' }[];
+    positions: string[];
+    readingTechnique: string;
+  };
 };
 
 export type MainTabParamList = {

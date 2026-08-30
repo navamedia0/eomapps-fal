@@ -49,6 +49,13 @@ type Props = NativeStackScreenProps<RootStackParamList, 'TarotResult'>;
 
 export default function TarotResultScreen({ route, navigation }: Props) {
   const spread = findSpread(route.params.spreadId);
+  // CardDeckTableScreen ("Kendi Kartlarınla Fal Bak") kendi ayrı açılım
+  // katalogunu kullanıyor ve gerçek pozisyon etiketlerini route.params.positions
+  // ile gönderiyor — spreadId orada sadece kart sayısı olduğu için
+  // findSpread()'in ürettiği pozisyonlar yanlış açılıma ait olabilir.
+  // TarotSpreadScreen üzerinden gelen "resmi" akışta positions gelmez, o
+  // zaman spread.positions (findSpread'in kendi tanımı) doğru ve tek kaynaktır.
+  const positions = route.params.positions ?? spread.positions;
 
   const cards = useMemo(
     () => route.params.picks.map((pick) => ({ ...findTarotCard(pick.id), orientation: pick.orientation as TarotOrientation })),
@@ -91,7 +98,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
 
       // Kendi Falına Bak ekranından 50 Coin ödenerek geldiyse doğrudan yorumu al
       if (route.params.isPrepaid) {
-        const interpretation = await interpretTarotSpread(cards, spread.positions, true, relContext);
+        const interpretation = await interpretTarotSpread(cards, positions, true, relContext);
         setResult(interpretation);
         await saveReadingHistory({
           type: 'tarot',
@@ -113,7 +120,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
           return;
         }
         spentAmount = spread.priceCoins;
-        const interpretation = await interpretTarotSpread(cards, spread.positions, true, relContext);
+        const interpretation = await interpretTarotSpread(cards, positions, true, relContext);
         setResult(interpretation);
         await saveReadingHistory({
           type: 'tarot',
@@ -164,7 +171,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
         setQueueNotice('Sistemdeki yoğunluk nedeniyle açılımınız inceleniyor; hazır olduğunda burada ve Geçmiş bölümünde görünecektir...');
       }, 12000);
 
-      const interpretation = await interpretTarotSpread(cards, spread.positions, payWithCoins);
+      const interpretation = await interpretTarotSpread(cards, positions, payWithCoins);
       clearTimeout(queueTimer);
       setQueueNotice(null);
 
@@ -188,7 +195,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [cards, spread.id, spread.positions, spread.priceCoins]);
+  }, [cards, spread.id, positions, spread.priceCoins]);
 
   const handleAdComplete = useCallback(async () => {
     setAdModalVisible(false);
@@ -232,11 +239,15 @@ export default function TarotResultScreen({ route, navigation }: Props) {
     return () => loop.stop();
   }, [loading, pulse]);
 
+  // 'Genel Uyum & Kadersel Sentez' burada rastgele bir etiket değil — interpretTarotSpread
+  // (readings-ai.ts) yapay zekaya SON bölümü tam olarak "GENEL UYUM & KADERSEL SENTEZ:"
+  // başlığıyla yazmasını söylüyor; parseSpreadReading arama teriminin bununla eşleşmesi
+  // gerekiyor, yoksa özet bölümü hiçbir zaman bulunamaz.
   const sectionsWithSummary = useMemo(
-    () => (result ? parseSpreadReading(result, [...spread.positions, 'Genel Yorum']) : null),
-    [result, spread.positions],
+    () => (result ? parseSpreadReading(result, [...positions, 'Genel Uyum & Kadersel Sentez']) : null),
+    [result, positions],
   );
-  const sections = sectionsWithSummary ? sectionsWithSummary.slice(0, spread.positions.length) : null;
+  const sections = sectionsWithSummary ? sectionsWithSummary.slice(0, positions.length) : null;
   const generalSummary = sectionsWithSummary ? sectionsWithSummary[sectionsWithSummary.length - 1] : null;
   const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] });
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.15] });
@@ -298,7 +309,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
             {result && (
               <TarotSpreadLayout
                 cards={cards}
-                positions={spread.positions}
+                positions={positions}
                 spreadId={spread.id}
                 isRelationship={route.params.isRelationship}
                 p1Name={route.params.p1Name}
@@ -312,7 +323,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
                 <View style={styles.cardBlockHeader}>
                   <TarotCardFace card={card} orientation={card.orientation} />
                   <View style={styles.cardBlockInfo}>
-                    <Text style={styles.positionLabel}>{turkishUpperCase(spread.positions[index])}</Text>
+                    <Text style={styles.positionLabel}>{turkishUpperCase(positions[index])}</Text>
                     <Text style={styles.cardName}>{card.name}</Text>
                     <Text style={styles.orientationLabel}>
                       {card.orientation === 'reversed' ? 'Ters' : 'Düz'}
@@ -384,7 +395,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
           visible={true}
           badge="Tarot Kadim Açılım Raporu"
           sections={[
-            ...spread.positions.map((pos, idx) => {
+            ...positions.map((pos, idx) => {
               const card = cards[idx];
               const kw = card ? getTarotKeywordList(card.id, card.orientation) : [];
               const meaning = card ? getTarotMeaning(card.id) : undefined;
@@ -409,7 +420,7 @@ export default function TarotResultScreen({ route, navigation }: Props) {
           spreadLayoutModalContent={
             <TarotSpreadLayout
               cards={cards}
-              positions={spread.positions}
+              positions={positions}
               spreadId={spread.id}
               isRelationship={route.params.isRelationship}
               p1Name={route.params.p1Name}

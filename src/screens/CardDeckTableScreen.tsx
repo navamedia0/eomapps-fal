@@ -31,6 +31,9 @@ import angelCardsData from '@/data/angel_cards.json';
 import runesData from '@/data/runes_futhark.json';
 import iskambilData from '@/data/iskambil_card_details.json';
 import katinaData from '@/data/katina_meanings.json';
+import { getLenormandMeaning } from '@/services/lenormandMeanings';
+import { LENORMAND_SPREADS } from '@/services/lenormandSpreads';
+import { interpretLenormandSpread } from '@/services/readings-ai';
 import RelationshipSpreadTable from '@/components/RelationshipSpreadTable';
 import { analyzeRelationshipSpread } from '@/utils/relationshipCompatibilityEngine';
 import CornerTicks from '@/components/CornerTicks';
@@ -162,6 +165,18 @@ const RELATIONSHIP_SPREAD_OPTIONS: SpreadOption[] = [
     ],
   },
 ];
+
+// Lenormand — Tarot'un Kelt Haçı gibi açılımlarını kopyalamak yerine, kendi
+// otantik tekniklerinden (kombinasyon/cümle okuma, haftalık açılım, 3x3 kutu)
+// türetilmiş kendine has açılım seçenekleri. LENORMAND_SPREADS ile birebir
+// aynı pozisyon/teknik kaynağından besleniyor (bkz. services/lenormandSpreads.ts).
+const LENORMAND_SPREAD_OPTIONS: SpreadOption[] = LENORMAND_SPREADS.map((spread) => ({
+  id: `lenormand_${spread.id}`,
+  name: spread.name,
+  cardCount: spread.positions.length,
+  desc: spread.description,
+  positions: spread.positions,
+}));
 
 // 4 Kart Dizilim Seçeneği
 const LAYOUT_OPTIONS: Array<{
@@ -306,7 +321,11 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
   const [p1DrawnCards, setP1DrawnCards] = useState<DrawnCard[]>([]);
   const [p2DrawnCards, setP2DrawnCards] = useState<DrawnCard[]>([]);
   const [bridgeDrawnCard, setBridgeDrawnCard] = useState<DrawnCard | null>(null);
-  const [selectedSpread, setSelectedSpread] = useState<SpreadOption>(SPREAD_OPTIONS[1]); // 3 card default
+  // Lenormand kendi otantik açılım kataloğunu kullanır (Tarot'un Kelt Haçı vb.
+  // isimlerini/pozisyonlarını taşımaz) — bkz. LENORMAND_SPREAD_OPTIONS.
+  const [selectedSpread, setSelectedSpread] = useState<SpreadOption>(() =>
+    deck.id === 'lenormand' ? LENORMAND_SPREAD_OPTIONS[1] : SPREAD_OPTIONS[1],
+  ); // 3 card default
   const [selectedLayout, setSelectedLayout] = useState<TarotLayoutId>('fullgrid');
   const [phase, setPhase] = useState<'setup' | 'shuffling' | 'picking' | 'table'>('setup');
   const [showRitualSpread, setShowRitualSpread] = useState(false);
@@ -907,22 +926,19 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
       }
     }
 
-    // 5. Lenormand
+    // 5. Lenormand — otantik 36 kartlık Fransız kartomansi anlamları
+    // (kombinasyon ipuçları dahil, Tarot'tan kopyalanmamış özgün içerik)
     if (deck.id === 'lenormand') {
-      const len = LENORMAND_FULL_CARDS.find((l) => l.id === cardId);
+      const len = getLenormandMeaning(cardId);
       if (len) {
         return {
-          upright: len.desc,
-          reversed: `Gelişmeler biraz zaman alabilir; detayları gözden kaçırma.`,
-          love: isRelationship
-            ? `${targetName}'e müjdele: 'İlişkinizde somut ve sevindirici gelişmeler çok yakın.'`
-            : `İlişkinizde somut ve net gelişmelerin yaşanacağı bir dönem.`,
-          career: len.desc,
-          advice: isRelationship
-            ? `🗣️ Rehberlik: 'Ona işaretleri doğru okumasını ve fırsatları kaçırmamasını tembihle.'`
-            : `İşaretleri doğru oku ve pratik çözümlere odaklan.`,
-          story: `Mlle Lenormand'ın 19. yüzyıl Paris saraylarında Napolyon ve aristokratlara baktığı doğrudan, somut ve şaşmaz kehanet kartı.`,
-          keywords: [len.name, 'Somut İşaret', 'Haber', 'Netlik'],
+          upright: len.meaning,
+          reversed: `Bu enerji şu an gecikmiş, zayıflamış ya da engellenmiş durumda — ${len.meaning.charAt(0).toLowerCase()}${len.meaning.slice(1)}`,
+          love: isRelationship ? `${targetName}'e söyle: '${len.love}'` : len.love,
+          career: len.career,
+          advice: isRelationship ? `🗣️ Rehberlik: '${len.advice}'` : len.advice,
+          story: `${len.combination} (Lenormand'da kartlar Tarot gibi tek başına değil, komşu kartlarla birlikte bir cümle gibi okunur.)`,
+          keywords: len.keywords,
         };
       }
     }
@@ -1062,10 +1078,31 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
       orientation: (c.isReversed ? 'reversed' : 'upright') as any,
     }));
 
+    // Lenormand'ın kendi otantik yorumlama motoru ve sonuç ekranı var — Tarot
+    // kart ID'leriyle çalışan TarotResult'a asla yönlendirilmemeli (findTarotCard
+    // Lenormand kart ID'lerini tanımaz, sonuç bozuk çıkar).
+    if (deck.id === 'lenormand') {
+      const lenormandSpread = LENORMAND_SPREADS.find((s) => s.positions.length === allCards.length) ?? LENORMAND_SPREADS[1];
+      navigation.navigate('LenormandResult', {
+        picks: mappedPicks,
+        positions: allCards.map((c) => c.positionName),
+        readingTechnique: lenormandSpread.readingTechnique,
+      });
+      return;
+    }
+
+    // spreadId burada sadece kart sayısı — kuyruk/başlık amaçlı yaklaşık bir
+    // bilgi. Gerçek pozisyon etiketleri (kullanıcının ekranda gördüğü ve bu
+    // ekranın kendi SPREAD_OPTIONS/RELATIONSHIP_SPREAD_OPTIONS kataloğundan
+    // gelen) ayrıca `positions` ile gönderiliyor — TarotResultScreen'in
+    // findSpread(spreadId) ile YANLIŞ bir açılım kataloğuna (ör. 5/7/10 kartlık
+    // farklı bir dizilime) düşmesini engellemek için. Her kartın kendi
+    // positionName'i zaten seçim sırasında doğru şekilde hesaplanmıştı.
     const targetSpreadId = allCards.length as any;
     navigation.navigate('TarotResult', {
       spreadId: targetSpreadId,
       picks: mappedPicks,
+      positions: allCards.map((c) => c.positionName),
       isPrepaid: true,
       isRelationship: readingMode === 'relationship',
       p1Name: p1Name.trim() || '1. Kişi',
@@ -1142,7 +1179,7 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
               <Pressable
                 onPress={() => {
                   setReadingMode('self');
-                  setSelectedSpread(SPREAD_OPTIONS[1]);
+                  setSelectedSpread(deck.id === 'lenormand' ? LENORMAND_SPREAD_OPTIONS[1] : SPREAD_OPTIONS[1]);
                 }}
                 style={[
                   styles.modeButton,
@@ -1165,31 +1202,36 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                 <Text style={styles.modeButtonDesc}>Bireysel içsel mesajlar & sezgisel rehberlik</Text>
               </Pressable>
 
-              <Pressable
-                onPress={() => {
-                  setReadingMode('relationship');
-                  setSelectedSpread(RELATIONSHIP_SPREAD_OPTIONS[0]);
-                }}
-                style={[
-                  styles.modeButton,
-                  readingMode === 'relationship' && [styles.modeButtonActive, { borderColor: deck.accent }],
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="heart-multiple"
-                  size={26}
-                  color={readingMode === 'relationship' ? deck.accent : TEXT_MUTED}
-                />
-                <Text
+              {/* Lenormand için otantik, araştırılmış bir çift açılımı henüz
+                  tasarlanmadı — yanlış/kopya bir açılım göstermektense bu mod
+                  şimdilik gizli. Sadece bireysel okuma sunuluyor. */}
+              {deck.id !== 'lenormand' && (
+                <Pressable
+                  onPress={() => {
+                    setReadingMode('relationship');
+                    setSelectedSpread(RELATIONSHIP_SPREAD_OPTIONS[0]);
+                  }}
                   style={[
-                    styles.modeButtonTitle,
-                    readingMode === 'relationship' && { color: deck.accent, fontWeight: '900' },
+                    styles.modeButton,
+                    readingMode === 'relationship' && [styles.modeButtonActive, { borderColor: deck.accent }],
                   ]}
                 >
-                  Karşılıklı Uyum Açılımı
-                </Text>
-                <Text style={styles.modeButtonDesc}>Çift & 2 kişilik ilişki aynası (Sırayla kart seçimi)</Text>
-              </Pressable>
+                  <MaterialCommunityIcons
+                    name="heart-multiple"
+                    size={26}
+                    color={readingMode === 'relationship' ? deck.accent : TEXT_MUTED}
+                  />
+                  <Text
+                    style={[
+                      styles.modeButtonTitle,
+                      readingMode === 'relationship' && { color: deck.accent, fontWeight: '900' },
+                    ]}
+                  >
+                    Karşılıklı Uyum Açılımı
+                  </Text>
+                  <Text style={styles.modeButtonDesc}>Çift & 2 kişilik ilişki aynası (Sırayla kart seçimi)</Text>
+                </Pressable>
+              )}
             </View>
 
             {/* Karşılıklı Uyum Moduna Özel Çift Bilgi Girişi */}
@@ -1236,7 +1278,12 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
             {/* 2. Açılım Tipi Seçimi */}
             <Text style={styles.sectionLabel}>2. AÇILIM VE KART SAYISINI SEÇ</Text>
             <View style={styles.spreadList}>
-              {(readingMode === 'relationship' ? RELATIONSHIP_SPREAD_OPTIONS : SPREAD_OPTIONS).map((spread) => {
+              {(deck.id === 'lenormand'
+                ? LENORMAND_SPREAD_OPTIONS
+                : readingMode === 'relationship'
+                ? RELATIONSHIP_SPREAD_OPTIONS
+                : SPREAD_OPTIONS
+              ).map((spread) => {
                 const isSelected = selectedSpread.id === spread.id;
                 return (
                   <Pressable
