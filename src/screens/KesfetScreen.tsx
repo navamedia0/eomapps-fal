@@ -4,6 +4,7 @@ import {
   View,
   Text,
   Pressable,
+  Image,
   RefreshControl,
   FlatList,
   TextInput,
@@ -11,7 +12,6 @@ import {
   ActivityIndicator,
   Modal,
 } from 'react-native';
-import { Image } from 'expo-image';
 import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
@@ -170,7 +170,7 @@ function PhotoPostComposer({ onPosted }: { onPosted: () => void }) {
     <View style={styles.composerOpen}>
       {imageUri && (
         <View style={styles.composerImageWrap}>
-          <Image source={{ uri: imageUri }} style={styles.composerImage} contentFit="cover" cachePolicy="memory-disk" />
+          <Image source={{ uri: imageUri }} style={styles.composerImage} resizeMode="cover" />
           <Pressable onPress={() => setImageUri(null)} style={styles.composerImageRemove} hitSlop={8}>
             <Ionicons name="close" size={16} color="#fff" />
           </Pressable>
@@ -414,7 +414,7 @@ function PhotoPostCard({
       {/* Popüler Lüks Kozmik Rozet */}
       {isPopular && (
         <View style={styles.popularRoyalBanner}>
-          <Image source={ROYAL_FRAME_IMG} style={styles.royalCrownImage} contentFit="cover" cachePolicy="memory-disk" />
+          <Image source={ROYAL_FRAME_IMG} style={styles.royalCrownImage} resizeMode="cover" />
           <View style={styles.royalCrownPill}>
             <MaterialCommunityIcons name="crown" size={14} color="#1a0d33" />
             <Text style={styles.royalCrownPillText}>EFSANE</Text>
@@ -455,7 +455,7 @@ function PhotoPostCard({
       {/* Large Photo */}
       {post.imageUri && (
         <View style={[styles.photoWrap, isPopular && styles.royalPhotoWrap]}>
-          <Image source={{ uri: post.imageUri }} style={styles.photoImage} contentFit="cover" cachePolicy="memory-disk" />
+          <Image source={{ uri: post.imageUri }} style={styles.photoImage} resizeMode="cover" />
         </View>
       )}
 
@@ -525,7 +525,7 @@ function TextStatusCard({
       {/* Popüler Lüks Kozmik Rozet */}
       {isPopular && (
         <View style={styles.popularRoyalBanner}>
-          <Image source={ROYAL_FRAME_IMG} style={styles.royalCrownImage} contentFit="cover" cachePolicy="memory-disk" />
+          <Image source={ROYAL_FRAME_IMG} style={styles.royalCrownImage} resizeMode="cover" />
           <View style={styles.royalCrownPill}>
             <MaterialCommunityIcons name="crown" size={14} color="#1a0d33" />
             <Text style={styles.royalCrownPillText}>EFSANE</Text>

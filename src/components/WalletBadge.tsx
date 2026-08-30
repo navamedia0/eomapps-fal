@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
 import { getCoins, subscribeCoins } from '@/services/coins';
 import { getStoredSession } from '@/services/auth';
 import { getWallet, subscribeWallet } from '@/services/shop';
@@ -66,7 +65,7 @@ export default function WalletBadge({ navigation }: { navigation: Navigation }) 
     >
       <View style={styles.balancesCol}>
         <View style={styles.row}>
-          <Image source={FEATURE_ICONS.coinIcon} style={styles.icon} contentFit="contain" cachePolicy="memory-disk" />
+          <Image source={FEATURE_ICONS.coinIcon} style={styles.icon} resizeMode="contain" />
           {coinsLoaded ? <AnimatedNumberText value={coins} style={styles.text} /> : <Text style={styles.text}>—</Text>}
         </View>
         {crystal !== null && (

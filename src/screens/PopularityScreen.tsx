@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
-import { Image } from 'expo-image';
+import { View, Text, Image, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import { getLeaderboard, type LeaderboardEntry } from '@/services/popularity';
@@ -65,7 +64,7 @@ export default function PopularityScreen() {
                   {entry.rank}
                 </Text>
                 {entry.avatarUrl ? (
-                  <Image source={{ uri: entry.avatarUrl }} style={styles.avatar} cachePolicy="memory-disk" />
+                  <Image source={{ uri: entry.avatarUrl }} style={styles.avatar} />
                 ) : (
                   <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: avatarColor(entry.userId) }]}>
                     <Text style={styles.avatarFallbackText}>{entry.displayName.charAt(0).toUpperCase()}</Text>

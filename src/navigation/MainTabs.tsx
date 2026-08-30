@@ -1,6 +1,5 @@
 import { Fragment, useState } from 'react';
-import { Pressable, Text, View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TabView, type NavigationState, type SceneRendererProps } from 'react-native-tab-view';
@@ -85,8 +84,7 @@ export default function MainTabs({ navigation }: Props) {
                         <Image
                           source={NAV_ICONS[route.key as keyof typeof NAV_ICONS]}
                           style={[styles.tabIcon, { opacity: focused ? 1 : 0.65 }]}
-                          contentFit="cover"
-                          cachePolicy="memory-disk"
+                          resizeMode="cover"
                         />
                       ) : (
                         <Ionicons

@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Image } from 'expo-image';
+import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -60,7 +59,7 @@ export default function BlockedUsersScreen() {
           renderItem={({ item }) => (
             <View style={styles.row}>
               {item.avatarUrl ? (
-                <Image source={{ uri: item.avatarUrl }} style={styles.avatar} cachePolicy="memory-disk" />
+                <Image source={{ uri: item.avatarUrl }} style={styles.avatar} />
               ) : (
                 <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: avatarColor(item.id) }]}>
                   <Text style={styles.avatarFallbackText}>{(item.displayName || '?').charAt(0).toUpperCase()}</Text>
