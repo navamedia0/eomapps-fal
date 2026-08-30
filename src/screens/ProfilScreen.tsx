@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { Image } from 'expo-image';
 import { showAlert } from '@/services/themedAlert';
 import type { TabScreenProps } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
@@ -89,7 +90,7 @@ function AuthSection() {
     return (
       <View style={styles.authCard}>
         {user.avatarUrl ? (
-          <Image source={{ uri: user.avatarUrl }} style={styles.authAvatar} />
+          <Image source={{ uri: user.avatarUrl }} style={styles.authAvatar} cachePolicy="memory-disk" />
         ) : (
           <View style={[styles.authAvatar, styles.authAvatarFallback]}>
             <Ionicons name="person" size={22} color={GOLD} />
@@ -208,7 +209,7 @@ function MyPostsSection() {
           {posts.map((post) => (
             <View key={post.id} style={styles.myPostCard}>
               {post.imageUri ? (
-                <Image source={{ uri: post.imageUri }} style={styles.myPostThumb} resizeMode="cover" />
+                <Image source={{ uri: post.imageUri }} style={styles.myPostThumb} contentFit="cover" cachePolicy="memory-disk" />
               ) : (
                 <View style={styles.myPostTextIconWrap}>
                   <Ionicons name="chatbox-ellipses-outline" size={20} color={GOLD} />

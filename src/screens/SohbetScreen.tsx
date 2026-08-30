@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Ionicons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, Image, Pressable, RefreshControl, ScrollView, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, RefreshControl, ScrollView, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
+import { Image } from 'expo-image';
 import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import type { TabScreenProps } from '@/navigation/types';
@@ -28,7 +29,7 @@ function ConversationRow({ item, onPress }: { item: Conversation; onPress: () =>
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}>
       {item.partnerAvatarUrl ? (
-        <Image source={{ uri: item.partnerAvatarUrl }} style={styles.avatar} />
+        <Image source={{ uri: item.partnerAvatarUrl }} style={styles.avatar} cachePolicy="memory-disk" />
       ) : (
         <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: avatarColor(item.partnerId) }]}>
           <Text style={styles.avatarFallbackText}>{item.partnerName.charAt(0).toUpperCase()}</Text>
@@ -80,7 +81,7 @@ function GuideRow({ item, onMessage }: { item: Guide; onMessage: () => void }) {
   return (
     <View style={styles.row}>
       {item.avatarUrl ? (
-        <Image source={{ uri: item.avatarUrl }} style={styles.avatar} />
+        <Image source={{ uri: item.avatarUrl }} style={styles.avatar} cachePolicy="memory-disk" />
       ) : (
         <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: avatarColor(item.id) }]}>
           <Text style={styles.avatarFallbackText}>{item.displayName.charAt(0).toUpperCase()}</Text>

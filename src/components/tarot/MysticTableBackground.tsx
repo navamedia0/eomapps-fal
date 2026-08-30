@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Animated, Image, StyleSheet, View, type DimensionValue } from 'react-native';
+import { Animated, StyleSheet, View, type DimensionValue } from 'react-native';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Starfield from '@/components/Starfield';
@@ -37,7 +38,12 @@ type Props = { children: ReactNode; variant?: BackgroundVariant; customBackgroun
 export default function MysticTableBackground({ children, variant = 'general', customBackground, scrollY }: Props) {
   return (
     <View style={styles.flex}>
-      <Image source={customBackground || BACKGROUNDS[variant]} resizeMode="cover" style={styles.bgImage} />
+      <Image
+        source={customBackground || BACKGROUNDS[variant]}
+        contentFit="cover"
+        cachePolicy="memory-disk"
+        style={styles.bgImage}
+      />
       <LinearGradient
         colors={['rgba(11, 10, 31, 0.45)', 'rgba(11, 10, 31, 0.75)', 'rgba(11, 10, 31, 0.94)']}
         style={StyleSheet.absoluteFillObject}

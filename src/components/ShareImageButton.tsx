@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
-import { Platform, Pressable, Text, View, StyleSheet, Modal, Image } from 'react-native';
+import { Platform, Pressable, Text, View, StyleSheet, Modal } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { captureRef } from 'react-native-view-shot';
 import QuoteShareCard from '@/components/QuoteShareCard';
@@ -84,7 +85,7 @@ export default function ShareImageButton({ text, label = 'Görsel Paylaş' }: Pr
 
             <View style={styles.previewImageContainer}>
               {previewUri ? (
-                <Image source={{ uri: previewUri }} style={styles.previewImage} resizeMode="contain" />
+                <Image source={{ uri: previewUri }} style={styles.previewImage} contentFit="contain" cachePolicy="memory-disk" />
               ) : null}
             </View>
 

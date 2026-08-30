@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
 import { showAlert } from '@/services/themedAlert';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -99,7 +100,7 @@ export default function UserProfileScreen({ route, navigation }: Props) {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           {user.avatarUrl ? (
-            <Image source={{ uri: user.avatarUrl }} style={styles.avatar} />
+            <Image source={{ uri: user.avatarUrl }} style={styles.avatar} cachePolicy="memory-disk" />
           ) : (
             <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: avatarColor(authorTag) }]}>
               <Text style={styles.avatarFallbackText}>{(user.displayName || '?').charAt(0).toUpperCase()}</Text>

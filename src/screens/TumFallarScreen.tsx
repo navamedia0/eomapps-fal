@@ -5,13 +5,13 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  ImageBackground,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
+import CachedImageBackground from '@/components/CachedImageBackground';
 import { EKOLLER_DATA, type EkolData } from '@/constants/ekollerData';
 import { GOLD, GOLD_SOFT, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
@@ -44,7 +44,7 @@ export default function TumFallarScreen({ navigation }: Props) {
                 pressed && styles.showcaseCardPressed,
               ]}
             >
-              <ImageBackground
+              <CachedImageBackground
                 source={ekol.sectionBg}
                 style={styles.showcaseBg}
                 imageStyle={styles.showcaseImage}
@@ -94,7 +94,7 @@ export default function TumFallarScreen({ navigation }: Props) {
                     </View>
                   </View>
                 </View>
-              </ImageBackground>
+              </CachedImageBackground>
             </Pressable>
           ))}
         </View>

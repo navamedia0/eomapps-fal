@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -12,6 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Room, RoomEvent } from 'livekit-client';
@@ -80,7 +80,7 @@ function Seat({
         <>
           <View style={[styles.seatAvatarWrap, isSpeaking && styles.seatAvatarSpeaking]}>
             {seat.avatarUrl ? (
-              <Image source={{ uri: seat.avatarUrl }} style={styles.seatAvatar} />
+              <Image source={{ uri: seat.avatarUrl }} style={styles.seatAvatar} cachePolicy="memory-disk" />
             ) : (
               <View style={[styles.seatAvatar, styles.seatAvatarFallback, { backgroundColor: avatarColor(seat.userId) }]}>
                 <Text style={styles.seatAvatarText}>{seat.displayName.charAt(0).toUpperCase()}</Text>
@@ -714,7 +714,7 @@ export default function RoomScreen({ route, navigation }: Props) {
                 {detail.viewers.map((viewer) => (
                   <View key={viewer.userId} style={styles.listenerChip}>
                     {viewer.avatarUrl ? (
-                      <Image source={{ uri: viewer.avatarUrl }} style={styles.listenerAvatar} />
+                      <Image source={{ uri: viewer.avatarUrl }} style={styles.listenerAvatar} cachePolicy="memory-disk" />
                     ) : (
                       <View style={[styles.listenerAvatar, styles.listenerAvatarFallback, { backgroundColor: avatarColor(viewer.userId) }]}>
                         <Text style={styles.listenerAvatarText}>{viewer.displayName.charAt(0).toUpperCase()}</Text>
