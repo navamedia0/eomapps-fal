@@ -75,11 +75,6 @@ export default function TumFallarScreen({ navigation }: Props) {
                     </View>
                   </View>
 
-                  {/* Açıklama */}
-                  <Text style={styles.ekolSub} numberOfLines={2}>
-                    {ekol.sub}
-                  </Text>
-
                   {/* Alt Ekol Keşfet Buton Şeridi */}
                   <View style={styles.bottomRow}>
                     <View

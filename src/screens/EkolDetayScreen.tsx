@@ -54,7 +54,6 @@ export default function EkolDetayScreen({ route, navigation }: Props) {
               <Text style={[styles.headerTitle, { color: ekol.accent }]}>
                 {ekol.title}
               </Text>
-              <Text style={styles.headerSubtitle}>{ekol.sub}</Text>
             </View>
             <View style={{ width: 36 }} />
           </View>
