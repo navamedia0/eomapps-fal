@@ -96,6 +96,7 @@ import KesifSalonuGameScreen from '@/screens/KesifSalonuGameScreen';
 import CardDeckHubScreen from '@/screens/CardDeckHubScreen';
 import CardDeckTableScreen from '@/screens/CardDeckTableScreen';
 import LenormandResultScreen from '@/screens/LenormandResultScreen';
+import RuneResultScreen from '@/screens/RuneResultScreen';
 import bilgiMakaleleri from '@/data/bilgi_makaleleri.json';
 import { GOLD, NIGHT_DEEP, NIGHT_MID, TEXT_PRIMARY } from '@/theme/colors';
 
@@ -253,6 +254,7 @@ export default function App() {
             <Stack.Screen name="CardDeckHub" component={CardDeckHubScreen} options={{ headerShown: false }} />
             <Stack.Screen name="CardDeckTable" component={CardDeckTableScreen} options={{ headerShown: false }} />
             <Stack.Screen name="LenormandResult" component={LenormandResultScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="RuneResult" component={RuneResultScreen} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
         <VoiceSessionBubble navigationRef={navigationRef} />

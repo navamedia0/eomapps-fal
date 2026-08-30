@@ -33,7 +33,8 @@ import iskambilData from '@/data/iskambil_card_details.json';
 import katinaData from '@/data/katina_meanings.json';
 import { getLenormandMeaning } from '@/services/lenormandMeanings';
 import { LENORMAND_SPREADS } from '@/services/lenormandSpreads';
-import { interpretLenormandSpread } from '@/services/readings-ai';
+import { getRuneMeaning, isSymmetricRune } from '@/services/runeMeanings';
+import { RUNE_SPREADS } from '@/services/runeSpreads';
 import RelationshipSpreadTable from '@/components/RelationshipSpreadTable';
 import { analyzeRelationshipSpread } from '@/utils/relationshipCompatibilityEngine';
 import CornerTicks from '@/components/CornerTicks';
@@ -172,6 +173,16 @@ const RELATIONSHIP_SPREAD_OPTIONS: SpreadOption[] = [
 // aynı pozisyon/teknik kaynağından besleniyor (bkz. services/lenormandSpreads.ts).
 const LENORMAND_SPREAD_OPTIONS: SpreadOption[] = LENORMAND_SPREADS.map((spread) => ({
   id: `lenormand_${spread.id}`,
+  name: spread.name,
+  cardCount: spread.positions.length,
+  desc: spread.description,
+  positions: spread.positions,
+}));
+
+// Rün — Tarot'un Kelt Haçı'nı değil, kendi kutsal sayılarından (3 Norn, 9
+// Dünya) türetilmiş otantik açılımlarını kullanır (bkz. services/runeSpreads.ts).
+const RUNE_SPREAD_OPTIONS: SpreadOption[] = RUNE_SPREADS.map((spread) => ({
+  id: `rune_${spread.id}`,
   name: spread.name,
   cardCount: spread.positions.length,
   desc: spread.description,
@@ -324,7 +335,7 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
   // Lenormand kendi otantik açılım kataloğunu kullanır (Tarot'un Kelt Haçı vb.
   // isimlerini/pozisyonlarını taşımaz) — bkz. LENORMAND_SPREAD_OPTIONS.
   const [selectedSpread, setSelectedSpread] = useState<SpreadOption>(() =>
-    deck.id === 'lenormand' ? LENORMAND_SPREAD_OPTIONS[1] : SPREAD_OPTIONS[1],
+    deck.id === 'lenormand' ? LENORMAND_SPREAD_OPTIONS[1] : deck.id === 'rune' ? RUNE_SPREAD_OPTIONS[1] : SPREAD_OPTIONS[1],
   ); // 3 card default
   const [selectedLayout, setSelectedLayout] = useState<TarotLayoutId>('fullgrid');
   const [phase, setPhase] = useState<'setup' | 'shuffling' | 'picking' | 'table'>('setup');
@@ -867,23 +878,23 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
       }
     }
 
-    // 2. Runes
+    // 2. Runes — otantik 24 Elder Futhark anlamı (simetrik rünlerde "tersi
+    // yoktur" ayrımı korunarak; aşk/anahtar kelimeler her rün için jenerik
+    // bir kalıp yerine kendi element/anlamından türetiliyor)
     if (deck.id === 'rune') {
-      const rList = (runesData as any).runes || [];
-      const rune = rList.find((r: any) => r.id === cardId);
+      const rune = getRuneMeaning(cardId);
       if (rune) {
+        const symmetric = isSymmetricRune(cardId);
         return {
           upright: rune.upright,
           reversed: rune.reversed,
           love: isRelationship
-            ? `${targetName}'e söyle: 'Aşk hayatında kadersel bir dönüm noktası ve sağlamlaşma var.'`
-            : `Bu rün aşkta güçlü bir dönüm noktasını ve kararlılığı simgeliyor.`,
-          career: rune.meaning,
-          advice: isRelationship
-            ? `🗣️ Rehberlik: 'Ona de ki: ${rune.advice}'`
-            : rune.advice,
-          story: `Elder Futhark alfabesinde ${rune.name} rünü, Viking bilgeliğinde kaderin dokusunu değiştiren kadim kozmik güçleri simgeler.`,
-          keywords: [rune.name, 'Viking Gücü', 'Koruma', 'Kader'],
+            ? `${targetName}'e söyle: '${rune.meaning} enerjisi ilişkinizde belirgin — ${rune.upright}'`
+            : `${rune.meaning} enerjisinin aşk hayatındaki yansıması: ${rune.upright}`,
+          career: `${rune.meaning} — ${rune.upright}`,
+          advice: isRelationship ? `🗣️ Rehberlik: 'Ona de ki: ${rune.advice}'` : rune.advice,
+          story: `Elder Futhark alfabesinde ${rune.name} rünü (${rune.element} elementi), Viking bilgeliğinde kaderin dokusunu değiştiren kadim kozmik güçleri simgeler.${symmetric ? ' Bu rün simetriktir — ters gelse bile anlamı değişmez, sadece dengeye dikkat çeker.' : ''}`,
+          keywords: [...rune.meaning.split(',').map((s) => s.trim()), rune.element],
         };
       }
     }
@@ -1091,6 +1102,18 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
       return;
     }
 
+    // Rün'ün de kendi otantik yorumlama motoru ve sonuç ekranı var — aynı
+    // sebeple Tarot'a yönlendirilmemeli.
+    if (deck.id === 'rune') {
+      const runeSpread = RUNE_SPREADS.find((s) => s.positions.length === allCards.length) ?? RUNE_SPREADS[1];
+      navigation.navigate('RuneResult', {
+        picks: mappedPicks,
+        positions: allCards.map((c) => c.positionName),
+        readingTechnique: runeSpread.readingTechnique,
+      });
+      return;
+    }
+
     // spreadId burada sadece kart sayısı — kuyruk/başlık amaçlı yaklaşık bir
     // bilgi. Gerçek pozisyon etiketleri (kullanıcının ekranda gördüğü ve bu
     // ekranın kendi SPREAD_OPTIONS/RELATIONSHIP_SPREAD_OPTIONS kataloğundan
@@ -1179,7 +1202,9 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
               <Pressable
                 onPress={() => {
                   setReadingMode('self');
-                  setSelectedSpread(deck.id === 'lenormand' ? LENORMAND_SPREAD_OPTIONS[1] : SPREAD_OPTIONS[1]);
+                  setSelectedSpread(
+                    deck.id === 'lenormand' ? LENORMAND_SPREAD_OPTIONS[1] : deck.id === 'rune' ? RUNE_SPREAD_OPTIONS[1] : SPREAD_OPTIONS[1],
+                  );
                 }}
                 style={[
                   styles.modeButton,
@@ -1202,10 +1227,10 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                 <Text style={styles.modeButtonDesc}>Bireysel içsel mesajlar & sezgisel rehberlik</Text>
               </Pressable>
 
-              {/* Lenormand için otantik, araştırılmış bir çift açılımı henüz
-                  tasarlanmadı — yanlış/kopya bir açılım göstermektense bu mod
-                  şimdilik gizli. Sadece bireysel okuma sunuluyor. */}
-              {deck.id !== 'lenormand' && (
+              {/* Lenormand ve Rün için otantik, araştırılmış bir çift açılımı
+                  henüz tasarlanmadı — yanlış/kopya bir açılım göstermektense
+                  bu mod şimdilik gizli. Sadece bireysel okuma sunuluyor. */}
+              {deck.id !== 'lenormand' && deck.id !== 'rune' && (
                 <Pressable
                   onPress={() => {
                     setReadingMode('relationship');
@@ -1280,6 +1305,8 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
             <View style={styles.spreadList}>
               {(deck.id === 'lenormand'
                 ? LENORMAND_SPREAD_OPTIONS
+                : deck.id === 'rune'
+                ? RUNE_SPREAD_OPTIONS
                 : readingMode === 'relationship'
                 ? RELATIONSHIP_SPREAD_OPTIONS
                 : SPREAD_OPTIONS

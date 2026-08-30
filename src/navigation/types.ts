@@ -90,6 +90,11 @@ export type RootStackParamList = {
     positions: string[];
     readingTechnique: string;
   };
+  RuneResult: {
+    picks: { id: string; orientation: 'upright' | 'reversed' }[];
+    positions: string[];
+    readingTechnique: string;
+  };
 };
 
 export type MainTabParamList = {

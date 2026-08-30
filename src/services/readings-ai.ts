@@ -11,6 +11,7 @@ import { getTarotMeaning } from '@/services/tarotMeanings';
 import type { KatinaCard } from '@/services/katina';
 import { getKatinaMeaning } from '@/services/katinaMeanings';
 import { getLenormandMeaning } from '@/services/lenormandMeanings';
+import { getRuneMeaning, isSymmetricRune } from '@/services/runeMeanings';
 import { findDreamMatches } from '@/services/dreamMeanings';
 import { getCoffeeSymbolGlossary } from '@/services/coffeeSymbols';
 import { getTeaLeafSymbolGlossary } from '@/services/teaLeafSymbols';
@@ -175,6 +176,39 @@ export async function interpretLenormandSpread(
   const prompt = `${prompts.lenormandSpread(positions, readingTechnique)}\n${formatInstruction}\n\nKartlar:\n${cardText}${profileBlock}`;
   return withFallbackChain([
     () => askGemini(prompt, undefined, tarotReadingType(cards.length), isPaid),
+    () => askCloudflare(prompt),
+    () => askOpenRouter(prompt),
+    () => askHuggingFace(prompt),
+  ]);
+}
+
+export type RunePick = { id: string; orientation: 'upright' | 'reversed' };
+
+export async function interpretRuneSpread(
+  runes: RunePick[],
+  positions: string[],
+  readingTechnique: string,
+  isPaid = false,
+): Promise<string> {
+  const runeText = runes
+    .map((rune, index) => {
+      const meaning = getRuneMeaning(rune.id);
+      const symmetric = isSymmetricRune(rune.id);
+      const orientationLabel = rune.orientation === 'reversed' ? (symmetric ? 'düz (bu rün simetriktir, tersi yoktur)' : 'ters') : 'düz';
+      const referenceLine = meaning
+        ? `\n   Klasik anlamı (esin için, birebir kopyalama): ${rune.orientation === 'reversed' && !symmetric ? meaning.reversed : meaning.upright}\n   Element: ${meaning.element}`
+        : '';
+      return `${positions[index] || `${index + 1}. Rün`}: ${meaning?.name ?? rune.id} (${orientationLabel})${referenceLine}`;
+    })
+    .join('\n');
+
+  const headerList = [...positions.map((position) => `"${turkishUpperCase(position)}:"`), '"GENEL YORUM & RÜNLERİN ORTAK KEHANETİ:"'].join(', ');
+  const formatInstruction = `Yanıtını ${positions.length + 1} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her rün için verilen "klasik anlamı" satırını doğrudan kopyalama; onu ilham kaynağı olarak kullanıp kendi otantik üslubunla yeniden anlat. Son bölüm olan "GENEL YORUM & RÜNLERİN ORTAK KEHANETİ:", tüm rünlerin birlikte işaret ettiği tek bir kadersel sonucu 3-4 cümlede özetlemeli.`;
+
+  const profileBlock = await buildProfileBlock();
+  const prompt = `${prompts.runeSpread(positions, readingTechnique)}\n${formatInstruction}\n\nRünler:\n${runeText}${profileBlock}`;
+  return withFallbackChain([
+    () => askGemini(prompt, undefined, tarotReadingType(runes.length), isPaid),
     () => askCloudflare(prompt),
     () => askOpenRouter(prompt),
     () => askHuggingFace(prompt),
