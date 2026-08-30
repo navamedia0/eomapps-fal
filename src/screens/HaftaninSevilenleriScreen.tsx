@@ -30,7 +30,7 @@ import {
 } from '@/theme/colors';
 
 const QUOTE_CARD_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
-const PARCHMENT_BG = require('@/assets/textures/parchment_info_card.jpg');
+const PARCHMENT_BG = require('@/assets/textures/light_parchment_card.jpg');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HaftaninSevilenleri'>;
 
@@ -244,11 +244,6 @@ export default function HaftaninSevilenleriScreen({ navigation }: Props) {
                   imageStyle={styles.factCardImage}
                   resizeMode="cover"
                 >
-                  <LinearGradient
-                    colors={['rgba(11, 10, 31, 0.45)', 'rgba(11, 10, 31, 0.72)']}
-                    style={styles.factScrim}
-                    pointerEvents="none"
-                  />
                   <CornerTicks />
                   {/* Rank Badge */}
                   <View style={styles.rankBadge}>
@@ -259,7 +254,7 @@ export default function HaftaninSevilenleriScreen({ navigation }: Props) {
                       <MaterialCommunityIcons
                         name={CATEGORY_ICON[item.card.category] || 'information-outline'}
                         size={13}
-                        color={GOLD}
+                        color="#78350F"
                       />
                       <Text style={styles.factCategoryText}>{CATEGORY_LABEL[item.card.category] || 'BİLGİ'}</Text>
                     </View>
@@ -428,16 +423,13 @@ const styles = StyleSheet.create({
   factCard: {
     position: 'relative',
     borderRadius: 16,
-    borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(180, 130, 45, 0.45)',
     padding: 16,
     overflow: 'hidden',
+    backgroundColor: '#F5EFE6',
   },
   factCardImage: {
-    borderRadius: 16,
-  },
-  factScrim: {
-    ...StyleSheet.absoluteFillObject,
     borderRadius: 16,
   },
   factHeader: {
@@ -451,27 +443,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(242, 200, 121, 0.18)',
+    backgroundColor: 'rgba(161, 98, 7, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(161, 98, 7, 0.25)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
   },
   factCategoryText: {
     fontSize: 10.5,
-    fontWeight: '800',
-    color: GOLD,
+    fontWeight: '900',
+    color: '#78350F',
     letterSpacing: 0.4,
   },
   factTitle: {
-    fontSize: 14.5,
-    fontWeight: '800',
-    color: GOLD_SOFT,
+    fontSize: 15,
+    fontWeight: '900',
+    color: '#2A1400',
     marginBottom: 6,
   },
   factBody: {
-    fontSize: 13.5,
-    lineHeight: 20,
-    color: '#FFF',
+    fontSize: 14,
+    lineHeight: 21,
+    color: '#1A1816',
+    fontWeight: '500',
     marginBottom: 14,
   },
   factFooter: {

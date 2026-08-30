@@ -103,14 +103,6 @@ export default function SozlerKoskuScreen({ navigation }: Props) {
           ) : null}
         </View>
 
-        {/* Akış Başlığı */}
-        <View style={styles.sectionHeader}>
-          <Ionicons name="book-outline" size={16} color={GOLD} />
-          <Text style={styles.sectionTitle}>
-            365 Günlük Söz Havuzu ({filteredQuotes.length})
-          </Text>
-        </View>
-
         {/* 365 Günlük Sözler Akışı */}
         <View style={styles.quotesFeed}>
           {visibleQuotes.map((quoteText, index) => (
