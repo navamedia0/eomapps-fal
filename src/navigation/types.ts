@@ -90,10 +90,13 @@ export type RootStackParamList = {
     positions: string[];
     readingTechnique: string;
   };
+  // Anasayfa'daki Rün Falı ile birebir aynı açılım kataloğunu kullanır (bkz.
+  // services/runeEngine.ts RUNE_SPREAD_POSITIONS) — o yüzden burada ayrı bir
+  // "positions"/"readingTechnique" taşınmıyor, sadece hangi kataloğun
+  // kullanılacağını belirten spreadType yeterli.
   RuneResult: {
     picks: { id: string; orientation: 'upright' | 'reversed' }[];
-    positions: string[];
-    readingTechnique: string;
+    spreadType: 'single' | 'norn' | 'cross';
   };
 };
 

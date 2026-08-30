@@ -33,8 +33,7 @@ import iskambilData from '@/data/iskambil_card_details.json';
 import katinaData from '@/data/katina_meanings.json';
 import { getLenormandMeaning } from '@/services/lenormandMeanings';
 import { LENORMAND_SPREADS } from '@/services/lenormandSpreads';
-import { getRuneMeaning, isSymmetricRune } from '@/services/runeMeanings';
-import { RUNE_SPREADS } from '@/services/runeSpreads';
+import { getAllRunes, isSymmetricRune, RUNE_SPREAD_TYPES, RUNE_SPREAD_POSITIONS, RUNE_SPREAD_INFO, spreadTypeForCount } from '@/services/runeEngine';
 import RelationshipSpreadTable from '@/components/RelationshipSpreadTable';
 import { analyzeRelationshipSpread } from '@/utils/relationshipCompatibilityEngine';
 import CornerTicks from '@/components/CornerTicks';
@@ -179,14 +178,15 @@ const LENORMAND_SPREAD_OPTIONS: SpreadOption[] = LENORMAND_SPREADS.map((spread) 
   positions: spread.positions,
 }));
 
-// Rün — Tarot'un Kelt Haçı'nı değil, kendi kutsal sayılarından (3 Norn, 9
-// Dünya) türetilmiş otantik açılımlarını kullanır (bkz. services/runeSpreads.ts).
-const RUNE_SPREAD_OPTIONS: SpreadOption[] = RUNE_SPREADS.map((spread) => ({
-  id: `rune_${spread.id}`,
-  name: spread.name,
-  cardCount: spread.positions.length,
-  desc: spread.description,
-  positions: spread.positions,
+// Rün — Anasayfa'daki Rün Falı (RuneScreen.tsx) ile BİREBİR aynı katalog
+// (services/runeEngine.ts) — Tarot'un Kelt Haçı'nı kopyalamaz, kendi otantik
+// açılımlarını (Norn Üçlüsü, Norse Haçı) kullanır.
+const RUNE_SPREAD_OPTIONS: SpreadOption[] = RUNE_SPREAD_TYPES.map((type) => ({
+  id: `rune_${type}`,
+  name: RUNE_SPREAD_INFO[type].label,
+  cardCount: RUNE_SPREAD_POSITIONS[type].length,
+  desc: RUNE_SPREAD_INFO[type].desc,
+  positions: RUNE_SPREAD_POSITIONS[type],
 }));
 
 // 4 Kart Dizilim Seçeneği
@@ -882,7 +882,7 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
     // yoktur" ayrımı korunarak; aşk/anahtar kelimeler her rün için jenerik
     // bir kalıp yerine kendi element/anlamından türetiliyor)
     if (deck.id === 'rune') {
-      const rune = getRuneMeaning(cardId);
+      const rune = getAllRunes().find((r) => r.id === cardId);
       if (rune) {
         const symmetric = isSymmetricRune(cardId);
         return {
@@ -1102,14 +1102,12 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
       return;
     }
 
-    // Rün'ün de kendi otantik yorumlama motoru ve sonuç ekranı var — aynı
-    // sebeple Tarot'a yönlendirilmemeli.
+    // Rün, Anasayfa'daki Rün Falı ile AYNI motoru (interpretRuneReading) ve
+    // aynı sonuç ekranını kullanır — Tarot'a yönlendirilmemeli.
     if (deck.id === 'rune') {
-      const runeSpread = RUNE_SPREADS.find((s) => s.positions.length === allCards.length) ?? RUNE_SPREADS[1];
       navigation.navigate('RuneResult', {
         picks: mappedPicks,
-        positions: allCards.map((c) => c.positionName),
-        readingTechnique: runeSpread.readingTechnique,
+        spreadType: spreadTypeForCount(allCards.length),
       });
       return;
     }

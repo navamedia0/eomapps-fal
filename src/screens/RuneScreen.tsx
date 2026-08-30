@@ -9,6 +9,7 @@ import ReelRevealFX from '@/components/effects/ReelRevealFX';
 import SparkleBurst from '@/components/effects/SparkleBurst';
 import ReadingCardStack from '@/components/ReadingCardStack';
 import ParchmentReadingResult from '@/components/ParchmentReadingResult';
+import RuneSpreadLayout from '@/components/RuneSpreadLayout';
 import EkolEntranceSplash from '@/components/EkolEntranceSplash';
 import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import { parseNumberedSections } from '@/utils/parseNumberedSections';
@@ -313,6 +314,13 @@ export default function RuneScreen({ navigation }: Props) {
           accentColor={FORTUNE_THEMES.rune.accentColor}
           onHomePress={() => navigation.navigate('Home')}
           onNewReadingPress={() => setRunes([])}
+          spreadLayoutModalContent={
+            <RuneSpreadLayout
+              runes={runes.map((r) => ({ id: r.id, orientation: r.isReversed ? 'reversed' : 'upright' }))}
+              positions={SPREADS[spreadType].positions}
+              accentColor={FORTUNE_THEMES.rune.accentColor}
+            />
+          }
         />
       ) : null}
       {FORTUNE_THEMES.rune.figure && (
