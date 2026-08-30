@@ -21,6 +21,16 @@ function GridPreview() {
   );
 }
 
+function FullGridPreview() {
+  return (
+    <View style={styles.fullGridPreview}>
+      {Array.from({ length: 32 }, (_, i) => (
+        <View key={i} style={styles.fullGridMiniCard} />
+      ))}
+    </View>
+  );
+}
+
 function FanPreview() {
   const n = MINI_CARD_COUNT_FAN;
   const center = (n - 1) / 2;
@@ -88,6 +98,12 @@ const LAYOUT_OPTIONS: Array<{
     title: 'Klasik Masa Dizilimi',
     subtitle: 'Kartlar ızgara düzeninde, ayrı ayrı sıralanır',
     preview: <GridPreview />,
+  },
+  {
+    id: 'fullgrid',
+    title: 'Büyük Masa Izgarası (78 Kart Tek Ekranda)',
+    subtitle: '78 kartın tamamı masaya yayılmış şekilde, tek ekrandan seçilir',
+    preview: <FullGridPreview />,
   },
   {
     id: 'fan',
@@ -210,6 +226,24 @@ const styles = StyleSheet.create({
     width: 12,
     height: 16,
     borderRadius: 2,
+    backgroundColor: GOLD,
+    opacity: 0.85,
+  },
+
+  // FullGrid preview
+  fullGridPreview: {
+    width: 72,
+    height: 72,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 2,
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+  fullGridMiniCard: {
+    width: 6.5,
+    height: 9,
+    borderRadius: 1,
     backgroundColor: GOLD,
     opacity: 0.85,
   },

@@ -52,7 +52,23 @@ async function buildProfileBlock(): Promise<string> {
   return `\n\nDanışan / Fal Sahibi hakkında arka plan bilgileri (yalnızca senin özümsemen ve kartları kişiye özel hissettirerek yorumlaman için — asla "verdiğin bilgilere göre" gibi mekanik ifadeler kullanma; sezgisel bir falcı gibi yorumuna sızdır):\n${parts.join('\n\n')}`;
 }
 
-export async function interpretTarotSpread(cards: TarotCard[], positions: string[], isPaid = false): Promise<string> {
+export interface RelationshipAiContext {
+  p1Name?: string;
+  p2Name?: string;
+  relFocus?: string;
+}
+
+export async function interpretTarotSpread(
+  cards: TarotCard[],
+  positions: string[],
+  isPaid = false,
+  relationshipContext?: RelationshipAiContext
+): Promise<string> {
+  const isRel = Boolean(relationshipContext?.p1Name || relationshipContext?.p2Name);
+  const p1 = relationshipContext?.p1Name?.trim() || '1. Kişi (Danışan)';
+  const p2 = relationshipContext?.p2Name?.trim() || '2. Kişi (Partner)';
+  const focus = relationshipContext?.relFocus?.trim() || 'Aşk, Ruhsal Çekim & Kadersel Uyum';
+
   const cardText = cards
     .map((card, index) => {
       const meaning = getTarotMeaning(card.id);
@@ -63,11 +79,19 @@ export async function interpretTarotSpread(cards: TarotCard[], positions: string
           : meaning.upright
         : null;
       const referenceLine = reference ? `\n   Klasik anlamı (esin için, birebir kopyalama): ${reference}` : '';
-      return `${positions[index]}: ${card.name} (${orientationLabel})${referenceLine}`;
+      return `${positions[index] || `${index + 1}. Katman`}: ${card.name} (${orientationLabel})${referenceLine}`;
     })
     .join('\n');
-  const headerList = [...positions.map((position) => `"${turkishUpperCase(position)}:"`), '"GENEL YORUM:"'].join(', ');
-  const formatInstruction = `Yanıtını ${positions.length + 1} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" satırını doğrudan kopyalama; onu yalnızca ilham kaynağı olarak kullanıp kendi akıcı ve edebi üslubunla yeniden anlat. Son bölüm olan "GENEL YORUM:", kartları tek tek tekrar etmeden hepsinin birlikte anlattığı hikayeyi, aralarındaki uyumu ya da çelişkiyi ve genel bir sonucu 3-4 cümlede özetlemeli — bu, ayrı kart yorumlarından bağımsız, açılımın bütününe dair kapanış niteliğinde olmalı.`;
+
+  const headerList = [...positions.map((position) => `"${turkishUpperCase(position)}:"`), '"GENEL UYUM & KADERSEL SENTEZ:"'].join(', ');
+
+  const formatInstruction = isRel
+    ? `Bu özel bir "ÇİFTLER İÇİN KARŞILIKLI UYUM TAROT AÇILIMI"dır. 1. Taraf: ${p1}, 2. Taraf: ${p2}, Odak: ${focus}.
+Yanıtını ${positions.length + 1} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}.
+Her bölümde ilgili kişinin o katmandaki hissini, düşüncesini ve diğer tarafla elementel/ruhsal etkileşimini derinlemesine yorumla.
+Son bölüm olan "GENEL UYUM & KADERSEL SENTEZ:", ${p1} ve ${p2} arasındaki aşk, ruh bağı, ten çekimi, olası krizler ve evlilik/gelecek potansiyelini özetleyen etkileyici, akıcı ve ilham verici bir kapanış olmalı.`
+    : `Yanıtını ${positions.length + 1} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" satırını doğrudan kopyalama; onu yalnızca ilham kaynağı olarak kullanıp kendi akıcı ve edebi üslubunla yeniden anlat. Son bölüm olan "GENEL UYUM & KADERSEL SENTEZ:", kartları tek tek tekrar etmeden hepsinin birlikte anlattığı hikayeyi, aralarındaki uyumu ya da çelişkiyi ve genel bir sonucu 3-4 cümlede özetlemeli.`;
+
   const profileBlock = await buildProfileBlock();
   const mysticBlock = buildRichMysticContext('tarot');
   const prompt = `${prompts.tarotSpread(positions)}\n${formatInstruction}\n\nKartlar:\n${cardText}${mysticBlock}${profileBlock}`;

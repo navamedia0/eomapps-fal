@@ -10,7 +10,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Keyboard,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import {
@@ -43,6 +45,8 @@ export default function ProfileChatScreen({ navigation }: Props) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmingClear, setConfirmingClear] = useState(false);
+  const insets = useSafeAreaInsets();
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -50,6 +54,34 @@ export default function ProfileChatScreen({ navigation }: Props) {
       .then(setEntries)
       .catch(() => setEntries([]))
       .finally(() => setLoading(false));
+  }, []);
+
+  // WhatsApp gibi klavye açıldığında input'u tam klavyenin üstüne kaldır
+  useEffect(() => {
+    const onShow = (e: any) => {
+      const h = e?.endCoordinates?.height || 0;
+      setKeyboardHeight(h);
+      setTimeout(() => {
+        scrollRef.current?.scrollToEnd({ animated: true });
+      }, 60);
+    };
+    const onHide = () => {
+      setKeyboardHeight(0);
+    };
+
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      onShow
+    );
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      onHide
+    );
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
   }, []);
 
   const clearAll = useCallback(async () => {
@@ -76,21 +108,21 @@ export default function ProfileChatScreen({ navigation }: Props) {
   }, [navigation, entries.length]);
 
   const send = useCallback(async () => {
-    const trimmed = input.trim();
-    if (!trimmed) return;
-    setError(null);
+    const text = input.trim();
+    if (!text || saving) return;
+
     setSaving(true);
+    setError(null);
     try {
-      const next = await addProfileEntry(trimmed);
+      const next = await addProfileEntry(text);
       setEntries(next);
       setInput('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Not kaydedilirken bir sorun oluştu.');
+      setError(err instanceof Error ? err.message : 'Bilgi kaydedilemedi. Lütfen tekrar dene.');
     } finally {
       setSaving(false);
-      requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }));
     }
-  }, [input]);
+  }, [input, saving]);
 
   const remove = useCallback(async (id: string) => {
     try {
@@ -103,15 +135,20 @@ export default function ProfileChatScreen({ navigation }: Props) {
 
   return (
     <CosmicChatBackground>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={90}
+      <View
+        style={[
+          styles.flex,
+          {
+            paddingBottom: keyboardHeight > 0 ? keyboardHeight : Math.max(8, insets.bottom),
+          },
+        ]}
       >
         <ScrollView
           ref={scrollRef}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
         >
           <View style={[styles.bubble, styles.bubbleModel]}>
@@ -165,10 +202,15 @@ export default function ProfileChatScreen({ navigation }: Props) {
           )}
         </ScrollView>
 
-        <View style={styles.inputBar}>
+        <View style={[styles.inputBar, { paddingBottom: Math.max(8, insets.bottom) }]}>
           <TextInput
             value={input}
             onChangeText={setInput}
+            onFocus={() => {
+              setTimeout(() => {
+                scrollRef.current?.scrollToEnd({ animated: true });
+              }, 120);
+            }}
             placeholder="Kendinden bahset..."
             placeholderTextColor={TEXT_MUTED}
             style={styles.input}
@@ -186,7 +228,7 @@ export default function ProfileChatScreen({ navigation }: Props) {
             <Ionicons name="send" size={18} color={NIGHT_CARD} />
           </Pressable>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </CosmicChatBackground>
   );
 }

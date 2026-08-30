@@ -13,6 +13,7 @@
     },
     "android": {
       "package": "com.mistikrehber.app",
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#0B0A1F"

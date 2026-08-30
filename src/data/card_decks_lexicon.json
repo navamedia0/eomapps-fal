@@ -1,0 +1,324 @@
+{
+  "tarot": {
+    "deli": {
+      "name": "Deli (The Fool)",
+      "arcana": "major",
+      "upright": "Yeni başlangıçlar, saflık, sınırsız potansiyel ve maceraya atılma cesareti.",
+      "reversed": "Dikkatsizlik, düşüncesizce risk alma, saflığın suistimal edilmesi ve kararsızlık.",
+      "love": "İlişkide taze bir sayfa, sürpriz bir tanışma veya kalıpları yıkma arzusu.",
+      "career": "Yeni bir projeye cesurca adım atma, alışılmışın dışında yaratıcı fırsatlar.",
+      "advice": "Korkularını bir kenara bırak, içindeki meraklı çocuğu serbest bırak."
+    },
+    "buyucu": {
+      "name": "Büyücü (The Magician)",
+      "arcana": "major",
+      "upright": "Yaratım gücü, yeteneklerini eyleme dökme, odaklanma ve irade.",
+      "reversed": "Manipülasyon, potansiyelini boşa harcama, illüzyonlara kapılma.",
+      "love": "Çekim gücü çok yüksek bir iletişim, niyetlerin gerçeğe dönüşmesi.",
+      "career": "Becerilerini sergileme zamanı, liderlik ve yeni kaynakları ustaca kullanma.",
+      "advice": "İhtiyacın olan tüm araçlar masanın üzerinde, gücünü kullan."
+    },
+    "bas_rahibe": {
+      "name": "Baş Rahibe (The High Priestess)",
+      "arcana": "major",
+      "upright": "Derin sezgiler, bilinçaltı sırları, içsel bilgelik ve gizem.",
+      "reversed": "Sezgileri bastırma, dedikodular, yüzeyde kalma, gizlenen sırlar.",
+      "love": "Sözsüz telepatik bağ, gizemli bir çekim veya sabırla beklenmesi gereken bir süreç.",
+      "career": "Mantıktan çok hislerine güvenmen gereken kritik bir karar anı.",
+      "advice": "Sessizliğe çekil ve rüyalarının mesajlarını dinle."
+    },
+    "imparatorice": {
+      "name": "İmparatoriçe (The Empress)",
+      "arcana": "major",
+      "upright": "Bolluk, bereket, şefkat, doğurganlık ve estetik zarafet.",
+      "reversed": "Aşırı sahiplenme, yaratıcılık tıkanması, öz bakımı ihmal etme.",
+      "love": "Büyüyen, besleyen ve kalpten paylaşılan derin bir sevgi.",
+      "career": "Maddi kazançların artması, estetik ve yaratıcı işlerde büyük verim.",
+      "advice": "Kendini sevgiye ve hayatın sunduğu güzelliklere aç."
+    },
+    "imparator": {
+      "name": "İmparator (The Emperor)",
+      "arcana": "major",
+      "upright": "Otorite, düzen, sağlam temeller, liderlik ve koruyuculuk.",
+      "reversed": "Aşırı katılık, baskıcılık, kontrol kaybı veya otorite çatışması.",
+      "love": "Güven veren, net sınırları olan ve sadık bir beraberlik.",
+      "career": "Stratejik planlama, hedeflere disiplinle ulaşma ve terfi imkanı.",
+      "advice": "Sınırlarını net çiz ve planına sadık kal."
+    },
+    "asiklar": {
+      "name": "Aşıklar (The Lovers)",
+      "arcana": "major",
+      "upright": "Ruh eşi uyumu, kalpten seçimler, ortak değerler ve çekim.",
+      "reversed": "Uyumsuzluk, değerler çatışması, kalple mantık arasında sıkışma.",
+      "love": "Kaderin bir araya getirdiği derin bir bağ ve koşulsuz sevgi.",
+      "career": "Kazan-kazan getiren ortaklıklar, ahlaki bir seçim anı.",
+      "advice": "Seçimini korkuyla değil, sevgiyle yap."
+    },
+    "kader_carki": {
+      "name": "Kader Çarkı (Wheel of Fortune)",
+      "arcana": "major",
+      "upright": "Kaderin dönüm noktası, şansın açılması, döngülerin tamamlanması.",
+      "reversed": "Geçici aksilikler, değişime direnç, döngüleri kıramama.",
+      "love": "Beklenmedik tesadüfler, kaderi belirleyen bir karşılaşma.",
+      "career": "Fırsat kapılarının ansızın açılması, rüzgarın arkana geçmesi.",
+      "advice": "Evrenin akışına güven, hiçbir şey aynı kalmaz."
+    },
+    "yildiz": {
+      "name": "Yıldız (The Star)",
+      "arcana": "major",
+      "upright": "Umut, ilham, ruhsal şifa, aydınlık gelecek ve dileklerin kabulü.",
+      "reversed": "Umutsuzluk, karamsarlık, yeteneklerine inanmama.",
+      "love": "Yaraların sarıldığı, saf ve umut dolu bir aşk dönemi.",
+      "career": "İlham dolu fikirler, görünürlük ve geleceğe güvenle bakış.",
+      "advice": "Karanlığın ardından doğan sabah yıldızına odaklan."
+    },
+    "gunes": {
+      "name": "Güneş (The Sun)",
+      "arcana": "major",
+      "upright": "Saf neşe, zafer, berraklık, canlılık ve büyük başarı.",
+      "reversed": "Geçici gölgelenmeler, başarıyı kutlayamama, aşırı gurur.",
+      "love": "Sıcak, aydınlık, açık ve mutlulukla parlayan bir ilişki.",
+      "career": "Emeğinin parladığı, takdir ve bol kazanç dolu bir dönem.",
+      "advice": "Işığını saklama, etrafını aydınlat."
+    },
+    "dunya": {
+      "name": "Dünya (The World)",
+      "arcana": "major",
+      "upright": "Tamamlanma, bütünlük, büyük başarı ve yeni bir seviyeye geçiş.",
+      "reversed": "Eksik kalan son adımlar, kapanamayan hesaplar.",
+      "love": "Kusursuz bir uyum ve huzurlu bir bütünleşme.",
+      "career": "Bir hedefe başarıyla ulaşma, küresel veya geniş çaplı açılımlar.",
+      "advice": "Tebrikler, bu döngüyü onurlandır ve kutla."
+    }
+  },
+  "katina": {
+    "valide_sultan": {
+      "name": "Valide Sultan (Katina Baş Kadın)",
+      "upright": "Güçlü sezgilere sahip, ilişkide belirleyici rol oynayan bilge ve koruyucu kadın enerjisi.",
+      "reversed": "İlişkiye karışan üçüncü kişiler, kıskançlık veya gizli manipülasyon.",
+      "love": "Kaderinde derin iz bırakan bir kadın figürü ya da senin baskın caziben.",
+      "career": "Kulislerde güçlü bir destekçinin varlığı, stratejik ilerleme.",
+      "advice": "Sezgilerini dinle ama kontrol tutkuna yenilme."
+    },
+    "yakut_kalp": {
+      "name": "Yakut Kalp",
+      "upright": "Alevlenen tutku, samimi sevgi itirafı ve kalbin yeniden heyecanla atması.",
+      "reversed": "Kırgınlık, karşılık bulamayan duygusal beklentiler.",
+      "love": "Gözlerinin içine bakan kişinin sana duyduğu gizli arzu ve derin bağlılık.",
+      "career": "Tutkuyla bağlandığın bir işte kazanılacak parlak zafer.",
+      "advice": "Duygularını gizleme, hissettiklerini cesurca söyle."
+    },
+    "zumrut_yilan": {
+      "name": "Zümrüt Yılan (Dara)",
+      "upright": "Zeka, kıvraklık, zor durumlardan ustalıkla sıyrılma ve yenilenme.",
+      "reversed": "Arkadan çevrilen dolaplar, tatlı dilli sinsi rakipler.",
+      "love": "İlişkide laf taşıyan veya fitne sokmak isteyen birine dikkat.",
+      "career": "Rakiplerini aklınla ve zekanla alt etme fırsatı.",
+      "advice": "Her sırrını herkese açma, tedbiri elden bırakma."
+    },
+    "elmas_anahtar": {
+      "name": "Elmas Anahtar",
+      "upright": "Kilitli kapıların açılması, bir düğümün çözülmesi ve net bir cevap alma.",
+      "reversed": "Yanlış kapıyı zorlama, zamansız hamleler.",
+      "love": "Aklındaki soru işaretini giderecek çok net bir konuşma yakında.",
+      "career": "Yeni bir anlaşma, beklemediğin bir maddi kapının aralanması.",
+      "advice": "Cevap zaten sende, sadece kilide doğru anahtarı tak."
+    },
+    "samran_atesi": {
+      "name": "Şamran'ın Ateşi",
+      "upright": "Dönüşüm ateşi, eski defterlerin yakılması ve küllerinden doğuş.",
+      "reversed": "Öfkeyle hareket etme, köprüleri aceleyle yakma.",
+      "love": "Fırtınalı ama tutkusu sönmeyen bir yüzleşme.",
+      "career": "Eski çalışma şeklini kökten değiştirip yepyeni bir enerjiyle başlama.",
+      "advice": "Sana hizmet etmeyeni ateşe ver ve geriye bakma."
+    }
+  },
+  "lenormand": {
+    "suvari": {
+      "name": "1. Süvari (The Rider)",
+      "upright": "Hızlı gelen haberler, ziyaretçi, dinamik gelişmeler ve yeni fikirler.",
+      "reversed": "Geciken haberler, asılsız dedikodular, aceleyle yapılmış hatalar.",
+      "love": "Sürpriz bir mesaj, uzaktan gelen bir buluşma teklifi.",
+      "career": "İş teklifi, seyahat veya yeni bir projenin hız kazanması.",
+      "advice": "Gelen haberleri dikkatle dinle ve hızlı aksiyon al."
+    },
+    "yonca": {
+      "name": "2. Yonca (The Clover)",
+      "upright": "Küçük mucizeler, anlık şans, neşe ve sıkıntıların çabucak geçmesi.",
+      "reversed": "Fırsatı kaçırma riski, şansı hafife alma.",
+      "love": "Tatlı bir flört, yüzünü güldürecek tesadüfi bir an.",
+      "career": "Piyango gibi küçük ama sevindirici bir kazanç, işlerin rast gitmesi.",
+      "advice": "Küçük sevinçlerin değerini bil, şans kapıda."
+    },
+    "gemi": {
+      "name": "3. Gemi (The Ship)",
+      "upright": "Uzak yolculuklar, ufukların genişlemesi, ticaret ve uzun vadeli planlar.",
+      "reversed": "Yolculukta aksamalar, yerinde sayma hissi, hasret.",
+      "love": "Mesafe ilişkisi veya birlikte çıkılacak anlamlı bir seyahat.",
+      "career": "Yurtdışı bağlantıları, vizyoner girişimler ve ticari kâr.",
+      "advice": "Güvenli limandan ayrıl ve yeni ufuklara yelken aç."
+    },
+    "ev": {
+      "name": "4. Ev (The House)",
+      "upright": "Aile huzuru, güvenli sığınak, kökler ve kalıcı sağlamlık.",
+      "reversed": "Ev içi tartışmalar, aidiyet hissedememe, temellerin sarsılması.",
+      "love": "Birlikte yaşama adımı, evlilik temelleri ve güven veren bir bağ.",
+      "career": "Evden çalışma, aile şirketi veya gayrimenkul fırsatları.",
+      "advice": "Kendi iç kaleni ve özel alanını koru."
+    },
+    "yuzuk": {
+      "name": "25. Yüzük (The Ring)",
+      "upright": "Bağlılık, evlilik teklifi, sözleşme, kalıcı anlaşma ve döngü.",
+      "reversed": "Kırılan sözler, ayrılık, feshedilen anlaşmalar.",
+      "love": "Resmiyet kazanan bir ilişki, derin bir sadakat ve bağlılık yemini.",
+      "career": "İmza atılacak karlı bir sözleşme, güvenilir iş ortaklığı.",
+      "advice": "Sözünün arkasında dur ve verdiğin taahhütleri onurlandır."
+    }
+  },
+  "angel": {
+    "koruyucu_melek": {
+      "name": "Koruyucu Melek Aurası",
+      "upright": "Yalnız değilsin; ilahi kanatlar etrafında. Korkularını bırak ve güvende hisset.",
+      "reversed": "Kendini desteksiz hissetme, içindeki rehberle bağı koparma.",
+      "love": "İlişkinde meleklerin koruması var, olumsuz nazardan arınma zamanı.",
+      "career": "Doğru yoldasın, attığın adımlarda görünmeyen eller sana destek veriyor.",
+      "advice": "Gözlerini kapat ve etrafındaki sıcak sevgi ışığını hisset."
+    },
+    "mucizeler_isigi": {
+      "name": "Mucizeler Işığı",
+      "upright": "Beklemediğin bir anda imkansız görünen kapıların ardına kadar açılması.",
+      "reversed": "Mucizelere inanmamak, karamsarlığa teslim olmak.",
+      "love": "Kalbinin en derin dileğinin beklenmedik bir şekilde gerçekleşmesi.",
+      "career": "Tıkanmış bir konunun aniden kendiliğinden çözülmesi.",
+      "advice": "Zihnin sınırlarını kaldır, evren senin için çalışıyor."
+    },
+    "sifa_ve_huzur": {
+      "name": "Şifa ve Arınma",
+      "upright": "Eski kırgınlıkları serbest bırakma, ruhsal ve bedensel hafifleme.",
+      "reversed": "Eski yaraları deşmek, affedememek.",
+      "love": "İlişkideki geçmiş krizlerin tatlıya bağlanması ve kalplerin yumuşaması.",
+      "career": "Stresin azalması, daha huzurlu ve verimli bir çalışma ortamı.",
+      "advice": "Kendini ve seni üzenleri affet, yüklerinden hafifle."
+    },
+    "ilahi_zamanlama": {
+      "name": "İlahi Zamanlama",
+      "upright": "Her şey olması gereken en kusursuz zamanda gelişiyor, sabırsızlanma.",
+      "reversed": "Olayları zorlamak, aceleyle yanlış kararlar vermek.",
+      "love": "Doğru insan, doğru zamanda hayatına girecek; güven.",
+      "career": "Beklediğin onay çok yakında, parçalar yerine oturuyor.",
+      "advice": "Zamanın akışına teslim ol ve anın tadını çıkar."
+    }
+  },
+  "iskambil": {
+    "kupa_asi": {
+      "name": "Kupa Ası (Aşk & Saadet)",
+      "upright": "Büyük bir aşkın doğuşu, ailede sevinçli bir kutlama, kalpten mutluluk.",
+      "reversed": "Duygusal hayal kırıklığı, sevgisizlik hissi.",
+      "love": "Kalbinin kapısını çalacak tutkulu ve samimi bir aşık.",
+      "career": "Yaptığın işten büyük bir manevi doyum ve takdir alma.",
+      "advice": "Kalbini açmaktan korkma."
+    },
+    "karo_asi": {
+      "name": "Karo Ası (Altın Fırsat)",
+      "upright": "Maddi kazanç, önemli bir mektup, tapu veya para haberi.",
+      "reversed": "Maddi gecikmeler, beklenmeyen küçük harcamalar.",
+      "love": "Hediyelerle gelen bir jest, geleceği parlak bir birliktelik.",
+      "career": "Maaş artışı, yeni bir gelir kapısı veya karlı bir yatırım.",
+      "advice": "Fırsatı gördüğün an tereddüt etmeden yakala."
+    },
+    "maca_krali": {
+      "name": "Maça Papazı (Devlet & Otorite)",
+      "upright": "Resmi bir iş, kanun adamı, tecrübeli ve kararlı bir otorite figürü.",
+      "reversed": "Baskıcı bir yönetici, resmi işlerde pürüzler.",
+      "love": "Ciddi, ağırbaşlı ve kuralları olan bir partner.",
+      "career": "Hukuki bir meselenin lehte çözülmesi, resmi onay.",
+      "advice": "İşlerini yasalara ve kurallara uygun şekilde yürüt."
+    },
+    "sinek_kizi": {
+      "name": "Sinek Kızı (Becerikli Dost)",
+      "upright": "Zeki, çalışkan, sana yol gösterecek samimi bir kadın dost.",
+      "reversed": "Kıskanç bir arkadaş, samimiyetsiz öğütler.",
+      "love": "İlişkinde sana destek olan ortak bir arkadaşın arabuluculuğu.",
+      "career": "Ekip çalışmasında ilham veren, iş bitirici bir ortak.",
+      "advice": "Dostlarının samimi tavsiyelerine kulak ver."
+    }
+  },
+  "osho_zen": {
+    "bosluk_ve_sukut": {
+      "name": "Sessizlik & Boşluk",
+      "upright": "Zihnin durulması, içsel huzur, saf mevcudiyet ve arınma.",
+      "reversed": "Zihin gevezeliği, içsel boşluk korkusu, gürültüye sığınma.",
+      "love": "Kelimelere ihtiyaç duymadan hissedilen derin bir ruhsal bağ.",
+      "career": "Karar vermeden önce zihnini dinlendirme ve netleşme.",
+      "advice": "Hiçbir şey yapmadan sadece nefesinde kal."
+    },
+    "donusum": {
+      "name": "Büyük Dönüşüm (Kundalini)",
+      "upright": "Tırtılın kelebeğe dönüşmesi; eski kimliğin ölümü ve aydınlanma.",
+      "reversed": "Değişime direnmek, eski alışkanlıklara körü körüne sarılmak.",
+      "love": "İlişkinin yepyeni ve daha olgun bir evreye sıçraması.",
+      "career": "Kariyerinde radikal ama özgürleştirici bir yön değişimi.",
+      "advice": "Kabuğunu kırmaktan korkma, uçuş vaktin geldi."
+    },
+    "kutlama": {
+      "name": "Kutlama (Yaşam Dansı)",
+      "upright": "Koşulsuz sevinç, hayatı bir şölen gibi yaşama, paylaşma coşkusu.",
+      "reversed": "Ciddiyet tuzağı, hayatın güzelliklerini erteleme.",
+      "love": "Birlikte kahkahaların bol olduğu neşeli bir birliktelik.",
+      "career": "Başarıların ekipçe kutlanması, bereketli bir atmosfer.",
+      "advice": "Bugünü bir hediye olarak gör ve dans et."
+    }
+  },
+  "rune": {
+    "fehu": {
+      "name": "ᚠ Fehu (Bolluk & Zenginlik)",
+      "upright": "Maddi refah, ödül, üretkenlik ve emeğin altın gibi karşılık bulması.",
+      "reversed": "Maddi kayıp, savurganlık, açgözlülük uyarısı.",
+      "love": "Cömert ve besleyici bir ilişki, ortak birikim.",
+      "career": "Kârın katlanması, yeni ticari başarılar.",
+      "advice": "Sahip olduğun bereketi cömertçe paylaş ki çoğalsın."
+    },
+    "ansuz": {
+      "name": "ᚨ Ansuz (Odin'in Bilgeliği & Söz)",
+      "upright": "İlahi ilham, doğru iletişim, bilge bir rehberden gelen öğüt.",
+      "reversed": "Yalanlar, yanlış yönlendirme, iletişim kopukluğu.",
+      "love": "Açık ve dürüst bir konuşma ile tüm buzların erimesi.",
+      "career": "Sunumlar, mülakatlar ve sözleşmelerde başarı.",
+      "advice": "Sözlerinin gücünün farkında ol, yapıcı konuş."
+    },
+    "algiz": {
+      "name": "ᛉ Algiz (Kutsal Koruma)",
+      "upright": "Geyik boynuzu gibi ilahi kalkan, tehlikelerden mutlak korunma.",
+      "reversed": "Savunmasız hissetme, tehlikeyi görememe.",
+      "love": "Kötü niyetlerden korunan tertemiz bir yuva.",
+      "career": "Riskli durumlardan kıl payı sıyrılma ve güvende kalma.",
+      "advice": "İçindeki koruyucu sezgiye güven."
+    }
+  },
+  "thoth_egypt": {
+    "anubis": {
+      "name": "Anubis (Kader Terazisi & Rehber)",
+      "upright": "Doğruluk, kalp ile tüyün tartılması, adalet ve gizemli geçişler.",
+      "reversed": "Vicdan azabı, dengesizlik, adaletten kaçış.",
+      "love": "Dürüstlüğün test edildiği ama kalpten olanın kazandığı bir sınav.",
+      "career": "Hakkın olanın sana teslim edilmesi, şeffaflık.",
+      "advice": "Kalbini hafif tut, doğruluktan şaşma."
+    },
+    "isis": {
+      "name": "İsis (Büyü & Yaşam Tanrıçası)",
+      "upright": "Yeniden birleştirme gücü, sonsuz şefkat, gizli simya.",
+      "reversed": "Dağılmış parçaları toparlayamama, duygusal tükenmişlik.",
+      "love": "Kopmuş bağları mucizevi bir şekilde yeniden onaran sevgi.",
+      "career": "Dağınık projeleri bir araya getirip büyük bir esere dönüştürme.",
+      "advice": "Parçaları birleştir, içinde iyileştirici bir simya var."
+    },
+    "horus_gozu": {
+      "name": "Horus'un Gözü (Wadjet - Bütünlük)",
+      "upright": "Her şeyi gören basiret, şifa, güç ve kötülüklere karşı mutlak kalkan.",
+      "reversed": "Kör noktalara takılma, gerçeği görememe.",
+      "love": "İlişkideki her detayı net bir şekilde görme ve aydınlanma.",
+      "career": "Stratejik vizyon, gelecekteki fırsatları erkenden sezme.",
+      "advice": "Görünenin ardındaki hakikate odaklan."
+    }
+  }
+}

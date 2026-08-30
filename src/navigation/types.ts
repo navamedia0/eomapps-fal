@@ -3,15 +3,23 @@ import type { TarotOrientation } from '@/services/tarot';
 import type { SpreadId } from '@/services/tarotSpreads';
 
 export type TarotPick = { id: string; orientation: TarotOrientation };
-export type TarotLayoutId = 'grid' | 'fan' | 'radial';
+export type TarotLayoutId = 'grid' | 'fullgrid' | 'fan' | 'radial';
 
 export type RootStackParamList = {
   Home: undefined;
   TumFallar: undefined;
   TarotSpread: undefined;
-  TarotLayout: { spreadId: SpreadId };
-  Tarot: { spreadId: SpreadId; layout: TarotLayoutId };
-  TarotResult: { spreadId: SpreadId; picks: TarotPick[] };
+  TarotLayout: { spreadId: SpreadId | number };
+  Tarot: { spreadId: SpreadId | number; layout: TarotLayoutId };
+  TarotResult: {
+    spreadId: SpreadId | number;
+    picks: TarotPick[];
+    isPrepaid?: boolean;
+    isRelationship?: boolean;
+    p1Name?: string;
+    p2Name?: string;
+    relFocus?: string;
+  };
   DreamChat: undefined;
   ProfileChat: undefined;
   ImageReading: { kind: 'coffee' | 'palm' | 'face' | 'tea' };
@@ -69,6 +77,8 @@ export type RootStackParamList = {
   KaderKasabasi: undefined;
   KesifSalonu: undefined;
   KesifSalonuOyun: undefined;
+  CardDeckHub: undefined;
+  CardDeckTable: { deckId: string };
 };
 
 export type MainTabParamList = {

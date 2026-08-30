@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet, Animated, Easing } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import { findTarotCard, type TarotOrientation } from '@/services/tarot';
@@ -33,6 +34,8 @@ import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import type { ReadingSection } from '@/utils/parseNumberedSections';
 import CornerTicks from '@/components/CornerTicks';
 import { getTarotKeywordList } from '@/services/tarotKeywords';
+import { getTarotMeaning } from '@/services/tarotMeanings';
+import { TAROT_CARD_IMAGES } from '@/assets/tarot';
 import type { TarotCardDef } from '@/services/tarot';
 import {
   GOLD,
@@ -78,12 +81,30 @@ export default function TarotResultScreen({ route, navigation }: Props) {
     let spentAmount = 0; // AI çağrısı başarısız olursa iade edilecek tutar
 
     try {
+      const relContext = route.params.isRelationship
+        ? {
+            p1Name: route.params.p1Name,
+            p2Name: route.params.p2Name,
+            relFocus: route.params.relFocus,
+          }
+        : undefined;
+
+      // Kendi Falına Bak ekranından 50 Coin ödenerek geldiyse doğrudan yorumu al
+      if (route.params.isPrepaid) {
+        const interpretation = await interpretTarotSpread(cards, spread.positions, true, relContext);
+        setResult(interpretation);
+        await saveReadingHistory({
+          type: 'tarot',
+          title: route.params.isRelationship
+            ? `${route.params.p1Name || '1. Kişi'} & ${route.params.p2Name || '2. Kişi'} Uyum Açılımı`
+            : `${spread.id} Kart Açılımı`,
+          result: interpretation,
+        });
+        return;
+      }
+
       // 5-7-10 Kartlık Özel Açılımlar (Doğrudan Coin ile limitsiz)
       if (spread.priceCoins > 0) {
-        // Ücret AI çağrısından ÖNCE düşülüyor — diğer tüm fal ekranlarıyla
-        // aynı sıra. Eskiden burası tersti (önce AI'dan sonuç alınıp SONRA
-        // coin düşülüyordu), bu da uygulama çökerse/ağ kesilirse ücretsiz
-        // sonuç alınabilecek dar bir pencere bırakıyordu.
         const spent = await spendCoins(spread.priceCoins);
         if (!spent) {
           const coins = await getCoins();
@@ -92,9 +113,15 @@ export default function TarotResultScreen({ route, navigation }: Props) {
           return;
         }
         spentAmount = spread.priceCoins;
-        const interpretation = await interpretTarotSpread(cards, spread.positions, true);
+        const interpretation = await interpretTarotSpread(cards, spread.positions, true, relContext);
         setResult(interpretation);
-        await saveReadingHistory({ type: 'tarot', title: `${spread.id} Kart Açılımı`, result: interpretation });
+        await saveReadingHistory({
+          type: 'tarot',
+          title: route.params.isRelationship
+            ? `${route.params.p1Name || '1. Kişi'} & ${route.params.p2Name || '2. Kişi'} Uyum Açılımı`
+            : `${spread.id} Kart Açılımı`,
+          result: interpretation,
+        });
         return;
       }
 
@@ -179,6 +206,20 @@ export default function TarotResultScreen({ route, navigation }: Props) {
     fetchReading();
   }, [fetchReading]);
 
+  // CoinShop'tan dönüldüğünde bakiye yeterliyse otomatik devam et
+  useFocusEffect(
+    useCallback(() => {
+      if (blocked) {
+        getCoins().then((c) => {
+          if (c >= spread.priceCoins) {
+            setBlocked(null);
+            fetchReading();
+          }
+        });
+      }
+    }, [blocked, spread.priceCoins, fetchReading])
+  );
+
   useEffect(() => {
     if (!loading) return;
     const loop = Animated.loop(
@@ -254,7 +295,16 @@ export default function TarotResultScreen({ route, navigation }: Props) {
 
         {!loading && !error && !blocked && !coinFallback && (
           <View style={styles.cardsList}>
-            {result && <TarotSpreadLayout cards={cards} positions={spread.positions} spreadId={spread.id} />}
+            {result && (
+              <TarotSpreadLayout
+                cards={cards}
+                positions={spread.positions}
+                spreadId={spread.id}
+                isRelationship={route.params.isRelationship}
+                p1Name={route.params.p1Name}
+                p2Name={route.params.p2Name}
+              />
+            )}
 
             {cards.map((card, index) => (
               <View key={card.id} style={styles.cardBlock}>
@@ -329,15 +379,26 @@ export default function TarotResultScreen({ route, navigation }: Props) {
         )}
       </ScrollView>
 
-      {result && sections ? (
+      {result ? (
         <ParchmentReadingResult
           visible={true}
           badge="Tarot Kadim Açılım Raporu"
           sections={[
-            ...spread.positions.map((pos, idx) => ({
-              title: `${pos}: ${turkishUpperCase(cards[idx]?.name || '')}`,
-              body: sections[idx] || '',
-            })),
+            ...spread.positions.map((pos, idx) => {
+              const card = cards[idx];
+              const kw = card ? getTarotKeywordList(card.id, card.orientation) : [];
+              const meaning = card ? getTarotMeaning(card.id) : undefined;
+              return {
+                title: `${pos}: ${turkishUpperCase(card?.name || '')}`,
+                body: sections ? sections[idx] : '',
+                cardImage: card ? TAROT_CARD_IMAGES[card.id] : undefined,
+                cardName: card ? card.name : undefined,
+                cardOrientation: card ? card.orientation : 'upright',
+                keywords: kw,
+                story: meaning?.story,
+                posLabel: pos,
+              };
+            }),
             ...(generalSummary ? [{ title: 'Genel Uyum ve Sentez', body: generalSummary }] : []),
           ]}
           shareTextPrefix="Mistik Rehber - Tarot Falım"
@@ -345,18 +406,18 @@ export default function TarotResultScreen({ route, navigation }: Props) {
           accentColor={FORTUNE_THEMES.tarot.accentColor}
           onHomePress={() => navigation.navigate('Home')}
           onNewReadingPress={() => navigation.navigate('TarotSpread')}
+          spreadLayoutModalContent={
+            <TarotSpreadLayout
+              cards={cards}
+              positions={spread.positions}
+              spreadId={spread.id}
+              isRelationship={route.params.isRelationship}
+              p1Name={route.params.p1Name}
+              p2Name={route.params.p2Name}
+            />
+          }
         />
       ) : null}
-      {FORTUNE_THEMES.tarot.figure && (
-        <EkolEntranceSplash
-          visible={showSplash}
-          figureSource={FORTUNE_THEMES.tarot.figure}
-          title={FORTUNE_THEMES.tarot.splashTitle}
-          subtitle={FORTUNE_THEMES.tarot.splashSubtitle}
-          accentColor={FORTUNE_THEMES.tarot.accentColor}
-          onFinish={() => setShowSplash(false)}
-        />
-      )}
       <CardStoryModal card={storyCard} onClose={() => setStoryCard(null)} />
       <RewardedAdModal
         visible={adModalVisible}

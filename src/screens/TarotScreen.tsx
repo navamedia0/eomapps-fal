@@ -255,6 +255,33 @@ export default function TarotScreen({ navigation, route }: Props) {
         <TarotRadialLayout deck={deck} selected={selected} isFull={isFull} customBack={customBack} onToggle={toggleCard} />
       )}
 
+      {route.params.layout === 'fullgrid' && (
+        <FlatList
+          style={styles.flex}
+          data={deck}
+          keyExtractor={(card) => card.id}
+          numColumns={6}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[styles.gridContent, { paddingHorizontal: 12, paddingVertical: 14, gap: 6 }]}
+          columnWrapperStyle={{ gap: 6 }}
+          renderItem={({ item }) => {
+            const selection = selected.find((entry) => entry.id === item.id);
+            const positionLabel = selection ? selected.indexOf(selection) + 1 : undefined;
+            return (
+              <View style={{ flex: 1 }}>
+                <TarotCardBack
+                  selected={!!selection}
+                  positionLabel={positionLabel}
+                  disabled={isFull && !selection}
+                  onPress={() => toggleCard(item)}
+                  customImage={customBack}
+                />
+              </View>
+            );
+          }}
+        />
+      )}
+
       {(!route.params.layout || route.params.layout === 'grid') && (
         <FlatList
           style={styles.flex}

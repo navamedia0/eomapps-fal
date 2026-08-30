@@ -12,7 +12,9 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
+  Keyboard,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import type { ChatTurn } from '@/services/gemini';
@@ -73,6 +75,8 @@ export default function DreamChatScreen({ navigation }: Props) {
   const [personInfo, setPersonInfo] = useState<PersonInfo | null>(null);
   const [showSplash, setShowSplash] = useState(true);
 
+  const insets = useSafeAreaInsets();
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
   const pulseAnim = useRef(new Animated.Value(0)).current;
 
@@ -80,6 +84,34 @@ export default function DreamChatScreen({ navigation }: Props) {
     getSavedPersonInfo().then((saved) => {
       if (saved) setPersonInfo(saved);
     });
+  }, []);
+
+  // WhatsApp gibi klavye açıldığında input'u tam klavyenin üstüne kaldır
+  useEffect(() => {
+    const onShow = (e: any) => {
+      const h = e?.endCoordinates?.height || 0;
+      setKeyboardHeight(h);
+      setTimeout(() => {
+        scrollRef.current?.scrollToEnd({ animated: true });
+      }, 60);
+    };
+    const onHide = () => {
+      setKeyboardHeight(0);
+    };
+
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      onShow
+    );
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      onHide
+    );
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
   }, []);
 
   // Nabız animasyonu
@@ -411,10 +443,13 @@ export default function DreamChatScreen({ navigation }: Props) {
   // 2. EKRAN: SOHBET EKRANI
   return (
     <CosmicChatBackground>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={90}
+      <View
+        style={[
+          styles.flex,
+          {
+            paddingBottom: keyboardHeight > 0 ? keyboardHeight : Math.max(8, insets.bottom),
+          },
+        ]}
       >
         {/* Üst Bar & Mod Değiştirme */}
         <View style={styles.chatTopBar}>
@@ -472,6 +507,8 @@ export default function DreamChatScreen({ navigation }: Props) {
           ref={scrollRef}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
         >
           {messages.map((message, index) => (
@@ -528,7 +565,7 @@ export default function DreamChatScreen({ navigation }: Props) {
         </ScrollView>
 
         {!coinFallback && (
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer, { paddingBottom: Math.max(8, insets.bottom) }]}>
             {selectedMode === 'deep' && messages.filter((m) => m.role === 'user').length === 0 && (
               <View style={styles.deepGuidanceBox}>
                 <Ionicons name="information-circle-outline" size={14} color={GOLD} />
@@ -542,6 +579,11 @@ export default function DreamChatScreen({ navigation }: Props) {
               <TextInput
                 value={input}
                 onChangeText={setInput}
+                onFocus={() => {
+                  setTimeout(() => {
+                    scrollRef.current?.scrollToEnd({ animated: true });
+                  }, 120);
+                }}
                 placeholder={
                   selectedMode === 'deep'
                     ? 'Rüyanı tüm ayrıntılarıyla anlat (maks 2000 karakter)...'
@@ -571,7 +613,7 @@ export default function DreamChatScreen({ navigation }: Props) {
             </View>
           </View>
         )}
-      </KeyboardAvoidingView>
+      </View>
 
       <RewardedAdModal
         visible={adModalVisible}

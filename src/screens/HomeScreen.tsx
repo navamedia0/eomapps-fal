@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Animated, View, Text, Pressable, Image, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { TabScreenProps } from '@/navigation/types';
 import { getCheckinStatus, type CheckinStatus } from '@/services/streak';
@@ -334,13 +335,33 @@ export default function HomeScreen({ navigation }: Props) {
               </View>
 
               {category.key === 'fallar' && (
-                <Pressable
-                  onPress={() => navigation.navigate('TumFallar')}
-                  style={({ pressed }) => [styles.allFalsButton, pressed && styles.pressedFade]}
-                >
-                  <Text style={styles.allFalsButtonText}>Tüm fal çeşitleri için tıklayınız</Text>
-                  <Ionicons name="chevron-forward" size={16} color={GOLD} />
-                </Pressable>
+                <View style={styles.fallarActionRow}>
+                  <Pressable
+                    onPress={() => navigation.navigate('CardDeckHub')}
+                    style={({ pressed }) => [styles.customDecksButton, pressed && styles.pressedFade]}
+                  >
+                    <LinearGradient
+                      colors={['rgba(245, 158, 11, 0.22)', 'rgba(168, 85, 247, 0.18)']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={StyleSheet.absoluteFillObject}
+                    />
+                    <MaterialCommunityIcons name="cards-playing" size={22} color={GOLD} />
+                    <View style={styles.customDeckTextWrap}>
+                      <Text style={styles.customDeckTitle}>Kendi Kartlarınla Fal Bak</Text>
+                      <Text style={styles.customDeckSub}>Tarot, Katina, Lenormand & 8 Mistik Deste</Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={18} color={GOLD} />
+                  </Pressable>
+
+                  <Pressable
+                    onPress={() => navigation.navigate('TumFallar')}
+                    style={({ pressed }) => [styles.allFalsButton, pressed && styles.pressedFade]}
+                  >
+                    <Text style={styles.allFalsButtonText}>Tüm fal çeşitleri için tıklayınız</Text>
+                    <Ionicons name="chevron-forward" size={16} color={GOLD} />
+                  </Pressable>
+                </View>
               )}
             </View>
           ))}
@@ -509,12 +530,42 @@ const styles = StyleSheet.create({
   gridPlaceholder: {
     flex: 1,
   },
+  fallarActionRow: {
+    marginTop: 12,
+    gap: 8,
+  },
+  customDecksButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: 'rgba(26, 16, 52, 0.95)',
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: GOLD,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    overflow: 'hidden',
+  },
+  customDeckTextWrap: {
+    flex: 1,
+    gap: 2,
+  },
+  customDeckTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: GOLD,
+    letterSpacing: 0.3,
+  },
+  customDeckSub: {
+    fontSize: 11,
+    color: '#E2E8F0',
+    fontWeight: '500',
+  },
   allFalsButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    marginTop: 10,
     paddingVertical: 12,
     borderRadius: 14,
     borderWidth: 1.2,

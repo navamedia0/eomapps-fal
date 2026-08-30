@@ -93,6 +93,8 @@ import GardenScreen from '@/screens/GardenScreen';
 import KaderKasabasiScreen from '@/screens/KaderKasabasiScreen';
 import KesifSalonuIntroScreen from '@/screens/KesifSalonuIntroScreen';
 import KesifSalonuGameScreen from '@/screens/KesifSalonuGameScreen';
+import CardDeckHubScreen from '@/screens/CardDeckHubScreen';
+import CardDeckTableScreen from '@/screens/CardDeckTableScreen';
 import bilgiMakaleleri from '@/data/bilgi_makaleleri.json';
 import { GOLD, NIGHT_DEEP, NIGHT_MID, TEXT_PRIMARY } from '@/theme/colors';
 
@@ -247,6 +249,8 @@ export default function App() {
             <Stack.Screen name="KaderKasabasi" component={KaderKasabasiScreen} options={{ headerShown: false }} />
             <Stack.Screen name="KesifSalonu" component={KesifSalonuIntroScreen} options={{ title: 'Keşif Salonu' }} />
             <Stack.Screen name="KesifSalonuOyun" component={KesifSalonuGameScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="CardDeckHub" component={CardDeckHubScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="CardDeckTable" component={CardDeckTableScreen} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
         <VoiceSessionBubble navigationRef={navigationRef} />
