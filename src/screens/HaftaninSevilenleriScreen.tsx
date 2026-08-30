@@ -30,7 +30,7 @@ import {
 } from '@/theme/colors';
 
 const QUOTE_CARD_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
-const PARCHMENT_BG = require('@/assets/textures/light_parchment_card.jpg');
+const PARCHMENT_BG = require('@/assets/textures/soz_karti_arkaplan.webp');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HaftaninSevilenleri'>;
 
@@ -218,7 +218,12 @@ export default function HaftaninSevilenleriScreen({ navigation }: Props) {
                   />
                   <Text style={styles.quoteText}>{item.body}</Text>
                   <View style={styles.quoteShareRow}>
-                    <ShareButton text={`Mistik Rehber (Haftanın #${item.rank} Sözü)\n\n"${item.body}"`} label="Paylaş" />
+                    <ShareButton
+                      text={`Mistik Rehber (Haftanın #${item.rank} Sözü)\n\n"${item.body}"`}
+                      label="Paylaş"
+                      style={styles.actionBtnStyle}
+                      textStyle={styles.actionBtnTextStyle}
+                    />
                     <ShareImageButton text={item.body} label="Görsel Paylaş" />
                   </View>
                 </ImageBackground>
@@ -244,6 +249,11 @@ export default function HaftaninSevilenleriScreen({ navigation }: Props) {
                   imageStyle={styles.factCardImage}
                   resizeMode="cover"
                 >
+                  <LinearGradient
+                    colors={['rgba(12, 10, 32, 0.62)', 'rgba(12, 10, 32, 0.82)']}
+                    style={styles.factScrim}
+                    pointerEvents="none"
+                  />
                   <CornerTicks />
                   {/* Rank Badge */}
                   <View style={styles.rankBadge}>
@@ -254,7 +264,7 @@ export default function HaftaninSevilenleriScreen({ navigation }: Props) {
                       <MaterialCommunityIcons
                         name={CATEGORY_ICON[item.card.category] || 'information-outline'}
                         size={13}
-                        color="#78350F"
+                        color={GOLD}
                       />
                       <Text style={styles.factCategoryText}>{CATEGORY_LABEL[item.card.category] || 'BİLGİ'}</Text>
                     </View>
@@ -263,7 +273,12 @@ export default function HaftaninSevilenleriScreen({ navigation }: Props) {
                   <Text style={styles.factTitle}>{item.card.title}</Text>
                   <Text style={styles.factBody}>{item.card.body}</Text>
                   <View style={styles.factFooter}>
-                    <ShareButton text={`Mistik Rehber (Haftanın #${item.rank} Bilgisi) - ${item.card.title}\n\n${item.card.body}`} label="Paylaş" />
+                    <ShareButton
+                      text={`Mistik Rehber (Haftanın #${item.rank} Bilgisi) - ${item.card.title}\n\n${item.card.body}`}
+                      label="Paylaş"
+                      style={styles.actionBtnStyle}
+                      textStyle={styles.actionBtnTextStyle}
+                    />
                     <ShareImageButton text={`${item.card.title}\n\n${item.card.body}`} label="Görsel Paylaş" />
                   </View>
                 </ImageBackground>
@@ -414,7 +429,8 @@ const styles = StyleSheet.create({
   },
   quoteShareRow: {
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
+    gap: 10,
     alignSelf: 'flex-end',
   },
   factsFeed: {
@@ -423,13 +439,16 @@ const styles = StyleSheet.create({
   factCard: {
     position: 'relative',
     borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: 'rgba(180, 130, 45, 0.45)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(242, 200, 121, 0.35)',
     padding: 16,
     overflow: 'hidden',
-    backgroundColor: '#F5EFE6',
   },
   factCardImage: {
+    borderRadius: 16,
+  },
+  factScrim: {
+    ...StyleSheet.absoluteFillObject,
     borderRadius: 16,
   },
   factHeader: {
@@ -443,9 +462,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(161, 98, 7, 0.12)',
+    backgroundColor: 'rgba(242, 200, 121, 0.16)',
     borderWidth: 1,
-    borderColor: 'rgba(161, 98, 7, 0.25)',
+    borderColor: 'rgba(242, 200, 121, 0.3)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
@@ -453,24 +472,39 @@ const styles = StyleSheet.create({
   factCategoryText: {
     fontSize: 10.5,
     fontWeight: '900',
-    color: '#78350F',
+    color: GOLD,
     letterSpacing: 0.4,
   },
   factTitle: {
     fontSize: 15,
-    fontWeight: '900',
-    color: '#2A1400',
+    fontWeight: '800',
+    color: GOLD_SOFT,
     marginBottom: 6,
   },
   factBody: {
-    fontSize: 14,
+    fontSize: 13.5,
     lineHeight: 21,
-    color: '#1A1816',
+    color: '#FFFFFF',
     fontWeight: '500',
     marginBottom: 14,
   },
   factFooter: {
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
+    gap: 10,
+    alignSelf: 'flex-end',
+  },
+  actionBtnStyle: {
+    backgroundColor: 'rgba(242, 200, 121, 0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  actionBtnTextStyle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: GOLD,
   },
 });
