@@ -22,7 +22,7 @@ type Ekol = {
   title: string;
   sub: string;
   accent: string;
-  sectionBg?: any;
+  sectionBg: any;
   items: GridItem[];
 };
 
@@ -73,7 +73,7 @@ export default function TumFallarScreen({ navigation }: Props) {
       title: 'Çin Ekolü',
       sub: 'Lake kırmızısı & imparatorluk altını',
       accent: '#E11D48',
-      sectionBg: require('@/assets/ekoller/cin_section_bg_v2.jpg'),
+      sectionBg: require('@/assets/ekoller/ekol_bg_1_cin.jpg'),
       items: [
         {
           key: 'face',
@@ -96,7 +96,7 @@ export default function TumFallarScreen({ navigation }: Props) {
       title: 'Osmanlı & Anadolu Ekolü',
       sub: 'İznik turkuazı & pirinç & lale motifi',
       accent: '#0EA5E9',
-      sectionBg: require('@/assets/ekoller/osmanli_section_bg_v2.jpg'),
+      sectionBg: require('@/assets/ekoller/ekol_bg_2_osmanli.jpg'),
       items: [
         {
           key: 'coffee',
@@ -118,7 +118,8 @@ export default function TumFallarScreen({ navigation }: Props) {
       key: 'nordik-kelt-ekolu',
       title: 'Nordik & Kelt Ekolü',
       sub: 'Kayrak grisi & yosun yeşili & bronz',
-      accent: '#5B8266',
+      accent: '#10B981',
+      sectionBg: require('@/assets/ekoller/ekol_bg_3_nordik.jpg'),
       items: [
         {
           key: 'rune',
@@ -140,7 +141,8 @@ export default function TumFallarScreen({ navigation }: Props) {
       key: 'bati-ezoterik-ekolu',
       title: 'Evrensel Batı Ezoterik Ekolü',
       sub: 'Ametist moru & antika pirinç & mum ışığı',
-      accent: '#7C5CBF',
+      accent: '#A855F7',
+      sectionBg: require('@/assets/ekoller/ekol_bg_4_bati_ezoterik.jpg'),
       items: [
         {
           key: 'palm',
@@ -190,7 +192,8 @@ export default function TumFallarScreen({ navigation }: Props) {
       key: 'ruya-ekolu',
       title: 'Bilinçaltı & Rüya Ekolü',
       sub: 'Gece indigosu & aurora moru-turkuazı',
-      accent: '#8B7CF6',
+      accent: '#6366F1',
+      sectionBg: require('@/assets/ekoller/ekol_bg_5_ruya.jpg'),
       items: [
         {
           key: 'dream',
@@ -212,7 +215,8 @@ export default function TumFallarScreen({ navigation }: Props) {
       key: 'klasik-evrensel',
       title: 'Klasik & Evrensel Fallar',
       sub: 'Geleneksel kehanet çeşitleri',
-      accent: GOLD,
+      accent: '#F59E0B',
+      sectionBg: require('@/assets/ekoller/ekol_bg_6_klasik.jpg'),
       items: [
         {
           key: 'tarot',
@@ -271,66 +275,45 @@ export default function TumFallarScreen({ navigation }: Props) {
 
         <View style={styles.ekolList}>
           {ekoller.map((ekol) => {
-            const hasBg = !!ekol.sectionBg;
-
-            const innerContent = (
-              <View style={[styles.sectionInner, styles.themedSectionInner]}>
-                <View style={[styles.ekolHeadBar, { backgroundColor: ekol.accent }]} />
-                <Text style={[styles.ekolTitle, { color: ekol.accent }]}>{ekol.title}</Text>
-                <Text style={styles.ekolSub}>{ekol.sub}</Text>
-
-                <View style={styles.grid}>
-                  {chunkPairs(ekol.items).map((pair, idx) => (
-                    <View key={`${ekol.key}-${idx}`} style={styles.gridRow}>
-                      <EkolGridButton
-                        item={pair[0]}
-                        accent={ekol.accent}
-                        navigation={navigation}
-                      />
-                      {pair[1] ? (
-                        <EkolGridButton
-                          item={pair[1]}
-                          accent={ekol.accent}
-                          navigation={navigation}
-                        />
-                      ) : (
-                        <View style={styles.gridPlaceholder} />
-                      )}
-                    </View>
-                  ))}
-                </View>
-              </View>
-            );
-
-            if (hasBg) {
-              return (
-                <View
-                  key={ekol.key}
-                  style={[styles.themedCardContainer, { borderColor: ekol.accent }]}
-                >
-                  <ImageBackground
-                    source={ekol.sectionBg}
-                    style={styles.themedCardBg}
-                    imageStyle={styles.themedCardImage}
-                    resizeMode="cover"
-                  >
-                    <View style={styles.cardDarkScrim} />
-                    {innerContent}
-                  </ImageBackground>
-                </View>
-              );
-            }
-
             return (
               <View
                 key={ekol.key}
-                style={[
-                  styles.themedCardContainer,
-                  styles.standardThemedContainer,
-                  { borderColor: ekol.accent },
-                ]}
+                style={[styles.themedCardContainer, { borderColor: ekol.accent }]}
               >
-                {innerContent}
+                <ImageBackground
+                  source={ekol.sectionBg}
+                  style={styles.themedCardBg}
+                  imageStyle={styles.themedCardImage}
+                  resizeMode="cover"
+                >
+                  <View style={styles.cardDarkScrim} />
+                  <View style={[styles.sectionInner, styles.themedSectionInner]}>
+                    <View style={[styles.ekolHeadBar, { backgroundColor: ekol.accent }]} />
+                    <Text style={[styles.ekolTitle, { color: ekol.accent }]}>{ekol.title}</Text>
+                    <Text style={styles.ekolSub}>{ekol.sub}</Text>
+
+                    <View style={styles.grid}>
+                      {chunkPairs(ekol.items).map((pair, idx) => (
+                        <View key={`${ekol.key}-${idx}`} style={styles.gridRow}>
+                          <EkolGridButton
+                            item={pair[0]}
+                            accent={ekol.accent}
+                            navigation={navigation}
+                          />
+                          {pair[1] ? (
+                            <EkolGridButton
+                              item={pair[1]}
+                              accent={ekol.accent}
+                              navigation={navigation}
+                            />
+                          ) : (
+                            <View style={styles.gridPlaceholder} />
+                          )}
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                </ImageBackground>
               </View>
             );
           })}
@@ -371,9 +354,6 @@ const styles = StyleSheet.create({
     width: '100%',
     gap: 20,
   },
-  standardSection: {
-    width: '100%',
-  },
   themedCardContainer: {
     width: '100%',
     borderRadius: 22,
@@ -385,10 +365,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 6,
   },
-  standardThemedContainer: {
-    backgroundColor: 'rgba(23, 13, 44, 0.94)',
-    borderWidth: 1.6,
-  },
   themedCardBg: {
     width: '100%',
   },
@@ -397,7 +373,7 @@ const styles = StyleSheet.create({
   },
   cardDarkScrim: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(8, 4, 18, 0.45)',
+    backgroundColor: 'rgba(8, 4, 18, 0.48)',
   },
   sectionInner: {
     width: '100%',
@@ -460,22 +436,19 @@ const styles = StyleSheet.create({
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
   },
-  gridPlaceholder: {
-    flex: 1,
-  },
   gridTextWrap: {
     flex: 1,
-    justifyContent: 'center',
   },
   gridTitle: {
-    fontSize: 13.5,
-    fontWeight: '800',
+    fontSize: 13,
+    fontWeight: '700',
     color: TEXT_PRIMARY,
-    lineHeight: 18,
-    letterSpacing: 0.2,
   },
   gridChevron: {
-    opacity: 0.85,
-    marginRight: 2,
+    marginRight: 4,
+    opacity: 0.8,
+  },
+  gridPlaceholder: {
+    flex: 1,
   },
 });
