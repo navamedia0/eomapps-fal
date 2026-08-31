@@ -28,7 +28,7 @@ type Props = {
  * Slot-reel / case-opening style reveal: rapidly cycles through random symbols,
  * decelerates, and locks onto the real result with a glow + bounce.
  */
-export default function ReelRevealFX({ finalSymbol, spinPool, delay = 0, glowColor = '#F2C879', onSettled, renderSymbol }: Props) {
+export default function ReelRevealFX({ finalSymbol, spinPool, delay = 0, glowColor = '#FFC93C', onSettled, renderSymbol }: Props) {
   const [displaySymbol, setDisplaySymbol] = useState(spinPool[0] ?? finalSymbol);
   const [settled, setSettled] = useState(false);
 

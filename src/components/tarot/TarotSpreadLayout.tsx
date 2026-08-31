@@ -456,18 +456,18 @@ const styles = StyleSheet.create({
   dualDividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(242, 200, 121, 0.25)',
+    backgroundColor: 'rgba(255, 201, 60, 0.25)',
   },
   dualDividerBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    backgroundColor: 'rgba(255, 201, 60, 0.1)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
   },
   dualDividerText: {
     fontSize: 9,
@@ -521,11 +521,11 @@ const styles = StyleSheet.create({
   },
   mirrorBridgeCardFrame: {
     alignItems: 'center',
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
     padding: 8,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
   },
   mirrorBridgeLabel: {
     fontSize: 9,
@@ -576,13 +576,13 @@ const styles = StyleSheet.create({
     width: MINI_CARD + 10,
   },
   horseshoeBadge: {
-    backgroundColor: 'rgba(242, 200, 121, 0.2)',
+    backgroundColor: 'rgba(255, 201, 60, 0.2)',
     borderRadius: 6,
     paddingHorizontal: 4,
     paddingVertical: 1,
     marginBottom: 2,
     borderWidth: 0.8,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
   },
   horseshoeBadgeText: {
     fontSize: 7.5,

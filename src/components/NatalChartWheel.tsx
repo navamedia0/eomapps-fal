@@ -143,10 +143,10 @@ export default function NatalChartWheel({
     <View style={styles.container}>
       <Svg width={size} height={size} viewBox={`0 0 ${VIEW_SIZE} ${VIEW_SIZE}`}>
         {/* Dış Astrolabe ve Zodyak Halkaları */}
-        <Circle cx={CENTER} cy={CENTER} r={outerR} stroke="rgba(242, 200, 121, 0.45)" strokeWidth={2} fill={NIGHT_CARD} fillOpacity={0.8} />
-        <Circle cx={CENTER} cy={CENTER} r={signRingR} stroke="rgba(242, 200, 121, 0.3)" strokeWidth={1.2} fill="rgba(11, 10, 31, 0.6)" />
-        <Circle cx={CENTER} cy={CENTER} r={houseRingR} stroke="rgba(242, 200, 121, 0.35)" strokeWidth={1} fill="none" />
-        <Circle cx={CENTER} cy={CENTER} r={innerAspectR} stroke="rgba(242, 200, 121, 0.25)" strokeWidth={1.5} fill="#05030e" />
+        <Circle cx={CENTER} cy={CENTER} r={outerR} stroke="rgba(255, 201, 60, 0.45)" strokeWidth={2} fill={NIGHT_CARD} fillOpacity={0.8} />
+        <Circle cx={CENTER} cy={CENTER} r={signRingR} stroke="rgba(255, 201, 60, 0.3)" strokeWidth={1.2} fill="rgba(8, 7, 8, 0.6)" />
+        <Circle cx={CENTER} cy={CENTER} r={houseRingR} stroke="rgba(255, 201, 60, 0.35)" strokeWidth={1} fill="none" />
+        <Circle cx={CENTER} cy={CENTER} r={innerAspectR} stroke="rgba(255, 201, 60, 0.25)" strokeWidth={1.5} fill="#05030e" />
 
         {/* 360 Derecelik Astronomik Kadran Çentikleri (Her 5 ve 10 derecede bir) */}
         {Array.from({ length: 72 }, (_, i) => i * 5).map((deg) => {
@@ -164,7 +164,7 @@ export default function NatalChartWheel({
               y1={p1.y}
               x2={p2.x}
               y2={p2.y}
-              stroke={isSignBorder ? 'rgba(242, 200, 121, 0.5)' : 'rgba(242, 200, 121, 0.22)'}
+              stroke={isSignBorder ? 'rgba(255, 201, 60, 0.5)' : 'rgba(255, 201, 60, 0.22)'}
               strokeWidth={isSignBorder ? 1.5 : 0.8}
             />
           );
@@ -180,7 +180,7 @@ export default function NatalChartWheel({
           return (
             <G key={`sign-${i}`}>
               {/* Burç Sınır Çizgisi */}
-              <Line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="rgba(242, 200, 121, 0.4)" strokeWidth={1.2} />
+              <Line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="rgba(255, 201, 60, 0.4)" strokeWidth={1.2} />
 
               {/* Burç Vektör Glifi (Mor kare içermeyen, pürüzsüz altın vektör) */}
               <G transform={`translate(${glyphPos.x - 10}, ${glyphPos.y - 10}) scale(0.85)`}>
@@ -211,7 +211,7 @@ export default function NatalChartWheel({
                   y1={inner.y}
                   x2={cusp.x}
                   y2={cusp.y}
-                  stroke="rgba(242, 200, 121, 0.25)"
+                  stroke="rgba(255, 201, 60, 0.25)"
                   strokeWidth={0.8}
                   strokeDasharray="2,2"
                 />
@@ -219,7 +219,7 @@ export default function NatalChartWheel({
                   x={labelPos.x}
                   y={labelPos.y + 3}
                   fontSize={10.5}
-                  fill="rgba(242, 200, 121, 0.85)"
+                  fill="rgba(255, 201, 60, 0.85)"
                   textAnchor="middle"
                   alignmentBaseline="middle"
                   fontWeight="700"
@@ -397,7 +397,7 @@ export default function NatalChartWheel({
                 onPress={() => setSelectedKey(p.key)}
                 style={[
                   styles.planetPill,
-                  isSel && { backgroundColor: 'rgba(242, 200, 121, 0.25)', borderColor: color },
+                  isSel && { backgroundColor: 'rgba(255, 201, 60, 0.25)', borderColor: color },
                 ]}
               >
                 <Text style={[styles.planetPillSymbol, { color }]}>{p.symbol}</Text>
@@ -420,10 +420,10 @@ const styles = StyleSheet.create({
   },
   selectedPlanetCard: {
     width: '94%',
-    backgroundColor: 'rgba(26, 16, 52, 0.95)',
+    backgroundColor: 'rgba(30, 30, 32, 0.95)',
     borderRadius: 16,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     padding: 12,
     marginTop: 14,
     gap: 6,
@@ -473,9 +473,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(11, 10, 31, 0.65)',
+    backgroundColor: 'rgba(8, 7, 8, 0.65)',
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
     borderRadius: 10,
     paddingVertical: 4,
     paddingHorizontal: 8,

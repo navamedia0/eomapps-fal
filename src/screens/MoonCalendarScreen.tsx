@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     width: 110,
     height: 110,
     borderRadius: 55,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   ritualCard: {
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
     borderRadius: 16,
     borderWidth: 1,
     borderColor: GOLD_SOFT,

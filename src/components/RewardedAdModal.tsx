@@ -114,7 +114,7 @@ export default function RewardedAdModal({
       <View style={styles.overlay}>
         <View style={styles.card}>
           <LinearGradient
-            colors={['rgba(26, 16, 52, 0.98)', 'rgba(11, 10, 31, 0.98)']}
+            colors={['rgba(30, 30, 32, 0.98)', 'rgba(8, 7, 8, 0.98)']}
             style={StyleSheet.absoluteFillObject}
           />
           <CornerTicks />
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     maxWidth: 380,
     borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: 'rgba(242, 200, 121, 0.45)',
+    borderColor: 'rgba(255, 201, 60, 0.45)',
     padding: 24,
     gap: 16,
     overflow: 'hidden',
@@ -224,12 +224,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   adBadge: {
-    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    backgroundColor: 'rgba(255, 201, 60, 0.15)',
     borderRadius: 6,
     paddingVertical: 3,
     paddingHorizontal: 8,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
   },
   adBadgeText: {
     fontSize: 10,
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   stepBadge: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    backgroundColor: 'rgba(255, 138, 0, 0.2)',
     borderRadius: 6,
     paddingVertical: 3,
     paddingHorizontal: 8,
@@ -250,10 +250,10 @@ const styles = StyleSheet.create({
   },
   videoSimWrap: {
     alignItems: 'center',
-    backgroundColor: 'rgba(11, 10, 31, 0.8)',
+    backgroundColor: 'rgba(8, 7, 8, 0.8)',
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     paddingVertical: 24,
     paddingHorizontal: 16,
     gap: 8,
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    backgroundColor: 'rgba(30, 30, 32, 0.9)',
     borderWidth: 1,
     borderColor: GOLD,
     borderRadius: 12,

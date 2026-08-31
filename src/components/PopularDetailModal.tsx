@@ -31,7 +31,7 @@ export default function PopularDetailModal({ item, onClose }: Props) {
             resizeMode="cover"
           >
             <LinearGradient
-              colors={['rgba(11, 10, 31, 0.48)', 'rgba(11, 10, 31, 0.72)']}
+              colors={['rgba(8, 7, 8, 0.48)', 'rgba(8, 7, 8, 0.72)']}
               style={StyleSheet.absoluteFillObject}
             />
 
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     overflow: 'hidden',
     borderWidth: 1.5,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     shadowColor: GOLD,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     marginTop: 18,
     paddingTop: 14,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(242, 200, 121, 0.18)',
+    borderTopColor: 'rgba(255, 201, 60, 0.18)',
     alignItems: 'center',
     gap: 12,
   },

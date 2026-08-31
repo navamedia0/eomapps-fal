@@ -163,7 +163,7 @@ export default function TarotScreen({ navigation, route }: Props) {
             ]}
           >
             <LinearGradient
-              colors={['#2A1B54', NIGHT_CARD]}
+              colors={['#2A2A2E', NIGHT_CARD]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.primaryButton}
@@ -426,18 +426,18 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 8,
     paddingHorizontal: 8,
-    backgroundColor: 'rgba(30, 17, 64, 0.65)',
+    backgroundColor: 'rgba(30, 30, 32, 0.65)',
     minHeight: 54,
   },
   dualButtonFilled: {
     borderColor: GOLD,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
   },
   dualIconWrap: {
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: 'rgba(242, 200, 121, 0.14)',
+    backgroundColor: 'rgba(255, 201, 60, 0.14)',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   optionRowSelected: {
-    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    backgroundColor: 'rgba(255, 201, 60, 0.1)',
   },
   optionText: {
     fontSize: 13.5,

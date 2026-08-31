@@ -22,7 +22,7 @@ export default function OyunMerkeziScreen({ navigation }: Props) {
       </View>
 
       <View style={styles.content}>
-        <LinearGradient colors={['#2A185C', '#140D36']} style={styles.card}>
+        <LinearGradient colors={['#242426', '#0D0D0E']} style={styles.card}>
           <View style={styles.iconCircle}>
             <MaterialCommunityIcons name="controller-classic-outline" size={48} color={GOLD} />
           </View>
@@ -81,8 +81,8 @@ const styles = StyleSheet.create({
     padding: 28,
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: '#7C3AED',
-    shadowColor: '#7C3AED',
+    borderColor: '#FF8A00',
+    shadowColor: '#FF8A00',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 20,
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: 'rgba(124, 58, 237, 0.25)',
+    backgroundColor: 'rgba(255, 138, 0, 0.20)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 13,
-    color: '#C4B5FD',
+    color: '#E8E2D0',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 24,
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#FF8A00',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,

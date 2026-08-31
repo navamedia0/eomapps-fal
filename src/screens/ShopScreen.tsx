@@ -160,8 +160,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderRadius: 16,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
-    backgroundColor: 'rgba(26, 16, 52, 0.6)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
+    backgroundColor: 'rgba(30, 30, 32, 0.6)',
   },
   tabButtonActive: {
     backgroundColor: GOLD,

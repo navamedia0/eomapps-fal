@@ -7,7 +7,7 @@ import { getLeaderboard, type LeaderboardEntry } from '@/services/popularity';
 import { avatarColor } from '@/utils/avatarColor';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
-const RANK_COLOR: Record<number, string> = { 1: '#F2C879', 2: '#C4B8E8', 3: '#C98A4B' };
+const RANK_COLOR: Record<number, string> = { 1: '#FFC93C', 2: '#C4B8E8', 3: '#C98A4B' };
 
 export default function PopularityScreen() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);

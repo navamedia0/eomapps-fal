@@ -39,12 +39,12 @@ export default function MysticTableBackground({ children, variant = 'general', c
     <View style={styles.flex}>
       <Image source={customBackground || BACKGROUNDS[variant]} resizeMode="cover" style={styles.bgImage} />
       <LinearGradient
-        colors={['rgba(11, 10, 31, 0.45)', 'rgba(11, 10, 31, 0.75)', 'rgba(11, 10, 31, 0.94)']}
+        colors={['rgba(8, 7, 8, 0.45)', 'rgba(8, 7, 8, 0.75)', 'rgba(8, 7, 8, 0.94)']}
         style={StyleSheet.absoluteFillObject}
         pointerEvents="none"
       />
       <LinearGradient
-        colors={['rgba(139, 92, 246, 0.28)', 'rgba(139, 92, 246, 0)']}
+        colors={['rgba(255, 138, 0, 0.22)', 'rgba(255, 138, 0, 0)']}
         style={styles.candleGlow}
         pointerEvents="none"
       />

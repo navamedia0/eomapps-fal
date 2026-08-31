@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   textInput: {
-    backgroundColor: 'rgba(11, 10, 31, 0.75)',
+    backgroundColor: 'rgba(8, 7, 8, 0.75)',
     borderWidth: 1,
     borderColor: GOLD_SOFT,
     borderRadius: 12,
@@ -348,13 +348,13 @@ const styles = StyleSheet.create({
   chip: {
     paddingVertical: 7,
     paddingHorizontal: 12,
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.22)',
+    borderColor: 'rgba(255, 201, 60, 0.22)',
     borderRadius: 14,
   },
   chipActive: {
-    backgroundColor: 'rgba(242, 200, 121, 0.28)',
+    backgroundColor: 'rgba(255, 201, 60, 0.28)',
     borderColor: GOLD,
   },
   chipText: {
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(242, 200, 121, 0.15)',
+    borderTopColor: 'rgba(255, 201, 60, 0.15)',
   },
   clearBtn: {
     paddingVertical: 10,

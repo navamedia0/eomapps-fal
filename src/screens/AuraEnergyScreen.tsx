@@ -206,7 +206,7 @@ export default function AuraEnergyScreen({ navigation }: Props) {
                   cx={RING_SIZE / 2}
                   cy={RING_SIZE / 2}
                   r={RING_RADIUS}
-                  stroke="rgba(242, 200, 121, 0.15)"
+                  stroke="rgba(255, 201, 60, 0.15)"
                   strokeWidth={RING_STROKE}
                   fill="none"
                 />
@@ -378,9 +378,9 @@ const styles = StyleSheet.create({
   },
   scanCard: {
     width: '100%',
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     borderRadius: 18,
     padding: 20,
     gap: 16,
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   dominantAuraCard: {
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderWidth: 1.5,
     borderRadius: 18,
     padding: 18,
@@ -483,9 +483,9 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   chakrasList: {
-    backgroundColor: 'rgba(26, 16, 52, 0.8)',
+    backgroundColor: 'rgba(30, 30, 32, 0.8)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     borderRadius: 16,
     padding: 16,
     gap: 10,
@@ -546,16 +546,16 @@ const styles = StyleSheet.create({
   },
   modeCard: {
     flex: 1,
-    backgroundColor: 'rgba(26, 16, 52, 0.75)',
+    backgroundColor: 'rgba(30, 30, 32, 0.75)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     borderRadius: 14,
     padding: 12,
     gap: 4,
   },
   modeCardActive: {
     borderColor: GOLD,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
   },
   modeCardDeep: {
     backgroundColor: 'rgba(35, 20, 70, 0.85)',
@@ -618,8 +618,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
   },
   resetBtnText: {
     fontSize: 12.5,

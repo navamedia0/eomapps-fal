@@ -98,7 +98,7 @@ export default function ScryingScreen({ navigation }: Props) {
           <View style={styles.blackMirror} key={castKey.current}>
             {!vision ? (
               <>
-                <MaterialCommunityIcons name="eye-circle-outline" size={48} color="rgba(242, 200, 121, 0.4)" />
+                <MaterialCommunityIcons name="eye-circle-outline" size={48} color="rgba(255, 201, 60, 0.4)" />
                 <Text style={styles.mirrorHint}>Aynanın derinliğine odaklan ve zihnini boşalt...</Text>
               </>
             ) : (
@@ -114,7 +114,7 @@ export default function ScryingScreen({ navigation }: Props) {
                     <MaterialCommunityIcons
                       name={isSettled ? 'eye' : 'eye-circle-outline'}
                       size={40}
-                      color={isSettled ? GOLD : 'rgba(242, 200, 121, 0.5)'}
+                      color={isSettled ? GOLD : 'rgba(255, 201, 60, 0.5)'}
                     />
                   )}
                 />
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     borderRadius: 85,
     backgroundColor: '#0A0518',
     borderWidth: 2,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
@@ -324,9 +324,9 @@ const styles = StyleSheet.create({
   },
   visionMeaningCard: {
     width: '100%',
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     borderRadius: 14,
     padding: 14,
   },
@@ -337,9 +337,9 @@ const styles = StyleSheet.create({
   },
   inputCard: {
     width: '100%',
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     borderRadius: 18,
     padding: 18,
     gap: 14,
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
   textArea: {
     backgroundColor: 'rgba(15, 8, 35, 0.75)',
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     borderRadius: 14,
     padding: 12,
     color: TEXT_PRIMARY,
@@ -376,16 +376,16 @@ const styles = StyleSheet.create({
   },
   modeCard: {
     flex: 1,
-    backgroundColor: 'rgba(26, 16, 52, 0.75)',
+    backgroundColor: 'rgba(30, 30, 32, 0.75)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     borderRadius: 14,
     padding: 12,
     gap: 4,
   },
   modeCardActive: {
     borderColor: GOLD,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
   },
   modeCardDeep: {
     backgroundColor: 'rgba(35, 20, 70, 0.85)',
@@ -474,8 +474,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
   },
   resetBtnText: {
     fontSize: 12.5,

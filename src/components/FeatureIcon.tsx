@@ -32,7 +32,7 @@ export default function FeatureIcon({ source, fallback, size = 44 }: Props) {
 
 const styles = StyleSheet.create({
   circleWrap: {
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },

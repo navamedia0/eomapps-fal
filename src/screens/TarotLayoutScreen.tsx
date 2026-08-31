@@ -284,6 +284,6 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 7,
-    backgroundColor: 'rgba(242, 200, 121, 0.3)',
+    backgroundColor: 'rgba(255, 201, 60, 0.3)',
   },
 });

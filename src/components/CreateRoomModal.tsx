@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   textInput: {
-    backgroundColor: 'rgba(11, 10, 31, 0.75)',
+    backgroundColor: 'rgba(8, 7, 8, 0.75)',
     borderWidth: 1,
     borderColor: GOLD_SOFT,
     borderRadius: 12,
@@ -208,9 +208,9 @@ const styles = StyleSheet.create({
   chip: {
     paddingVertical: 8,
     paddingHorizontal: 13,
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.22)',
+    borderColor: 'rgba(255, 201, 60, 0.22)',
     borderRadius: 100,
   },
   chipActive: {
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   footer: {
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(242, 200, 121, 0.15)',
+    borderTopColor: 'rgba(255, 201, 60, 0.15)',
   },
   saveBtn: {
     flexDirection: 'row',

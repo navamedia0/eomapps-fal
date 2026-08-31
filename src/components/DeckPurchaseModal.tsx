@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0F091F',
     borderRadius: 24,
     borderWidth: 1.5,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     overflow: 'hidden',
   },
   headerBar: {
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
     borderWidth: 1,
     borderColor: GOLD_SOFT,
     borderRadius: 14,

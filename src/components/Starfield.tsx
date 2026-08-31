@@ -77,6 +77,6 @@ export default function Starfield({ count = 14 }: { count?: number }) {
 const styles = StyleSheet.create({
   star: {
     position: 'absolute',
-    backgroundColor: '#F5F0FF',
+    backgroundColor: '#FFFEFB',
   },
 });

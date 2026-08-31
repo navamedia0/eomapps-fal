@@ -303,10 +303,10 @@ const styles = StyleSheet.create({
   },
   limitCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.92)',
+    backgroundColor: 'rgba(30, 30, 32, 0.92)',
     borderRadius: 16,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     padding: 16,
     alignItems: 'center',
     gap: 8,

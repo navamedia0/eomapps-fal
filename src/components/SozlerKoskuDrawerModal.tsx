@@ -56,7 +56,7 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               onPress={() => handleNavigate('SozlerKosku')}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(242, 200, 121, 0.18)' }]}>
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(255, 201, 60, 0.18)' }]}>
                 <MaterialCommunityIcons name="feather" size={20} color={GOLD} />
               </View>
               <Text style={styles.menuItemTitle}>Sözler Köşkü</Text>
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: 'rgba(22, 12, 42, 0.98)',
     borderRightWidth: 1.5,
-    borderRightColor: 'rgba(242, 200, 121, 0.35)',
+    borderRightColor: 'rgba(255, 201, 60, 0.35)',
     paddingHorizontal: 14,
     shadowColor: '#000',
     shadowOffset: { width: 4, height: 0 },
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(242, 200, 121, 0.2)',
+    borderBottomColor: 'rgba(255, 201, 60, 0.2)',
     marginBottom: 6,
   },
   drawerTitleRow: {
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(38, 24, 70, 0.88)',
     borderRadius: 13,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.22)',
+    borderColor: 'rgba(255, 201, 60, 0.22)',
     paddingVertical: 10,
     paddingHorizontal: 12,
     gap: 10,
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(242, 200, 121, 0.2)',
+    backgroundColor: 'rgba(255, 201, 60, 0.2)',
     marginVertical: 4,
   },
   sectionHeading: {
