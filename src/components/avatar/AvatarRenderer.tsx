@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AVATAR_ASSETS } from '@/assets/avatar/registry';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, VELVET_MID } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, VELVET_MID, WALNUT } from '@/theme/colors';
 import type { AvatarGender } from '@/services/socialProfile';
 
 type Props = {
@@ -15,10 +15,6 @@ type Props = {
   animated?: boolean;
 };
 
-// Katmanlı 2D "Konuşan Tom" tarzı avatar — 3D değil, kasıtlı olarak. Görsel
-// yoksa (henüz üretilmediyse) nefes/salınım animasyonlu yumuşak bir yer
-// tutucu daireye düşer; gerçek PNG'ler assets/avatar/registry.ts'e eklenince
-// otomatik olarak katmanlı görünüme geçer — bu bileşen değişmez.
 export default function AvatarRenderer({
   gender,
   hatItemId,
@@ -101,15 +97,24 @@ export default function AvatarRenderer({
         <>
           {layers.map((layer) =>
             layer.asset ? (
-              <Image key={layer.key} source={layer.asset} style={StyleSheet.absoluteFillObject} resizeMode="contain" />
+              <Image
+                key={layer.key}
+                source={layer.asset}
+                style={[styles.layerImage, { width: size, height: size }]}
+                resizeMode="contain"
+              />
             ) : null,
           )}
           {blinkAsset ? (
-            <Animated.Image source={blinkAsset} style={[StyleSheet.absoluteFillObject, { opacity: blink }]} resizeMode="contain" />
+            <Animated.Image
+              source={blinkAsset}
+              style={[styles.layerImage, { width: size, height: size, opacity: blink }]}
+              resizeMode="contain"
+            />
           ) : null}
         </>
       ) : (
-        <View style={[styles.placeholder, { borderRadius: size / 2, backgroundColor: gender === 'male' ? VELVET_MID : NIGHT_CARD }]}>
+        <View style={[styles.placeholder, { borderRadius: size / 2, backgroundColor: gender === 'male' ? WALNUT : NIGHT_CARD }]}>
           <Ionicons name="sparkles-outline" size={size * 0.4} color={GOLD} />
         </View>
       )}
@@ -118,7 +123,14 @@ export default function AvatarRenderer({
 }
 
 const styles = StyleSheet.create({
-  wrap: { alignItems: 'center', justifyContent: 'center' },
+  wrap: { alignItems: 'center', justifyContent: 'center', position: 'relative' },
+  layerImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+  },
   placeholder: {
     width: '100%',
     height: '100%',

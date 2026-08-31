@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { showAlert } from '@/services/themedAlert';
@@ -8,6 +8,7 @@ import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import AvatarRenderer from '@/components/avatar/AvatarRenderer';
 import AppleSignInButton from '@/components/AppleSignInButton';
+import { AVATAR_ASSETS } from '@/assets/avatar/registry';
 import { getStoredSession, signInWithGoogle } from '@/services/auth';
 import { getUserProfile, setAvatarGender, equipAvatarItem, type AvatarGender, type AvatarSlot, type AvatarState } from '@/services/socialProfile';
 import { getShopItems, purchaseItem, type ShopItem } from '@/services/shop';
@@ -120,6 +121,8 @@ export default function AvatarWardrobeScreen({ navigation }: Props) {
     async (item: ShopItem | null) => {
       const itemId = item?.id ?? null;
       const busyKey = itemId ?? `${activeSlot}-none`;
+      // Anında arayüzü güncelle (Optimistic update - 0ms gecikme)
+      setEquipped((prev) => ({ ...prev, [SLOT_FIELD[activeSlot]]: itemId }));
       setBusyId(busyKey);
       try {
         if (item && !item.owned) {
@@ -130,9 +133,8 @@ export default function AvatarWardrobeScreen({ navigation }: Props) {
           }));
         }
         await equipAvatarItem(activeSlot, itemId);
-        setEquipped((prev) => ({ ...prev, [SLOT_FIELD[activeSlot]]: itemId }));
       } catch (err) {
-        showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+        console.warn('Avatar equip error:', err);
       } finally {
         setBusyId(null);
       }
@@ -241,7 +243,13 @@ export default function AvatarWardrobeScreen({ navigation }: Props) {
                   style={[styles.card, isEquipped && styles.cardEquipped, isBusy && styles.cardDisabled]}
                 >
                   <View style={styles.cardSwatch}>
-                    <Ionicons name={isNone ? 'close-outline' : 'sparkles'} size={26} color={GOLD} />
+                    {isNone ? (
+                      <Ionicons name="close-outline" size={26} color={GOLD} />
+                    ) : item && AVATAR_ASSETS[item.id] ? (
+                      <Image source={AVATAR_ASSETS[item.id]} style={{ width: 38, height: 38 }} resizeMode="contain" />
+                    ) : (
+                      <Ionicons name="sparkles" size={26} color={GOLD} />
+                    )}
                   </View>
                   <Text style={styles.cardName} numberOfLines={1}>
                     {isNone ? 'Yok' : item?.name}
@@ -276,12 +284,45 @@ const styles = StyleSheet.create({
   stage: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: VELVET_MID,
+    backgroundColor: 'rgba(30, 17, 64, 0.85)',
     borderRadius: 24,
+    borderWidth: 1.5,
+    borderColor: GOLD_SOFT,
+    paddingTop: 16,
+    paddingBottom: 24,
+    marginBottom: 18,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  styleToggleRow: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    backgroundColor: 'rgba(15, 9, 36, 0.7)',
+    borderRadius: 20,
+    padding: 3,
+    marginBottom: 14,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
-    paddingVertical: 26,
-    marginBottom: 18,
+    gap: 4,
+  },
+  styleToggleBtn: {
+    paddingVertical: 5,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+  },
+  styleToggleBtnActive: {
+    backgroundColor: GOLD,
+  },
+  styleToggleText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: TEXT_MUTED,
+  },
+  styleToggleTextActive: {
+    color: NIGHT_DEEP,
   },
   slotTabRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
   slotTab: {
