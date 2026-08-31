@@ -954,34 +954,45 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
       }
     }
 
-    // 4. Katina
+    // 4. Katina — katina_meanings.json düz bir Record<string,string> (id -> tek
+    // cümlelik anlam), obje değil; kat.meaning gibi alan adları hep undefined
+    // dönüyordu ve yazılmış hiçbir metin ekrana gelmiyordu. Katina zaten
+    // gerçekte sadece aşk/ilişkiye adanmış bir fal olduğu için ayrı bir
+    // "kariyer" yorumu uydurulmuyor; tek yazılmış cümle asıl anlam alanında
+    // gösteriliyor.
     if (deck.id === 'katina') {
-      const kat = (katinaData as any)[cardId];
-      if (kat) {
+      const katText = (katinaData as any)[cardId] as string | undefined;
+      if (katText) {
         return {
-          upright: kat.meaning || kat.deste_anlami,
-          reversed: `Kartın gölge tarafı devreye girebilir; niyetlerinde aceleci olma.`,
-          love: isRelationship ? `${targetName}'e söyle: '${kat.love || kat.ask_anlami || kat.meaning}'` : (kat.love || kat.ask_anlami || kat.meaning),
-          career: kat.career || kat.is_anlami || kat.meaning,
-          advice: isRelationship ? `🗣️ Rehberlik: '${targetName}, ${kat.advice || kat.uyari}'` : (kat.advice || kat.uyari || kat.meaning),
-          story: kat.story || kat.hikaye || `${kat.name || cardId} kartı, İzmirli Katina destesinde derin aşk ve tutku şifrelerini barındırır.`,
-          keywords: kat.keywords || ['Katina Kehaneti', 'Tutku', 'Kader'],
+          upright: katText,
+          reversed: `Kartın gölge tarafı devreye girebilir; niyetlerinde aceleci olma, kalbini zorlama.`,
+          love: undefined,
+          career: undefined,
+          advice: isRelationship
+            ? `🗣️ Rehberlik: '${targetName}, kalbinin sesini dinle, bu enerjiye güven.'`
+            : `Kalbinin sesini dinle ve bu enerjiyi ilişkine taşı.`,
+          story: `Katina destesi, aşk ve ilişki kehanetine adanmış özel bir fal geleneğidir; bu kart kalbinin derin katmanlarından birini temsil eder.`,
+          keywords: ['Katina Kehaneti', 'Aşk', 'Kader'],
         };
       }
     }
 
-    // 5. İskambil
+    // 5. İskambil — iskambil_card_details.json'daki gerçek alanlar
+    // name/figure/element/meaning/story/advice; isk.upright/isk.genel gibi
+    // var olmayan alan adları yüzünden asıl yorum metni (meaning) hiç
+    // gösterilmiyordu, sadece hikaye ve tavsiye görünüyordu.
     if (deck.id === 'iskambil') {
       const isk = (iskambilData as any)[cardId];
       if (isk) {
+        const figureKeywords = [isk.figure, isk.element].filter(Boolean);
         return {
-          upright: isk.upright || isk.genel,
-          reversed: isk.reversed || isk.ters || `Enerjinin dengelenmesi için biraz zaman tanı.`,
-          love: isRelationship ? `${targetName}'e söyle: '${isk.love || isk.ask}'` : (isk.love || isk.ask),
-          career: isk.career || isk.is,
-          advice: isRelationship ? `🗣️ Rehberlik: '${targetName}, ${isk.advice || isk.tavsiye}'` : (isk.advice || isk.tavsiye),
-          story: isk.story || isk.hikaye || `${isk.name || cardId} iskambil kartı, kadim kart falı geleneğinde kadersel olayların somut karşılığıdır.`,
-          keywords: isk.keywords || ['Kader', 'Olay', 'Maddi / Manevi'],
+          upright: isk.meaning,
+          reversed: `Enerjinin dengelenmesi için biraz zaman tanı; kartın gölge yönü öne çıkabilir.`,
+          love: undefined,
+          career: undefined,
+          advice: isRelationship ? `🗣️ Rehberlik: '${targetName}, ${isk.advice}'` : isk.advice,
+          story: isk.story,
+          keywords: figureKeywords.length ? figureKeywords : ['Kader', 'Olay', 'Maddi / Manevi'],
         };
       }
     }
