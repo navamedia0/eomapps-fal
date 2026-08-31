@@ -372,6 +372,13 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
   const [flippedLevels, setFlippedLevels] = useState<Record<number, boolean>>({});
   const [isPartnersSwapped, setIsPartnersSwapped] = useState(false);
 
+  // Katina'nın gerçek geleneği: fala başlarken 4 element/ruh kartı kenara
+  // ayrılır, ana açılım bittikten sonra açılıp sonucun olumlu/olumsuz
+  // enerjisini belirler. Bu yüzden bu 4 kart normal çekiliş havuzunun
+  // (deckPool) dışında, ayrı tutuluyor.
+  const [katinaElementDraw, setKatinaElementDraw] = useState<(typeof katinaElementCards)[number][]>([]);
+  const [katinaElementRevealed, setKatinaElementRevealed] = useState(false);
+
   const p1Color = isPartnersSwapped ? '#F43F5E' : '#38BDF8';
   const p2Color = isPartnersSwapped ? '#38BDF8' : '#F43F5E';
   const p1RoleLabel = isPartnersSwapped ? '1. Kişi (Kadın)' : '1. Kişi (Erkek)';
@@ -482,12 +489,14 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
     }
 
     if (deck.id === 'katina') {
-      // 52 sembolik kart (Kupa/Karo/Sinek/Maça) + 13 element/ruh kartı = 65
-      // kartlık gerçek Katina destesi (bkz. katina_card_details.json ve
-      // katina_element_cards.json). İsimler artık düz "KUPA ASI" yerine
-      // katina_card_details.json'daki gerçek başlıklardan geliyor.
+      // 65 kartlık gerçek Katina destesi: 52 sembolik kart (Kupa/Karo/Sinek/
+      // Maça) BURADA, ana açılımın (Haç/İlişki/Karar/3 Kart) pozisyonlarına
+      // dağıtılır. Geriye kalan 13 element/ruh kartı (katina_element_cards.json)
+      // bu havuzda YOK — Katina geleneğinde bu kartlar okumanın başında ayrı
+      // tutulur ve fal bittikten sonra sonuç enerjisini belirlemek için
+      // açılır (bkz. startShuffle() ve "Element Kartları" ritüel bölümü).
       const symbolicEntries = Object.entries(katinaData as any);
-      const symbolicCards: DeckCardItem[] = symbolicEntries.map(([key]) => {
+      return symbolicEntries.map(([key]) => {
         const isKupa = key.startsWith('kupa');
         const isKaro = key.startsWith('karo');
         const isSinek = key.startsWith('sinek');
@@ -502,14 +511,6 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
           themeColor: color,
         };
       });
-      const elementCards: DeckCardItem[] = (katinaElementCards as any[]).map((card) => ({
-        id: card.id,
-        name: card.name,
-        suitSymbol: '✨',
-        rankLabel: 'Element',
-        themeColor: card.valence === 'negative' ? '#F87171' : card.valence === 'mixed' ? '#FBBF24' : '#34D399',
-      }));
-      return [...symbolicCards, ...elementCards];
     }
 
     if (deck.id === 'lenormand') {
@@ -554,6 +555,11 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
 
   // Karıştırma Animasyonu
   const startShuffle = () => {
+    if (deck.id === 'katina') {
+      const shuffled = [...(katinaElementCards as any[])].sort(() => Math.random() - 0.5);
+      setKatinaElementDraw(shuffled.slice(0, 4));
+      setKatinaElementRevealed(false);
+    }
     setPhase('shuffling');
     shuffleRotate.setValue(0);
     shuffleScale.setValue(1);
@@ -850,6 +856,36 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
   };
 
   const allRevealed = drawnCards.length > 0 && drawnCards.every((c) => c.isRevealed);
+
+  // 4 element kartının birlikte açılmasıyla ortaya çıkan genel sonuç enerjisi.
+  const katinaOutcome = useMemo(() => {
+    if (!katinaElementRevealed || katinaElementDraw.length === 0) return null;
+    let positive = 0;
+    let negative = 0;
+    katinaElementDraw.forEach((card: any) => {
+      if (card.valence === 'positive') positive += 1;
+      else if (card.valence === 'negative') negative += 1;
+    });
+    if (positive - negative >= 2) {
+      return { label: '✨ Genel Sonuç: Olumlu', color: '#34D399', desc: 'Element kartları bu falın olumlu bir enerji taşıdığını gösteriyor; önünüzdeki yol açık.' };
+    }
+    if (negative - positive >= 2) {
+      return { label: '⚠️ Genel Sonuç: Dikkat Gerektiriyor', color: '#F87171', desc: 'Element kartları temkinli olmanız gereken bir dönemi işaret ediyor; sabırlı ve dikkatli olun.' };
+    }
+    return { label: '🌗 Genel Sonuç: Karışık Enerji', color: '#FBBF24', desc: 'Element kartları hem fırsat hem zorluk barındırıyor; seçimleriniz sonucu şekillendirecek.' };
+  }, [katinaElementRevealed, katinaElementDraw]);
+
+  const openKatinaElementDetail = (card: any) => {
+    setInspectedCard({
+      id: card.id,
+      name: card.name,
+      isReversed: false,
+      positionName: 'Element Kartı — Sonuç Enerjisi',
+      isRevealed: true,
+      flipAnim: new Animated.Value(1),
+      dealAnim: new Animated.Value(1),
+    });
+  };
 
   // Masaya Serim Ritüeli Animasyonunu Başlat (Kartları sırayla tek tek masaya koyma)
   const playRitualDealingAnimation = useCallback(() => {
@@ -3593,6 +3629,68 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
               </View>
             )}
 
+            {/* 3.5 KATİNA ELEMENT KARTLARI RİTÜELİ — okumanın başında kenara
+                ayrılan 4 kart, ana açılım bittikten sonra burada açılıyor ve
+                falın genel sonuç enerjisini (olumlu/olumsuz) belirliyor. */}
+            {deck.id === 'katina' && katinaElementDraw.length === 4 && (
+              <View style={styles.katinaElementBox}>
+                <View style={styles.katinaElementHeader}>
+                  <MaterialCommunityIcons name="crystal-ball" size={16} color={GOLD} />
+                  <Text style={styles.katinaElementTitle}>Element Kartları — Falın Sonucu</Text>
+                </View>
+                <Text style={styles.katinaElementSubtitle}>
+                  Bu 4 kart, okumanın en başında kenara ayrıldı. Katina geleneğinde fal
+                  bittikten sonra açılır ve sonucun enerjisini belirler.
+                </Text>
+
+                <View style={styles.katinaElementRow}>
+                  {katinaElementDraw.map((card: any) => (
+                    <Pressable
+                      key={card.id}
+                      disabled={!katinaElementRevealed}
+                      onPress={() => openKatinaElementDetail(card)}
+                      style={styles.katinaElementCard}
+                    >
+                      {katinaElementRevealed ? (
+                        <>
+                          <View
+                            style={[
+                              styles.katinaElementValenceDot,
+                              {
+                                backgroundColor:
+                                  card.valence === 'negative' ? '#F87171' : card.valence === 'mixed' ? '#FBBF24' : '#34D399',
+                              },
+                            ]}
+                          />
+                          <Text style={styles.katinaElementCardName} numberOfLines={2}>
+                            {card.name}
+                          </Text>
+                        </>
+                      ) : (
+                        <MaterialCommunityIcons name="help" size={22} color={GOLD_SOFT} />
+                      )}
+                    </Pressable>
+                  ))}
+                </View>
+
+                {!katinaElementRevealed ? (
+                  <Pressable onPress={() => setKatinaElementRevealed(true)} style={styles.katinaElementRevealBtn}>
+                    <Ionicons name="sparkles" size={16} color="#1A0D00" />
+                    <Text style={styles.katinaElementRevealBtnText}>Element Kartlarını Aç</Text>
+                  </Pressable>
+                ) : (
+                  katinaOutcome && (
+                    <View style={[styles.katinaElementOutcomeBox, { borderColor: katinaOutcome.color }]}>
+                      <Text style={[styles.katinaElementOutcomeTitle, { color: katinaOutcome.color }]}>
+                        {katinaOutcome.label}
+                      </Text>
+                      <Text style={styles.katinaElementOutcomeDesc}>{katinaOutcome.desc}</Text>
+                    </View>
+                  )
+                )}
+              </View>
+            )}
+
             {/* 4. MASAYI YENİLEME & AI ANALİZİ BUTONLARI */}
             <View style={{ gap: 10, marginTop: 14 }}>
               <Pressable
@@ -3603,6 +3701,8 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                   setP2DrawnCards([]);
                   setBridgeDrawnCard(null);
                   setPlacedCount(0);
+                  setKatinaElementDraw([]);
+                  setKatinaElementRevealed(false);
                 }}
                 style={styles.resetBtn}
               >
@@ -7599,6 +7699,92 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#0B0612',
     letterSpacing: 0.3,
+  },
+  katinaElementBox: {
+    marginTop: 16,
+    padding: 14,
+    borderRadius: 18,
+    borderWidth: 1.2,
+    borderColor: 'rgba(255, 201, 60, 0.4)',
+    backgroundColor: 'rgba(30, 30, 32, 0.9)',
+  },
+  katinaElementHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 4,
+  },
+  katinaElementTitle: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: GOLD,
+  },
+  katinaElementSubtitle: {
+    fontSize: 11.5,
+    color: TEXT_MUTED,
+    lineHeight: 16,
+    marginBottom: 12,
+  },
+  katinaElementRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
+  },
+  katinaElementCard: {
+    flex: 1,
+    minHeight: 70,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    backgroundColor: 'rgba(8, 7, 8, 0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    padding: 6,
+  },
+  katinaElementValenceDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  katinaElementCardName: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+    textAlign: 'center',
+    lineHeight: 13,
+  },
+  katinaElementRevealBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: GOLD,
+    borderRadius: 14,
+    paddingVertical: 12,
+  },
+  katinaElementRevealBtnText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#1A0D00',
+  },
+  katinaElementOutcomeBox: {
+    borderWidth: 1.4,
+    borderRadius: 14,
+    padding: 12,
+    alignItems: 'center',
+    gap: 4,
+  },
+  katinaElementOutcomeTitle: {
+    fontSize: 13.5,
+    fontWeight: '900',
+    letterSpacing: 0.3,
+  },
+  katinaElementOutcomeDesc: {
+    fontSize: 11.5,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+    lineHeight: 16,
   },
 });
 
