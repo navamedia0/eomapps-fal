@@ -17,6 +17,7 @@ import { GOLD, GOLD_SOFT, NIGHT_DEEP, NIGHT_CARD, VELVET_MID, TEXT_PRIMARY, TEXT
 type Props = NativeStackScreenProps<RootStackParamList, 'AvatarWardrobe'>;
 
 const SLOTS: { key: AvatarSlot; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+  { key: 'skin', label: 'Kostüm', icon: 'shield-checkmark-outline' },
   { key: 'hat', label: 'Şapka', icon: 'sparkles-outline' },
   { key: 'cape', label: 'Pelerin', icon: 'body-outline' },
   { key: 'outfit', label: 'Kıyafet', icon: 'shirt-outline' },
@@ -24,11 +25,24 @@ const SLOTS: { key: AvatarSlot; label: string; icon: keyof typeof Ionicons.glyph
 ];
 
 const SLOT_FIELD: Record<AvatarSlot, keyof AvatarState> = {
+  skin: 'skinItemId',
   hat: 'hatItemId',
   cape: 'capeItemId',
   outfit: 'outfitItemId',
   pants: 'pantsItemId',
 };
+
+const DEFAULT_SKIN_ITEMS: ShopItem[] = [
+  {
+    id: 'skin_leonidas',
+    category: 'avatar_skin' as any,
+    name: 'Leonidas (Aslan)',
+    description: 'Efsanevi aslan savaşçı özel karakter kostümü.',
+    currency: 'crystal',
+    price: 0,
+    owned: true,
+  },
+];
 
 const CURRENCY_LABEL: Record<'coin' | 'crystal', string> = { coin: 'Coin', crystal: 'Kristal' };
 
@@ -38,13 +52,15 @@ export default function AvatarWardrobeScreen({ navigation }: Props) {
   const [gender, setGender] = useState<AvatarGender | null>(null);
   const [equipped, setEquipped] = useState<AvatarState>({
     gender: null,
+    skinItemId: null,
     hatItemId: null,
     capeItemId: null,
     outfitItemId: null,
     pantsItemId: null,
   });
-  const [activeSlot, setActiveSlot] = useState<AvatarSlot>('hat');
+  const [activeSlot, setActiveSlot] = useState<AvatarSlot>('skin');
   const [itemsBySlot, setItemsBySlot] = useState<Record<AvatarSlot, ShopItem[]>>({
+    skin: DEFAULT_SKIN_ITEMS,
     hat: [],
     cape: [],
     outfit: [],
@@ -75,7 +91,7 @@ export default function AvatarWardrobeScreen({ navigation }: Props) {
         ]);
         setGender(profile.avatar.gender);
         setEquipped(profile.avatar);
-        setItemsBySlot({ hat, cape, outfit, pants });
+        setItemsBySlot({ skin: DEFAULT_SKIN_ITEMS, hat, cape, outfit, pants });
       })
       .catch((err) => {
         showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
@@ -206,6 +222,7 @@ export default function AvatarWardrobeScreen({ navigation }: Props) {
           <View style={styles.stage}>
             <AvatarRenderer
               gender={gender}
+              skinId={equipped.skinItemId}
               hatItemId={equipped.hatItemId}
               capeItemId={equipped.capeItemId}
               outfitItemId={equipped.outfitItemId}

@@ -17,8 +17,8 @@ export const FORTUNE_THEMES: Record<string, FortuneTheme> = {
     splashSubtitle: 'Osmanlı Saray Kehaneti Başlıyor...',
     accentColor: '#B45309',
     figure: require('@/assets/themes/figures/coffee.png'),
-    background: require('@/assets/themes/backgrounds/coffee.jpg'),
-    resultBg: require('@/assets/themes/results/coffee.jpg'),
+    background: require('@/assets/ekoller/ekol_bg_2_osmanli.jpg'),
+    resultBg: require('@/assets/ekoller/ekol_bg_2_osmanli.jpg'),
   },
   bakla: {
     key: 'bakla',

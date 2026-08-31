@@ -7,6 +7,7 @@ import type { AvatarGender } from '@/services/socialProfile';
 
 type Props = {
   gender: AvatarGender | null;
+  skinId?: string | null;
   hatItemId?: string | null;
   capeItemId?: string | null;
   outfitItemId?: string | null;
@@ -17,6 +18,7 @@ type Props = {
 
 export default function AvatarRenderer({
   gender,
+  skinId,
   hatItemId,
   capeItemId,
   outfitItemId,
@@ -71,6 +73,7 @@ export default function AvatarRenderer({
     };
   }, [animated, blink]);
 
+  const skinAsset = skinId && AVATAR_ASSETS[skinId] ? AVATAR_ASSETS[skinId] : null;
   const baseKey = gender === 'male' ? 'base_male' : gender === 'female' ? 'base_female' : null;
   const blinkKey = gender === 'male' ? 'blink_male' : gender === 'female' ? 'blink_female' : null;
 
@@ -84,8 +87,8 @@ export default function AvatarRenderer({
     ],
     [baseKey, capeItemId, outfitItemId, pantsItemId, hatItemId],
   );
-  const hasArt = layers.some((layer) => layer.asset);
-  const blinkAsset = blinkKey ? AVATAR_ASSETS[blinkKey] : null;
+  const hasArt = skinAsset || layers.some((layer) => layer.asset);
+  const blinkAsset = !skinAsset && blinkKey ? AVATAR_ASSETS[blinkKey] : null;
 
   const translateY = breathe.interpolate({ inputRange: [0, 1], outputRange: [0, -size * 0.02] });
   const scaleY = breathe.interpolate({ inputRange: [0, 1], outputRange: [1, 1.015] });
@@ -95,23 +98,33 @@ export default function AvatarRenderer({
     <Animated.View style={[styles.wrap, { width: size, height: size, transform: [{ translateY }, { scaleY }, { rotate }] }]}>
       {hasArt ? (
         <>
-          {layers.map((layer) =>
-            layer.asset ? (
-              <Image
-                key={layer.key}
-                source={layer.asset}
-                style={[styles.layerImage, { width: size, height: size }]}
-                resizeMode="contain"
-              />
-            ) : null,
-          )}
-          {blinkAsset ? (
-            <Animated.Image
-              source={blinkAsset}
-              style={[styles.layerImage, { width: size, height: size, opacity: blink }]}
+          {skinAsset ? (
+            <Image
+              source={skinAsset}
+              style={[styles.layerImage, { width: size, height: size }]}
               resizeMode="contain"
             />
-          ) : null}
+          ) : (
+            <>
+              {layers.map((layer) =>
+                layer.asset ? (
+                  <Image
+                    key={layer.key}
+                    source={layer.asset}
+                    style={[styles.layerImage, { width: size, height: size }]}
+                    resizeMode="contain"
+                  />
+                ) : null,
+              )}
+              {blinkAsset ? (
+                <Animated.Image
+                  source={blinkAsset}
+                  style={[styles.layerImage, { width: size, height: size, opacity: blink }]}
+                  resizeMode="contain"
+                />
+              ) : null}
+            </>
+          )}
         </>
       ) : (
         <View style={[styles.placeholder, { borderRadius: size / 2, backgroundColor: gender === 'male' ? WALNUT : NIGHT_CARD }]}>

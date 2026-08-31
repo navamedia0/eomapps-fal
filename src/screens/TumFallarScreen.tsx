@@ -1,113 +1,269 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
-  Pressable,
   ScrollView,
   StyleSheet,
+  TextInput,
+  Pressable,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import CachedImageBackground from '@/components/CachedImageBackground';
-import { EKOLLER_DATA, type EkolData } from '@/constants/ekollerData';
-import { GOLD, GOLD_SOFT, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import SignatureFortuneCard from '@/components/fortune/SignatureFortuneCard';
+import TarotModeSelectionModal from '@/components/tarot/TarotModeSelectionModal';
+import RuneModeSelectionModal from '@/components/runes/RuneModeSelectionModal';
+import { ALL_SIGNATURE_FORTUNES, type FortuneSignatureItem } from '@/constants/allFortunesData';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'TumFallar'>;
 
+type FilterCategory = 'all' | 'cards' | 'visual' | 'ancient';
+
+const FILTERS: { key: FilterCategory; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+  { key: 'all', label: 'Tümü', icon: 'sparkles' },
+  { key: 'cards', label: 'Kart Desteleri', icon: 'albums-outline' },
+  { key: 'visual', label: 'Fotoğraflı Fallar', icon: 'camera-outline' },
+  { key: 'ancient', label: 'Antik Kehanetler', icon: 'planet-outline' },
+];
+
 export default function TumFallarScreen({ navigation }: Props) {
+  const [tarotModalVisible, setTarotModalVisible] = useState(false);
+  const [runeModalVisible, setRuneModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState<FilterCategory>('all');
+
+  const popularItems = useMemo(
+    () => [
+      {
+        key: 'coffee',
+        title: 'Kahve Falı',
+        iconName: 'coffee' as const,
+        accent: '#F59E0B',
+        onPress: () => navigation.navigate('ImageReading', { kind: 'coffee' }),
+      },
+      {
+        key: 'tarot',
+        title: 'Tarot Falı',
+        iconName: 'cards-playing-outline' as const,
+        accent: '#EC4899',
+        onPress: () => setTarotModalVisible(true),
+      },
+      {
+        key: 'face',
+        title: 'Yüz Falı',
+        iconName: 'face-recognition' as const,
+        accent: '#A855F7',
+        onPress: () => navigation.navigate('ImageReading', { kind: 'face' }),
+      },
+      {
+        key: 'voice',
+        title: 'Sesli Falcı',
+        iconName: 'microphone-outline' as const,
+        accent: '#F43F5E',
+        onPress: () => navigation.navigate('VoiceReading'),
+      },
+      {
+        key: 'rune',
+        title: 'Nordik Rün',
+        iconName: 'triangle-outline' as const,
+        accent: '#38BDF8',
+        onPress: () => setRuneModalVisible(true),
+      },
+      {
+        key: 'palm',
+        title: 'El Falı',
+        iconName: 'hand-back-right-outline' as const,
+        accent: '#10B981',
+        onPress: () => navigation.navigate('ImageReading', { kind: 'palm' }),
+      },
+      {
+        key: 'katina',
+        title: 'Katina Aşk',
+        iconName: 'cards-heart-outline' as const,
+        accent: '#E11D48',
+        onPress: () => navigation.navigate('CardDeckTable', { deckId: 'katina' }),
+      },
+      {
+        key: 'sufal',
+        title: 'Su Falı',
+        iconName: 'water-outline' as const,
+        accent: '#06B6D4',
+        onPress: () => navigation.navigate('SuFal'),
+      },
+    ],
+    [navigation],
+  );
+
+  const filteredFortunes = useMemo(() => {
+    return ALL_SIGNATURE_FORTUNES.filter((item) => {
+      // 1. Arama Filtresi
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        const matchTitle = item.title.toLowerCase().includes(query);
+        const matchSubtitle = item.subtitle.toLowerCase().includes(query);
+        const matchTags = item.tags.some((t) => t.toLowerCase().includes(query));
+        if (!matchTitle && !matchSubtitle && !matchTags) return false;
+      }
+
+      // 2. Kategori Filtresi
+      if (selectedFilter === 'all') return true;
+      if (selectedFilter === 'cards') {
+        return ['tarot', 'katina', 'lenormand', 'thoth', 'osho_zen', 'angel', 'iskambil'].includes(item.key);
+      }
+      if (selectedFilter === 'visual') {
+        return ['coffee', 'palm', 'face', 'sufal', 'wax'].includes(item.key);
+      }
+      if (selectedFilter === 'ancient') {
+        return ['rune', 'iching', 'bakla'].includes(item.key);
+      }
+      return true;
+    });
+  }, [searchQuery, selectedFilter]);
+
+  const handleCardPress = (item: FortuneSignatureItem) => {
+    if (item.actionType === 'tarot_modal') {
+      setTarotModalVisible(true);
+    } else if (item.actionType === 'rune_modal') {
+      setRuneModalVisible(true);
+    } else if (item.route) {
+      navigation.navigate(item.route as any, item.params);
+    }
+  };
+
   return (
     <MysticTableBackground variant="general">
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <MaterialCommunityIcons name="earth" size={22} color={GOLD} />
+          <MaterialCommunityIcons name="cards-playing-outline" size={26} color={GOLD} />
           <Text style={styles.headerTitle}>Tüm Fal Çeşitleri</Text>
         </View>
         <Text style={styles.headerCaption}>
-          Dünyanın dört bir yanından kadim kehanet ekolleri vitrini
+          Dünyanın dört bir yanından kadim kehanetler ve mistik kart atölyeleri
         </Text>
 
-        {/* 6 Standart Boyutlu Görsel Ekol Vitrin Kartı */}
-        <View style={styles.ekolList}>
-          {EKOLLER_DATA.map((ekol) => (
-            <Pressable
-              key={ekol.key}
-              onPress={() => navigation.navigate('EkolDetay', { ekolKey: ekol.key })}
-              style={({ pressed }) => [
-                styles.showcaseCard,
-                pressed && styles.showcaseCardPressed,
-              ]}
-            >
-              <CachedImageBackground
-                source={ekol.sectionBg}
-                style={styles.showcaseBg}
-                imageStyle={styles.showcaseImage}
-                resizeMode="cover"
-              >
-                {/* Mistik Karartma Gradient */}
-                <LinearGradient
-                  colors={[
-                    'rgba(8, 4, 18, 0.45)',
-                    'rgba(8, 4, 18, 0.65)',
-                    'rgba(8, 4, 18, 0.88)',
-                  ]}
-                  style={StyleSheet.absoluteFillObject}
-                />
-
-                {/* Kart İçeriği */}
-                <View style={styles.showcaseContent}>
-                  {/* Üst Başlık & Çizgi */}
-                  <View style={styles.topRow}>
-                    <View style={styles.titleWrap}>
-                      <View style={[styles.headBar, { backgroundColor: ekol.accent }]} />
-                      <Text style={[styles.ekolTitle, { color: ekol.accent }]}>
-                        {ekol.title}
-                      </Text>
-                    </View>
-                    <View style={[styles.chevronWrap, { backgroundColor: ekol.accent + '25', borderColor: ekol.accent + '66' }]}>
-                      <Ionicons name="chevron-forward" size={18} color={ekol.accent} />
-                    </View>
-                  </View>
-
-                  {/* Alt Ekol Keşfet Buton Şeridi */}
-                  <View style={styles.bottomRow}>
-                    <View
-                      style={[
-                        styles.explorePill,
-                        {
-                          backgroundColor: ekol.accent + '22',
-                          borderColor: ekol.accent + '66',
-                        },
-                      ]}
-                    >
-                      <MaterialCommunityIcons name="cards-playing-outline" size={14} color={ekol.accent} />
-                      <Text style={[styles.explorePillText, { color: ekol.accent }]}>
-                        {ekol.items.length} Fal Çeşidi · İncele
-                      </Text>
-                      <Ionicons name="arrow-forward" size={13} color={ekol.accent} />
-                    </View>
-                  </View>
-                </View>
-              </CachedImageBackground>
+        {/* Arama Çubuğu */}
+        <View style={styles.searchBar}>
+          <Ionicons name="search-outline" size={18} color={TEXT_MUTED} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Fal veya deste ara... (Örn: Aşk, Tarot, Kahve)"
+            placeholderTextColor={TEXT_MUTED}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
+            <Pressable onPress={() => setSearchQuery('')} hitSlop={8}>
+              <Ionicons name="close-circle" size={18} color={TEXT_MUTED} />
             </Pressable>
+          )}
+        </View>
+
+        {/* Kategori Filtre Butonları (Pills) */}
+        <View style={styles.filterRow}>
+          {FILTERS.map((f) => {
+            const active = selectedFilter === f.key;
+            return (
+              <Pressable
+                key={f.key}
+                onPress={() => setSelectedFilter(f.key)}
+                style={[styles.filterPill, active && styles.filterPillActive]}
+              >
+                <Ionicons name={f.icon} size={14} color={active ? '#0F0820' : GOLD} />
+                <Text style={[styles.filterText, active && styles.filterTextActive]}>
+                  {f.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {/* EN ÇOK SEVİLEN & POPÜLER FALLAR (2 SATIRLIK KOMPAKT SİMGE VİTRİNİ) */}
+        {!searchQuery.trim() && (
+          <View style={styles.popularSection}>
+            <View style={styles.popularHeaderRow}>
+              <MaterialCommunityIcons name="star-shooting" size={16} color={GOLD} />
+              <Text style={styles.popularSectionTitle}>En Çok Tercih Edilen Fallar</Text>
+            </View>
+            <View style={styles.popularGrid}>
+              {popularItems.map((item) => (
+                <Pressable
+                  key={item.key}
+                  onPress={item.onPress}
+                  style={({ pressed }) => [
+                    styles.popularIconBtn,
+                    pressed && styles.popularIconBtnPressed,
+                  ]}
+                >
+                  <View style={[styles.popularIconCircle, { borderColor: item.accent + '66', backgroundColor: item.accent + '18' }]}>
+                    <MaterialCommunityIcons name={item.iconName} size={22} color={item.accent} />
+                  </View>
+                  <Text style={styles.popularIconText} numberOfLines={1}>
+                    {item.title}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* Fal Listesi (Geniş İmza Kartları) */}
+        <View style={styles.cardsList}>
+          {filteredFortunes.map((item) => (
+            <SignatureFortuneCard
+              key={item.key}
+              title={item.title}
+              subtitle={item.subtitle}
+              tags={item.tags}
+              accent={item.accent}
+              badgeText={item.badgeText}
+              badgeColor={item.badgeColor}
+              ctaText={item.ctaText}
+              imageSource={item.imageSource}
+              onPress={() => handleCardPress(item)}
+            />
           ))}
+
+          {filteredFortunes.length === 0 && (
+            <View style={styles.emptyWrap}>
+              <Ionicons name="search" size={32} color={TEXT_MUTED} />
+              <Text style={styles.emptyText}>Aradığınız kriterde bir fal bulunamadı.</Text>
+            </View>
+          )}
         </View>
       </ScrollView>
+
+      {/* Tarot 3'lü Mod Birleştirme Modalı */}
+      <TarotModeSelectionModal
+        visible={tarotModalVisible}
+        onClose={() => setTarotModalVisible(false)}
+        onSelectRelationshipSpread={() =>
+          navigation.navigate('CardDeckTable', { deckId: 'tarot', initialMode: 'relationship' })
+        }
+        onSelectQuickSpread={() => navigation.navigate('TarotSpread')}
+        onSelectDeckTable={() =>
+          navigation.navigate('CardDeckTable', { deckId: 'tarot', initialMode: 'self' })
+        }
+      />
+
+      {/* Nordik Rün 2'li Mod Birleştirme Modalı */}
+      <RuneModeSelectionModal
+        visible={runeModalVisible}
+        onClose={() => setRuneModalVisible(false)}
+        onSelectClothReading={() => navigation.navigate('RuneReading')}
+        onSelectTableReading={() =>
+          navigation.navigate('CardDeckTable', { deckId: 'rune', initialMode: 'self' })
+        }
+      />
     </MysticTableBackground>
   );
 }
 
 const styles = StyleSheet.create({
   scrollContent: {
-    flexGrow: 1,
-    alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: 16,
     paddingBottom: 48,
     paddingHorizontal: 14,
   },
@@ -116,110 +272,132 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+    marginTop: 4,
+    marginBottom: 4,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 22,
+    fontWeight: '900',
     color: GOLD,
-    textAlign: 'center',
+    letterSpacing: 0.3,
   },
   headerCaption: {
-    marginTop: 6,
-    marginBottom: 20,
     fontSize: 12.5,
     color: TEXT_MUTED,
     textAlign: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 20,
+    lineHeight: 17,
   },
-  ekolList: {
-    width: '100%',
-    gap: 18,
-  },
-  showcaseCard: {
-    width: '100%',
-    height: 235, // %50 artırılmış standart vitrin kartı boyutu
-    borderRadius: 22,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 7,
-  },
-  showcaseCardPressed: {
-    opacity: 0.88,
-    transform: [{ scale: 0.985 }],
-  },
-  showcaseBg: {
-    width: '100%',
-    height: '100%',
-  },
-  showcaseImage: {
-    borderRadius: 22,
-  },
-  showcaseContent: {
-    flex: 1,
-    padding: 16,
-    justifyContent: 'space-between',
-    zIndex: 2,
-  },
-  topRow: {
+  searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    backgroundColor: 'rgba(15, 8, 30, 0.85)',
+    borderWidth: 1.2,
+    borderColor: GOLD_SOFT,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    gap: 10,
+    marginBottom: 12,
   },
-  titleWrap: {
+  searchInput: {
     flex: 1,
-    gap: 4,
+    fontSize: 13,
+    color: '#FFFFFF',
+    paddingVertical: 0,
   },
-  headBar: {
-    width: 38,
-    height: 3.5,
-    borderRadius: 2,
+  filterRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 14,
   },
-  ekolTitle: {
-    fontSize: 18,
-    fontWeight: '900',
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-    textShadowColor: 'rgba(0, 0, 0, 0.95)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  chevronWrap: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    borderWidth: 1,
+  filterPill: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 5,
+    paddingVertical: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(15, 8, 30, 0.7)',
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
   },
-  ekolSub: {
-    fontSize: 13,
-    color: '#F1F5F9',
-    fontWeight: '600',
-    lineHeight: 19,
-    marginVertical: 8,
-    textShadowColor: 'rgba(0, 0, 0, 0.95)',
-    textShadowOffset: { width: 0, height: 1.5 },
-    textShadowRadius: 3,
+  filterPillActive: {
+    backgroundColor: GOLD,
+    borderColor: GOLD,
   },
-  bottomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+  filterText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: GOLD,
   },
-  explorePill: {
+  filterTextActive: {
+    color: '#0F0820',
+  },
+  popularSection: {
+    backgroundColor: 'rgba(20, 10, 40, 0.7)',
+    borderRadius: 18,
+    borderWidth: 1.2,
+    borderColor: GOLD_SOFT,
+    padding: 12,
+    marginBottom: 16,
+  },
+  popularHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    borderWidth: 1.2,
-    borderRadius: 12,
-    paddingVertical: 7,
-    paddingHorizontal: 12,
+    marginBottom: 10,
+    paddingHorizontal: 4,
   },
-  explorePillText: {
-    fontSize: 12.5,
+  popularSectionTitle: {
+    fontSize: 12,
     fontWeight: '800',
+    color: GOLD,
     letterSpacing: 0.3,
+  },
+  popularGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: 10,
+  },
+  popularIconBtn: {
+    width: '23%',
+    alignItems: 'center',
+    gap: 4,
+  },
+  popularIconBtnPressed: {
+    opacity: 0.75,
+    transform: [{ scale: 0.94 }],
+  },
+  popularIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1.2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  popularIconText: {
+    fontSize: 10.5,
+    fontWeight: '700',
+    color: '#E2E8F0',
+    textAlign: 'center',
+  },
+  cardsList: {
+    gap: 2,
+  },
+  emptyWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 48,
+    gap: 10,
+  },
+  emptyText: {
+    fontSize: 13,
+    color: TEXT_MUTED,
+    textAlign: 'center',
   },
 });

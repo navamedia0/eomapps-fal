@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Animated, View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,6 +8,8 @@ import { getCheckinStatus, type CheckinStatus } from '@/services/streak';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import FeatureIcon from '@/components/FeatureIcon';
 import SozlerKoskuDrawerModal from '@/components/SozlerKoskuDrawerModal';
+import CompactCategoryCard from '@/components/fortune/CompactCategoryCard';
+import PsychologyTestsModal from '@/components/psychology/PsychologyTestsModal';
 import { FEATURE_ICONS } from '@/assets/icons';
 import {
   GOLD,
@@ -15,55 +17,16 @@ import {
   NIGHT_CARD,
   TEXT_PRIMARY,
   TEXT_MUTED,
-  TEXT_CAPTION,
 } from '@/theme/colors';
 
 const UST_BANNER = require('@/assets/icons/ust_banner.png');
 
 type Props = TabScreenProps;
 
-type GridItem = {
-  key: string;
-  title: string;
-  subtitle?: string;
-  icon: React.ReactNode;
-  onPress?: () => void;
-};
-
-type Category = {
-  key: string;
-  title: string;
-  items: GridItem[];
-};
-
-function chunkPairs<T>(items: T[]): T[][] {
-  const pairs: T[][] = [];
-  for (let i = 0; i < items.length; i += 2) {
-    pairs.push(items.slice(i, i + 2));
-  }
-  return pairs;
-}
-
-const GridButton = React.memo(function GridButton({ item }: { item: GridItem }) {
-  return (
-    <Pressable
-      onPress={item.onPress}
-      style={({ pressed }) => [styles.gridButton, pressed && styles.gridButtonPressed]}
-    >
-      <FeatureIcon source={FEATURE_ICONS[item.key]} fallback={item.icon} size={56} />
-      <View style={styles.gridTextWrap}>
-        <Text style={styles.gridTitle} numberOfLines={2}>
-          {item.title}
-        </Text>
-      </View>
-      <Ionicons name="chevron-forward" size={14} color={GOLD} style={styles.gridChevron} />
-    </Pressable>
-  );
-});
-
 export default function HomeScreen({ navigation }: Props) {
   const [checkinInfo, setCheckinInfo] = useState<CheckinStatus | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [psychologyModalVisible, setPsychologyModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -72,199 +35,6 @@ export default function HomeScreen({ navigation }: Props) {
   }, []);
 
   const goToTasks = () => navigation.navigate('Tasks');
-
-  const categories: Category[] = useMemo(() => [
-    {
-      key: 'fallar',
-      title: 'Fallar',
-      items: [
-        {
-          key: 'coffee',
-          title: 'Kahve Falı',
-          subtitle: 'Fincanındaki sırları çözelim',
-          icon: <MaterialCommunityIcons name="coffee" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('ImageReading', { kind: 'coffee' }),
-        },
-        {
-          key: 'tarot',
-          title: 'Tarot Falı',
-          subtitle: 'Kartlar bugününü aydınlatsın',
-          icon: <MaterialCommunityIcons name="cards" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('TarotSpread'),
-        },
-        {
-          key: 'face',
-          title: 'Yüz Falı',
-          subtitle: 'Sima ilmiyle kaderini keşfet',
-          icon: <MaterialCommunityIcons name="face-recognition" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('ImageReading', { kind: 'face' }),
-        },
-        {
-          key: 'palm',
-          title: 'El Falı',
-          subtitle: 'Avucundaki çizgileri oku',
-          icon: <MaterialCommunityIcons name="hand-back-right-outline" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('ImageReading', { kind: 'palm' }),
-        },
-        {
-          key: 'iching',
-          title: 'Çin I Ching Falı',
-          subtitle: '3 sikke ile 64 heksagram',
-          icon: <MaterialCommunityIcons name="yin-yang" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('IChingReading'),
-        },
-        {
-          key: 'rune',
-          title: 'Nordik Rün Falı',
-          subtitle: 'Vikinglerin kutsal taşları',
-          icon: <MaterialCommunityIcons name="triangle-outline" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('RuneReading'),
-        },
-        {
-          key: 'voiceReading',
-          title: 'Sesli Fal',
-          subtitle: 'Anlat, biz yorumlayalım',
-          icon: <Ionicons name="mic-outline" size={24} color={GOLD} />,
-          onPress: () => navigation.navigate('VoiceReading'),
-        },
-      ],
-    },
-    {
-      key: 'ruya',
-      title: 'Rüya',
-      items: [
-        {
-          key: 'dream',
-          title: 'Rüya Yorumlama',
-          subtitle: 'Rüyanın sembollerini birlikte çöz',
-          icon: <Ionicons name="moon" size={24} color={GOLD} />,
-          onPress: () => navigation.navigate('DreamChat'),
-        },
-        {
-          key: 'dreamLibrary',
-          title: 'Rüya Kitaplığı',
-          subtitle: 'Geçmiş rüyalarını sakla, ara',
-          icon: <Ionicons name="library-outline" size={24} color={GOLD} />,
-          onPress: () => navigation.navigate('RuyaKitapligi'),
-        },
-      ],
-    },
-    {
-      key: 'astroloji',
-      title: 'Burç & Astroloji',
-      items: [
-        {
-          key: 'horoscope',
-          title: 'Günlük Burç',
-          subtitle: 'Bugün burcunu neler bekliyor?',
-          icon: <MaterialCommunityIcons name="zodiac-leo" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('Zodiac'),
-        },
-        {
-          key: 'zodiacTraits',
-          title: 'Burç Özellikleri',
-          subtitle: 'Burcunun tüm özelliklerini keşfet',
-          icon: <MaterialCommunityIcons name="star-circle-outline" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('ZodiacTraits'),
-        },
-        {
-          key: 'compatibility',
-          title: 'Burç Uyumu',
-          subtitle: 'İki burcun uyumuna bak',
-          icon: <Ionicons name="heart-outline" size={24} color={GOLD} />,
-          onPress: () => navigation.navigate('Compatibility'),
-        },
-        {
-          key: 'birthChart',
-          title: 'Doğum Haritası',
-          subtitle: 'Gök haritanı çıkar',
-          icon: <MaterialCommunityIcons name="chart-donut" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('BirthChart'),
-        },
-        {
-          key: 'risingSign',
-          title: 'Yükselen Burcum',
-          subtitle: 'Yükselen burcunu hesapla',
-          icon: <Ionicons name="flash-outline" size={24} color={GOLD} />,
-          onPress: () => navigation.navigate('RisingSign'),
-        },
-      ],
-    },
-    {
-      key: 'sayilar',
-      title: 'Sayılar & Enerji',
-      items: [
-        {
-          key: 'numerology',
-          title: 'Numeroloji',
-          subtitle: 'Sayıların gizli anlamını öğren',
-          icon: <MaterialCommunityIcons name="numeric" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('Numerology'),
-        },
-        {
-          key: 'biorhythm',
-          title: 'Biyoritim',
-          subtitle: 'Bugünkü enerji seviyeni gör',
-          icon: <MaterialCommunityIcons name="waveform" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('Biorhythm'),
-        },
-        {
-          key: 'moonCalendar',
-          title: 'Ay Takvimi',
-          subtitle: 'Ayın evresini takip et',
-          icon: <MaterialCommunityIcons name="moon-waning-crescent" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('MoonCalendar'),
-        },
-      ],
-    },
-    {
-      key: 'eglence',
-      title: 'Eğlence',
-      items: [
-        {
-          key: 'magicBall',
-          title: 'Sihirli Küre',
-          subtitle: 'Evet ya da hayır? Sor',
-          icon: <MaterialCommunityIcons name="crystal-ball" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('MagicBall'),
-        },
-      ],
-    },
-    {
-      key: 'ic-huzur',
-      title: 'İç Huzur',
-      items: [
-        {
-          key: 'angelCard',
-          title: 'Günün İlham Kartı',
-          subtitle: 'Bugüne küçük bir mesaj',
-          icon: <Ionicons name="rose-outline" size={24} color={GOLD} />,
-          onPress: () => navigation.navigate('AngelCard'),
-        },
-        {
-          key: 'affirmation',
-          title: 'Günlük Olumlama',
-          subtitle: 'Gününe iyi bir söz',
-          icon: <Ionicons name="sunny-outline" size={24} color={GOLD} />,
-          onPress: () => navigation.navigate('Affirmation'),
-        },
-        {
-          key: 'breathing',
-          title: 'Nefes Egzersizi',
-          subtitle: 'Sakinleş, nefesine odaklan',
-          icon: <MaterialCommunityIcons name="meditation" size={26} color={GOLD} />,
-          onPress: () => navigation.navigate('BreathingExercise'),
-        },
-        {
-          key: 'moodJournal',
-          title: 'Duygu Günlüğü',
-          subtitle: 'Bugünkü ruh halini kaydet',
-          icon: <Ionicons name="book-outline" size={24} color={GOLD} />,
-          onPress: () => navigation.navigate('MoodJournal'),
-        },
-      ],
-    },
-  ], [navigation]);
 
   return (
     <MysticTableBackground scrollY={scrollY}>
@@ -293,7 +63,7 @@ export default function HomeScreen({ navigation }: Props) {
           <MaterialCommunityIcons name="star-crescent" size={20} color={GOLD} style={styles.sparkle} />
         </View>
         <View style={styles.headerDivider} />
-        <Text style={styles.headerCaption}>Kaderin kapılarını aralayın</Text>
+        <Text style={styles.headerCaption}>Kişisel Ruhsal Yaşam ve Keşif Platformu</Text>
 
         {checkinInfo && !checkinInfo.isClaimedToday && (
           <Pressable onPress={goToTasks}>
@@ -317,56 +87,88 @@ export default function HomeScreen({ navigation }: Props) {
           </Pressable>
         </View>
 
-        <View style={styles.categoryList}>
-          {categories.map((category) => (
-            <View key={category.key} style={styles.categorySection}>
-              <Text style={styles.categoryTitle}>{category.title}</Text>
-              <View style={styles.grid}>
-                {chunkPairs(category.items).map((pair, idx) => (
-                  <View key={`${category.key}-${idx}`} style={styles.gridRow}>
-                    <GridButton item={pair[0]} />
-                    {pair[1] ? (
-                      <GridButton item={pair[1]} />
-                    ) : (
-                      <View style={styles.gridPlaceholder} />
-                    )}
-                  </View>
-                ))}
-              </View>
+        {/* 6 ANA YAŞAM & KEŞİF BÖLÜMÜ (KOMPAKT İMZA KARTLARI) */}
+        <View style={styles.categoryContainer}>
+          {/* 1. Tüm Fal Çeşitleri */}
+          <CompactCategoryCard
+            title="Tüm Fal Çeşitleri"
+            subtitle="17 Kadim Fal · 3 Modlu Tarot, Katina & Deste Masası"
+            tags={['17 Fal Çeşidi', '3 Modlu Tarot', 'Fotoğraflı & Canlı']}
+            accent="#F59E0B"
+            iconName="cards-playing-outline"
+            badgeText="17 Mistik Ekol"
+            imageSource={require('@/assets/backgrounds/decks/tarot_bg.jpg')}
+            onPress={() => navigation.navigate('TumFallar')}
+          />
 
-              {category.key === 'fallar' && (
-                <View style={styles.fallarActionRow}>
-                  <Pressable
-                    onPress={() => navigation.navigate('CardDeckHub')}
-                    style={({ pressed }) => [styles.customDecksButton, pressed && styles.pressedFade]}
-                  >
-                    <LinearGradient
-                      colors={['rgba(245, 158, 11, 0.22)', 'rgba(168, 85, 247, 0.18)']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
-                      style={StyleSheet.absoluteFillObject}
-                    />
-                    <MaterialCommunityIcons name="cards-playing" size={22} color={GOLD} />
-                    <View style={styles.customDeckTextWrap}>
-                      <Text style={styles.customDeckTitle}>Kendi Kartlarınla Fal Bak</Text>
-                      <Text style={styles.customDeckSub}>Tarot, Katina, Lenormand & 8 Mistik Deste</Text>
-                    </View>
-                    <Ionicons name="chevron-forward" size={18} color={GOLD} />
-                  </Pressable>
+          {/* 2. Psikolojik Testler */}
+          <CompactCategoryCard
+            title="Psikolojik & Kişilik Testleri"
+            subtitle="Aşk Bağlanma Stili, 16 Kişilik, Gölge Benlik & Ruh Yaşı"
+            tags={['Bağlanma Stili', '16 Kişilik', 'Gölge Arketip']}
+            accent="#A855F7"
+            iconName="brain"
+            badgeText="Kendini Keşfet"
+            imageSource={require('@/assets/ekoller/ekol_bg_4_bati_ezoterik.jpg')}
+            onPress={() => setPsychologyModalVisible(true)}
+          />
 
-                  <Pressable
-                    onPress={() => navigation.navigate('TumFallar')}
-                    style={({ pressed }) => [styles.allFalsButton, pressed && styles.pressedFade]}
-                  >
-                    <Text style={styles.allFalsButtonText}>Tüm fal çeşitleri için tıklayınız</Text>
-                    <Ionicons name="chevron-forward" size={16} color={GOLD} />
-                  </Pressable>
-                </View>
-              )}
-            </View>
-          ))}
+          {/* 3. Rüya Yorumlama */}
+          <CompactCategoryCard
+            title="Rüya Yorumu & Tabir"
+            subtitle="Rüyanı Yaz veya Anlat · Bilinçaltı Sembolleri & Rüya Kitaplığı"
+            tags={['Rüya Yorumu', 'Rüya Kitaplığı', 'Bilinçaltı']}
+            accent="#6366F1"
+            iconName="moon-waning-crescent"
+            badgeText="Bilinçaltı Aynası"
+            imageSource={require('@/assets/ekoller/ekol_bg_5_ruya.jpg')}
+            onPress={() => navigation.navigate('DreamChat')}
+          />
+
+          {/* 4. Burç ve Astroloji */}
+          <CompactCategoryCard
+            title="Burç ve Astroloji"
+            subtitle="Günlük Burç, Kişiye Özel Doğum Haritası, Yükselen & Sinastri"
+            tags={['Günlük Burç', 'Doğum Haritası', 'Burç Uyumu']}
+            accent="#EC4899"
+            iconName="zodiac-leo"
+            badgeText="Kozmik Harita"
+            imageSource={require('@/assets/backgrounds/decks/angel_bg.jpg')}
+            onPress={() => navigation.navigate('Zodiac')}
+          />
+
+          {/* 5. Sayılar ve Enerji */}
+          <CompactCategoryCard
+            title="Sayılar & Enerji Haritası"
+            subtitle="Kader Matrisi, Numeroloji, Kelt Ağacı, Çakra & Aura Taraması"
+            tags={['Kader Matrisi', 'Numeroloji', 'Çakra & Aura']}
+            accent="#06B6D4"
+            iconName="matrix"
+            badgeText="Kader Şifresi"
+            imageSource={require('@/assets/ekoller/ekol_bg_1_cin.jpg')}
+            onPress={() => navigation.navigate('MatrixOfDestiny')}
+          />
+
+          {/* 6. Ruhsal Denge & İç Huzur */}
+          <CompactCategoryCard
+            title="Ruhsal Denge & İç Huzur"
+            subtitle="4-7-8 Nefes Egzersizi, Günlük Olumlamalar, Biyoritim & Şifa"
+            tags={['Nefes Egzersizi', 'Olumlama', 'Biyoritim']}
+            accent="#10B981"
+            iconName="meditation"
+            badgeText="İç Huzur"
+            imageSource={require('@/assets/backgrounds/decks/osho_zen_bg.jpg')}
+            onPress={() => navigation.navigate('BreathingExercise')}
+          />
         </View>
       </Animated.ScrollView>
+
+      {/* Psikolojik Testler Açılır Modalı */}
+      <PsychologyTestsModal
+        visible={psychologyModalVisible}
+        onClose={() => setPsychologyModalVisible(false)}
+        navigation={navigation}
+      />
 
       {/* Sözler & Bilgi Köşkü Açılır Çekmece Menüsü */}
       <SozlerKoskuDrawerModal
@@ -400,196 +202,93 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   hamburgerButtonPressed: {
-    backgroundColor: 'rgba(58, 36, 106, 0.95)',
-    borderColor: GOLD,
-    transform: [{ scale: 0.92 }],
+    opacity: 0.8,
+    transform: [{ scale: 0.95 }],
   },
   scrollContent: {
     flexGrow: 1,
-    alignItems: 'center',
-    paddingTop: 48,
-    paddingBottom: 40,
-    paddingHorizontal: 12,
+    paddingTop: 12,
+    paddingBottom: 48,
+    paddingHorizontal: 14,
   },
   banner: {
     width: '100%',
-    height: 150,
-    borderRadius: 22,
-    marginBottom: 18,
+    height: 90,
+    borderRadius: 16,
+    marginBottom: 10,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: 8,
+    marginTop: 2,
+    marginBottom: 4,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: GOLD,
+    letterSpacing: 0.3,
+  },
+  headerDivider: {
+    width: 48,
+    height: 2,
+    backgroundColor: GOLD_SOFT,
+    alignSelf: 'center',
+    marginVertical: 4,
+    borderRadius: 1,
+  },
+  headerCaption: {
+    fontSize: 12.5,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+    marginBottom: 12,
   },
   sparkle: {
     opacity: 0.9,
   },
-  headerTitle: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: GOLD,
-    letterSpacing: 1.5,
-    textShadowColor: GOLD_SOFT,
-    textShadowRadius: 16,
-    textShadowOffset: { width: 0, height: 0 },
-  },
-  headerDivider: {
-    marginTop: 14,
-    width: 120,
-    height: 1,
-    backgroundColor: GOLD_SOFT,
-  },
-  headerCaption: {
-    marginTop: 10,
-    fontSize: 13,
-    color: TEXT_CAPTION,
-    letterSpacing: 0.5,
-    marginBottom: 30,
-  },
-  pressedFade: {
-    opacity: 0.85,
-  },
   rewardToast: {
+    textAlign: 'center',
     fontSize: 12,
     color: GOLD,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginBottom: 10,
+    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    fontWeight: '700',
   },
   freeRow: {
     flexDirection: 'row',
-    gap: 8,
-    width: '100%',
-    marginBottom: 26,
+    gap: 10,
+    marginBottom: 16,
   },
   freeButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(242, 200, 121, 0.16)',
+    backgroundColor: 'rgba(26, 16, 52, 0.85)',
     borderWidth: 1.2,
     borderColor: GOLD_SOFT,
-    borderRadius: 18,
-    paddingVertical: 7,
-    paddingLeft: 8,
-    paddingRight: 10,
-    minHeight: 68,
+    borderRadius: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    gap: 8,
   },
   freeButtonText: {
     flex: 1,
-    fontSize: 12.5,
+    fontSize: 12,
     fontWeight: '700',
-    color: GOLD,
-    lineHeight: 16,
+    color: '#FFFFFF',
+    lineHeight: 15,
   },
-  categoryList: {
-    width: '100%',
-    gap: 26,
-  },
-  categorySection: {
-    width: '100%',
-  },
-  categoryTitle: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    color: GOLD,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: 12,
-  },
-  grid: {
-    width: '100%',
-    gap: 8,
-  },
-  gridRow: {
-    flexDirection: 'row',
-    gap: 8,
-    width: '100%',
-  },
-  gridButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 9,
-    backgroundColor: NIGHT_CARD,
-    borderRadius: 18,
-    borderWidth: 1.2,
-    borderColor: GOLD_SOFT,
-    paddingVertical: 10,
-    paddingLeft: 8,
-    paddingRight: 6,
-    minHeight: 74,
-  },
-  gridButtonPressed: {
+  pressedFade: {
     opacity: 0.85,
-    transform: [{ scale: 0.98 }],
   },
-  gridPlaceholder: {
-    flex: 1,
-  },
-  fallarActionRow: {
-    marginTop: 12,
-    gap: 8,
-  },
-  customDecksButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: 'rgba(26, 16, 52, 0.95)',
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: GOLD,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    overflow: 'hidden',
-  },
-  customDeckTextWrap: {
-    flex: 1,
+  categoryContainer: {
     gap: 2,
-  },
-  customDeckTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: GOLD,
-    letterSpacing: 0.3,
-  },
-  customDeckSub: {
-    fontSize: 11,
-    color: '#E2E8F0',
-    fontWeight: '500',
-  },
-  allFalsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 12,
-    borderRadius: 14,
-    borderWidth: 1.2,
-    borderColor: GOLD_SOFT,
-    borderStyle: 'dashed',
-  },
-  allFalsButtonText: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    color: GOLD,
-  },
-  gridTextWrap: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  gridTitle: {
-    fontSize: 14.5,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
-    lineHeight: 19,
-    letterSpacing: 0.2,
-  },
-  gridChevron: {
-    opacity: 0.75,
-    marginRight: 2,
   },
 });

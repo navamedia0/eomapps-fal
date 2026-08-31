@@ -144,101 +144,100 @@ export default function CardDeckHubScreen({ navigation }: Props) {
               <Pressable
                 key={deck.id}
                 onPress={() => handleDeckPress(deck)}
-                style={({ pressed }) => [styles.showcaseCard, pressed && styles.showcaseCardPressed]}
+                style={({ pressed }) => [
+                  styles.showcaseCard,
+                  { borderColor: deck.accent + '66' },
+                  pressed && styles.showcaseCardPressed,
+                ]}
               >
-                <ImageBackground
-                  source={deck.sectionBg}
-                  style={styles.showcaseBg}
-                  imageStyle={styles.showcaseImage}
-                  resizeMode="cover"
-                >
-                  <LinearGradient
-                    colors={[
-                      'rgba(8, 4, 18, 0.20)',
-                      'rgba(8, 4, 18, 0.40)',
-                      'rgba(8, 4, 18, 0.85)',
-                    ]}
-                    style={StyleSheet.absoluteFillObject}
-                  />
-
-                  <View style={styles.showcaseContent}>
-                    {/* Üst Kısım: Başlık, Tam Açıklama ve Etiketler */}
-                    <View style={styles.topSectionWrap}>
-                      <View style={styles.topRow}>
-                        <View style={styles.titleWrap}>
-                          <Text style={[styles.deckCardTitle, { color: deck.accent }]}>
-                            {deck.title}
-                          </Text>
-                          <Text style={styles.deckCardTagline}>
-                            {deck.tagline}
-                          </Text>
-                        </View>
-
-                        {/* Durum Rozeti */}
-                        {tier === 'explained' ? (
-                          <View style={[styles.tierBadge, { backgroundColor: 'rgba(16, 185, 129, 0.25)', borderColor: '#10B981' }]}>
-                            <Ionicons name="sparkles" size={12} color="#10B981" />
-                            <Text style={[styles.tierBadgeText, { color: '#10B981' }]}>Açıklamalı</Text>
-                          </View>
-                        ) : tier === 'visual' ? (
-                          <View style={[styles.tierBadge, { backgroundColor: 'rgba(56, 189, 248, 0.25)', borderColor: '#38BDF8' }]}>
-                            <Ionicons name="image" size={12} color="#38BDF8" />
-                            <Text style={[styles.tierBadgeText, { color: '#38BDF8' }]}>Görsel Açık</Text>
-                          </View>
-                        ) : (
-                          <View style={[styles.tierBadge, { backgroundColor: 'rgba(245, 158, 11, 0.2)', borderColor: GOLD }]}>
-                            <Ionicons name="lock-closed" size={12} color={GOLD} />
-                            <Text style={[styles.tierBadgeText, { color: GOLD }]}>
-                              {deck.priceVisualCoins === 0 ? 'Ücretsiz' : `${deck.priceVisualCoins} Coin`}
-                            </Text>
-                          </View>
-                        )}
-                      </View>
-
-                      {/* Tag Şeritleri — Artık üstte, başlığın hemen altında */}
-                      <View style={styles.tagsRow}>
-                        {deck.tags.map((tag, idx) => (
-                          <View key={idx} style={[styles.tagPill, { borderColor: deck.accent + '55', backgroundColor: 'rgba(10, 6, 20, 0.7)' }]}>
-                            <Text style={[styles.tagText, { color: '#F1F5F9' }]}>{tag}</Text>
-                          </View>
-                        ))}
-                      </View>
-                    </View>
-
-                    {/* Alt Keşfet & Masaya Geç Şeridi */}
-                    <View style={styles.bottomRow}>
-                      <View
-                        style={[
-                          styles.explorePill,
-                          {
-                            backgroundColor: deck.accent + '25',
-                            borderColor: deck.accent + '77',
-                          },
-                        ]}
-                      >
-                        <MaterialCommunityIcons name="cards-playing" size={15} color={deck.accent} />
-                        <Text style={[styles.explorePillText, { color: deck.accent }]}>
-                          {isOwned ? 'Masaya Geç & Fal Bak' : 'İncele & Kilidi Aç'}
-                        </Text>
-                        <Ionicons name="arrow-forward" size={13} color={deck.accent} />
-                      </View>
-
-                      {/* Upgrade Quick Button if visual */}
-                      {tier === 'visual' && (
-                        <Pressable
-                          onPress={(e) => {
-                            e.stopPropagation();
-                            setSelectedDeckForModal(deck);
-                          }}
-                          style={[styles.upgradePill, { borderColor: GOLD_SOFT }]}
-                        >
-                          <Ionicons name="arrow-up-circle" size={13} color={GOLD} />
-                          <Text style={styles.upgradePillText}>Rehberi Aç</Text>
-                        </Pressable>
-                      )}
-                    </View>
+                {/* 1. ÜST SİYAH ŞERİT */}
+                <View style={styles.topHeaderBar}>
+                  <View style={styles.titleWrap}>
+                    <Text style={[styles.deckCardTitle, { color: deck.accent }]}>
+                      {deck.title}
+                    </Text>
                   </View>
-                </ImageBackground>
+
+                  {/* Durum Rozeti */}
+                  {tier === 'explained' ? (
+                    <View style={[styles.tierBadge, { backgroundColor: 'rgba(16, 185, 129, 0.25)', borderColor: '#10B981' }]}>
+                      <Ionicons name="sparkles" size={12} color="#10B981" />
+                      <Text style={[styles.tierBadgeText, { color: '#10B981' }]}>Açıklamalı</Text>
+                    </View>
+                  ) : tier === 'visual' ? (
+                    <View style={[styles.tierBadge, { backgroundColor: 'rgba(56, 189, 248, 0.25)', borderColor: '#38BDF8' }]}>
+                      <Ionicons name="image" size={12} color="#38BDF8" />
+                      <Text style={[styles.tierBadgeText, { color: '#38BDF8' }]}>Görsel Açık</Text>
+                    </View>
+                  ) : (
+                    <View style={[styles.tierBadge, { backgroundColor: 'rgba(245, 158, 11, 0.2)', borderColor: GOLD }]}>
+                      <Ionicons name="lock-closed" size={12} color={GOLD} />
+                      <Text style={[styles.tierBadgeText, { color: GOLD }]}>
+                        {deck.priceVisualCoins === 0 ? 'Ücretsiz' : `${deck.priceVisualCoins} Coin`}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
+                {/* 2. ORTA GÖRSEL ALANI (FOTOĞRAF & ETİKETLER) */}
+                <View style={styles.middleArtworkWrap}>
+                  <ImageBackground
+                    source={deck.sectionBg}
+                    style={styles.showcaseBg}
+                    resizeMode="cover"
+                  >
+                    <LinearGradient
+                      colors={[
+                        'rgba(6, 3, 11, 0.45)',
+                        'transparent',
+                        'rgba(6, 3, 11, 0.85)',
+                      ]}
+                      style={StyleSheet.absoluteFillObject}
+                    />
+
+                    {/* Tag Şeritleri */}
+                    <View style={styles.tagsRow}>
+                      {deck.tags.map((tag, idx) => (
+                        <View key={idx} style={[styles.tagPill, { borderColor: 'rgba(255, 255, 255, 0.15)', backgroundColor: 'rgba(10, 5, 20, 0.82)' }]}>
+                          <Text style={[styles.tagText, { color: '#F1F5F9' }]}>{tag}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </ImageBackground>
+                </View>
+
+                {/* 3. ALT SİYAH ŞERİT (MASAYA GEÇ BUTONU & REHBER) */}
+                <View style={styles.bottomFooterBar}>
+                  <View
+                    style={[
+                      styles.explorePill,
+                      {
+                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                        borderColor: deck.accent + '66',
+                      },
+                    ]}
+                  >
+                    <MaterialCommunityIcons name="cards-playing" size={15} color={deck.accent} />
+                    <Text style={[styles.explorePillText, { color: deck.accent }]}>
+                      {isOwned ? 'Masaya Geç & Fal Bak' : 'İncele & Kilidi Aç'}
+                    </Text>
+                    <Ionicons name="arrow-forward" size={13} color={deck.accent} />
+                  </View>
+
+                  {/* Upgrade Quick Button if visual */}
+                  {tier === 'visual' && (
+                    <Pressable
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        setSelectedDeckForModal(deck);
+                      }}
+                      style={[styles.upgradePill, { borderColor: GOLD_SOFT }]}
+                    >
+                      <Ionicons name="arrow-up-circle" size={13} color={GOLD} />
+                      <Text style={styles.upgradePillText}>Rehberi Aç</Text>
+                    </Pressable>
+                  )}
+                </View>
               </Pressable>
             );
           })}
@@ -347,9 +346,11 @@ const styles = StyleSheet.create({
   },
   showcaseCard: {
     width: '100%',
-    height: 250,
+    height: 245,
     borderRadius: 22,
     overflow: 'hidden',
+    borderWidth: 1.2,
+    backgroundColor: '#06030B',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.5,
@@ -357,101 +358,95 @@ const styles = StyleSheet.create({
     elevation: 7,
   },
   showcaseCardPressed: {
-    opacity: 0.88,
+    opacity: 0.92,
     transform: [{ scale: 0.985 }],
   },
-  showcaseBg: {
-    width: '100%',
-    height: '100%',
-  },
-  showcaseImage: {
-    borderRadius: 22,
-  },
-  showcaseContent: {
-    flex: 1,
-    padding: 16,
-    justifyContent: 'space-between',
-    zIndex: 2,
-  },
-  topSectionWrap: {
-    gap: 8,
-  },
-  topRow: {
+  topHeaderBar: {
+    backgroundColor: '#06030B',
+    paddingHorizontal: 16,
+    paddingTop: 13,
+    paddingBottom: 10,
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
     gap: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.06)',
+    zIndex: 2,
   },
   titleWrap: {
     flex: 1,
-    gap: 4,
   },
   deckCardTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '900',
-    letterSpacing: 0.5,
-    textShadowColor: 'rgba(0, 0, 0, 0.95)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  deckCardTagline: {
-    fontSize: 12,
-    color: '#F8FAFC',
-    fontWeight: '600',
-    lineHeight: 17,
-    textShadowColor: 'rgba(0, 0, 0, 0.95)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    letterSpacing: 0.3,
   },
   tierBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    borderWidth: 1,
+    borderWidth: 0.9,
     borderRadius: 12,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingVertical: 4.5,
+    paddingHorizontal: 9,
   },
   tierBadgeText: {
-    fontSize: 10.5,
+    fontSize: 11,
     fontWeight: '800',
+  },
+  middleArtworkWrap: {
+    flex: 1,
+    width: '100%',
+    overflow: 'hidden',
+  },
+  showcaseBg: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end',
   },
   tagsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 6,
-    marginTop: 2,
+    paddingHorizontal: 14,
+    paddingBottom: 10,
   },
   tagPill: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingVertical: 3,
-    paddingHorizontal: 7,
+    borderRadius: 9,
+    borderWidth: 0.8,
+    paddingVertical: 3.5,
+    paddingHorizontal: 8,
   },
   tagText: {
-    fontSize: 10,
-    fontWeight: '600',
+    fontSize: 10.5,
+    fontWeight: '700',
   },
-  bottomRow: {
+  bottomFooterBar: {
+    backgroundColor: '#06030B',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.06)',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 8,
+    zIndex: 2,
   },
   explorePill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    borderWidth: 1.2,
+    gap: 7,
+    borderWidth: 1,
     borderRadius: 12,
-    paddingVertical: 7,
-    paddingHorizontal: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
   },
   explorePillText: {
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0.3,
+    fontSize: 12.5,
+    fontWeight: '900',
+    letterSpacing: 0.2,
   },
   upgradePill: {
     flexDirection: 'row',

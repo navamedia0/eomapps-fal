@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { getLenormandMeaning } from '@/services/lenormandMeanings';
+import { LENORMAND_IMAGES } from '@/assets/cards/lenormand';
 import CornerTicks from '@/components/CornerTicks';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_MUTED, TEXT_PRIMARY } from '@/theme/colors';
 
@@ -11,10 +12,12 @@ type Props = {
   accentColor: string;
 };
 
-const MINI_SIZE = 46;
+const MINI_SIZE = 48;
 
 function MiniCard({ card, label, accentColor }: { card: LenormandCardPick; label: string; accentColor: string }) {
   const meaning = getLenormandMeaning(card.id);
+  const cardImg = meaning?.number ? LENORMAND_IMAGES[meaning.number] : null;
+
   return (
     <View style={styles.miniItem}>
       <Text style={[styles.miniLabel, { color: accentColor }]} numberOfLines={2}>
@@ -26,7 +29,11 @@ function MiniCard({ card, label, accentColor }: { card: LenormandCardPick; label
           { borderColor: accentColor, transform: card.orientation === 'reversed' ? [{ rotate: '180deg' }] : undefined },
         ]}
       >
-        <Text style={[styles.miniBadgeNumber, { color: accentColor }]}>{meaning?.number ?? '?'}</Text>
+        {cardImg ? (
+          <Image source={cardImg} style={{ width: '100%', height: '100%', borderRadius: 6 }} resizeMode="cover" />
+        ) : (
+          <Text style={[styles.miniBadgeNumber, { color: accentColor }]}>{meaning?.number ?? '?'}</Text>
+        )}
       </View>
       <Text style={styles.miniName} numberOfLines={1}>
         {meaning?.name ?? card.id}

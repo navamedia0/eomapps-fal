@@ -11,9 +11,11 @@ export type SocialUser = {
 };
 
 export type AvatarGender = 'female' | 'male';
+export type AvatarSlot = 'skin' | 'hat' | 'cape' | 'outfit' | 'pants';
 
 export type AvatarState = {
   gender: AvatarGender | null;
+  skinItemId?: string | null;
   hatItemId: string | null;
   capeItemId: string | null;
   outfitItemId: string | null;
@@ -92,8 +94,6 @@ export async function setAvatarGender(gender: AvatarGender): Promise<void> {
   const headers = await requireAuthHeaders();
   await postJson(`${env.socialApiUrl()}/avatar/gender`, { gender }, headers);
 }
-
-export type AvatarSlot = 'hat' | 'cape' | 'outfit' | 'pants';
 
 export async function equipAvatarItem(slot: AvatarSlot, itemId: string | null): Promise<void> {
   const headers = await requireAuthHeaders();

@@ -85,7 +85,7 @@ export type RootStackParamList = {
   KesifSalonu: undefined;
   KesifSalonuOyun: undefined;
   CardDeckHub: undefined;
-  CardDeckTable: { deckId: string };
+  CardDeckTable: { deckId: string; initialMode?: 'self' | 'relationship' };
   LenormandResult: {
     picks: { id: string; orientation: 'upright' | 'reversed' }[];
     positions: string[];
