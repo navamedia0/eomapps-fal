@@ -9,6 +9,7 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import FeatureIcon from '@/components/FeatureIcon';
 import SozlerKoskuDrawerModal from '@/components/SozlerKoskuDrawerModal';
 import CompactCategoryCard from '@/components/fortune/CompactCategoryCard';
+import FortuneShelf from '@/components/home/FortuneShelf';
 import PsychologyTestsModal from '@/components/psychology/PsychologyTestsModal';
 import { FEATURE_ICONS } from '@/assets/icons';
 import {
@@ -22,24 +23,6 @@ import {
 const UST_BANNER = require('@/assets/icons/ust_banner.png');
 
 type Props = TabScreenProps;
-
-type QuickLink = { label: string; onPress: () => void };
-
-function QuickLinksRow({ links }: { links: QuickLink[] }) {
-  return (
-    <View style={styles.quickLinksRow}>
-      {links.map((link) => (
-        <Pressable
-          key={link.label}
-          onPress={link.onPress}
-          style={({ pressed }) => [styles.quickLinkChip, pressed && styles.pressedFade]}
-        >
-          <Text style={styles.quickLinkText} numberOfLines={1}>{link.label}</Text>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
 
 export default function HomeScreen({ navigation }: Props) {
   const [checkinInfo, setCheckinInfo] = useState<CheckinStatus | null>(null);
@@ -142,8 +125,17 @@ export default function HomeScreen({ navigation }: Props) {
             imageSource={require('@/assets/ekoller/ekol_bg_5_ruya.jpg')}
             onPress={() => navigation.navigate('DreamChat')}
           />
-          <QuickLinksRow
-            links={[{ label: 'Rüya Kitaplığı', onPress: () => navigation.navigate('RuyaKitapligi') }]}
+          <FortuneShelf
+            title="Rüya Bölümündeki Diğer Özellikler"
+            items={[
+              {
+                key: 'dreamLibrary',
+                title: 'Rüya Kitaplığı',
+                iconSource: FEATURE_ICONS.dreamLibrary,
+                iconName: 'book-outline',
+                onPress: () => navigation.navigate('RuyaKitapligi'),
+              },
+            ]}
           />
 
           {/* 4. Burç ve Astroloji */}
@@ -157,12 +149,37 @@ export default function HomeScreen({ navigation }: Props) {
             imageSource={require('@/assets/backgrounds/decks/angel_bg.jpg')}
             onPress={() => navigation.navigate('Zodiac')}
           />
-          <QuickLinksRow
-            links={[
-              { label: 'Doğum Haritası', onPress: () => navigation.navigate('BirthChart') },
-              { label: 'Yükselen Burcum', onPress: () => navigation.navigate('RisingSign') },
-              { label: 'Burç Uyumu', onPress: () => navigation.navigate('Compatibility') },
-              { label: 'Burç Özellikleri', onPress: () => navigation.navigate('ZodiacTraits') },
+          <FortuneShelf
+            title="Burç & Astroloji Bölümündeki Diğer Özellikler"
+            items={[
+              {
+                key: 'birthChart',
+                title: 'Doğum Haritası',
+                iconSource: FEATURE_ICONS.birthChart,
+                iconName: 'chart-donut',
+                onPress: () => navigation.navigate('BirthChart'),
+              },
+              {
+                key: 'risingSign',
+                title: 'Yükselen Burcum',
+                iconSource: FEATURE_ICONS.risingSign,
+                iconName: 'flash-outline',
+                onPress: () => navigation.navigate('RisingSign'),
+              },
+              {
+                key: 'compatibility',
+                title: 'Burç Uyumu',
+                iconSource: FEATURE_ICONS.compatibility,
+                iconName: 'heart-outline',
+                onPress: () => navigation.navigate('Compatibility'),
+              },
+              {
+                key: 'zodiacTraits',
+                title: 'Burç Özellikleri',
+                iconSource: FEATURE_ICONS.zodiacTraits,
+                iconName: 'star-circle-outline',
+                onPress: () => navigation.navigate('ZodiacTraits'),
+              },
             ]}
           />
 
@@ -177,11 +194,44 @@ export default function HomeScreen({ navigation }: Props) {
             imageSource={require('@/assets/ekoller/ekol_bg_1_cin.jpg')}
             onPress={() => navigation.navigate('MatrixOfDestiny')}
           />
-          <QuickLinksRow
-            links={[
-              { label: 'Numeroloji', onPress: () => navigation.navigate('Numerology') },
-              { label: 'Biyoritim', onPress: () => navigation.navigate('Biorhythm') },
-              { label: 'Ay Takvimi', onPress: () => navigation.navigate('MoonCalendar') },
+          <FortuneShelf
+            title="Sayılar & Enerji Bölümündeki Diğer Özellikler"
+            items={[
+              {
+                key: 'numerology',
+                title: 'Numeroloji',
+                iconSource: FEATURE_ICONS.numerology,
+                iconName: 'numeric',
+                onPress: () => navigation.navigate('Numerology'),
+              },
+              {
+                key: 'biorhythm',
+                title: 'Biyoritim',
+                iconSource: FEATURE_ICONS.biorhythm,
+                iconName: 'waveform',
+                onPress: () => navigation.navigate('Biorhythm'),
+              },
+              {
+                key: 'moonCalendar',
+                title: 'Ay Takvimi',
+                iconSource: FEATURE_ICONS.moonCalendar,
+                iconName: 'moon-waning-crescent',
+                onPress: () => navigation.navigate('MoonCalendar'),
+              },
+              {
+                key: 'celticTree',
+                title: 'Kelt Ağacı',
+                iconSource: FEATURE_ICONS.celticTree,
+                iconName: 'tree-outline',
+                onPress: () => navigation.navigate('CelticTreeReading'),
+              },
+              {
+                key: 'aura',
+                title: 'Çakra & Aura',
+                iconSource: FEATURE_ICONS.aura,
+                iconName: 'circle-multiple-outline',
+                onPress: () => navigation.navigate('AuraEnergy'),
+              },
             ]}
           />
 
@@ -196,12 +246,37 @@ export default function HomeScreen({ navigation }: Props) {
             imageSource={require('@/assets/backgrounds/decks/osho_zen_bg.jpg')}
             onPress={() => navigation.navigate('BreathingExercise')}
           />
-          <QuickLinksRow
-            links={[
-              { label: 'Günün İlham Kartı', onPress: () => navigation.navigate('AngelCard') },
-              { label: 'Günlük Olumlama', onPress: () => navigation.navigate('Affirmation') },
-              { label: 'Duygu Günlüğü', onPress: () => navigation.navigate('MoodJournal') },
-              { label: 'Sihirli Küre', onPress: () => navigation.navigate('MagicBall') },
+          <FortuneShelf
+            title="İç Huzur Bölümündeki Diğer Özellikler"
+            items={[
+              {
+                key: 'angelCard',
+                title: 'Günün İlham Kartı',
+                iconSource: FEATURE_ICONS.angelCard,
+                iconName: 'flower-outline',
+                onPress: () => navigation.navigate('AngelCard'),
+              },
+              {
+                key: 'affirmation',
+                title: 'Günlük Olumlama',
+                iconSource: FEATURE_ICONS.affirmation,
+                iconName: 'white-balance-sunny',
+                onPress: () => navigation.navigate('Affirmation'),
+              },
+              {
+                key: 'moodJournal',
+                title: 'Duygu Günlüğü',
+                iconSource: FEATURE_ICONS.moodJournal,
+                iconName: 'book-outline',
+                onPress: () => navigation.navigate('MoodJournal'),
+              },
+              {
+                key: 'magicBall',
+                title: 'Sihirli Küre',
+                iconSource: FEATURE_ICONS.magicBall,
+                iconName: 'crystal-ball',
+                onPress: () => navigation.navigate('MagicBall'),
+              },
             ]}
           />
         </View>
@@ -334,26 +409,5 @@ const styles = StyleSheet.create({
   },
   categoryContainer: {
     gap: 2,
-  },
-  quickLinksRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginTop: -6,
-    marginBottom: 16,
-    paddingHorizontal: 2,
-  },
-  quickLinkChip: {
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    backgroundColor: 'rgba(30, 30, 32, 0.85)',
-    borderRadius: 12,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-  },
-  quickLinkText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: GOLD,
   },
 });
