@@ -1,0 +1,132 @@
+[
+  {
+    "id": "valide-sultan",
+    "name": "Valide Sultan",
+    "figure": "İzmir'in Koruyucu Anası",
+    "element": "Element Kartı • Otorite ve Koruma",
+    "meaning": "Güçlü bir kadın figürünün korumasını, ailevi desteği ve otoriteyi işaret eder. Katina'nın kendisi gibi, zor zamanlarda dimdik ayakta kalan bir güç.",
+    "story": "Efsaneye göre Katina, kocasını kaybettiğinde halkın onu suçlamasına rağmen boyun eğmedi; bu kart onun o dirençli, koruyucu ruhunu taşır.",
+    "advice": "Kendi gücünüze güvenin; kimsenin onayına ihtiyacınız yok.",
+    "valence": "positive"
+  },
+  {
+    "id": "yakut-kalp",
+    "name": "Yakut Kalp",
+    "figure": "Tutkunun Kızıl Taşı",
+    "element": "Element Kartı • Ateşli Tutku",
+    "meaning": "Derin, yakıcı bir aşk ya da tutkulu bir bağlılığın işaretidir. Kalbiniz güçlü bir arzuyla çarpıyor.",
+    "story": "Katina'nın tablolarında sıkça geçen kızıl taş, kaybolan kocasına duyduğu sönmeyen aşkın simgesi olarak anlatılır.",
+    "advice": "Tutkunuzu bastırmayın; bu ateş sizi doğru yöne taşıyacak.",
+    "valence": "positive"
+  },
+  {
+    "id": "zumrut-yilan",
+    "name": "Zümrüt Yılan",
+    "figure": "Deri Değiştiren Sır",
+    "element": "Element Kartı • Dönüşüm ve Uyanış",
+    "meaning": "Kıskançlık ya da saklı bir sırra karşı uyarı olabileceği gibi, köklü bir dönüşümün ve yeniden doğuşun da işaretidir; bağlama göre değişir.",
+    "story": "Yılan, derisini değiştirirken hem savunmasız hem de yeniden doğmuş haldedir; Katina bu kartı hem tehlike hem fırsat olarak yorumlardı.",
+    "advice": "Çevrenizdeki gizli duygulara dikkat edin, ama kendi dönüşümünüzden de korkmayın.",
+    "valence": "mixed"
+  },
+  {
+    "id": "elmas-anahtar",
+    "name": "Elmas Anahtar",
+    "figure": "Kapanmış Kapının Çözümü",
+    "element": "Element Kartı • Yeni Kapılar",
+    "meaning": "Uzun süredir kapalı kalan bir konunun çözüme kavuşacağını, yeni bir kapının açılacağını müjdeler.",
+    "story": "Katina'nın efsanesinde, kocasının sırrını çözecek anahtarın hiçbir zaman bulunamadığı söylenir — ama bu kart, sizin anahtarınızın elinizde olduğunu hatırlatır.",
+    "advice": "Aradığınız çözüm düşündüğünüzden yakın; cesaretle kapıyı açın.",
+    "valence": "positive"
+  },
+  {
+    "id": "ates-ruhu",
+    "name": "Ateş Ruhu",
+    "figure": "Şamran'ın Ateşi",
+    "element": "Element Kartı • Ateş",
+    "meaning": "Tutkulu bir başlangıç, cesaret ve harekete geçme enerjisi. Eski defterlerin kapanıp küllerinden yeni bir enerjiyle doğduğunuz bir dönem.",
+    "story": "Katina geleneğinde Şamran'ın Ateşi, sana artık hizmet etmeyen her şeyi yakıp geride bırakma cesaretini simgeler; her büyük değişim küçük bir kıvılcımla başlar.",
+    "advice": "Cesaretinizi kullanın; harekete geçmenin tam zamanı.",
+    "valence": "positive"
+  },
+  {
+    "id": "su-ruhu",
+    "name": "Su Ruhu",
+    "figure": "Ege'nin Şifalı Dalgası",
+    "element": "Element Kartı • Su",
+    "meaning": "Duygusal şifa, arınma ve içsel huzur getirir. Yaralarınız yavaşça iyileşiyor.",
+    "story": "Ege kıyılarında dalgaların taşları yumuşatması gibi, zamanla kalbinizdeki sertlik de yumuşayacak.",
+    "advice": "Kendinize şefkat gösterin; şifa zamanla, sabırla gelir.",
+    "valence": "positive"
+  },
+  {
+    "id": "toprak-ruhu",
+    "name": "Toprak Ruhu",
+    "figure": "Zeytin Ağacının Kökleri",
+    "element": "Element Kartı • Toprak",
+    "meaning": "Kalıcılık, güven ve sağlam bir temel kurma zamanı. Attığınız adımlar köklü sonuçlar doğuracak.",
+    "story": "Yüzyıllık bir zeytin ağacı gibi, şimdi attığınız kökler nesiller boyu meyve verecek.",
+    "advice": "Sabırlı olun; kalıcı olan her şey yavaş büyür.",
+    "valence": "positive"
+  },
+  {
+    "id": "hava-ruhu",
+    "name": "Hava Ruhu",
+    "figure": "Meltem ile Gelen Haber",
+    "element": "Element Kartı • Hava",
+    "meaning": "Yeni bir fikir, önemli bir haber ya da taze bir bakış açısı yolda. Zihniniz açılıyor.",
+    "story": "Ege'nin meltemi gibi, hafif ama net bir haber ufkunuzu değiştirmek üzere.",
+    "advice": "Açık fikirli olun; gelen haber beklenmedik bir yön değişikliği getirebilir.",
+    "valence": "positive"
+  },
+  {
+    "id": "gunes-taci",
+    "name": "Güneş Tacı",
+    "figure": "Zaferin Altın Işığı",
+    "element": "Element Kartı • Mutlak Aydınlanma",
+    "meaning": "Çok güçlü bir olumlu işaret; mutlu son, açık zafer ve tam bir aydınlanma. Katina falının en şanslı kartlarından biridir.",
+    "story": "Güneşin tacı gibi, üzerinize düşen bu ışık hiçbir gölgeye yer bırakmaz.",
+    "advice": "Bu enerjiye tam güvenin; önünüzdeki yol açık ve aydınlık.",
+    "valence": "positive"
+  },
+  {
+    "id": "golge-pece",
+    "name": "Gölge Peçe",
+    "figure": "Örtülü Gerçeğin Peçesi",
+    "element": "Element Kartı • Yanılsama",
+    "meaning": "Bir konuda kendinizi ya da başkalarını kandırdığınıza, gerçeğin hâlâ örtülü olduğuna işaret eder.",
+    "story": "Peçe altında saklanan yüz, ne kadar güzel olursa olsun gerçeği göstermez; Katina bu kartı dikkatli olun diye çekerdi.",
+    "advice": "Görünenin ardındakini sorgulayın; her şey göründüğü gibi olmayabilir.",
+    "valence": "negative"
+  },
+  {
+    "id": "kirik-muhur",
+    "name": "Kırık Mühür",
+    "figure": "Bozulan Sözün İzi",
+    "element": "Element Kartı • Güven Kaybı",
+    "meaning": "Bir güven kırılması, ihanet ya da verilen bir sözün tutulmaması olasılığına dikkat çeker.",
+    "story": "Mühürlenmiş bir mektubun kırık halde bulunması gibi, bir sırrın ya da sözün ihlal edildiğinin işaretidir.",
+    "advice": "Tetikte olun ama panik yapmayın; her kırılan şey yeniden onarılabilir.",
+    "valence": "negative"
+  },
+  {
+    "id": "zeytin-dali",
+    "name": "Zeytin Dalı",
+    "figure": "Barışın Yeşil Dalı",
+    "element": "Element Kartı • Uzlaşma",
+    "meaning": "Bir çatışmanın barışla sonuçlanacağını, uzlaşma ve affetme zamanının geldiğini gösterir.",
+    "story": "Ege'nin en eski sembollerinden biri olan zeytin dalı, savaşların bittiği, barışın başladığı anı simgeler.",
+    "advice": "Uzatın elinizi; barış her iki tarafa da huzur getirecek.",
+    "valence": "positive"
+  },
+  {
+    "id": "firtina-bulutu",
+    "name": "Fırtına Bulutu",
+    "figure": "Ufukta Beliren Kara Bulut",
+    "element": "Element Kartı • Ani Sınav",
+    "meaning": "Ani bir çatışma, beklenmedik bir zorluk ya da sınav dönemine işaret eder; ama fırtına her zaman geçicidir.",
+    "story": "Ege denizinde aniden beliren kara bulutlar, denizcileri hazırlıklı yakalar; ama ustaca yön değiştirenler limana güvenle ulaşır.",
+    "advice": "Hazırlıklı olun; bu fırtına sizi yıldırmak için değil, güçlendirmek için geliyor.",
+    "valence": "negative"
+  }
+]

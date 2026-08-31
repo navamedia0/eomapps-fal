@@ -1,0 +1,418 @@
+{
+  "kupa-asi": {
+    "name": "Kupa Ası",
+    "figure": "Afrodit'in Deniz Köpüğünden Doğuşu",
+    "element": "Su Elementi • Aşkın Kaynağı",
+    "meaning": "Yeni bir aşk ya da içten bir mutluluğun başlangıcı; kalbin taze bir heyecana açılıyor.",
+    "story": "Ege'nin köpüklü sularından doğan Afrodit gibi, kalbinizde yepyeni bir aşk dalgası yükseliyor. Katina'nın efsanesinde bu kart, kaybolan sevgilinin bile bir gün geri dönebileceğine dair umudun sembolüdür.",
+    "advice": "Kalbinizi bu yeni dalgaya açın; korkularınız sizi geride bırakmasın."
+  },
+  "kupa-ikilisi": {
+    "name": "Kupa İkilisi",
+    "figure": "İki Ruhun Ege'de Buluşması",
+    "element": "Su Elementi • Uyum ve Bağ",
+    "meaning": "İki kişi arasında kurulan sıcak bir bağ, karşılıklı anlayış ve uyum.",
+    "story": "Bir zeytinlik altında karşılaşan iki yabancının, tek bakışta birbirini tanıdığı andır. Katina der ki: bazı bağlar zamandan önce, ruhlar arasında kurulmuştur.",
+    "advice": "Karşınızdaki kişiye güvenin; bu uyum tesadüf değil, kaderin bir işareti."
+  },
+  "kupa-uclusu": {
+    "name": "Kupa Üçlüsü",
+    "figure": "Kadınların Ay Işığında Kutlaması",
+    "element": "Su Elementi • Paylaşılan Neşe",
+    "meaning": "Dostlarla, ailenle kutlanacak neşeli bir buluşma ya da sevindirici bir haber.",
+    "story": "İzmir'in eski mahallelerinde kadınlar, dolunay altında bir araya gelip sevinçlerini paylaşırlardı; Katina'nın kendisi de bu meclislerin bir parçasıydı denilir.",
+    "advice": "Sevdiklerinizle paylaştığınız her an, gelecekteki mutluluğunuzun tohumunu ekiyor."
+  },
+  "kupa-dortlusu": {
+    "name": "Kupa Dörtlüsü",
+    "figure": "Limanda Bekleyen Gemici",
+    "element": "Su Elementi • Durgunluk",
+    "meaning": "Duygusal bir doygunluk hali; bazen isteksizlik ya da içe kapanma.",
+    "story": "Limanın kıyısında oturup ufka bakan, ama artık hiçbir gemiyi beklemeyen bir adamın hikayesidir. Bazen durgunluk, içsel bir dinlenmedir.",
+    "advice": "Çevrenizdeki fırsatları gözden kaçırmayın; belki de aradığınız gemi zaten limanda."
+  },
+  "kupa-beslisi": {
+    "name": "Kupa Beşlisi",
+    "figure": "Dökülen Şarap Kadehleri",
+    "element": "Su Elementi • Teselli",
+    "meaning": "Bir hayal kırıklığı ama elinde kalanları görebilirsen teselli bulursun.",
+    "story": "Beş kadehten üçü devrilmiş, ikisi hâlâ doludur. Katina'nın öğrettiği gibi: yasını tuttuğunuz şeye değil, elinizde kalana bakın.",
+    "advice": "Kaybettiklerinize takılmayın; hâlâ sahip olduklarınız sizi ayakta tutmaya yeter."
+  },
+  "kupa-altilisi": {
+    "name": "Kupa Altılısı",
+    "figure": "Çocukluk Bahçesine Dönüş",
+    "element": "Su Elementi • Nostalji",
+    "meaning": "Geçmişten gelen tatlı bir anı ya da eski bir dostla yeniden bağ kurma.",
+    "story": "Yasemin kokulu bir bahçede, çocukluğunun oyun arkadaşıyla yeniden karşılaşan birinin hikayesi. Geçmiş, bazen en tatlı hediyeleri saklar.",
+    "advice": "Eski bir bağı yeniden canlandırmaktan çekinmeyin; nostalji size güç verecek."
+  },
+  "kupa-yedilisi": {
+    "name": "Kupa Yedilisi",
+    "figure": "Bulutlardaki Yedi Kadeh Hayali",
+    "element": "Su Elementi • Hayal ve Seçim",
+    "meaning": "Çok fazla seçenek, hayaller arasında kaybolma; netleşmen gereken bir an.",
+    "story": "Gökyüzünde beliren yedi ayrı kadehin her biri farklı bir hayat vaat eder; ama hepsini aynı anda seçemezsiniz.",
+    "advice": "Hayal kurmayı bırakın, gerçekçi olanı seçip ona odaklanın."
+  },
+  "kupa-sekizlisi": {
+    "name": "Kupa Sekizlisi",
+    "figure": "Ay Işığında Yola Çıkan Gölge",
+    "element": "Su Elementi • Vazgeçiş",
+    "meaning": "Seni tatmin etmeyen bir durumdan uzaklaşıp daha anlamlı bir şey aramak.",
+    "story": "Sekiz dolu kadehi geride bırakıp dağların ardındaki aya doğru yürüyen bir figürdür; maddi tatmin bazen ruhu doyurmaz.",
+    "advice": "İçinizin sesini dinleyin; bazen en cesur adım geride bırakmaktır."
+  },
+  "kupa-dokuzlusu": {
+    "name": "Kupa Dokuzlusu",
+    "figure": "Dileklerin Gerçekleştiği Gece",
+    "element": "Su Elementi • Doyum",
+    "meaning": "Dileğinin gerçekleşmesine yakın bir doyum ve iç huzur.",
+    "story": "Katina geleneğinde bu kart 'dilek kartı' olarak bilinir; gece yarısı tutulan bir dileğin kabul olmasına işaret eder.",
+    "advice": "Dileğinizi net bir şekilde niyet edin; gerçekleşmesine çok az kaldı."
+  },
+  "kupa-onlusu": {
+    "name": "Kupa Onlusu",
+    "figure": "Gökkuşağı Altındaki Aile",
+    "element": "Su Elementi • Tamlık",
+    "meaning": "Aile mutluluğu, huzurlu bir yuva ve duygusal tamlık.",
+    "story": "Fırtınadan sonra beliren gökkuşağının altında toplanan bir ailenin hikayesidir; huzur, en zor günlerin ardından gelir.",
+    "advice": "Ailenize ve yuvanıza değer verin; en büyük hazineniz orada saklı."
+  },
+  "kupa-valesi": {
+    "name": "Kupa Valesi",
+    "figure": "Eros'un Oku",
+    "element": "Su Elementi • Aşkın Müjdecisi",
+    "meaning": "Duygusal, hayalperest bir haberci; belki bir davet ya da tatlı bir sürpriz.",
+    "story": "Aşk tanrısı Eros'un genç ve şakacı hali; okunu attığı kalpte beklenmedik bir tutku uyandırır. Katina'nın müjdecisi olarak bilinir.",
+    "advice": "Gelen bir daveti ya da mesajı ciddiye alın; kalbiniz için hazırlıksız yakalanabilirsiniz."
+  },
+  "kupa-kizi": {
+    "name": "Kupa Kızı",
+    "figure": "Afrodit, Aşk ve Güzellik Tanrıçası",
+    "element": "Su Elementi • Şefkat",
+    "meaning": "Sezgisel, şefkatli bir kadın enerjisi ya da senin şefkatli tarafın öne çıkıyor.",
+    "story": "Güzelliğin ve aşkın tanrıçası Afrodit, yalnızca dış görünüşle değil, derin bir şefkatle de anılır. Bu kart, sevginin en saf halini temsil eder.",
+    "advice": "Şefkatinizi esirgemeyin; en güçlü silahınız kalbinizdir."
+  },
+  "kupa-papazi": {
+    "name": "Kupa Papazı",
+    "figure": "Ares, Tutkunun Savaşçısı",
+    "element": "Su Elementi • Olgunluk",
+    "meaning": "Duygularına hakim, olgun ve destekleyici bir erkek figürü ya da senin olgunluğun.",
+    "story": "Savaş tanrısı Ares, Afrodit'in aşkıyla yumuşamış, tutkusunu olgunlukla yönetmeyi öğrenmiştir. Güç ile şefkatin dengeye ulaştığı andır.",
+    "advice": "Gücünüzü koruyuculuk için kullanın; sertlik değil, olgunluk gösterin."
+  },
+  "karo-asi": {
+    "name": "Karo Ası",
+    "figure": "Altın Post Efsanesi",
+    "element": "Toprak Elementi • Yeni Fırsat",
+    "meaning": "Maddi ya da fırsatla ilgili yeni bir başlangıç; bir kapı aralanıyor.",
+    "story": "Argonotların peşinden gittiği Altın Post gibi, önünüzde parlak ama emek isteyen bir fırsat beliriyor.",
+    "advice": "Fırsatı kaçırmayın ama aceleyle de atılmayın; hazırlığınızı yapın."
+  },
+  "karo-ikilisi": {
+    "name": "Karo İkilisi",
+    "figure": "Terazideki İki Kese Altın",
+    "element": "Toprak Elementi • Denge",
+    "meaning": "İki iş ya da sorumluluk arasında denge kurmaya çalışıyorsun.",
+    "story": "İzmir çarşısındaki bir tüccarın iki kese altını aynı anda tartıya koyma çabasıdır; denge sabır ister.",
+    "advice": "İki sorumluluğu da savsaklamadan, esnek bir düzen kurun."
+  },
+  "karo-uclusu": {
+    "name": "Karo Üçlüsü",
+    "figure": "Zanaatkarların Ortak Emeği",
+    "element": "Toprak Elementi • İşbirliği",
+    "meaning": "Emeğinin karşılığını almaya başladığın, işbirliğinin meyve verdiği bir dönem.",
+    "story": "Üç zanaatkarın birlikte inşa ettiği bir çeşmenin tamamlanışıdır; ortak emek, kalıcı bir eser bırakır.",
+    "advice": "İşbirliğine değer verin; yalnız başarmaya çalışmak yerine ekip kurun."
+  },
+  "karo-dortlusu": {
+    "name": "Karo Dörtlüsü",
+    "figure": "Kilit Altındaki Hazine Sandığı",
+    "element": "Toprak Elementi • Temkin",
+    "meaning": "Maddi konularda temkinli, birikime önem veren bir tutum.",
+    "story": "Sandığını sıkı sıkı kilitleyen bir tüccarın hikayesidir; tutumluluk erdemdir ama aşırısı cimriliğe döner.",
+    "advice": "Biriktirin ama paylaşmaktan da korkmayın; bereket akışta çoğalır."
+  },
+  "karo-beslisi": {
+    "name": "Karo Beşlisi",
+    "figure": "Kış Soğuğu ve Dayanışma",
+    "element": "Toprak Elementi • Geçici Darlık",
+    "meaning": "Beklenmedik bir masraf ya da geçici bir sıkıntı; ama geçici.",
+    "story": "Soğuk bir kış gecesinde, bir komşusunun kapısını çalan yoksul bir yolcunun hikayesidir; yardım her zaman bir kapı ötededir.",
+    "advice": "Bu sıkıntı geçicidir; gurura kapılmadan destek istemekten çekinmeyin."
+  },
+  "karo-altilisi": {
+    "name": "Karo Altılısı",
+    "figure": "Adil Paylaşımın Pazarı",
+    "element": "Toprak Elementi • Denge Yeniden",
+    "meaning": "Bir borcun kapanması ya da adil bir paylaşım, denge yeniden kuruluyor.",
+    "story": "İzmir pazarında bir tüccarın, aldığı kadar vermeyi bilmesiyle övülen dürüstlüğünün hikayesidir.",
+    "advice": "Adaletli davranın; verdiğiniz ve aldığınız arasında denge kurun."
+  },
+  "karo-yedilisi": {
+    "name": "Karo Yedilisi",
+    "figure": "Olgunlaşmayı Bekleyen Bağ",
+    "element": "Toprak Elementi • Sabır",
+    "meaning": "Yatırımının meyvesini görmek için biraz daha sabır gerekiyor.",
+    "story": "Ege'nin bağlarında üzümlerin olgunlaşmasını bekleyen bir bağcının sabrıdır; emek zamanla meyve verir.",
+    "advice": "Sabırlı olun; yatırımınızın tam zamanı henüz gelmedi."
+  },
+  "karo-sekizlisi": {
+    "name": "Karo Sekizlisi",
+    "figure": "Ustanın Tezgahındaki Titizlik",
+    "element": "Toprak Elementi • Emek",
+    "meaning": "Yeni bir beceri ya da işte titiz, emek isteyen bir çalışma dönemi.",
+    "story": "Bir kuyumcunun her bir taşı özenle işlemesi gibi, sizin de emeğinizin karşılığını titizlikle kazanacağınız bir dönemdesiniz.",
+    "advice": "Aceleyle değil, özenle ilerleyin; ustalık zamanla gelir."
+  },
+  "karo-dokuzlusu": {
+    "name": "Karo Dokuzlusu",
+    "figure": "Kendi Bahçesinin Sahibi",
+    "element": "Toprak Elementi • Bağımsızlık",
+    "meaning": "Kendi çabanla kazandığın bir bağımsızlık ve konfor.",
+    "story": "Kendi elleriyle diktiği bahçede huzurla oturan bir kadının hikayesidir; bağımsızlık en tatlı ödüldür.",
+    "advice": "Emeğinizin tadını çıkarın; kimseye muhtaç olmadan ayakta durabilirsiniz."
+  },
+  "karo-onlusu": {
+    "name": "Karo Onlusu",
+    "figure": "Nesilden Nesile Miras",
+    "element": "Toprak Elementi • Bolluk",
+    "meaning": "Ailevi bir miras, kalıcı bir maddi güvence ya da bolluk.",
+    "story": "Büyük bir ailenin nesiller boyu koruduğu bir zeytinliğin hikayesidir; bereket, kök saldığı yerde büyür.",
+    "advice": "Ailenizin size bıraktığı değerleri koruyun ve büyütün."
+  },
+  "karo-valesi": {
+    "name": "Karo Valesi",
+    "figure": "Hermes'in Kanatlı Sandaletleri",
+    "element": "Toprak Elementi • Haber",
+    "meaning": "Haber getiren genç bir enerji; iş ya da paraya dair bir gelişme.",
+    "story": "Tanrıların habercisi Hermes'in kanatlı sandaletleriyle koşarak getirdiği müjdeli bir haberdir.",
+    "advice": "Gelen haberi dikkatle değerlendirin; hızlı hareket etmeniz gerekebilir."
+  },
+  "karo-kizi": {
+    "name": "Karo Kızı",
+    "figure": "Demeter, Bereket Ana Tanrıça",
+    "element": "Toprak Elementi • Kararlılık",
+    "meaning": "Pratik, ayakları yere basan bir kadın enerjisi ya da senin kararlı tarafın.",
+    "story": "Toprağın ve hasadın tanrıçası Demeter, emeğin karşılığını sabırla bekleyen ve asla vazgeçmeyen bir anaç güçtür.",
+    "advice": "Ayaklarınızı yere sağlam basın; pratik çözümler en kalıcı olanlardır."
+  },
+  "karo-papazi": {
+    "name": "Karo Papazı",
+    "figure": "Kral Midas'ın Altın Dokunuşu",
+    "element": "Toprak Elementi • Otorite",
+    "meaning": "Başarılı, işinde otorite sahibi bir erkek figürü ya da senin liderlik yönün.",
+    "story": "Dokunduğu her şeyi altına çeviren Kral Midas gibi, başarıya el atan güçlü bir otorite figürüdür — ama unutmayın, Midas dengeyi bulmayı da öğrenmişti.",
+    "advice": "Başarınızı paylaşmayı unutmayın; güç, cömertlikle birleşince kalıcı olur."
+  },
+  "sinek-asi": {
+    "name": "Sinek Ası",
+    "figure": "Truva Atı'nın Kurnazlığı",
+    "element": "Ateş Elementi • İlham Kıvılcımı",
+    "meaning": "Yeni bir proje ya da fikrin kıvılcımı; ilham dolu bir başlangıç.",
+    "story": "Odysseus'un kurnazca tasarladığı Truva Atı gibi, göz ardı edilecek küçük bir fikir aslında büyük bir dönüşümün kapısını açabilir.",
+    "advice": "Fikrinizi küçümsemeyin; en basit görünen kıvılcım en büyük ateşi yakabilir."
+  },
+  "sinek-ikilisi": {
+    "name": "Sinek İkilisi",
+    "figure": "İki Yol Ayrımındaki Filozof",
+    "element": "Ateş Elementi • Seçim",
+    "meaning": "İki farklı yol arasında seçim yapman gereken bir an.",
+    "story": "Agora'da iki öğrencisine farklı yollar öneren bir filozofun hikayesidir; her yol kendi bilgeliğini taşır.",
+    "advice": "Aceleyle karar vermeyin; her iki yolu da tartın, sonra seçin."
+  },
+  "sinek-uclusu": {
+    "name": "Sinek Üçlüsü",
+    "figure": "Ortak Fikrin Filizlenmesi",
+    "element": "Ateş Elementi • İşbirliği",
+    "meaning": "Bir işbirliğinin ya da ortak projenin ilk meyvelerini vermesi.",
+    "story": "Üç düşünürün agora'da tartışarak vardığı ortak bir fikrin, şehri değiştiren bir esere dönüşmesidir.",
+    "advice": "Fikir alışverişine açık olun; en iyi sonuçlar ortak akılla doğar."
+  },
+  "sinek-dortlusu": {
+    "name": "Sinek Dörtlüsü",
+    "figure": "Sağlam Temelin Ustası",
+    "element": "Ateş Elementi • Sağlamlık",
+    "meaning": "Emek verdiğin bir konuda sağlam bir temel atman.",
+    "story": "Bir mimarın, göz ardı edilen temel taşlarına gösterdiği özenle, yıkılmaz bir yapı inşa etmesidir.",
+    "advice": "Temelinizi sağlam atın; acele ettiğiniz her adım ileride sizi yorabilir."
+  },
+  "sinek-beslisi": {
+    "name": "Sinek Beşlisi",
+    "figure": "Agora'daki Tartışma",
+    "element": "Ateş Elementi • Rekabet",
+    "meaning": "Bir rekabet ya da anlaşmazlık; ama üstesinden gelebilirsin.",
+    "story": "İki hatibin agora'da fikir çarpıştırdığı, ama sonunda her ikisinin de bir şeyler öğrendiği bir tartışmadır.",
+    "advice": "Anlaşmazlıktan kaçmayın; doğru şekilde ele alınırsa sizi güçlendirir."
+  },
+  "sinek-altilisi": {
+    "name": "Sinek Altılısı",
+    "figure": "Zaferin Defne Tacı",
+    "element": "Ateş Elementi • Takdir",
+    "meaning": "Çabalarının takdir görmesi, küçük bir zaferin tadını çıkarman.",
+    "story": "Antik oyunlarda kazanan bir atletin başına takılan defne tacı gibi, emeğinizin karşılığını almak üzeresiniz.",
+    "advice": "Başarınızın tadını çıkarın; bunu hak ettiniz."
+  },
+  "sinek-yedilisi": {
+    "name": "Sinek Yedilisi",
+    "figure": "Tepedeki Savunma",
+    "element": "Ateş Elementi • Direniş",
+    "meaning": "Kararlılıkla sürdürdüğün bir mücadelede yorulma ama pes etmeme.",
+    "story": "Tek başına tepesini savunan bir stratejist gibi, yorulsanız da duruşunuzdan taviz vermiyorsunuz.",
+    "advice": "Pes etmeyin; direncinizin karşılığını yakında alacaksınız."
+  },
+  "sinek-sekizlisi": {
+    "name": "Sinek Sekizlisi",
+    "figure": "Rüzgarla Gelen Haberci",
+    "element": "Ateş Elementi • Hareketlilik",
+    "meaning": "Hızlı gelişen olaylar, ani bir hareketlilik dönemi.",
+    "story": "Rüzgar gibi hızla şehirden şehre haber taşıyan bir habercinin telaşıdır; olaylar hızla akışa geçiyor.",
+    "advice": "Hıza ayak uydurun; bu dönemde esneklik en büyük gücünüz."
+  },
+  "sinek-dokuzlusu": {
+    "name": "Sinek Dokuzlusu",
+    "figure": "Kendi Kalesini Kuran Kadın",
+    "element": "Ateş Elementi • Bağımsızlık",
+    "meaning": "Bağımsızlığını koruyarak kendi gücünle ayakta durman.",
+    "story": "Kendi başına bir kale inşa eden ve kimseye muhtaç olmadan yaşayan güçlü bir kadının hikayesidir.",
+    "advice": "Bağımsızlığınızı koruyun; gücünüz kendi içinizde saklı."
+  },
+  "sinek-onlusu": {
+    "name": "Sinek Onlusu",
+    "figure": "Omuzlardaki Ağır Yük",
+    "element": "Ateş Elementi • Sorumluluk",
+    "meaning": "Üzerine aldığın sorumlulukların ağırlığı; biraz yük hafifletmen iyi olabilir.",
+    "story": "Sırtında on değneği taşıyan bir yolcunun, hedefe yaklaşırken yükünün ağırlaşmasıdır.",
+    "advice": "Bazı yükleri paylaşmaktan çekinmeyin; her şeyi tek başınıza taşımak zorunda değilsiniz."
+  },
+  "sinek-valesi": {
+    "name": "Sinek Valesi",
+    "figure": "Genç Perseus'un Yolculuğu",
+    "element": "Ateş Elementi • Cesur Teklif",
+    "meaning": "Meraklı, enerjik bir genç haberci; yeni bir fikir ya da teklif.",
+    "story": "Kahramanlığa ilk adımını atan genç Perseus gibi, cesur ama tecrübesiz bir enerji size yeni bir teklif getiriyor.",
+    "advice": "Gelen teklife açık olun ama detayları dikkatle inceleyin."
+  },
+  "sinek-kizi": {
+    "name": "Sinek Kızı",
+    "figure": "Athena, Bilgelik Tanrıçası",
+    "element": "Ateş Elementi • Zeka",
+    "meaning": "Zeki, girişken bir kadın enerjisi ya da senin cesur tarafın.",
+    "story": "Savaş meydanında da düşünce dünyasında da eşit güçle var olan Athena, zekayı cesaretle birleştirir.",
+    "advice": "Zekanıza güvenin; doğru stratejiyle her engeli aşabilirsiniz."
+  },
+  "sinek-papazi": {
+    "name": "Sinek Papazı",
+    "figure": "Kurnaz Kral Odysseus",
+    "element": "Ateş Elementi • Liderlik",
+    "meaning": "Girişimci, karizmatik bir erkek figürü ya da senin liderlik ateşin.",
+    "story": "On yıllık yolculuğunda hep bir çıkış yolu bulan Odysseus gibi, en zor durumlarda bile çözüm üreten bir liderlik ateşidir.",
+    "advice": "Yaratıcı çözümler üretmekten çekinmeyin; kurnazlığınız en büyük silahınız."
+  },
+  "maca-asi": {
+    "name": "Maça Ası",
+    "figure": "Moiraların Kader İpliği",
+    "element": "Hava Elementi • Dönüştürücü Başlangıç",
+    "meaning": "Zorlu ama dönüştürücü bir başlangıç; güçlü bir irade gerektiriyor.",
+    "story": "Kader tanrıçaları Moiralar'ın örmeye başladığı yeni bir ipliktir; zor ama kaçınılmaz bir dönüşümün ilk adımı.",
+    "advice": "Zorluktan kaçmayın; bu başlangıç sizi güçlendirecek bir dönüşüme götürüyor."
+  },
+  "maca-ikilisi": {
+    "name": "Maça İkilisi",
+    "figure": "Bağlı Gözlerle Terazi Tutan Kadın",
+    "element": "Hava Elementi • Tarafsızlık",
+    "meaning": "Zor bir karar karşısında tarafsız kalmaya çalışman.",
+    "story": "Gözleri bağlı, elinde terazi tutan bir kadının, iki tarafı da adaletle tartma çabasıdır.",
+    "advice": "Duygularınızı bir kenara koyup meseleye tarafsız bakmayı deneyin."
+  },
+  "maca-uclusu": {
+    "name": "Maça Üçlüsü",
+    "figure": "Kırık Kalbin Fırtınası",
+    "element": "Hava Elementi • Hayal Kırıklığı",
+    "meaning": "Bir hayal kırıklığı ya da ayrılık; ama iyileşme de yakın.",
+    "story": "Fırtınalı bir gökyüzü altında kırık bir kalbin hikayesidir; ama her fırtınanın ardından gökyüzü yeniden açılır.",
+    "advice": "Acınızı yaşayın ama içinde boğulmayın; iyileşme zamanla gelecek."
+  },
+  "maca-dortlusu": {
+    "name": "Maça Dörtlüsü",
+    "figure": "Şövalyenin Mabette Dinlenişi",
+    "element": "Hava Elementi • Mola",
+    "meaning": "Mola verip dinlenmen, ilerlemeden önce güç toplaman gereken bir dönem.",
+    "story": "Savaştan çekilip mabette dinlenen bir şövalyenin hikayesidir; güç toplamak da bir strateji biçimidir.",
+    "advice": "Kendinizi zorlamayın; dinlenmek de ilerlemenin bir parçasıdır."
+  },
+  "maca-beslisi": {
+    "name": "Maça Beşlisi",
+    "figure": "Yenilginin Öğrettikleri",
+    "element": "Hava Elementi • Ders",
+    "meaning": "Bir çatışma ya da kayıp; ama ders çıkarılacak bir deneyim.",
+    "story": "Savaş meydanında yenilen ama bu yenilgiden büyük bir ders çıkaran bir komutanın hikayesidir.",
+    "advice": "Kaybınızdan öğrenin; bu deneyim sizi daha güçlü kılacak."
+  },
+  "maca-altilisi": {
+    "name": "Maça Altılısı",
+    "figure": "Fırtınadan Sakin Sulara Geçiş",
+    "element": "Hava Elementi • Geçiş",
+    "meaning": "Zor bir dönemden daha sakin sulara doğru geçiş yapman.",
+    "story": "Fırtınalı denizden çıkıp sakin bir kıyıya yanaşan bir teknenin yolculuğudur.",
+    "advice": "En kötüsü geride kaldı; şimdi sakinliğe doğru ilerleyin."
+  },
+  "maca-yedilisi": {
+    "name": "Maça Yedilisi",
+    "figure": "Gölgede Planlayan Stratejist",
+    "element": "Hava Elementi • Strateji",
+    "meaning": "Stratejik davranman, her şeyi açık etmeden ilerlemen gereken bir an.",
+    "story": "Kartlarını göstermeden, sessizce planını kuran bir stratejistin hikayesidir.",
+    "advice": "Her şeyi paylaşmak zorunda değilsiniz; bazı planlar sessizce olgunlaşır."
+  },
+  "maca-sekizlisi": {
+    "name": "Maça Sekizlisi",
+    "figure": "Bağlı Ellerin Farkında Olmadığı Çözüm",
+    "element": "Hava Elementi • Kısıtlanmışlık",
+    "meaning": "Kendini kısıtlanmış hissetsen de aslında çözüm elinin altında.",
+    "story": "Gözleri bağlı, elleri gevşek bağlarla sarılı bir figürün, aslında kolayca kurtulabileceğini fark etmesidir.",
+    "advice": "Kendinizi mahkûm hissetmeyin; çözüm düşündüğünüzden daha yakın."
+  },
+  "maca-dokuzlusu": {
+    "name": "Maça Dokuzlusu",
+    "figure": "Uykusuz Geçen Gece",
+    "element": "Hava Elementi • Kaygı",
+    "meaning": "Kaygılar, uykusuz geceler; ama çoğu zaman korktuğun kadar kötü değil.",
+    "story": "Karanlıkta oturup kaygılarıyla boğuşan birinin, sabah ışığıyla korkularının küçüldüğünü görmesidir.",
+    "advice": "Kaygılarınızı büyütmeyin; sabah her zaman geceden daha aydınlık gelir."
+  },
+  "maca-onlusu": {
+    "name": "Maça Onlusu",
+    "figure": "Dibe Vurup Yeniden Doğuş",
+    "element": "Hava Elementi • Dip Nokta",
+    "meaning": "Zor bir sürecin dibe vurup buradan ancak yukarı çıkacağın bir nokta.",
+    "story": "Persephone'nin yeraltına inişi gibi, bu bir son değil, yeniden doğuşun eşiğidir.",
+    "advice": "En karanlık nokta geride; buradan sonrası yalnızca yukarı doğru."
+  },
+  "maca-valesi": {
+    "name": "Maça Valesi",
+    "figure": "İkaros'un Düşüşü",
+    "element": "Hava Elementi • Tedbirsizlik",
+    "meaning": "Tedbirli olman gereken bir haber ya da meraklı ama güvenilmez bir kişi.",
+    "story": "Güneşe fazla yaklaşan İkaros gibi, aşırı hevesli ama tedbirsiz bir enerjiye karşı dikkatli olmalısınız.",
+    "advice": "Heyecanınızı sınırlarınızı unutmadan yaşayın; her parlayan şey güvenilir değildir."
+  },
+  "maca-kizi": {
+    "name": "Maça Kızı",
+    "figure": "Persephone, Yeraltının Kraliçesi",
+    "element": "Hava Elementi • Sert Gerçekçilik",
+    "meaning": "Keskin zekalı, bağımsız bir kadın enerjisi ya da senin sert gerçekçi tarafın.",
+    "story": "Hem yeraltının hem baharın kraliçesi olan Persephone, karanlığı da ışığı da içinde taşımayı öğrenmiştir.",
+    "advice": "Gerçeklerle yüzleşmekten korkmayın; gücünüz bu çift yönlülükte saklı."
+  },
+  "maca-papazi": {
+    "name": "Maça Papazı",
+    "figure": "Hades, Kader ve Derinliklerin Hükümdarı",
+    "element": "Hava Elementi • Otorite",
+    "meaning": "Otoriter, bazen sert bir erkek figürü; ya da kararlı, disiplinli tarafın.",
+    "story": "Yeraltının hükümdarı Hades, adaletsiz değil, yalnızca kesin ve değişmezdir. Kader onun elindedir.",
+    "advice": "Kararlılığınızı koruyun; disiplin, kaosun ortasında size yön verecek."
+  }
+}

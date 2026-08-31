@@ -70,11 +70,14 @@ export const POPULAR_CARD_DECKS: CardDeckInfo[] = [
     sectionBg: require('@/assets/backgrounds/decks/katina_bg.jpg'),
     cardBackImage: require('@/assets/tarot-backs/premium-back.jpg'),
     tags: ['Aşk Falı', '65 Kart', 'Ruh Eşi', 'Popüler'],
+    // Bu 4 örnek artık gerçekten çekilebilir kartlar (bkz.
+    // src/data/katina_element_cards.json) — önizleme ile oyundaki deste
+    // arasında tutarsızlık kalmasın diye.
     sampleCards: [
-      { id: 'valide_sultan', name: 'Valide Sultan', suitSymbol: '♥', rankLabel: 'Q', themeColor: '#E11D48' },
-      { id: 'yakut_kalp', name: 'Yakut Kalp', suitSymbol: '♦', rankLabel: 'A', themeColor: '#F43F5E' },
-      { id: 'zumrut_yilan', name: 'Zümrüt Yılan', suitSymbol: '♠', rankLabel: 'J', themeColor: '#10B981' },
-      { id: 'elmas_anahtar', name: 'Elmas Anahtar', suitSymbol: '♣', rankLabel: 'K', themeColor: '#38BDF8' },
+      { id: 'valide-sultan', name: 'Valide Sultan', suitSymbol: '✨', rankLabel: 'Element', themeColor: '#34D399' },
+      { id: 'yakut-kalp', name: 'Yakut Kalp', suitSymbol: '✨', rankLabel: 'Element', themeColor: '#34D399' },
+      { id: 'zumrut-yilan', name: 'Zümrüt Yılan', suitSymbol: '✨', rankLabel: 'Element', themeColor: '#FBBF24' },
+      { id: 'elmas-anahtar', name: 'Elmas Anahtar', suitSymbol: '✨', rankLabel: 'Element', themeColor: '#34D399' },
     ],
   },
   {
