@@ -91,48 +91,6 @@
       "advice": "Tebrikler, bu döngüyü onurlandır ve kutla."
     }
   },
-  "katina": {
-    "valide_sultan": {
-      "name": "Valide Sultan (Katina Baş Kadın)",
-      "upright": "Güçlü sezgilere sahip, ilişkide belirleyici rol oynayan bilge ve koruyucu kadın enerjisi.",
-      "reversed": "İlişkiye karışan üçüncü kişiler, kıskançlık veya gizli manipülasyon.",
-      "love": "Kaderinde derin iz bırakan bir kadın figürü ya da senin baskın caziben.",
-      "career": "Kulislerde güçlü bir destekçinin varlığı, stratejik ilerleme.",
-      "advice": "Sezgilerini dinle ama kontrol tutkuna yenilme."
-    },
-    "yakut_kalp": {
-      "name": "Yakut Kalp",
-      "upright": "Alevlenen tutku, samimi sevgi itirafı ve kalbin yeniden heyecanla atması.",
-      "reversed": "Kırgınlık, karşılık bulamayan duygusal beklentiler.",
-      "love": "Gözlerinin içine bakan kişinin sana duyduğu gizli arzu ve derin bağlılık.",
-      "career": "Tutkuyla bağlandığın bir işte kazanılacak parlak zafer.",
-      "advice": "Duygularını gizleme, hissettiklerini cesurca söyle."
-    },
-    "zumrut_yilan": {
-      "name": "Zümrüt Yılan (Dara)",
-      "upright": "Zeka, kıvraklık, zor durumlardan ustalıkla sıyrılma ve yenilenme.",
-      "reversed": "Arkadan çevrilen dolaplar, tatlı dilli sinsi rakipler.",
-      "love": "İlişkide laf taşıyan veya fitne sokmak isteyen birine dikkat.",
-      "career": "Rakiplerini aklınla ve zekanla alt etme fırsatı.",
-      "advice": "Her sırrını herkese açma, tedbiri elden bırakma."
-    },
-    "elmas_anahtar": {
-      "name": "Elmas Anahtar",
-      "upright": "Kilitli kapıların açılması, bir düğümün çözülmesi ve net bir cevap alma.",
-      "reversed": "Yanlış kapıyı zorlama, zamansız hamleler.",
-      "love": "Aklındaki soru işaretini giderecek çok net bir konuşma yakında.",
-      "career": "Yeni bir anlaşma, beklemediğin bir maddi kapının aralanması.",
-      "advice": "Cevap zaten sende, sadece kilide doğru anahtarı tak."
-    },
-    "samran_atesi": {
-      "name": "Şamran'ın Ateşi",
-      "upright": "Dönüşüm ateşi, eski defterlerin yakılması ve küllerinden doğuş.",
-      "reversed": "Öfkeyle hareket etme, köprüleri aceleyle yakma.",
-      "love": "Fırtınalı ama tutkusu sönmeyen bir yüzleşme.",
-      "career": "Eski çalışma şeklini kökten değiştirip yepyeni bir enerjiyle başlama.",
-      "advice": "Sana hizmet etmeyeni ateşe ver ve geriye bakma."
-    }
-  },
   "lenormand": {
     "suvari": {
       "name": "1. Süvari (The Rider)",

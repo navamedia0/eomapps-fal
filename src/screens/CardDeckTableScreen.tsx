@@ -31,6 +31,8 @@ import angelCardsData from '@/data/angel_cards.json';
 import runesData from '@/data/runes_futhark.json';
 import iskambilData from '@/data/iskambil_card_details.json';
 import katinaData from '@/data/katina_meanings.json';
+import katinaCardDetails from '@/data/katina_card_details.json';
+import katinaElementCards from '@/data/katina_element_cards.json';
 import { getLenormandMeaning } from '@/services/lenormandMeanings';
 import { LENORMAND_SPREADS } from '@/services/lenormandSpreads';
 import { LENORMAND_IMAGES } from '@/assets/cards/lenormand';
@@ -480,21 +482,34 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
     }
 
     if (deck.id === 'katina') {
-      const entries = Object.entries(katinaData as any);
-      return entries.map(([key, val]: [string, any]) => {
+      // 52 sembolik kart (Kupa/Karo/Sinek/Maça) + 13 element/ruh kartı = 65
+      // kartlık gerçek Katina destesi (bkz. katina_card_details.json ve
+      // katina_element_cards.json). İsimler artık düz "KUPA ASI" yerine
+      // katina_card_details.json'daki gerçek başlıklardan geliyor.
+      const symbolicEntries = Object.entries(katinaData as any);
+      const symbolicCards: DeckCardItem[] = symbolicEntries.map(([key]) => {
         const isKupa = key.startsWith('kupa');
         const isKaro = key.startsWith('karo');
         const isSinek = key.startsWith('sinek');
         const symbol = isKupa ? '♥' : isKaro ? '♦' : isSinek ? '♣' : '♠';
         const color = isKupa || isKaro ? '#E11D48' : '#10B981';
+        const detail = (katinaCardDetails as any)[key];
         return {
           id: key,
-          name: key.replace('-', ' ').toUpperCase(),
+          name: detail?.name || key.replace('-', ' ').toUpperCase(),
           suitSymbol: symbol,
           rankLabel: symbol,
           themeColor: color,
         };
       });
+      const elementCards: DeckCardItem[] = (katinaElementCards as any[]).map((card) => ({
+        id: card.id,
+        name: card.name,
+        suitSymbol: '✨',
+        rankLabel: 'Element',
+        themeColor: card.valence === 'negative' ? '#F87171' : card.valence === 'mixed' ? '#FBBF24' : '#34D399',
+      }));
+      return [...symbolicCards, ...elementCards];
     }
 
     if (deck.id === 'lenormand') {
@@ -954,25 +969,41 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
       }
     }
 
-    // 4. Katina — katina_meanings.json düz bir Record<string,string> (id -> tek
-    // cümlelik anlam), obje değil; kat.meaning gibi alan adları hep undefined
-    // dönüyordu ve yazılmış hiçbir metin ekrana gelmiyordu. Katina zaten
-    // gerçekte sadece aşk/ilişkiye adanmış bir fal olduğu için ayrı bir
-    // "kariyer" yorumu uydurulmuyor; tek yazılmış cümle asıl anlam alanında
-    // gösteriliyor.
+    // 4. Katina — 65 kartlık gerçek deste: 52 sembolik kart artık kendi
+    // Helenik/İzmir temalı figür+hikaye içeriğine sahip (katina_card_details.json,
+    // katina_meanings.json'daki asıl yazılmış anlamı korur), + 13 element/ruh
+    // kartı (katina_element_cards.json) sonuç enerjisini (olumlu/olumsuz)
+    // belirleyen ayrı bir katman olarak çekilebiliyor. Katina gerçekte sadece
+    // aşk/ilişkiye adanmış bir fal olduğu için ayrı bir "kariyer" yorumu
+    // uydurulmuyor.
     if (deck.id === 'katina') {
-      const katText = (katinaData as any)[cardId] as string | undefined;
-      if (katText) {
+      const elementCard = (katinaElementCards as any[]).find((c) => c.id === cardId);
+      if (elementCard) {
         return {
-          upright: katText,
+          upright: elementCard.meaning,
+          reversed: `Bu enerjinin gölge yönü öne çıkabilir; dikkatli ve sabırlı ol.`,
+          love: undefined,
+          career: undefined,
+          advice: isRelationship ? `🗣️ Rehberlik: '${targetName}, ${elementCard.advice}'` : elementCard.advice,
+          story: elementCard.story,
+          keywords: [elementCard.figure, elementCard.element].filter(Boolean),
+        };
+      }
+      const katDetail = (katinaCardDetails as any)[cardId];
+      const katText = (katinaData as any)[cardId] as string | undefined;
+      if (katDetail || katText) {
+        return {
+          upright: katDetail?.meaning || katText,
           reversed: `Kartın gölge tarafı devreye girebilir; niyetlerinde aceleci olma, kalbini zorlama.`,
           love: undefined,
           career: undefined,
           advice: isRelationship
-            ? `🗣️ Rehberlik: '${targetName}, kalbinin sesini dinle, bu enerjiye güven.'`
-            : `Kalbinin sesini dinle ve bu enerjiyi ilişkine taşı.`,
-          story: `Katina destesi, aşk ve ilişki kehanetine adanmış özel bir fal geleneğidir; bu kart kalbinin derin katmanlarından birini temsil eder.`,
-          keywords: ['Katina Kehaneti', 'Aşk', 'Kader'],
+            ? `🗣️ Rehberlik: '${targetName}, ${katDetail?.advice || 'kalbinin sesini dinle, bu enerjiye güven.'}'`
+            : (katDetail?.advice || `Kalbinin sesini dinle ve bu enerjiyi ilişkine taşı.`),
+          story: katDetail?.story || `Katina destesi, aşk ve ilişki kehanetine adanmış özel bir fal geleneğidir; bu kart kalbinin derin katmanlarından birini temsil eder.`,
+          keywords: [katDetail?.figure, katDetail?.element].filter(Boolean).length
+            ? [katDetail?.figure, katDetail?.element].filter(Boolean)
+            : ['Katina Kehaneti', 'Aşk', 'Kader'],
         };
       }
     }
