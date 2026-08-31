@@ -112,7 +112,7 @@ export default function HomeScreen({ navigation }: Props) {
             title="Tüm Fal Çeşitleri"
             subtitle="17 Kadim Fal · 3 Modlu Tarot, Katina & Deste Masası"
             tags={['17 Fal Çeşidi', '3 Modlu Tarot', 'Fotoğraflı & Canlı']}
-            accent="#F59E0B"
+            accent="#FFC93C"
             iconName="cards-playing-outline"
             badgeText="17 Mistik Ekol"
             imageSource={require('@/assets/backgrounds/decks/tarot_bg.jpg')}
@@ -124,7 +124,7 @@ export default function HomeScreen({ navigation }: Props) {
             title="Psikolojik & Kişilik Testleri"
             subtitle="Aşk Bağlanma Stili, 16 Kişilik, Gölge Benlik & Ruh Yaşı"
             tags={['Bağlanma Stili', '16 Kişilik', 'Gölge Arketip']}
-            accent="#A855F7"
+            accent="#FFC93C"
             iconName="brain"
             badgeText="Kendini Keşfet"
             imageSource={require('@/assets/ekoller/ekol_bg_4_bati_ezoterik.jpg')}
@@ -136,7 +136,7 @@ export default function HomeScreen({ navigation }: Props) {
             title="Rüya Yorumu & Tabir"
             subtitle="Rüyanı Yaz veya Anlat · Bilinçaltı Sembolleri & Rüya Kitaplığı"
             tags={['Rüya Yorumu', 'Rüya Kitaplığı', 'Bilinçaltı']}
-            accent="#6366F1"
+            accent="#FFC93C"
             iconName="moon-waning-crescent"
             badgeText="Bilinçaltı Aynası"
             imageSource={require('@/assets/ekoller/ekol_bg_5_ruya.jpg')}
@@ -151,7 +151,7 @@ export default function HomeScreen({ navigation }: Props) {
             title="Burç ve Astroloji"
             subtitle="Günlük Burç, Kişiye Özel Doğum Haritası, Yükselen & Sinastri"
             tags={['Günlük Burç', 'Doğum Haritası', 'Burç Uyumu']}
-            accent="#EC4899"
+            accent="#FFC93C"
             iconName="zodiac-leo"
             badgeText="Kozmik Harita"
             imageSource={require('@/assets/backgrounds/decks/angel_bg.jpg')}
@@ -171,7 +171,7 @@ export default function HomeScreen({ navigation }: Props) {
             title="Sayılar & Enerji Haritası"
             subtitle="Kader Matrisi, Numeroloji, Kelt Ağacı, Çakra & Aura Taraması"
             tags={['Kader Matrisi', 'Numeroloji', 'Çakra & Aura']}
-            accent="#06B6D4"
+            accent="#FFC93C"
             iconName="matrix"
             badgeText="Kader Şifresi"
             imageSource={require('@/assets/ekoller/ekol_bg_1_cin.jpg')}
@@ -190,7 +190,7 @@ export default function HomeScreen({ navigation }: Props) {
             title="Ruhsal Denge & İç Huzur"
             subtitle="4-7-8 Nefes Egzersizi, Günlük Olumlamalar, Biyoritim & Şifa"
             tags={['Nefes Egzersizi', 'Olumlama', 'Biyoritim']}
-            accent="#10B981"
+            accent="#FFC93C"
             iconName="meditation"
             badgeText="İç Huzur"
             imageSource={require('@/assets/backgrounds/decks/osho_zen_bg.jpg')}
