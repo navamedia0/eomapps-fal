@@ -114,7 +114,7 @@ export default function SozlerKoskuScreen({ navigation }: Props) {
               resizeMode="cover"
             >
               <LinearGradient
-                colors={['rgba(11, 10, 31, 0.55)', 'rgba(11, 10, 31, 0.75)']}
+                colors={['rgba(8, 7, 8, 0.55)', 'rgba(8, 7, 8, 0.75)']}
                 style={styles.quoteScrim}
                 pointerEvents="none"
               />
@@ -177,10 +177,10 @@ const styles = StyleSheet.create({
   searchBarWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    backgroundColor: 'rgba(30, 30, 32, 0.9)',
     borderRadius: 14,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     paddingHorizontal: 12,
     paddingVertical: 9,
     gap: 8,
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     minHeight: 110,
     justifyContent: 'space-between',
   },
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderWidth: 1.2,
     borderColor: GOLD,
     borderRadius: 14,
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   loadMoreBtnPressed: {
-    backgroundColor: 'rgba(242, 200, 121, 0.2)',
+    backgroundColor: 'rgba(255, 201, 60, 0.2)',
   },
   loadMoreBtnText: {
     fontSize: 13,

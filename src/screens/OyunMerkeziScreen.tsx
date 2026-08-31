@@ -4,38 +4,36 @@ import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TabScreenProps } from '@/navigation/types';
-import { GOLD, GOLD_SOFT, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, NIGHT_DEEP } from '@/theme/colors';
 
 type Props = TabScreenProps;
 
-export default function KaderKasabasiScreen({ navigation }: Props) {
+export default function OyunMerkeziScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-      {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color="#fff" />
         </Pressable>
-        <Text style={styles.headerTitle}>Kader Kasabası</Text>
+        <Text style={styles.headerTitle}>Oyun Merkezi</Text>
         <View style={{ width: 40 }} />
       </View>
 
-      {/* Hero Body */}
       <View style={styles.content}>
-        <LinearGradient colors={['#2A185C', '#140D36']} style={styles.card}>
+        <LinearGradient colors={['#242426', '#0D0D0E']} style={styles.card}>
           <View style={styles.iconCircle}>
-            <MaterialCommunityIcons name="castle" size={48} color={GOLD} />
+            <MaterialCommunityIcons name="controller-classic-outline" size={48} color={GOLD} />
           </View>
-          <Text style={styles.title}>Kader Kasabası Yeniden Tasarlanıyor</Text>
+          <Text style={styles.title}>Oyun Merkezi Yakında Açılıyor</Text>
           <Text style={styles.subtitle}>
-            Büyülü kasaba, yepyeni bir mimari, canlı karakterler ve modüler bina geliştirme sistemiyle baştan inşa ediliyor!
+            Okey gibi keyifli, klasik masa oyunları burada toplanacak. Şimdilik Mini Oyunlar bölümünden Coin kazanabilirsin.
           </Text>
 
           <View style={styles.badge}>
             <MaterialCommunityIcons name="hammer-wrench" size={16} color="#FDE68A" />
-            <Text style={styles.badgeText}>YENİ ÇAĞ YAKINDA</Text>
+            <Text style={styles.badgeText}>YAPIM AŞAMASINDA</Text>
           </View>
         </LinearGradient>
       </View>
@@ -83,8 +81,8 @@ const styles = StyleSheet.create({
     padding: 28,
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: '#7C3AED',
-    shadowColor: '#7C3AED',
+    borderColor: '#FF8A00',
+    shadowColor: '#FF8A00',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 20,
@@ -94,7 +92,7 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: 'rgba(124, 58, 237, 0.25)',
+    backgroundColor: 'rgba(255, 138, 0, 0.20)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
@@ -110,7 +108,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 13,
-    color: '#C4B5FD',
+    color: '#E8E2D0',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 24,
@@ -119,7 +117,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#7C3AED',
+    backgroundColor: '#FF8A00',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,

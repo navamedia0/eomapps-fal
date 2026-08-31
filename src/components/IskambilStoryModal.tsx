@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     backgroundColor: NIGHT_CARD,
     borderRadius: 24,
     borderWidth: 1.5,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     padding: 20,
     shadowColor: GOLD,
     shadowOffset: { width: 0, height: 6 },
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(242, 200, 121, 0.15)',
+    borderBottomColor: 'rgba(255, 201, 60, 0.15)',
   },
   headerTitleRow: {
     flexDirection: 'row',
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
   },
   cardPreviewText: {
     flex: 1,
@@ -153,11 +153,11 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.12)',
+    borderColor: 'rgba(255, 201, 60, 0.12)',
   },
   adviceBox: {
     backgroundColor: 'rgba(38, 22, 70, 0.7)',
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
   },
   sectionHeader: {
     flexDirection: 'row',

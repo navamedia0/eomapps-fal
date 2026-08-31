@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   moonCard: {
     position: 'relative',
     alignItems: 'center',
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderRadius: 18,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(242, 200, 121, 0.1)',
+    borderTopColor: 'rgba(255, 201, 60, 0.1)',
   },
   seedName: { fontSize: 13.5, fontWeight: '700', color: TEXT_PRIMARY, marginBottom: 2 },
   seedMeta: { fontSize: 11, color: TEXT_MUTED },

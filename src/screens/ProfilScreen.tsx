@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
   },
   authAvatarFallback: {
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -310,7 +310,7 @@ export default function RelationshipSpreadTable({
               style={[
                 styles.pairScorePill,
                 {
-                  backgroundColor: pair.score >= 85 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(242, 200, 121, 0.15)',
+                  backgroundColor: pair.score >= 85 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 201, 60, 0.15)',
                   borderColor: pair.score >= 85 ? '#10B981' : accentColor,
                 },
               ]}
@@ -574,7 +574,7 @@ const styles = StyleSheet.create({
   tableWrapper: {
     backgroundColor: 'rgba(14, 10, 30, 0.95)',
     borderWidth: 1.5,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
     borderRadius: 22,
     padding: 16,
     gap: 14,
@@ -680,10 +680,10 @@ const styles = StyleSheet.create({
 
   // Ortak Köprü Bölümü
   centerBridgeSection: {
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
     borderRadius: 16,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     padding: 12,
     alignItems: 'center',
     marginVertical: 4,
@@ -698,7 +698,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
   },
   bridgePillTitle: {
     fontSize: 11,
@@ -745,7 +745,7 @@ const styles = StyleSheet.create({
   resonanceLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(242, 200, 121, 0.3)',
+    backgroundColor: 'rgba(255, 201, 60, 0.3)',
   },
   resonanceCenterBadge: {
     flexDirection: 'row',
@@ -789,11 +789,11 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(242, 200, 121, 0.2)',
+    backgroundColor: 'rgba(255, 201, 60, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
   },
   pairLevelNumber: {
     fontSize: 14,
@@ -1012,7 +1012,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   pairAdviceBox: {
-    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    backgroundColor: 'rgba(255, 201, 60, 0.1)',
     borderLeftWidth: 3,
     borderLeftColor: GOLD,
     padding: 12,
@@ -1105,7 +1105,7 @@ const styles = StyleSheet.create({
     gap: 8,
     backgroundColor: 'rgba(22, 16, 42, 0.9)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     borderRadius: 14,
     paddingVertical: 14,
   },

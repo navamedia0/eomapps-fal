@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
   tabButtonTextActive: { color: GOLD },
   avatarPanel: {
     marginTop: 16,
-    backgroundColor: 'rgba(30, 17, 64, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderRadius: 20,
     borderWidth: 1.5,
     borderColor: GOLD_SOFT,

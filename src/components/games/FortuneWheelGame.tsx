@@ -18,7 +18,7 @@ import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/c
 const SLICES = [
   { id: 0, label: '10 Coin', type: 'coin', value: 10, color: '#1a103c', stroke: '#F59E0B', textColor: '#FBBF24', icon: 'star' },
   { id: 1, label: '5 Coin', type: 'coin', value: 5, color: '#130d2d', stroke: '#38BDF8', textColor: '#7DD3FC', icon: 'star-outline' },
-  { id: 2, label: '25 Coin', type: 'coin', value: 25, color: '#2a1a4e', stroke: '#F2C879', textColor: '#F2C879', isJackpot: true, icon: 'crown' },
+  { id: 2, label: '25 Coin', type: 'coin', value: 25, color: '#2a1a4e', stroke: '#FFC93C', textColor: '#FFC93C', isJackpot: true, icon: 'crown' },
   { id: 3, label: '1 Kredi', type: 'credit', value: 1, color: '#130d2d', stroke: '#A855F7', textColor: '#C084FC', icon: 'crystal-ball' },
   { id: 4, label: '15 Coin', type: 'coin', value: 15, color: '#1a103c', stroke: '#EC4899', textColor: '#F472B6', icon: 'star' },
   { id: 5, label: 'Mistik Mesaj', type: 'message', value: 0, color: '#130d2d', stroke: '#10B981', textColor: '#34D399', icon: 'book-open-variant' },
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
   },
   prizeCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.95)',
+    backgroundColor: 'rgba(30, 30, 32, 0.95)',
     borderRadius: 18,
     borderWidth: 1.2,
     borderColor: GOLD,
@@ -338,10 +338,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    backgroundColor: 'rgba(255, 201, 60, 0.1)',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     padding: 14,
   },
   cooldownText: {

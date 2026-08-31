@@ -123,13 +123,13 @@ export default function MagazaScreen({ navigation }: Props) {
         <Text style={styles.sectionLabel}>Oyunlar</Text>
         <View style={styles.list}>
           <Pressable
-            onPress={() => navigation.navigate('KaderKasabasi')}
+            onPress={() => navigation.navigate('OyunMerkezi')}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <FeatureIcon fallback={<MaterialCommunityIcons name="city-variant-outline" size={22} color={GOLD} />} size={74} />
+            <FeatureIcon fallback={<Ionicons name="game-controller-outline" size={22} color={GOLD} />} size={74} />
             <View style={styles.cardTextWrap}>
-              <Text style={styles.cardTitle}>Kader Kasabası</Text>
-              <Text style={styles.cardSubtitle}>Kasabanı gez, binalara gir</Text>
+              <Text style={styles.cardTitle}>Oyun Merkezi</Text>
+              <Text style={styles.cardSubtitle}>Yakında yeni oyunlar burada</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color={GOLD} />
           </Pressable>
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    backgroundColor: 'rgba(255, 201, 60, 0.1)',
     borderRadius: 18,
     borderWidth: 1,
     borderColor: GOLD_SOFT,

@@ -206,7 +206,7 @@ export default function TarotMemoryGame({ onClose }: { onClose: () => void }) {
                 </View>
               ) : (
                 <View style={styles.cardBack}>
-                  <MaterialCommunityIcons name="star-crescent" size={22} color="rgba(242, 200, 121, 0.4)" />
+                  <MaterialCommunityIcons name="star-crescent" size={22} color="rgba(255, 201, 60, 0.4)" />
                 </View>
               )}
             </Pressable>
@@ -291,10 +291,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: 'rgba(11, 10, 31, 0.7)',
+    backgroundColor: 'rgba(8, 7, 8, 0.7)',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
     paddingVertical: 4,
     paddingHorizontal: 10,
   },
@@ -319,10 +319,10 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   card: {
-    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    backgroundColor: 'rgba(30, 30, 32, 0.9)',
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardOpen: {
-    backgroundColor: 'rgba(11, 10, 31, 0.95)',
+    backgroundColor: 'rgba(8, 7, 8, 0.95)',
     borderColor: GOLD,
   },
   cardMatched: {
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
   },
   winCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.95)',
+    backgroundColor: 'rgba(30, 30, 32, 0.95)',
     borderRadius: 20,
     borderWidth: 1.5,
     borderColor: GOLD,

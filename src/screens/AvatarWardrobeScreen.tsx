@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
   stage: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(30, 17, 64, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderRadius: 24,
     borderWidth: 1.5,
     borderColor: GOLD_SOFT,
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },

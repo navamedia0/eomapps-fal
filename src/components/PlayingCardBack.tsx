@@ -2,7 +2,7 @@ import { View, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Rect, Circle, Line, G } from 'react-native-svg';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_MID, WALNUT, RED_ACCENT, CRYSTAL_BLUE } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_MID, INDIGO_DEEP, RED_ACCENT, CRYSTAL_BLUE } from '@/theme/colors';
 
 export type PlayingCardBackVariant = 'gold' | 'ruby' | 'amethyst';
 
@@ -11,7 +11,7 @@ type Props = { width?: number; variant?: PlayingCardBackVariant };
 // Katina deste stilleri: Klasik (altın), Aşk (yakut), Kader (ametist) — sadece
 // görsel/tonal bir seçim, açılımın rastgeleliğini etkilemez.
 const VARIANTS: Record<PlayingCardBackVariant, { base: [string, string]; accent: string; border: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }> = {
-  gold: { base: [WALNUT, NIGHT_CARD], accent: GOLD, border: GOLD_SOFT, icon: 'star-crescent' },
+  gold: { base: [INDIGO_DEEP, NIGHT_CARD], accent: GOLD, border: GOLD_SOFT, icon: 'star-crescent' },
   ruby: { base: ['#3A0F16', NIGHT_CARD], accent: RED_ACCENT, border: 'rgba(180, 35, 42, 0.4)', icon: 'heart' },
   amethyst: { base: [NIGHT_MID, NIGHT_CARD], accent: CRYSTAL_BLUE, border: 'rgba(139, 92, 246, 0.4)', icon: 'star-four-points' },
 };

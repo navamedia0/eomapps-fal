@@ -14,13 +14,12 @@ type Props = {
   buttonLabel?: string;
   loadingLines?: string[];
   minLoadMs?: number;
-  // 'loading' — bir önceki ekranda zaten bir "başla" butonuna basıldıysa
-  // (ör. Keşif Salonu'nun giriş ekranı), burada tekrar buton göstermeden
-  // doğrudan yükleme adımından başlar.
+  // 'loading' — bir önceki ekranda zaten bir "başla" butonuna basıldıysa,
+  // burada tekrar buton göstermeden doğrudan yükleme adımından başlar.
   initialPhase?: Phase;
   // Verilirse gate/loading aşamalarında sol üstte küçük, saydam bir "geri dön"
   // butonu gösterir. 'ready' aşamasında gösterilmez — içerik (children) kendi
-  // çıkış kontrolünü kendi HUD'unda yönetir (ör. Keşif Salonu'nun savaş HUD'u).
+  // çıkış kontrolünü kendi HUD'unda yönetir.
   onExit?: () => void;
   children: ReactNode;
 };
@@ -120,7 +119,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: 'rgba(30, 17, 64, 0.8)',
+    backgroundColor: 'rgba(30, 30, 32, 0.8)',
     borderWidth: 1.4,
     borderColor: GOLD,
     alignItems: 'center',

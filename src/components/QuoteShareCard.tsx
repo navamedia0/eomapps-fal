@@ -33,7 +33,7 @@ const QuoteShareCard = forwardRef<View, Props>(({ text, paletteIndex }, ref) => 
         <MaterialCommunityIcons
           name="star-crescent"
           size={24}
-          color="rgba(242, 200, 121, 0.95)"
+          color="rgba(255, 201, 60, 0.95)"
           style={styles.sparkle}
         />
 
@@ -45,9 +45,9 @@ const QuoteShareCard = forwardRef<View, Props>(({ text, paletteIndex }, ref) => 
         {/* Alt Marka İmzası */}
         <View style={styles.brandRow}>
           <View style={styles.brandLine} />
-          <Ionicons name="moon" size={12} color="rgba(242, 200, 121, 0.9)" />
+          <Ionicons name="moon" size={12} color="rgba(255, 201, 60, 0.9)" />
           <Text style={styles.brand}>MİSTİK REHBER</Text>
-          <Ionicons name="star" size={10} color="rgba(242, 200, 121, 0.9)" />
+          <Ionicons name="star" size={10} color="rgba(255, 201, 60, 0.9)" />
           <View style={styles.brandLine} />
         </View>
       </View>
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   dim: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(11, 10, 31, 0.22)',
+    backgroundColor: 'rgba(8, 7, 8, 0.22)',
   },
   watermarkIcon: {
     position: 'absolute',

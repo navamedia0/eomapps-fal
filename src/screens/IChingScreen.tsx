@@ -375,9 +375,9 @@ const styles = StyleSheet.create({
   },
   tossCard: {
     width: '100%',
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     borderRadius: 18,
     padding: 20,
     gap: 16,
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
   },
   tossRevealBox: {
     alignItems: 'center',
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
     borderRadius: 27,
     overflow: 'hidden',
     borderWidth: 1.5,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   hexCard: {
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderWidth: 1.2,
     borderColor: GOLD,
     borderRadius: 18,
@@ -596,7 +596,7 @@ const styles = StyleSheet.create({
   },
   hexDivider: {
     height: 1,
-    backgroundColor: 'rgba(242, 200, 121, 0.2)',
+    backgroundColor: 'rgba(255, 201, 60, 0.2)',
     marginVertical: 4,
   },
   hexJudgment: {
@@ -624,16 +624,16 @@ const styles = StyleSheet.create({
   },
   modeCard: {
     flex: 1,
-    backgroundColor: 'rgba(26, 16, 52, 0.75)',
+    backgroundColor: 'rgba(30, 30, 32, 0.75)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     borderRadius: 14,
     padding: 12,
     gap: 4,
   },
   modeCardActive: {
     borderColor: GOLD,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
   },
   modeCardDeep: {
     backgroundColor: 'rgba(35, 20, 70, 0.85)',

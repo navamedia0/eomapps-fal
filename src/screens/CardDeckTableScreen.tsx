@@ -1574,7 +1574,7 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                   </Text>
                 </View>
 
-                <View style={[styles.friendInputCard, { borderColor: 'rgba(242, 200, 121, 0.25)' }]}>
+                <View style={[styles.friendInputCard, { borderColor: 'rgba(255, 201, 60, 0.25)' }]}>
                   <View style={styles.friendHeaderRow}>
                     <MaterialCommunityIcons name="heart-pulse" size={18} color="#F43F5E" />
                     <Text style={[styles.friendInputTitle, { color: '#FFFFFF' }]}>
@@ -1938,7 +1938,7 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                                   styles.fullGridCardTile,
                                   deck.id === 'rune' && { backgroundColor: 'transparent', borderWidth: 0 },
                                   isPicked && styles.fullGridTilePicked,
-                                  { borderColor: isPicked ? GOLD : 'rgba(242, 200, 121, 0.3)' },
+                                  { borderColor: isPicked ? GOLD : 'rgba(255, 201, 60, 0.3)' },
                                 ]}
                               >
                                 <Image source={deck.cardBackImage} style={styles.fullGridTileImg} resizeMode="contain" />
@@ -3156,7 +3156,7 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                           style={[
                             styles.pairScorePill,
                             {
-                              backgroundColor: pair.score >= 85 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(242, 200, 121, 0.15)',
+                              backgroundColor: pair.score >= 85 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 201, 60, 0.15)',
                               borderColor: pair.score >= 85 ? '#10B981' : deck.accent,
                             },
                           ]}
@@ -4797,7 +4797,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderWidth: 1.2,
     borderColor: GOLD_SOFT,
     alignItems: 'center',
@@ -4821,7 +4821,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    backgroundColor: 'rgba(255, 201, 60, 0.15)',
     borderWidth: 1,
     borderRadius: 12,
     paddingVertical: 5,
@@ -4865,7 +4865,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(22, 12, 44, 0.82)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
     borderRadius: 16,
     padding: 14,
     alignItems: 'center',
@@ -4888,7 +4888,7 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
   friendInputCard: {
-    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    backgroundColor: 'rgba(30, 30, 32, 0.9)',
     borderWidth: 1.2,
     borderRadius: 16,
     padding: 14,
@@ -4906,7 +4906,7 @@ const styles = StyleSheet.create({
   friendTextInput: {
     backgroundColor: 'rgba(10, 5, 24, 0.75)',
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     borderRadius: 10,
     minHeight: 46,
     paddingVertical: 10,
@@ -4967,7 +4967,7 @@ const styles = StyleSheet.create({
   spreadCard: {
     backgroundColor: 'rgba(22, 12, 44, 0.82)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
     borderRadius: 16,
     padding: 14,
     gap: 6,
@@ -5015,7 +5015,7 @@ const styles = StyleSheet.create({
     width: (SCREEN_WIDTH - 40) / 2,
     backgroundColor: 'rgba(22, 12, 44, 0.82)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
     borderRadius: 14,
     padding: 10,
     alignItems: 'center',
@@ -5111,7 +5111,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(15, 8, 32, 0.8)',
     borderRadius: 18,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     padding: 10,
     alignItems: 'center',
     gap: 8,
@@ -5451,7 +5451,7 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 10,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(242, 200, 121, 0.2)',
+    borderBottomColor: 'rgba(255, 201, 60, 0.2)',
   },
   ritualBackBtn: {
     flexDirection: 'row',
@@ -5470,7 +5470,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    backgroundColor: 'rgba(255, 201, 60, 0.15)',
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 12,
@@ -5793,7 +5793,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingLeft: 10,
     borderLeftWidth: 1,
-    borderLeftColor: 'rgba(242, 200, 121, 0.2)',
+    borderLeftColor: 'rgba(255, 201, 60, 0.2)',
   },
 
   // 5 Kart Haç Geometrisi
@@ -6050,7 +6050,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    backgroundColor: 'rgba(255, 201, 60, 0.15)',
     borderWidth: 1,
     borderColor: GOLD_SOFT,
     borderRadius: 10,
@@ -6277,14 +6277,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(15, 8, 30, 0.9)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     overflow: 'hidden',
   },
   relTableHeaderRow: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(242, 200, 121, 0.3)',
+    borderBottomColor: 'rgba(255, 201, 60, 0.3)',
   },
   relTableColHead: {
     flex: 1,
@@ -6305,7 +6305,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
     paddingVertical: 10,
   },
   relTableCenterColHeadText: {
@@ -6368,11 +6368,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.12)',
+    borderColor: 'rgba(255, 201, 60, 0.12)',
     gap: 2,
   },
   relLayerBadge: {
-    backgroundColor: 'rgba(242, 200, 121, 0.18)',
+    backgroundColor: 'rgba(255, 201, 60, 0.18)',
     borderRadius: 6,
     paddingHorizontal: 5,
     paddingVertical: 1,
@@ -6577,8 +6577,8 @@ const styles = StyleSheet.create({
   },
   emptyTableSlotBoxNext: {
     borderStyle: 'solid',
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
-    shadowColor: '#F2C879',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
+    shadowColor: '#FFC93C',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 10,
@@ -6650,7 +6650,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 8,
     borderWidth: 1,
-    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    backgroundColor: 'rgba(255, 201, 60, 0.1)',
   },
   seeSpreadAnimationBtnText: {
     fontSize: 11,
@@ -6752,7 +6752,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 94,
     borderWidth: 2,
-    shadowColor: '#F2C879',
+    shadowColor: '#FFC93C',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.85,
     shadowRadius: 8,
@@ -6872,8 +6872,8 @@ const styles = StyleSheet.create({
     borderColor: '#F43F5E',
   },
   dockPersonTabActiveBridge: {
-    backgroundColor: 'rgba(242, 200, 121, 0.2)',
-    borderColor: '#F2C879',
+    backgroundColor: 'rgba(255, 201, 60, 0.2)',
+    borderColor: '#FFC93C',
   },
   dockPersonTabText: {
     fontSize: 11,
@@ -6964,7 +6964,7 @@ const styles = StyleSheet.create({
   },
   gridCardPlaceholderSymbol: {
     fontSize: 28,
-    color: '#F2C879',
+    color: '#FFC93C',
   },
   gridCardName: {
     fontSize: 13.5,
@@ -7056,7 +7056,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0515',
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     padding: 16,
     gap: 12,
   },
@@ -7081,7 +7081,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     padding: 14,
     overflow: 'hidden',
   },
@@ -7094,12 +7094,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 1,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
   },
   spreadReplayBtnText: {
     fontSize: 13,
     fontWeight: '900',
-    color: '#F2C879',
+    color: '#FFC93C',
   },
   spreadCloseBtn: {
     paddingVertical: 12,
@@ -7177,7 +7177,7 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontSize: 13,
     fontWeight: '900',
-    color: '#F2C879',
+    color: '#FFC93C',
     letterSpacing: 0.8,
     marginTop: 8,
   },
@@ -7197,14 +7197,14 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 8,
-    backgroundColor: 'rgba(242, 200, 121, 0.2)',
+    backgroundColor: 'rgba(255, 201, 60, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   pairLevelNumber: {
     fontSize: 12,
     fontWeight: '900',
-    color: '#F2C879',
+    color: '#FFC93C',
   },
   pairHeaderTextWrap: {
     flex: 1,
@@ -7289,7 +7289,7 @@ const styles = StyleSheet.create({
   },
   pairCardPlaceholderSym: {
     fontSize: 24,
-    color: '#F2C879',
+    color: '#FFC93C',
   },
   pairCardReversedBadge: {
     position: 'absolute',
@@ -7466,7 +7466,7 @@ const styles = StyleSheet.create({
   tableVsText: {
     fontSize: 9,
     fontWeight: '900',
-    color: '#F2C879',
+    color: '#FFC93C',
     letterSpacing: 0.5,
   },
   tableHeaderColRight: {
@@ -7577,11 +7577,11 @@ const styles = StyleSheet.create({
 
   // --- ELEMENT SYNERGY BAR & SYNTHESIS & ADVICE ---
   elementSynergyBanner: {
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
     borderRadius: 10,
     padding: 10,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
     gap: 6,
   },
   synergyTitleRow: {
@@ -7592,7 +7592,7 @@ const styles = StyleSheet.create({
   synergyBannerTitle: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#F2C879',
+    color: '#FFC93C',
   },
   synergyTrack: {
     height: 6,
@@ -7623,11 +7623,11 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   pairAdviceBox: {
-    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    backgroundColor: 'rgba(255, 201, 60, 0.1)',
     borderRadius: 12,
     padding: 12,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     gap: 6,
   },
   adviceHeaderRow: {
@@ -7638,7 +7638,7 @@ const styles = StyleSheet.create({
   adviceHeadingText: {
     fontSize: 12,
     fontWeight: '900',
-    color: '#F2C879',
+    color: '#FFC93C',
   },
   pairAdviceText: {
     fontSize: 12.5,

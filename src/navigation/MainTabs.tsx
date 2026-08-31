@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react';
-import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
+import { Pressable, Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TabView, type NavigationState, type SceneRendererProps } from 'react-native-tab-view';
@@ -11,7 +11,6 @@ import SohbetScreen from '@/screens/SohbetScreen';
 import MagazaScreen from '@/screens/MagazaScreen';
 import ProfilScreen from '@/screens/ProfilScreen';
 import WalletBadge from '@/components/WalletBadge';
-import { NAV_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_MID, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -19,9 +18,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 type TabKey = keyof MainTabParamList;
 type TabRoute = { key: TabKey; title: string };
 
-// Kader Kasabası burada YOK — TabView'ın navigationState.routes'una girseydi
+// Oyun Merkezi burada YOK — TabView'ın navigationState.routes'una girseydi
 // (renderScene null döndürse bile) yatay kaydırma onu boş bir sekme olarak
-// yine de gösterirdi. Ayrı, tam ekran bir "dünya" olduğu için sekme
+// yine de gösterirdi. Ayrı, tam ekran bir ekran olduğu için sekme
 // çubuğunda ayrı, statik bir buton olarak render ediliyor (aşağıda).
 const ROUTES: TabRoute[] = [
   { key: 'AnaSayfa', title: 'Ana Sayfa' },
@@ -31,11 +30,20 @@ const ROUTES: TabRoute[] = [
   { key: 'Profil', title: 'Profil' },
 ];
 
-// Sohbet için henüz özel sanat üretilmedi (Kader Atölyesi belgesindeki
-// görsel üretim hattını bekliyor) — o güne kadar Ionicons üzerinden tutarlı
-// bir geçici simge gösteriyoruz.
-const FALLBACK_TAB_ICONS: Partial<Record<TabKey, keyof typeof Ionicons.glyphMap>> = {
+// Düz vektör ikon seti: odaklıyken dolu, değilken çerçeveli varyant.
+const TAB_ICONS_FILLED: Record<TabKey, keyof typeof Ionicons.glyphMap> = {
+  AnaSayfa: 'home',
+  Kesfet: 'compass',
+  Sohbet: 'chatbubbles',
+  Magaza: 'storefront',
+  Profil: 'person-circle',
+};
+const TAB_ICONS_OUTLINE: Record<TabKey, keyof typeof Ionicons.glyphMap> = {
+  AnaSayfa: 'home-outline',
+  Kesfet: 'compass-outline',
   Sohbet: 'chatbubbles-outline',
+  Magaza: 'storefront-outline',
+  Profil: 'person-circle-outline',
 };
 
 export default function MainTabs({ navigation }: Props) {
@@ -78,41 +86,33 @@ export default function MainTabs({ navigation }: Props) {
               return (
                 <Fragment key={route.key}>
                   <Pressable onPress={() => jumpTo(route.key)} style={styles.tabItem} hitSlop={4}>
-                    {/* Dış siyah kareleri kırparak sadece mor yuvarlak çerçeveyi ve büyütülmüş simgeyi gösterir */}
+                    {focused && <View style={styles.activeIndicator} />}
                     <View style={[styles.tabIconClip, focused && styles.tabIconClipActive]}>
-                      {NAV_ICONS[route.key as keyof typeof NAV_ICONS] ? (
-                        <Image
-                          source={NAV_ICONS[route.key as keyof typeof NAV_ICONS]}
-                          style={[styles.tabIcon, { opacity: focused ? 1 : 0.65 }]}
-                          resizeMode="cover"
-                        />
-                      ) : (
-                        <Ionicons
-                          name={FALLBACK_TAB_ICONS[route.key] ?? 'ellipse-outline'}
-                          size={26}
-                          color={focused ? GOLD : TEXT_MUTED}
-                        />
-                      )}
+                      <Ionicons
+                        name={focused ? TAB_ICONS_FILLED[route.key] : TAB_ICONS_OUTLINE[route.key]}
+                        size={24}
+                        color={focused ? GOLD : TEXT_MUTED}
+                      />
                     </View>
                     <Text style={[styles.tabLabel, { color: focused ? GOLD : TEXT_MUTED }]} numberOfLines={1}>
                       {route.title}
                     </Text>
                   </Pressable>
                   {route.key === 'Sohbet' && (
-                    // Kader Kasabası: TabView'ın navigationState.routes'unun
+                    // Oyun Merkezi: TabView'ın navigationState.routes'unun
                     // DIŞINDA, bağımsız statik bir buton — bu yüzden yatay
                     // kaydırmayla asla ulaşılamaz, sadece dokunarak stack
                     // üzerinden tam ekran ayrı bir ekran olarak açılır.
                     <Pressable
-                      onPress={() => navigation.navigate('KaderKasabasi')}
+                      onPress={() => navigation.navigate('OyunMerkezi')}
                       style={styles.tabItem}
                       hitSlop={4}
                     >
                       <View style={styles.tabIconClip}>
-                        <Ionicons name="business-outline" size={26} color={TEXT_MUTED} />
+                        <Ionicons name="game-controller-outline" size={24} color={TEXT_MUTED} />
                       </View>
                       <Text style={[styles.tabLabel, { color: TEXT_MUTED }]} numberOfLines={1}>
-                        Kader Kas...
+                        Oyun Mer...
                       </Text>
                     </Pressable>
                   )}
@@ -151,27 +151,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  activeIndicator: {
+    position: 'absolute',
+    top: -8,
+    width: 22,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: GOLD,
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+  },
   tabIconClip: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     borderRadius: 12,
-    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 5,
   },
   tabIconClipActive: {
-    borderWidth: 1.5,
-    borderColor: GOLD,
-    shadowColor: GOLD,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 6,
-    elevation: 6,
-  },
-  tabIcon: {
-    width: 56,
-    height: 56,
+    backgroundColor: 'rgba(255, 201, 60, 0.14)',
   },
   tabLabel: {
     fontSize: 11,

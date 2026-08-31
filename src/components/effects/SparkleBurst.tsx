@@ -40,7 +40,7 @@ type Props = {
 };
 
 /** Small radiating particle burst — a lightweight, dependency-free stand-in for a Lottie "win" effect. */
-export default function SparkleBurst({ active, color = '#F2C879', count = 10, radius = 46 }: Props) {
+export default function SparkleBurst({ active, color = '#FFC93C', count = 10, radius = 46 }: Props) {
   const particles = useMemo(
     () => Array.from({ length: count }, (_, i) => ({ angle: (i / count) * Math.PI * 2, delay: (i % 3) * 18 })),
     [count],

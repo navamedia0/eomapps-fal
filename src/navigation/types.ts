@@ -81,9 +81,7 @@ export type RootStackParamList = {
   Achievements: undefined;
   Popularity: undefined;
   Garden: undefined;
-  KaderKasabasi: undefined;
-  KesifSalonu: undefined;
-  KesifSalonuOyun: undefined;
+  OyunMerkezi: undefined;
   CardDeckHub: undefined;
   CardDeckTable: { deckId: string; initialMode?: 'self' | 'relationship' };
   LenormandResult: {

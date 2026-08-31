@@ -278,7 +278,7 @@ export default function CompatibilityScreen({ navigation }: Props) {
             {/* ÜST BAŞLIK KARTI */}
             <View style={styles.pairHeaderCard}>
               <LinearGradient
-                colors={['rgba(242, 200, 121, 0.15)', 'rgba(168, 85, 247, 0.2)']}
+                colors={['rgba(255, 201, 60, 0.15)', 'rgba(255, 138, 0, 0.2)']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFillObject}
@@ -401,7 +401,7 @@ export default function CompatibilityScreen({ navigation }: Props) {
             {isDeepLoading && (
               <View style={styles.deepLoadingCard}>
                 <LinearGradient
-                  colors={['rgba(242, 200, 121, 0.16)', 'rgba(168, 85, 247, 0.22)', 'rgba(11, 10, 31, 0.95)']}
+                  colors={['rgba(255, 201, 60, 0.16)', 'rgba(255, 138, 0, 0.22)', 'rgba(8, 7, 8, 0.95)']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={StyleSheet.absoluteFillObject}
@@ -552,10 +552,10 @@ const styles = StyleSheet.create({
     width: '31%',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     paddingVertical: 14,
     paddingHorizontal: 4,
   },
@@ -582,11 +582,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
-    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    backgroundColor: 'rgba(30, 30, 32, 0.9)',
     borderRadius: 14,
     padding: 10,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     marginBottom: 8,
   },
   selectedPill: {
@@ -623,7 +623,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     borderRadius: 20,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     padding: 18,
     alignItems: 'center',
     gap: 10,
@@ -690,10 +690,10 @@ const styles = StyleSheet.create({
   },
   featureCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.88)',
+    backgroundColor: 'rgba(30, 30, 32, 0.88)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     padding: 14,
     gap: 6,
   },
@@ -714,10 +714,10 @@ const styles = StyleSheet.create({
   },
   aiCtaCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.95)',
+    backgroundColor: 'rgba(30, 30, 32, 0.95)',
     borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: 'rgba(242, 200, 121, 0.45)',
+    borderColor: 'rgba(255, 201, 60, 0.45)',
     padding: 18,
     gap: 10,
     marginTop: 6,
@@ -737,7 +737,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    backgroundColor: 'rgba(255, 201, 60, 0.15)',
     borderRadius: 8,
     paddingVertical: 3,
     paddingHorizontal: 8,
@@ -798,7 +798,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    backgroundColor: 'rgba(30, 30, 32, 0.9)',
     borderWidth: 1.5,
     borderColor: GOLD,
     borderRadius: 14,
@@ -830,10 +830,10 @@ const styles = StyleSheet.create({
     color: GOLD_SOFT,
   },
   activeStageCard: {
-    backgroundColor: 'rgba(11, 10, 31, 0.8)',
+    backgroundColor: 'rgba(8, 7, 8, 0.8)',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     padding: 12,
     width: '100%',
     gap: 4,
@@ -869,7 +869,7 @@ const styles = StyleSheet.create({
   },
   aiReportCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.95)',
+    backgroundColor: 'rgba(30, 30, 32, 0.95)',
     borderRadius: 20,
     borderWidth: 1.5,
     borderColor: GOLD,
@@ -882,7 +882,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(242, 200, 121, 0.2)',
+    borderBottomColor: 'rgba(255, 201, 60, 0.2)',
     paddingBottom: 10,
   },
   aiReportTitle: {
@@ -907,7 +907,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     borderRadius: 14,
     paddingVertical: 12,
     marginTop: 8,

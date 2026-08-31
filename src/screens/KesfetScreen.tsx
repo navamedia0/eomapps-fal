@@ -347,14 +347,14 @@ function LikeOptionsModal({
             }}
             style={[styles.likeOptionRow, styles.luxuryLikeRow]}
           >
-            <View style={[styles.likeOptionIconCircle, { backgroundColor: 'rgba(242, 200, 121, 0.2)' }]}>
+            <View style={[styles.likeOptionIconCircle, { backgroundColor: 'rgba(255, 201, 60, 0.2)' }]}>
               <MaterialCommunityIcons name="crown" size={22} color={GOLD} />
             </View>
             <View style={styles.likeOptionTextWrap}>
               <Text style={[styles.likeOptionName, { color: GOLD }]}>Lüks Beğeni (x5)</Text>
               <Text style={styles.likeOptionDesc}>+5 Beğeni ekler, popülerliğe taşır</Text>
             </View>
-            <View style={[styles.likeOptionPriceBadge, { backgroundColor: 'rgba(242, 200, 121, 0.22)' }]}>
+            <View style={[styles.likeOptionPriceBadge, { backgroundColor: 'rgba(255, 201, 60, 0.22)' }]}>
               <Ionicons name="diamond" size={13} color={GOLD} />
               <Text style={[styles.likeOptionDiamondText, { color: GOLD }]}>{LUXURY_LIKE_DIAMONDS} 💎</Text>
             </View>
@@ -976,12 +976,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   tabSwitchGrid: {
-    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    backgroundColor: 'rgba(30, 30, 32, 0.9)',
     borderRadius: 16,
     padding: 6,
     marginBottom: 14,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     gap: 6,
   },
   tabSwitchRow: {
@@ -1065,7 +1065,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(30, 20, 58, 0.9)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     padding: 12,
     gap: 10,
     marginBottom: 8,
@@ -1079,7 +1079,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    backgroundColor: 'rgba(255, 201, 60, 0.15)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -1093,7 +1093,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(30, 20, 58, 0.95)',
     borderRadius: 16,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
     padding: 14,
     marginBottom: 8,
     gap: 10,
@@ -1128,7 +1128,7 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingTop: 6,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(242, 200, 121, 0.15)',
+    borderTopColor: 'rgba(255, 201, 60, 0.15)',
   },
   composerIconButton: {
     padding: 4,
@@ -1166,14 +1166,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(30, 20, 58, 0.92)',
     borderRadius: 18,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     overflow: 'hidden',
   },
   statusCard: {
     backgroundColor: 'rgba(30, 20, 58, 0.92)',
     borderRadius: 16,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     padding: 16,
   },
   popularRoyalOuterBox: {
@@ -1374,7 +1374,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   feedRetryButton: {
-    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    backgroundColor: 'rgba(255, 201, 60, 0.15)',
     borderWidth: 1,
     borderColor: GOLD,
     paddingHorizontal: 16,
@@ -1409,10 +1409,10 @@ const styles = StyleSheet.create({
     paddingBottom: 36,
   },
   likeOptionsCard: {
-    backgroundColor: 'rgba(26, 16, 52, 0.98)',
+    backgroundColor: 'rgba(30, 30, 32, 0.98)',
     borderRadius: 22,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     padding: 18,
     gap: 10,
   },
@@ -1433,7 +1433,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(38, 24, 70, 0.85)',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
     padding: 12,
     gap: 12,
   },
@@ -1442,7 +1442,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(30, 38, 80, 0.9)',
   },
   luxuryLikeRow: {
-    borderColor: 'rgba(242, 200, 121, 0.5)',
+    borderColor: 'rgba(255, 201, 60, 0.5)',
     backgroundColor: 'rgba(48, 32, 85, 0.92)',
   },
   likeOptionIconCircle: {

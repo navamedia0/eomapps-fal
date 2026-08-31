@@ -1,26 +1,25 @@
-// "Cosmic Indigo" tema — koyu galaksi moru zemin, ametist ve lavanta vurgular,
-// altın CTA/aktif rengi. Eski sıcak ceviz/bordo "Kitaplık Teması"nın yerine geçti.
-export const GOLD = '#F2C879';
-export const GOLD_SOFT = 'rgba(242, 200, 121, 0.35)';
-export const GOLD_MUTED = '#C9A86A';
-export const GOLD_DEEP = '#B8862E';
-export const CANDLE_GLOW = '#F2C879';
+// "Yumuşak Siyah" tema — neredeyse siyah zemin, canlı altın/amber vurgular.
+// "Cosmic Indigo" (galaksi moru) paletinin yerine deneme amaçlı geçti; bu
+// dosyayı eski değerlere döndürmek geri almak için yeterli.
+export const GOLD = '#FFC93C';
+export const GOLD_SOFT = 'rgba(255, 201, 60, 0.35)';
+export const GOLD_MUTED = '#C9A227';
+export const GOLD_DEEP = '#FF8A00';
+export const CANDLE_GLOW = '#FFD60A';
 
-export const NIGHT_DEEP = '#0B0A1F';
-export const NIGHT_MID = '#150F30';
-export const NIGHT_CARD = '#1E1140';
-export const WALNUT = '#2A1B54';
+export const NIGHT_DEEP = '#080708';
+export const NIGHT_MID = '#121214';
+export const NIGHT_CARD = '#1E1E20';
+export const INDIGO_DEEP = '#2A2A2E';
 
-export const BORDO = '#5B3A9E';
-export const BORDO_DEEP = '#2A1B54';
-export const VELVET_MID = '#8B5CF6';
+export const VELVET_MID = '#36363C';
 
 export const CRYSTAL_BLUE = '#8B5CF6';
-export const RED_ACCENT = '#B4232A';
+export const RED_ACCENT = '#E50914';
 
-export const TEXT_PRIMARY = '#F5F0FF';
-export const TEXT_MUTED = '#C4A6FF';
-export const TEXT_CAPTION = '#A79BC4';
+export const TEXT_PRIMARY = '#FFFEFB';
+export const TEXT_MUTED = '#E8E2D0';
+export const TEXT_CAPTION = '#B8B5A8';
 
 // Bilgi Köşesi — kendi alt-teması olarak kalıyor (glassmorphism ametist tonu),
 // diğer ekranların indigo kart zemininden ayrışması için.

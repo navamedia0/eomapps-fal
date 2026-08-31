@@ -99,13 +99,13 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(242, 200, 121, 0.15)',
+    borderTopColor: 'rgba(255, 201, 60, 0.15)',
   },
   buttonFirst: {
     borderTopWidth: 0,
   },
   buttonPrimary: {
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
   },
   buttonPressed: {
     opacity: 0.7,

@@ -260,13 +260,13 @@ const styles = StyleSheet.create({
   },
   bubbleUser: {
     alignSelf: 'flex-end',
-    backgroundColor: 'rgba(242, 200, 121, 0.16)',
-    borderColor: 'rgba(242, 200, 121, 0.55)',
+    backgroundColor: 'rgba(255, 201, 60, 0.16)',
+    borderColor: 'rgba(255, 201, 60, 0.55)',
     borderBottomRightRadius: 6,
   },
   bubbleModel: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(30, 17, 64, 0.92)',
+    backgroundColor: 'rgba(30, 30, 32, 0.92)',
     borderColor: GOLD_SOFT,
     borderBottomLeftRadius: 6,
   },
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   bubbleTextUser: {
     fontSize: 14,
     lineHeight: 21,
-    color: '#F5F0FF',
+    color: '#FFFEFB',
     fontWeight: '500',
   },
   bubbleTextModel: {

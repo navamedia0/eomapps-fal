@@ -201,7 +201,7 @@ export default function HaftaninSevilenleriScreen({ navigation }: Props) {
                   resizeMode="cover"
                 >
                   <LinearGradient
-                    colors={['rgba(11, 10, 31, 0.55)', 'rgba(11, 10, 31, 0.75)']}
+                    colors={['rgba(8, 7, 8, 0.55)', 'rgba(8, 7, 8, 0.75)']}
                     style={styles.quoteScrim}
                     pointerEvents="none"
                   />
@@ -344,9 +344,9 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingVertical: 11,
     borderRadius: 14,
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
   },
   categorySwitchBtnActive: {
     backgroundColor: GOLD,
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     minHeight: 110,
     justifyContent: 'space-between',
   },
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     borderRadius: 16,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     padding: 16,
     overflow: 'hidden',
   },
@@ -462,9 +462,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(242, 200, 121, 0.16)',
+    backgroundColor: 'rgba(255, 201, 60, 0.16)',
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
@@ -496,9 +496,9 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   actionBtnStyle: {
-    backgroundColor: 'rgba(242, 200, 121, 0.14)',
+    backgroundColor: 'rgba(255, 201, 60, 0.14)',
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 6,

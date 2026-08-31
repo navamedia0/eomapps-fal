@@ -128,7 +128,7 @@ export default function MiniGamesScreen() {
         {/* GÜNLÜK ÖDÜL DURUM KARTI */}
         <View style={styles.summaryBanner}>
           <LinearGradient
-            colors={['rgba(242, 200, 121, 0.18)', 'rgba(168, 85, 247, 0.22)']}
+            colors={['rgba(255, 201, 60, 0.18)', 'rgba(255, 138, 0, 0.22)']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={StyleSheet.absoluteFillObject}
@@ -243,9 +243,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
     borderRadius: 14,
     paddingVertical: 5,
     paddingHorizontal: 12,
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     gap: 12,
     borderRadius: 18,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     padding: 14,
     marginBottom: 20,
     overflow: 'hidden',
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 14,
-    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    backgroundColor: 'rgba(255, 201, 60, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -314,9 +314,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    backgroundColor: 'rgba(30, 30, 32, 0.9)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     borderRadius: 20,
     padding: 16,
     shadowColor: '#000',

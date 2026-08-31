@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     fontSize: 9.5,
     fontWeight: '700',
     color: '#fff',
-    backgroundColor: 'rgba(11, 10, 31, 0.75)',
+    backgroundColor: 'rgba(8, 7, 8, 0.75)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 8,

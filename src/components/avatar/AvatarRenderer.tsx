@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AVATAR_ASSETS } from '@/assets/avatar/registry';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, VELVET_MID, WALNUT } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, VELVET_MID, INDIGO_DEEP } from '@/theme/colors';
 import type { AvatarGender } from '@/services/socialProfile';
 
 type Props = {
@@ -127,7 +127,7 @@ export default function AvatarRenderer({
           )}
         </>
       ) : (
-        <View style={[styles.placeholder, { borderRadius: size / 2, backgroundColor: gender === 'male' ? WALNUT : NIGHT_CARD }]}>
+        <View style={[styles.placeholder, { borderRadius: size / 2, backgroundColor: gender === 'male' ? INDIGO_DEEP : NIGHT_CARD }]}>
           <Ionicons name="sparkles-outline" size={size * 0.4} color={GOLD} />
         </View>
       )}

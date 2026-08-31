@@ -407,7 +407,7 @@ export default function BirthChartScreen({ navigation }: Props) {
                   style={({ pressed }) => [styles.detailedCardBtn, pressed && styles.pressed]}
                 >
                   <LinearGradient
-                    colors={['rgba(242, 200, 121, 0.22)', 'rgba(168, 85, 247, 0.28)', 'rgba(26, 16, 52, 0.95)']}
+                    colors={['rgba(255, 201, 60, 0.22)', 'rgba(255, 138, 0, 0.28)', 'rgba(30, 30, 32, 0.95)']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={StyleSheet.absoluteFillObject}
@@ -458,7 +458,7 @@ export default function BirthChartScreen({ navigation }: Props) {
           {loading && isDetailedLoading && (
             <View style={styles.deepLoadingCard}>
               <LinearGradient
-                colors={['rgba(242, 200, 121, 0.16)', 'rgba(168, 85, 247, 0.22)', 'rgba(11, 10, 31, 0.95)']}
+                colors={['rgba(255, 201, 60, 0.16)', 'rgba(255, 138, 0, 0.22)', 'rgba(8, 7, 8, 0.95)']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFillObject}
@@ -1024,7 +1024,7 @@ export default function BirthChartScreen({ navigation }: Props) {
                 style={({ pressed }) => [styles.upgradeBanner, pressed && styles.pressed]}
               >
                 <LinearGradient
-                  colors={['rgba(242, 200, 121, 0.2)', 'rgba(168, 85, 247, 0.25)']}
+                  colors={['rgba(255, 201, 60, 0.2)', 'rgba(255, 138, 0, 0.25)']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={StyleSheet.absoluteFillObject}
@@ -1100,7 +1100,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: 'rgba(242, 200, 121, 0.45)',
+    borderColor: 'rgba(255, 201, 60, 0.45)',
     padding: 18,
     overflow: 'hidden',
     shadowColor: GOLD,
@@ -1134,9 +1134,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: 'rgba(26, 16, 52, 0.8)',
+    backgroundColor: 'rgba(30, 30, 32, 0.8)',
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
     borderRadius: 8,
     paddingVertical: 3,
     paddingHorizontal: 8,
@@ -1183,9 +1183,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     width: '100%',
-    backgroundColor: 'rgba(26, 16, 52, 0.75)',
+    backgroundColor: 'rgba(30, 30, 32, 0.75)',
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     borderRadius: 14,
     paddingVertical: 13,
   },
@@ -1206,10 +1206,10 @@ const styles = StyleSheet.create({
   },
   deepLoadingCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.9)',
+    backgroundColor: 'rgba(30, 30, 32, 0.9)',
     borderRadius: 24,
     borderWidth: 1.5,
-    borderColor: 'rgba(242, 200, 121, 0.45)',
+    borderColor: 'rgba(255, 201, 60, 0.45)',
     padding: 24,
     alignItems: 'center',
     overflow: 'hidden',
@@ -1237,7 +1237,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(11, 10, 31, 0.85)',
+    backgroundColor: 'rgba(8, 7, 8, 0.85)',
     borderWidth: 1.5,
     borderColor: GOLD,
     borderRadius: 16,
@@ -1272,10 +1272,10 @@ const styles = StyleSheet.create({
   },
   activeStageCard: {
     width: '100%',
-    backgroundColor: 'rgba(11, 10, 31, 0.75)',
+    backgroundColor: 'rgba(8, 7, 8, 0.75)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     padding: 14,
     marginBottom: 16,
   },
@@ -1360,10 +1360,10 @@ const styles = StyleSheet.create({
   },
   resultHeaderCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderRadius: 20,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     padding: 16,
     alignItems: 'center',
     marginBottom: 16,
@@ -1388,11 +1388,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 6,
     marginBottom: 16,
-    backgroundColor: 'rgba(11, 10, 31, 0.7)',
+    backgroundColor: 'rgba(8, 7, 8, 0.7)',
     borderRadius: 14,
     padding: 4,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
   },
   tabButton: {
     flex: 1,
@@ -1419,10 +1419,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   wheelCard: {
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderRadius: 22,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 14,
@@ -1441,10 +1441,10 @@ const styles = StyleSheet.create({
   },
   signCard: {
     flex: 1,
-    backgroundColor: 'rgba(26, 16, 52, 0.88)',
+    backgroundColor: 'rgba(30, 30, 32, 0.88)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 6,
@@ -1461,10 +1461,10 @@ const styles = StyleSheet.create({
   },
   statsCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    backgroundColor: 'rgba(30, 30, 32, 0.85)',
     borderRadius: 18,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.3)',
+    borderColor: 'rgba(255, 201, 60, 0.3)',
     padding: 16,
   },
   statsHeader: {
@@ -1513,10 +1513,10 @@ const styles = StyleSheet.create({
   },
   planetCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.88)',
+    backgroundColor: 'rgba(30, 30, 32, 0.88)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.28)',
+    borderColor: 'rgba(255, 201, 60, 0.28)',
     padding: 14,
   },
   planetCardTop: {
@@ -1528,7 +1528,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: 'rgba(242, 200, 121, 0.12)',
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
     borderWidth: 1,
     borderColor: GOLD,
     alignItems: 'center',
@@ -1553,9 +1553,9 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   planetHouseBadge: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    backgroundColor: 'rgba(255, 138, 0, 0.2)',
     borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.4)',
+    borderColor: 'rgba(255, 138, 0, 0.4)',
     borderRadius: 8,
     paddingVertical: 4,
     paddingHorizontal: 8,
@@ -1588,10 +1588,10 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   houseCard: {
-    backgroundColor: 'rgba(26, 16, 52, 0.82)',
+    backgroundColor: 'rgba(30, 30, 32, 0.82)',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.22)',
+    borderColor: 'rgba(255, 201, 60, 0.22)',
     padding: 12,
   },
   houseHeaderRow: {
@@ -1627,7 +1627,7 @@ const styles = StyleSheet.create({
     color: TEXT_MUTED,
   },
   housePlanetPill: {
-    backgroundColor: 'rgba(242, 200, 121, 0.15)',
+    backgroundColor: 'rgba(255, 201, 60, 0.15)',
     borderRadius: 6,
     paddingVertical: 2,
     paddingHorizontal: 6,
@@ -1648,10 +1648,10 @@ const styles = StyleSheet.create({
   },
   aspectCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.88)',
+    backgroundColor: 'rgba(30, 30, 32, 0.88)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     padding: 14,
   },
   aspectTopRow: {
@@ -1690,10 +1690,10 @@ const styles = StyleSheet.create({
   },
   reportCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.92)',
+    backgroundColor: 'rgba(30, 30, 32, 0.92)',
     borderRadius: 18,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     padding: 16,
   },
   reportCardHeader: {
@@ -1728,10 +1728,10 @@ const styles = StyleSheet.create({
   },
   advCard: {
     position: 'relative',
-    backgroundColor: 'rgba(26, 16, 52, 0.92)',
+    backgroundColor: 'rgba(30, 30, 32, 0.92)',
     borderRadius: 20,
     borderWidth: 1.3,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     padding: 16,
   },
   advCardHeader: {
@@ -1756,10 +1756,10 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   soulmateItem: {
-    backgroundColor: 'rgba(11, 10, 31, 0.65)',
+    backgroundColor: 'rgba(8, 7, 8, 0.65)',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.2)',
+    borderColor: 'rgba(255, 201, 60, 0.2)',
     padding: 10,
     gap: 4,
   },
@@ -1807,11 +1807,11 @@ const styles = StyleSheet.create({
   },
   loveExtraCol: {
     flex: 1,
-    backgroundColor: 'rgba(11, 10, 31, 0.65)',
+    backgroundColor: 'rgba(8, 7, 8, 0.65)',
     borderRadius: 12,
     padding: 10,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.15)',
+    borderColor: 'rgba(255, 201, 60, 0.15)',
     gap: 2,
   },
   loveExtraHeading: {
@@ -1840,11 +1840,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: 'rgba(11, 10, 31, 0.7)',
+    backgroundColor: 'rgba(8, 7, 8, 0.7)',
     borderRadius: 14,
     padding: 10,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
   },
   rulerSymbolBig: {
     fontSize: 26,
@@ -1886,10 +1886,10 @@ const styles = StyleSheet.create({
     color: '#10B981',
   },
   nodeItem: {
-    backgroundColor: 'rgba(11, 10, 31, 0.65)',
+    backgroundColor: 'rgba(8, 7, 8, 0.65)',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.15)',
+    borderColor: 'rgba(255, 201, 60, 0.15)',
     padding: 10,
     gap: 4,
   },
@@ -1929,10 +1929,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   careerPill: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    backgroundColor: 'rgba(255, 138, 0, 0.2)',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.35)',
+    borderColor: 'rgba(255, 138, 0, 0.35)',
     paddingVertical: 3,
     paddingHorizontal: 8,
   },
@@ -1961,7 +1961,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 12,
     flex: 1.4,
-    backgroundColor: 'rgba(242, 200, 121, 0.08)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
   },
   resetButtonText: {
     fontSize: 13.5,
@@ -1993,7 +1993,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     borderRadius: 18,
     borderWidth: 1.2,
-    borderColor: 'rgba(242, 200, 121, 0.4)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
     padding: 16,
     overflow: 'hidden',
     marginBottom: 16,

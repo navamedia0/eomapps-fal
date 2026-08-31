@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(242, 200, 121, 0.1)',
+    backgroundColor: 'rgba(255, 201, 60, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -336,9 +336,9 @@ const styles = StyleSheet.create({
   },
   // DOSYA / KLASÖR GÖRÜNÜM STİLLERİ
   dossierCard: {
-    backgroundColor: 'rgba(26, 16, 52, 0.95)',
+    backgroundColor: 'rgba(30, 30, 32, 0.95)',
     borderWidth: 1.3,
-    borderColor: 'rgba(242, 200, 121, 0.35)',
+    borderColor: 'rgba(255, 201, 60, 0.35)',
     borderRadius: 18,
     padding: 14,
     gap: 8,
@@ -385,10 +385,10 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   dossierTag: {
-    backgroundColor: 'rgba(11, 10, 31, 0.7)',
+    backgroundColor: 'rgba(8, 7, 8, 0.7)',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(242, 200, 121, 0.25)',
+    borderColor: 'rgba(255, 201, 60, 0.25)',
     paddingVertical: 3,
     paddingHorizontal: 8,
   },
