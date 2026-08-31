@@ -91,9 +91,7 @@ import VipTiersScreen from '@/screens/VipTiersScreen';
 import AchievementsScreen from '@/screens/AchievementsScreen';
 import PopularityScreen from '@/screens/PopularityScreen';
 import GardenScreen from '@/screens/GardenScreen';
-import KaderKasabasiScreen from '@/screens/KaderKasabasiScreen';
-import KesifSalonuIntroScreen from '@/screens/KesifSalonuIntroScreen';
-import KesifSalonuGameScreen from '@/screens/KesifSalonuGameScreen';
+import OyunMerkeziScreen from '@/screens/OyunMerkeziScreen';
 import CardDeckHubScreen from '@/screens/CardDeckHubScreen';
 import CardDeckTableScreen from '@/screens/CardDeckTableScreen';
 import LenormandResultScreen from '@/screens/LenormandResultScreen';
@@ -250,9 +248,7 @@ export default function App() {
             <Stack.Screen name="Achievements" component={AchievementsScreen} options={{ title: 'Başarımlar' }} />
             <Stack.Screen name="Popularity" component={PopularityScreen} options={{ title: 'Haftalık Popülerlik' }} />
             <Stack.Screen name="Garden" component={GardenScreen} options={{ title: 'Kader Bahçesi' }} />
-            <Stack.Screen name="KaderKasabasi" component={KaderKasabasiScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="KesifSalonu" component={KesifSalonuIntroScreen} options={{ title: 'Keşif Salonu' }} />
-            <Stack.Screen name="KesifSalonuOyun" component={KesifSalonuGameScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="OyunMerkezi" component={OyunMerkeziScreen} options={{ headerShown: false }} />
             <Stack.Screen name="CardDeckHub" component={CardDeckHubScreen} options={{ headerShown: false }} />
             <Stack.Screen name="CardDeckTable" component={CardDeckTableScreen} options={{ headerShown: false }} />
             <Stack.Screen name="LenormandResult" component={LenormandResultScreen} options={{ headerShown: false }} />

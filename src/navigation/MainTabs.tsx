@@ -19,9 +19,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 type TabKey = keyof MainTabParamList;
 type TabRoute = { key: TabKey; title: string };
 
-// Kader Kasabası burada YOK — TabView'ın navigationState.routes'una girseydi
+// Oyun Merkezi burada YOK — TabView'ın navigationState.routes'una girseydi
 // (renderScene null döndürse bile) yatay kaydırma onu boş bir sekme olarak
-// yine de gösterirdi. Ayrı, tam ekran bir "dünya" olduğu için sekme
+// yine de gösterirdi. Ayrı, tam ekran bir ekran olduğu için sekme
 // çubuğunda ayrı, statik bir buton olarak render ediliyor (aşağıda).
 const ROUTES: TabRoute[] = [
   { key: 'AnaSayfa', title: 'Ana Sayfa' },
@@ -99,20 +99,20 @@ export default function MainTabs({ navigation }: Props) {
                     </Text>
                   </Pressable>
                   {route.key === 'Sohbet' && (
-                    // Kader Kasabası: TabView'ın navigationState.routes'unun
+                    // Oyun Merkezi: TabView'ın navigationState.routes'unun
                     // DIŞINDA, bağımsız statik bir buton — bu yüzden yatay
                     // kaydırmayla asla ulaşılamaz, sadece dokunarak stack
                     // üzerinden tam ekran ayrı bir ekran olarak açılır.
                     <Pressable
-                      onPress={() => navigation.navigate('KaderKasabasi')}
+                      onPress={() => navigation.navigate('OyunMerkezi')}
                       style={styles.tabItem}
                       hitSlop={4}
                     >
                       <View style={styles.tabIconClip}>
-                        <Ionicons name="business-outline" size={26} color={TEXT_MUTED} />
+                        <Ionicons name="game-controller-outline" size={26} color={TEXT_MUTED} />
                       </View>
                       <Text style={[styles.tabLabel, { color: TEXT_MUTED }]} numberOfLines={1}>
-                        Kader Kas...
+                        Oyun Mer...
                       </Text>
                     </Pressable>
                   )}

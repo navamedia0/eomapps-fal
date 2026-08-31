@@ -335,10 +335,9 @@ CREATE TABLE IF NOT EXISTS garden_plots (
   PRIMARY KEY (user_id, slot_index)
 );
 
--- Kader Kasabası içindeki hyper-casual oyunların (Keşif Salonu vb.) en iyi
--- skorları. game_key jenerik tutuldu (örn. 'kesif_salonu') — ileride eklenecek
--- 5-6 farklı oyun aynı tabloyu paylaşabilsin diye. Sadece final sonuç
--- yazılıyor (her vuruşta değil) — D1 yazma kotasını korumak için.
+-- Oyun Merkezi'ndeki oyunların en iyi skorları. game_key jenerik tutuldu —
+-- ileride eklenecek 5-6 farklı oyun aynı tabloyu paylaşabilsin diye. Sadece
+-- final sonuç yazılıyor (her vuruşta değil) — D1 yazma kotasını korumak için.
 CREATE TABLE IF NOT EXISTS game_scores (
   user_id TEXT NOT NULL REFERENCES users(id),
   game_key TEXT NOT NULL,

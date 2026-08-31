@@ -4,38 +4,36 @@ import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TabScreenProps } from '@/navigation/types';
-import { GOLD, GOLD_SOFT, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, NIGHT_DEEP } from '@/theme/colors';
 
 type Props = TabScreenProps;
 
-export default function KaderKasabasiScreen({ navigation }: Props) {
+export default function OyunMerkeziScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-      {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color="#fff" />
         </Pressable>
-        <Text style={styles.headerTitle}>Kader Kasabası</Text>
+        <Text style={styles.headerTitle}>Oyun Merkezi</Text>
         <View style={{ width: 40 }} />
       </View>
 
-      {/* Hero Body */}
       <View style={styles.content}>
         <LinearGradient colors={['#2A185C', '#140D36']} style={styles.card}>
           <View style={styles.iconCircle}>
-            <MaterialCommunityIcons name="castle" size={48} color={GOLD} />
+            <MaterialCommunityIcons name="controller-classic-outline" size={48} color={GOLD} />
           </View>
-          <Text style={styles.title}>Kader Kasabası Yeniden Tasarlanıyor</Text>
+          <Text style={styles.title}>Oyun Merkezi Yakında Açılıyor</Text>
           <Text style={styles.subtitle}>
-            Büyülü kasaba, yepyeni bir mimari, canlı karakterler ve modüler bina geliştirme sistemiyle baştan inşa ediliyor!
+            Okey gibi keyifli, klasik masa oyunları burada toplanacak. Şimdilik Mini Oyunlar bölümünden Coin kazanabilirsin.
           </Text>
 
           <View style={styles.badge}>
             <MaterialCommunityIcons name="hammer-wrench" size={16} color="#FDE68A" />
-            <Text style={styles.badgeText}>YENİ ÇAĞ YAKINDA</Text>
+            <Text style={styles.badgeText}>YAPIM AŞAMASINDA</Text>
           </View>
         </LinearGradient>
       </View>

@@ -13,8 +13,8 @@ async function authHeadersOrNull(): Promise<Record<string, string> | null> {
   return { Authorization: `Bearer ${session.token}`, ...appHeaders() };
 }
 
-// Giriş yapılmamışsa sessizce null döner — Kader Kasabası oyunları girişsiz de
-// oynanabilir, sunucu skoru sadece "varsa" senkronize edilir.
+// Giriş yapılmamışsa sessizce null döner — oyunlar girişsiz de oynanabilir,
+// sunucu skoru sadece "varsa" senkronize edilir.
 export async function getServerBestScore(gameKey: string): Promise<number | null> {
   const headers = await authHeadersOrNull();
   if (!headers) return null;
