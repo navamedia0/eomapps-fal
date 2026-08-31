@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Animated, View, Text, Pressable, Image, StyleSheet } from 'react-native';
+import { Animated, View, Text, Pressable, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { TabScreenProps } from '@/navigation/types';
@@ -10,6 +10,7 @@ import FeatureIcon from '@/components/FeatureIcon';
 import SozlerKoskuDrawerModal from '@/components/SozlerKoskuDrawerModal';
 import CompactCategoryCard from '@/components/fortune/CompactCategoryCard';
 import FortuneShelf from '@/components/home/FortuneShelf';
+import SoulOrbHero from '@/components/home/SoulOrbHero';
 import PsychologyTestsModal from '@/components/psychology/PsychologyTestsModal';
 import { FEATURE_ICONS } from '@/assets/icons';
 import {
@@ -19,8 +20,6 @@ import {
   TEXT_PRIMARY,
   TEXT_MUTED,
 } from '@/theme/colors';
-
-const UST_BANNER = require('@/assets/icons/ust_banner.png');
 
 type Props = TabScreenProps;
 
@@ -56,7 +55,7 @@ export default function HomeScreen({ navigation }: Props) {
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
         scrollEventThrottle={16}
       >
-        <Image source={UST_BANNER} style={styles.banner} resizeMode="cover" />
+        <SoulOrbHero />
 
         <View style={styles.header}>
           <MaterialCommunityIcons name="star-crescent" size={20} color={GOLD} style={styles.sparkle} />
@@ -329,12 +328,6 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 48,
     paddingHorizontal: 14,
-  },
-  banner: {
-    width: '100%',
-    height: 90,
-    borderRadius: 16,
-    marginBottom: 10,
   },
   header: {
     flexDirection: 'row',
