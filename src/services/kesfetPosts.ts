@@ -36,9 +36,10 @@ async function requireAuthHeaders(): Promise<Record<string, string>> {
   return { Authorization: `Bearer ${session.token}`, ...appHeaders() };
 }
 
-export async function getFeed(): Promise<KesfetFeedPost[]> {
+export async function getFeed(authorId?: string): Promise<KesfetFeedPost[]> {
   const headers = await optionalAuthHeaders();
-  const { posts } = await getJson<{ posts: KesfetFeedPost[] }>(`${env.socialApiUrl()}/posts`, headers);
+  const query = authorId ? `?authorId=${encodeURIComponent(authorId)}` : '';
+  const { posts } = await getJson<{ posts: KesfetFeedPost[] }>(`${env.socialApiUrl()}/posts${query}`, headers);
   return posts;
 }
 

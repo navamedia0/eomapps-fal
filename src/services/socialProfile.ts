@@ -10,11 +10,26 @@ export type SocialUser = {
   createdAt: string;
 };
 
+export type AvatarGender = 'female' | 'male';
+
+export type AvatarState = {
+  gender: AvatarGender | null;
+  hatItemId: string | null;
+  capeItemId: string | null;
+  outfitItemId: string | null;
+  pantsItemId: string | null;
+};
+
 export type SocialProfile = {
   user: SocialUser;
   followerCount: number;
   followingCount: number;
   isFollowing: boolean;
+  xp: number;
+  level: number;
+  achievementCount: number;
+  popularityScore: number;
+  avatar: AvatarState;
 };
 
 function appHeaders(): Record<string, string> {
@@ -71,4 +86,16 @@ export async function getBlockedUsers(): Promise<BlockedUser[]> {
 export async function unblockUser(userId: string): Promise<void> {
   const headers = await requireAuthHeaders();
   await deleteRequest(`${env.socialApiUrl()}/block/${userId}`, headers);
+}
+
+export async function setAvatarGender(gender: AvatarGender): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await postJson(`${env.socialApiUrl()}/avatar/gender`, { gender }, headers);
+}
+
+export type AvatarSlot = 'hat' | 'cape' | 'outfit' | 'pants';
+
+export async function equipAvatarItem(slot: AvatarSlot, itemId: string | null): Promise<void> {
+  const headers = await requireAuthHeaders();
+  await postJson(`${env.socialApiUrl()}/avatar/equip`, { slot, itemId }, headers);
 }

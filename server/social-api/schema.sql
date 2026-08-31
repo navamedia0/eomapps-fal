@@ -1,6 +1,9 @@
 -- Mistik Rehber Social API — D1 şeması
 -- Faz 0: hesap sistemi + Faz 1: takip/engelle ilişkileri + Keşfet gönderileri
 
+-- xp/avatar_gender sonradan eklendi (Faz 9, profil/karakter sistemi) — var
+-- olan uzak veritabanında ayrı bir ALTER TABLE ile (bkz. README "Seviye ve
+-- Karakter Sistemi"); burada fresh-DB kurulumları için tanımlıdır.
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   provider TEXT NOT NULL,          -- 'google' | 'apple'
@@ -9,6 +12,8 @@ CREATE TABLE IF NOT EXISTS users (
   display_name TEXT,
   avatar_url TEXT,
   bio TEXT,
+  xp INTEGER NOT NULL DEFAULT 0,
+  avatar_gender TEXT,              -- 'female' | 'male' | NULL (henüz seçmedi)
   created_at TEXT NOT NULL,
   UNIQUE(provider, provider_sub)
 );
@@ -85,7 +90,7 @@ CREATE INDEX IF NOT EXISTS idx_ledger_user ON ledger_entries(user_id);
 -- akışı test etmek için — gerçek içerik değil.
 CREATE TABLE IF NOT EXISTS shop_items (
   id TEXT PRIMARY KEY,
-  category TEXT NOT NULL,        -- 'frame' | 'badge' | 'entrance_effect'
+  category TEXT NOT NULL,        -- 'frame' | 'badge' | 'entrance_effect' | 'avatar_hat' | 'avatar_cape' | 'avatar_outfit' | 'avatar_pants'
   name TEXT NOT NULL,
   description TEXT,
   currency TEXT NOT NULL,        -- 'coin' | 'crystal'
@@ -104,6 +109,21 @@ CREATE INDEX IF NOT EXISTS idx_shop_purchases_user ON shop_purchases(user_id);
 -- Aynı ürünü iki kez satın almayı (ve dolayısıyla çift ücretlendirmeyi)
 -- eşzamanlı isteklerde bile DB seviyesinde imkansız kılar.
 CREATE UNIQUE INDEX IF NOT EXISTS idx_shop_purchases_unique ON shop_purchases(user_id, item_id);
+
+-- Karakter/avatar giydirme (Faz 9). Giyilebilir eşyalar shop_items'ın
+-- 'avatar_hat'/'avatar_cape'/'avatar_outfit'/'avatar_pants' kategorileri
+-- olarak modellenir — satın alma/sahiplik zaten shop_purchases'ta var,
+-- burada sadece "şu an hangisi kuşanılı" durumu tutulur. Slot boşsa
+-- (hiçbir şey kuşanılmamış) ilgili sütun NULL — bu her zaman geçerli bir
+-- seçim, ücretsiz "yalın" görünüm.
+CREATE TABLE IF NOT EXISTS user_avatars (
+  user_id TEXT PRIMARY KEY REFERENCES users(id),
+  hat_item_id TEXT REFERENCES shop_items(id),
+  cape_item_id TEXT REFERENCES shop_items(id),
+  outfit_item_id TEXT REFERENCES shop_items(id),
+  pants_item_id TEXT REFERENCES shop_items(id),
+  updated_at TEXT NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS vip_tiers (
   id TEXT PRIMARY KEY,
@@ -128,6 +148,25 @@ INSERT OR IGNORE INTO shop_items (id, category, name, description, currency, pri
   ('seed-badge-star', 'badge', '[Örnek] Yıldız Rozeti', 'Gerçek katalog gelene kadar akışı test etmek için yer tutucu.', 'coin', 300, 1, '2026-01-01T00:00:00.000Z'),
   ('seed-badge-diamond', 'badge', '[Örnek] Elmas Rozeti', 'Gerçek katalog gelene kadar akışı test etmek için yer tutucu.', 'crystal', 150, 1, '2026-01-01T00:00:00.000Z'),
   ('seed-entrance-sparkle', 'entrance_effect', '[Örnek] Parıltı Girişi', 'Gerçek katalog gelene kadar akışı test etmek için yer tutucu.', 'crystal', 250, 1, '2026-01-01T00:00:00.000Z');
+
+-- Karakter dolabı (Faz 9) — 4 temel slot (şapka/pelerin/kıyafet/pantolon),
+-- her birinde 3 seçenek. id'ler görsel prompt kütüphanesindeki katman
+-- adlarıyla birebir eşleşecek şekilde seçildi (bkz. "Avatar Atölyesi"
+-- Artifact'ı) — gerçek PNG'ler hazır olunca AvatarRenderer'daki yerel
+-- varlık haritasına bu id'lerle eklenecek, satırların kendisi değişmeyecek.
+INSERT OR IGNORE INTO shop_items (id, category, name, description, currency, price, active, created_at) VALUES
+  ('avatar_hat_star', 'avatar_hat', 'Yıldız Tacı', 'Ucunda küçük bir yıldız parıldayan sivri mistik şapka.', 'coin', 250, 1, '2026-01-01T00:00:00.000Z'),
+  ('avatar_hat_crescent', 'avatar_hat', 'Hilal Başlık', 'Alnında hilal ay motifi olan yumuşak başlık.', 'coin', 250, 1, '2026-01-01T00:00:00.000Z'),
+  ('avatar_hat_flowercrown', 'avatar_hat', 'Çiçek Tacı', 'Küçük mor çiçeklerden örülü hafif taç.', 'crystal', 90, 1, '2026-01-01T00:00:00.000Z'),
+  ('avatar_cape_starry', 'avatar_cape', 'Yıldızlı Pelerin', 'İçi gece gökyüzü desenli, hafif dalgalanan pelerin.', 'coin', 350, 1, '2026-01-01T00:00:00.000Z'),
+  ('avatar_cape_shadow', 'avatar_cape', 'Gölge Pelerini', 'Kenarları duman gibi dağılan koyu mor pelerin.', 'coin', 350, 1, '2026-01-01T00:00:00.000Z'),
+  ('avatar_cape_royal', 'avatar_cape', 'Asil Pelerin', 'Altın işlemeli, kadife dokulu görkemli pelerin.', 'crystal', 120, 1, '2026-01-01T00:00:00.000Z'),
+  ('avatar_outfit_mystic', 'avatar_outfit', 'Falcı Cübbesi', 'Ay ve yıldız işlemeli klasik mistik kaftan.', 'coin', 300, 1, '2026-01-01T00:00:00.000Z'),
+  ('avatar_outfit_scholar', 'avatar_outfit', 'Bilge Kıyafeti', 'Sade, şık, kemerli bir kaftan.', 'coin', 300, 1, '2026-01-01T00:00:00.000Z'),
+  ('avatar_outfit_festive', 'avatar_outfit', 'Şölen Kıyafeti', 'Rengarenk kurdele ve pullarla süslü bayramlık kıyafet.', 'crystal', 100, 1, '2026-01-01T00:00:00.000Z'),
+  ('avatar_pants_night', 'avatar_pants', 'Gece Pantolonu', 'Koyu mor, yıldız tozu desenli rahat pantolon.', 'coin', 200, 1, '2026-01-01T00:00:00.000Z'),
+  ('avatar_pants_forest', 'avatar_pants', 'Orman Pantolonu', 'Toprak tonlarında, günlük rahat pantolon.', 'coin', 200, 1, '2026-01-01T00:00:00.000Z'),
+  ('avatar_pants_royal', 'avatar_pants', 'Asil Pantolon', 'Altın şeritli, gösterişli tören pantolonu.', 'crystal', 80, 1, '2026-01-01T00:00:00.000Z');
 
 INSERT OR IGNORE INTO vip_tiers (id, name, monthly_price_crystal, perks, sort_order, active, created_at) VALUES
   ('seed-vip-silver', '[Örnek] Gümüş', 300, '["Örnek ayrıcalık 1","Örnek ayrıcalık 2"]', 1, 1, '2026-01-01T00:00:00.000Z'),

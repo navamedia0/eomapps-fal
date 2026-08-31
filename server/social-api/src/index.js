@@ -289,10 +289,28 @@ async function createLiveKitToken(env, roomName, identity, name) {
     .sign(secret);
 }
 
+// Seviye/XP (Faz 9). Ayrı bir "levels" tablosu yok — seviye, xp'den saf bir
+// formülle türetiliyor (users.xp tek kaynak). Eğri: seviye N'e ulaşmak için
+// gereken toplam xp = 25 * (N-1)^2 (seviye 2: 25xp, 5: 400xp, 10: 2025xp).
+// Client tarafında da (src/utils/xp.ts) birebir aynı formül var — ikisi de
+// bağımsız, ufak, saf fonksiyonlar olduğu için ortak pakete gerek duyulmadı.
+function levelForXp(xp) {
+  return Math.floor(Math.sqrt(Math.max(0, xp) / 25)) + 1;
+}
+
+// Kullanıcının xp'sine ekleme yapar. Başarı/hata fark etmeksizin sessizce
+// devam eden bir "bonus" işlemi — mağaza harcaması gibi geri alınabilir bir
+// ekonomi değil, bu yüzden debitWallet'taki gibi atomik bakiye kontrolüne
+// gerek yok, düz bir UPDATE yeterli.
+async function grantXp(env, userId, amount) {
+  if (amount <= 0) return;
+  await env.DB.prepare('UPDATE users SET xp = xp + ? WHERE id = ?').bind(amount, userId).run();
+}
+
 // Bir başarımın eşiklerini currentValue'ya göre kontrol eder, yeni geçilen
-// kademeleri user_achievements'a yazar ve her biri için push bildirimi
-// yollar (fire-and-forget, ctx.waitUntil ile). Birden fazla kademe birden
-// geçilmişse (örn. 5 takipçiden 60'a çıkmak) hepsini tek seferde açar.
+// kademeleri user_achievements'a yazar, her biri için xp verir ve push
+// bildirimi yollar (fire-and-forget, ctx.waitUntil ile). Birden fazla kademe
+// birden geçilmişse (örn. 5 takipçiden 60'a çıkmak) hepsini tek seferde açar.
 async function checkAndGrantAchievement(env, ctx, userId, achievementId, currentValue) {
   const definition = await env.DB.prepare('SELECT tiers, name FROM achievement_definitions WHERE id = ?')
     .bind(achievementId)
@@ -313,6 +331,7 @@ async function checkAndGrantAchievement(env, ctx, userId, achievementId, current
       )
         .bind(userId, achievementId, t.tier, now)
         .run();
+      await grantXp(env, userId, t.tier * 20);
       ctx.waitUntil(
         sendPushNotifications(env, userId, 'Yeni başarım!', `${definition.name} — ${t.label}`, {
           type: 'achievement',
@@ -466,6 +485,7 @@ export default {
           ]);
           ctx.waitUntil(checkAndGrantAchievement(env, ctx, me.id, 'social_first_follow', followingCount.c));
           ctx.waitUntil(checkAndGrantAchievement(env, ctx, targetId, 'social_followers', followerCount.c));
+          ctx.waitUntil(grantXp(env, me.id, 5));
         } else {
           await env.DB.prepare('DELETE FROM follows WHERE follower_id = ? AND followee_id = ?').bind(me.id, targetId).run();
         }
@@ -1011,23 +1031,49 @@ export default {
         const me = await getSessionUser(request, env);
         const targetId = userMatch[1];
         const target = await env.DB.prepare(
-          'SELECT id, display_name, avatar_url, bio, created_at FROM users WHERE id = ?',
+          'SELECT id, display_name, avatar_url, bio, xp, avatar_gender, created_at FROM users WHERE id = ?',
         )
           .bind(targetId)
           .first();
         if (!target) return json({ error: 'kullanıcı bulunamadı' }, 404);
-        const [followerCount, followingCount, followingRow] = await Promise.all([
+        // Profil kartı — tek istek, thousands of users senaryosunda kasma
+        // olmaması için tamamı küçük, indeksli sorgulardan oluşan tek bir
+        // Promise.all ile paralel çekiliyor (N+1 yok, ekstra round-trip yok).
+        const weekStart = currentWeekStart().toISOString();
+        const [followerCount, followingCount, followingRow, achievementCount, popularityRow, avatarRow] = await Promise.all([
           env.DB.prepare('SELECT COUNT(*) as c FROM follows WHERE followee_id = ?').bind(targetId).first(),
           env.DB.prepare('SELECT COUNT(*) as c FROM follows WHERE follower_id = ?').bind(targetId).first(),
           me
             ? env.DB.prepare('SELECT 1 FROM follows WHERE follower_id = ? AND followee_id = ?').bind(me.id, targetId).first()
             : null,
+          env.DB.prepare('SELECT COUNT(*) as c FROM user_achievements WHERE user_id = ?').bind(targetId).first(),
+          env.DB.prepare(
+            "SELECT COALESCE(SUM(-amount), 0) as score FROM ledger_entries WHERE user_id = ? AND amount < 0 AND created_at >= ?",
+          )
+            .bind(targetId, weekStart)
+            .first(),
+          env.DB.prepare(
+            'SELECT hat_item_id, cape_item_id, outfit_item_id, pants_item_id FROM user_avatars WHERE user_id = ?',
+          )
+            .bind(targetId)
+            .first(),
         ]);
         return json({
           user: publicUser(target),
           followerCount: followerCount.c,
           followingCount: followingCount.c,
           isFollowing: !!followingRow,
+          xp: target.xp,
+          level: levelForXp(target.xp),
+          achievementCount: achievementCount.c,
+          popularityScore: popularityRow.score,
+          avatar: {
+            gender: target.avatar_gender,
+            hatItemId: avatarRow?.hat_item_id ?? null,
+            capeItemId: avatarRow?.cape_item_id ?? null,
+            outfitItemId: avatarRow?.outfit_item_id ?? null,
+            pantsItemId: avatarRow?.pants_item_id ?? null,
+          },
         });
       }
 
@@ -1232,6 +1278,7 @@ export default {
           .bind(me.id)
           .first();
         ctx.waitUntil(checkAndGrantAchievement(env, ctx, me.id, 'game_harvests', harvestCount.c));
+        ctx.waitUntil(grantXp(env, me.id, 10));
         return json({ ok: true, yieldCoin });
       }
 
@@ -1453,6 +1500,54 @@ export default {
         });
       }
 
+      // Karakter (Faz 9). Cinsiyet bir kez seçilir ama istenirse tekrar
+      // değiştirilebilir — sadece hangi temel avatar katmanının
+      // kullanılacağını belirler, ayrıca bir bedel gerektirmez.
+      if (path === '/avatar/gender' && request.method === 'POST') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const { gender } = await request.json();
+        if (gender !== 'female' && gender !== 'male') return json({ error: 'geçersiz cinsiyet' }, 400);
+        await env.DB.prepare('UPDATE users SET avatar_gender = ? WHERE id = ?').bind(gender, me.id).run();
+        return json({ ok: true });
+      }
+
+      const AVATAR_SLOT_COLUMNS = {
+        hat: 'hat_item_id',
+        cape: 'cape_item_id',
+        outfit: 'outfit_item_id',
+        pants: 'pants_item_id',
+      };
+
+      // itemId null ise slot boşaltılır (her zaman ücretsiz geçerli bir
+      // seçim). Doluysa hem sahiplik (shop_purchases) hem de doğru slota ait
+      // olduğu (shop_items.category) kontrol edilir — başka bir slotun
+      // eşyasını buraya kuşanmayı engeller.
+      if (path === '/avatar/equip' && request.method === 'POST') {
+        const me = await getSessionUser(request, env);
+        if (!me) return json({ error: 'oturum geçersiz' }, 401);
+        const { slot, itemId } = await request.json();
+        const column = AVATAR_SLOT_COLUMNS[slot];
+        if (!column) return json({ error: 'geçersiz slot' }, 400);
+        if (itemId !== null && itemId !== undefined) {
+          const owned = await env.DB.prepare(
+            `SELECT 1 FROM shop_purchases JOIN shop_items ON shop_items.id = shop_purchases.item_id
+             WHERE shop_purchases.user_id = ? AND shop_purchases.item_id = ? AND shop_items.category = ?`,
+          )
+            .bind(me.id, itemId, `avatar_${slot}`)
+            .first();
+          if (!owned) return json({ error: 'bu eşyaya sahip değilsin' }, 403);
+        }
+        const now = new Date().toISOString();
+        await env.DB.prepare(
+          `INSERT INTO user_avatars (user_id, ${column}, updated_at) VALUES (?, ?, ?)
+           ON CONFLICT(user_id) DO UPDATE SET ${column} = excluded.${column}, updated_at = excluded.updated_at`,
+        )
+          .bind(me.id, itemId ?? null, now)
+          .run();
+        return json({ ok: true });
+      }
+
       if (path === '/vip/tiers' && request.method === 'GET') {
         const { results } = await env.DB.prepare('SELECT * FROM vip_tiers WHERE active = 1 ORDER BY sort_order').all();
         return json({
@@ -1519,6 +1614,10 @@ export default {
       if (path === '/posts' && request.method === 'GET') {
         const me = await getSessionUser(request, env);
         const meId = me?.id ?? '';
+        // authorId verilirse (profil ekranındaki "Paylaşımlar" sekmesi) genel
+        // akış yerine sadece o kullanıcının gönderileri filtrelenir — aynı
+        // indeksli sorgu, sadece bir eşitlik koşulu ekleniyor.
+        const authorId = url.searchParams.get('authorId') ?? '';
         const { results } = await env.DB.prepare(
           `SELECT posts.id, posts.author_id, posts.text, posts.image_key, posts.created_at,
                   users.display_name,
@@ -1528,6 +1627,7 @@ export default {
            FROM posts
            JOIN users ON users.id = posts.author_id
            WHERE posts.created_at > ?
+             AND (? = '' OR posts.author_id = ?)
              AND posts.author_id NOT IN (
                SELECT blocked_id FROM blocks WHERE blocker_id = ?
                UNION
@@ -1539,7 +1639,7 @@ export default {
            ORDER BY posts.created_at DESC
            LIMIT 50`,
         )
-          .bind(meId, postRetentionCutoff(), meId, meId, REPORT_HIDE_THRESHOLD)
+          .bind(meId, postRetentionCutoff(), authorId, authorId, meId, meId, REPORT_HIDE_THRESHOLD)
           .all();
         const origin = new URL(request.url).origin;
         return json({ posts: results.map((row) => publicPost(row, origin, meId)) });
@@ -1572,6 +1672,7 @@ export default {
           .run();
         const postCount = await env.DB.prepare('SELECT COUNT(*) as c FROM posts WHERE author_id = ?').bind(me.id).first();
         ctx.waitUntil(checkAndGrantAchievement(env, ctx, me.id, 'social_first_post', postCount.c));
+        ctx.waitUntil(grantXp(env, me.id, 20));
         const origin = new URL(request.url).origin;
         return json(
           {
@@ -1642,6 +1743,7 @@ export default {
         await env.DB.prepare('INSERT INTO comments (id, post_id, author_id, text, created_at) VALUES (?, ?, ?, ?, ?)')
           .bind(id, postId, me.id, trimmed, now)
           .run();
+        ctx.waitUntil(grantXp(env, me.id, 5));
         return json(
           {
             comment: publicComment(

@@ -2,7 +2,7 @@ import { env } from '@/config/env';
 import { getStoredSession } from '@/services/auth';
 import { getJson, postJson } from '@/services/http';
 
-export type ShopCategory = 'frame' | 'badge' | 'entrance_effect';
+export type ShopCategory = 'frame' | 'badge' | 'entrance_effect' | 'avatar_hat' | 'avatar_cape' | 'avatar_outfit' | 'avatar_pants';
 export type Currency = 'coin' | 'crystal';
 
 export type ShopItem = {

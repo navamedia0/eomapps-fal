@@ -82,6 +82,7 @@ import SozlerKoskuScreen from '@/screens/SozlerKoskuScreen';
 import HaftaninSevilenleriScreen from '@/screens/HaftaninSevilenleriScreen';
 import EkolDetayScreen from '@/screens/EkolDetayScreen';
 import UserProfileScreen from '@/screens/UserProfileScreen';
+import AvatarWardrobeScreen from '@/screens/AvatarWardrobeScreen';
 import BlockedUsersScreen from '@/screens/BlockedUsersScreen';
 import DMThreadScreen from '@/screens/DMThreadScreen';
 import RoomScreen from '@/screens/RoomScreen';
@@ -232,6 +233,7 @@ export default function App() {
             <Stack.Screen name="HaftaninSevilenleri" component={HaftaninSevilenleriScreen} options={{ title: 'Haftanın En Sevilenleri' }} />
             <Stack.Screen name="EkolDetay" component={EkolDetayScreen} options={{ headerShown: false }} />
             <Stack.Screen name="UserProfile" component={UserProfileScreen} options={{ title: 'Profil' }} />
+            <Stack.Screen name="AvatarWardrobe" component={AvatarWardrobeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="BlockedUsers" component={BlockedUsersScreen} options={{ title: 'Engellenen Kullanıcılar' }} />
             <Stack.Screen
               name="DMThread"

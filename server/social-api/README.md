@@ -94,7 +94,7 @@ npm run deploy
 | POST | `/guide-applications` | `{ message }` → rehberlik başvurusu yapar |
 | GET | `/guide-applications/me` | Kendi son başvurunun durumu → `{ application }` (`null` olabilir) |
 | GET | `/guides` | Onaylanmış rehberlerin listesi (herkese açık) |
-| GET | `/posts` | Son 50 gönderi (engellenen kullanıcılar hariç, girişsiz de çalışır) |
+| GET | `/posts` | Son 50 gönderi (`?authorId=` ile tek kullanıcıya filtrelenebilir — profil "Paylaşımlar" sekmesi), engellenen kullanıcılar hariç, girişsiz de çalışır |
 | POST | `/posts` | `multipart/form-data`: `text`, `image?` → `{ post }` (giriş gerekli) |
 | DELETE | `/posts/:id` | Kendi gönderini sil (görsel varsa R2'den de silinir) |
 | POST | `/posts/:id/like` | Beğeniyi aç/kapat → `{ liked, likeCount }` |
@@ -111,6 +111,8 @@ npm run deploy
 | GET | `/vip/me` | Güncel VIP aboneliği → `{ subscription }` (`null` olabilir) |
 | GET | `/achievements` | Kendi başarımların: tanımlar + açılan kademeler + ilerleme |
 | GET | `/popularity/leaderboard` | Bu haftanın harcama liderlik tablosu (herkese açık) |
+| POST | `/avatar/gender` | `{ gender: 'female'\|'male' }` → temel avatar cinsiyetini seçer/değiştirir |
+| POST | `/avatar/equip` | `{ slot: 'hat'\|'cape'\|'outfit'\|'pants', itemId: string\|null }` → o slotu kuşandırır/boşaltır (sahiplik kontrollü) |
 | GET | `/garden/seeds` | Tohum kataloğu (herkese açık) |
 | GET | `/garden` | Kendi bahçen: 6 arsa + o anki ay evresi bilgisi |
 | POST | `/garden/plant` | `{ slotIndex, seedTypeId }` → eker (bakiyeden düşer) |
@@ -150,6 +152,28 @@ Tohum kataloğu (`garden_seed_types`) [Örnek] önekli yer tutucu içerik — me
 ```bash
 wrangler d1 execute mistik-rehber-social --remote --command "INSERT INTO achievement_definitions (id, category, name, description, tiers, created_at) VALUES ('<id>', '<kategori>', '<isim>', '<açıklama>', '[{\"tier\":1,\"threshold\":10,\"label\":\"10\"}]', datetime('now'))"
 ```
+
+## Seviye ve Karakter Sistemi (Faz 9)
+
+`GET /users/:userId` artık tek istekte profil kartının tamamını döner: `xp`, `level` (xp'den saf formülle türetilir, ayrı bir tablo yok — bkz. `levelForXp()`), `achievementCount`, `popularityScore` (o haftanın harcaması, liderlik tablosuyla aynı hesap), ve `avatar` (`gender` + 4 slotun hangi `shop_items` id'sini giydiği). Hepsi küçük, indeksli sorgulardan oluşan tek bir `Promise.all` — bu yüzden binlerce kullanıcı art arda profil açsa bile ek round-trip veya N+1 yok.
+
+XP kazanılan olaylar: gönderi paylaşmak (+20), yorum yazmak (+5), birini takip etmek (+5), bahçe hasadı (+10), bir başarım kademesi açmak (+20 × kademe no). Yeni bir olay eklemek için ilgili uç noktada `grantXp(env, userId, miktar)` çağırın.
+
+Karakter giydirme, mevcut mağaza altyapısını (`shop_items`/`shop_purchases`) yeniden kullanıyor — `avatar_hat`/`avatar_cape`/`avatar_outfit`/`avatar_pants` kategorileriyle. Sadece "şu an hangisi kuşanılı" durumu yeni `user_avatars` tablosunda (`POST /avatar/equip` ile güncellenir, sahiplik olmadan kuşanmaya izin vermez). Yeni bir kıyafet eklemek mağaza ürünü eklemekle birebir aynı akış:
+
+```bash
+wrangler d1 execute mistik-rehber-social --remote --command "INSERT INTO shop_items (id, category, name, description, currency, price, active, created_at) VALUES ('avatar_hat_<id>', 'avatar_hat', '<isim>', '<açıklama>', 'coin', 250, 1, datetime('now'))"
+```
+
+`schema.sql`'deki `users.xp`/`users.avatar_gender` sütunları ve `user_avatars` tablosu sadece fresh-DB kurulumları için tanımlı — var olan uzak veritabanına eklemek için (bir kez, `capacity`/`topic` sütunlarında yapıldığı gibi):
+
+```bash
+wrangler d1 execute mistik-rehber-social --remote --command "ALTER TABLE users ADD COLUMN xp INTEGER NOT NULL DEFAULT 0"
+wrangler d1 execute mistik-rehber-social --remote --command "ALTER TABLE users ADD COLUMN avatar_gender TEXT"
+wrangler d1 execute mistik-rehber-social --remote --command "CREATE TABLE IF NOT EXISTS user_avatars (user_id TEXT PRIMARY KEY REFERENCES users(id), hat_item_id TEXT REFERENCES shop_items(id), cape_item_id TEXT REFERENCES shop_items(id), outfit_item_id TEXT REFERENCES shop_items(id), pants_item_id TEXT REFERENCES shop_items(id), updated_at TEXT NOT NULL)"
+```
+
+Sonra `npm run db:migrate:remote` ile geri kalan `CREATE TABLE IF NOT EXISTS`/seed satırlarını (avatar kıyafet kataloğu dahil) uygulayın — zararsızdır, zaten var olanları atlar.
 
 ## Rehber başvuruları
 

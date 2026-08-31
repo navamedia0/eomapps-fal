@@ -72,6 +72,7 @@ export type RootStackParamList = {
   HaftaninSevilenleri: undefined;
   EkolDetay: { ekolKey: string };
   UserProfile: { userId: string };
+  AvatarWardrobe: undefined;
   BlockedUsers: undefined;
   DMThread: { userId: string; displayName?: string | null; avatarUrl?: string | null };
   Room: { roomId: string; roomName?: string };
