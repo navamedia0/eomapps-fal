@@ -24,12 +24,19 @@ export type ShelfItem = {
   onPress: () => void;
 };
 
-type Props = { title: string; items: ShelfItem[] };
+type Props = { title: string; badgeText?: string; items: ShelfItem[] };
 
-export default function FortuneShelf({ title, items }: Props) {
+export default function FortuneShelf({ title, badgeText, items }: Props) {
   return (
     <View style={styles.wrap}>
-      <Text style={styles.title}>{title}</Text>
+      <View style={styles.titleRow}>
+        <Text style={styles.title}>{title}</Text>
+        {badgeText && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeLabel}>{badgeText}</Text>
+          </View>
+        )}
+      </View>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -84,12 +91,32 @@ const styles = StyleSheet.create({
   wrap: {
     marginBottom: 18,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    paddingHorizontal: 2,
+  },
   title: {
+    flex: 1,
     fontSize: 13,
     fontWeight: '800',
     color: TEXT_PRIMARY,
-    marginBottom: 10,
-    paddingHorizontal: 2,
+  },
+  badge: {
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginLeft: 8,
+  },
+  badgeLabel: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    color: GOLD,
   },
   row: {
     gap: 10,
