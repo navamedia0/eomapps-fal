@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { GOLD, GOLD_SOFT, NIGHT_MID, BORDO_DEEP } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_MID, INDIGO_DEEP } from '@/theme/colors';
 
 const VELVET_TEXTURE = require('../../assets/textures/velvet.jpg');
 
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: '100%',
-    backgroundColor: BORDO_DEEP,
+    backgroundColor: INDIGO_DEEP,
     opacity: 0.45,
   },
   glow: {

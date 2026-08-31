@@ -9,10 +9,8 @@ export const CANDLE_GLOW = '#F2C879';
 export const NIGHT_DEEP = '#0B0A1F';
 export const NIGHT_MID = '#150F30';
 export const NIGHT_CARD = '#1E1140';
-export const WALNUT = '#2A1B54';
+export const INDIGO_DEEP = '#2A1B54';
 
-export const BORDO = '#5B3A9E';
-export const BORDO_DEEP = '#2A1B54';
 export const VELVET_MID = '#8B5CF6';
 
 export const CRYSTAL_BLUE = '#8B5CF6';
