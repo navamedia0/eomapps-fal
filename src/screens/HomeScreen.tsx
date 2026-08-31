@@ -23,6 +23,24 @@ const UST_BANNER = require('@/assets/icons/ust_banner.png');
 
 type Props = TabScreenProps;
 
+type QuickLink = { label: string; onPress: () => void };
+
+function QuickLinksRow({ links }: { links: QuickLink[] }) {
+  return (
+    <View style={styles.quickLinksRow}>
+      {links.map((link) => (
+        <Pressable
+          key={link.label}
+          onPress={link.onPress}
+          style={({ pressed }) => [styles.quickLinkChip, pressed && styles.pressedFade]}
+        >
+          <Text style={styles.quickLinkText} numberOfLines={1}>{link.label}</Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
 export default function HomeScreen({ navigation }: Props) {
   const [checkinInfo, setCheckinInfo] = useState<CheckinStatus | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -124,6 +142,9 @@ export default function HomeScreen({ navigation }: Props) {
             imageSource={require('@/assets/ekoller/ekol_bg_5_ruya.jpg')}
             onPress={() => navigation.navigate('DreamChat')}
           />
+          <QuickLinksRow
+            links={[{ label: 'Rüya Kitaplığı', onPress: () => navigation.navigate('RuyaKitapligi') }]}
+          />
 
           {/* 4. Burç ve Astroloji */}
           <CompactCategoryCard
@@ -135,6 +156,14 @@ export default function HomeScreen({ navigation }: Props) {
             badgeText="Kozmik Harita"
             imageSource={require('@/assets/backgrounds/decks/angel_bg.jpg')}
             onPress={() => navigation.navigate('Zodiac')}
+          />
+          <QuickLinksRow
+            links={[
+              { label: 'Doğum Haritası', onPress: () => navigation.navigate('BirthChart') },
+              { label: 'Yükselen Burcum', onPress: () => navigation.navigate('RisingSign') },
+              { label: 'Burç Uyumu', onPress: () => navigation.navigate('Compatibility') },
+              { label: 'Burç Özellikleri', onPress: () => navigation.navigate('ZodiacTraits') },
+            ]}
           />
 
           {/* 5. Sayılar ve Enerji */}
@@ -148,6 +177,13 @@ export default function HomeScreen({ navigation }: Props) {
             imageSource={require('@/assets/ekoller/ekol_bg_1_cin.jpg')}
             onPress={() => navigation.navigate('MatrixOfDestiny')}
           />
+          <QuickLinksRow
+            links={[
+              { label: 'Numeroloji', onPress: () => navigation.navigate('Numerology') },
+              { label: 'Biyoritim', onPress: () => navigation.navigate('Biorhythm') },
+              { label: 'Ay Takvimi', onPress: () => navigation.navigate('MoonCalendar') },
+            ]}
+          />
 
           {/* 6. Ruhsal Denge & İç Huzur */}
           <CompactCategoryCard
@@ -159,6 +195,14 @@ export default function HomeScreen({ navigation }: Props) {
             badgeText="İç Huzur"
             imageSource={require('@/assets/backgrounds/decks/osho_zen_bg.jpg')}
             onPress={() => navigation.navigate('BreathingExercise')}
+          />
+          <QuickLinksRow
+            links={[
+              { label: 'Günün İlham Kartı', onPress: () => navigation.navigate('AngelCard') },
+              { label: 'Günlük Olumlama', onPress: () => navigation.navigate('Affirmation') },
+              { label: 'Duygu Günlüğü', onPress: () => navigation.navigate('MoodJournal') },
+              { label: 'Sihirli Küre', onPress: () => navigation.navigate('MagicBall') },
+            ]}
           />
         </View>
       </Animated.ScrollView>
@@ -290,5 +334,26 @@ const styles = StyleSheet.create({
   },
   categoryContainer: {
     gap: 2,
+  },
+  quickLinksRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: -6,
+    marginBottom: 16,
+    paddingHorizontal: 2,
+  },
+  quickLinkChip: {
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
+    backgroundColor: 'rgba(26, 16, 52, 0.85)',
+    borderRadius: 12,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  quickLinkText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: GOLD,
   },
 });
