@@ -32,7 +32,7 @@ import {
   type DreamMode,
   type DreamChatStatus,
 } from '@/services/dreamChatLimits';
-import CosmicChatBackground from '@/components/CosmicChatBackground';
+import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import RewardedAdModal from '@/components/RewardedAdModal';
 import PersonInfoModal from '@/components/PersonInfoModal';
@@ -41,6 +41,7 @@ import EkolEntranceSplash from '@/components/EkolEntranceSplash';
 import { FORTUNE_THEMES } from '@/constants/fortuneThemes';
 import type { PersonInfo } from '@/types/personInfo';
 import { getSavedPersonInfo, savePersonInfo } from '@/services/personInfo';
+import { saveReadingHistory } from '@/services/readingHistory';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DreamChat'>;
@@ -259,6 +260,20 @@ export default function DreamChatScreen({ navigation }: Props) {
       const isFirstUserMessage = history.filter((t) => t.role === 'user').length === 1;
       const lastMessageText = history[history.length - 1]?.text || '';
 
+      const saveDreamToHistory = (chatHistory: ChatTurn[], replyText: string) => {
+        const userFirstMsg = chatHistory.find((m) => m.role === 'user')?.text || 'Rüya Tabiri';
+        const title = userFirstMsg.length > 50 ? `${userFirstMsg.slice(0, 50)}...` : userFirstMsg;
+        saveReadingHistory({
+          type: 'ruya',
+          title: `🌙 ${title}`,
+          result: replyText,
+          metadata: {
+            mode: selectedMode,
+            messages: [...chatHistory, { role: 'model', text: replyText }],
+          },
+        }).catch(() => {});
+      };
+
       if (selectedMode === 'deep' && isFirstUserMessage) {
         await Promise.all([
           interpretDreamChat(history, 'deep'),
@@ -268,6 +283,7 @@ export default function DreamChatScreen({ navigation }: Props) {
             recordDreamMessageSent('deep');
             refreshQuota('deep');
             setMessages([...history, { role: 'model', text: reply }]);
+            saveDreamToHistory(history, reply);
           })
           .catch(async (err) => {
             let message = err instanceof Error ? err.message : 'Rüya analiz edilirken bir sorun oluştu.';
@@ -286,6 +302,7 @@ export default function DreamChatScreen({ navigation }: Props) {
             recordDreamMessageSent('deep');
             refreshQuota('deep');
             setMessages([...history, { role: 'model', text: reply }]);
+            saveDreamToHistory(history, reply);
           })
           .catch(async (err) => {
             let message = err instanceof Error ? err.message : 'Rüya analiz edilirken bir sorun oluştu.';
@@ -302,6 +319,7 @@ export default function DreamChatScreen({ navigation }: Props) {
           await recordDreamMessageSent(selectedMode);
           await refreshQuota(selectedMode);
           setMessages([...history, { role: 'model', text: reply }]);
+          saveDreamToHistory(history, reply);
         } catch (err) {
           let message = err instanceof Error ? err.message : 'Rüya yorumlanırken bir sorun oluştu.';
           if (spentAmount > 0) {
@@ -339,7 +357,7 @@ export default function DreamChatScreen({ navigation }: Props) {
   // 1. EKRAN: MOD SEÇİM EKRANI
   if (!selectedMode) {
     return (
-      <CosmicChatBackground>
+      <MysticTableBackground customBackground={FORTUNE_THEMES.dream.background}>
         <ScrollView contentContainerStyle={styles.selectionScrollContent} showsVerticalScrollIndicator={false}>
           <View style={styles.selectionHeader}>
             <View style={styles.iconCircle}>
@@ -404,7 +422,7 @@ export default function DreamChatScreen({ navigation }: Props) {
               <Ionicons
                 name={hasPersonInfo ? 'person' : 'person-add-outline'}
                 size={18}
-                color={hasPersonInfo ? NIGHT_CARD : GOLD}
+                color={hasPersonInfo ? '#000000' : GOLD}
               />
             </View>
             <View style={styles.personTextWrap}>
@@ -436,13 +454,13 @@ export default function DreamChatScreen({ navigation }: Props) {
           onSave={handleSavePersonInfo}
           onClose={() => setIsPersonModalVisible(false)}
         />
-      </CosmicChatBackground>
+      </MysticTableBackground>
     );
   }
 
   // 2. EKRAN: SOHBET EKRANI
   return (
-    <CosmicChatBackground>
+    <MysticTableBackground customBackground={FORTUNE_THEMES.dream.background}>
       <View
         style={[
           styles.flex,
@@ -633,7 +651,7 @@ export default function DreamChatScreen({ navigation }: Props) {
           onFinish={() => setShowSplash(false)}
         />
       )}
-    </CosmicChatBackground>
+    </MysticTableBackground>
   );
 }
 
@@ -655,7 +673,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: 'rgba(255, 201, 60, 0.15)',
+    backgroundColor: 'rgba(229, 169, 60, 0.15)',
     borderWidth: 1.5,
     borderColor: GOLD,
     alignItems: 'center',
@@ -664,33 +682,38 @@ const styles = StyleSheet.create({
   },
   selectionTitle: {
     fontSize: 22,
-    fontWeight: '800',
+    fontWeight: '900',
     color: GOLD,
     textAlign: 'center',
     marginBottom: 6,
   },
   selectionSubtitle: {
     fontSize: 13,
-    color: TEXT_MUTED,
+    color: '#A1A1AA',
     textAlign: 'center',
     lineHeight: 18,
     paddingHorizontal: 12,
   },
   modeCard: {
     position: 'relative',
-    backgroundColor: 'rgba(30, 30, 32, 0.92)',
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
     borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 201, 60, 0.35)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.4)',
     padding: 20,
     gap: 10,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 6,
   },
   modeCardDeep: {
     borderColor: GOLD,
-    backgroundColor: 'rgba(38, 20, 72, 0.95)',
+    backgroundColor: 'rgba(22, 16, 36, 0.94)',
     shadowColor: GOLD,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.3,
     shadowRadius: 10,
     elevation: 6,
   },
@@ -707,12 +730,12 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 201, 60, 0.16)',
+    backgroundColor: 'rgba(229, 169, 60, 0.16)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   modeIconWrapDeep: {
-    backgroundColor: 'rgba(255, 201, 60, 0.25)',
+    backgroundColor: 'rgba(192, 132, 252, 0.2)',
   },
   modeTitleWrap: {
     flex: 1,
@@ -725,34 +748,33 @@ const styles = StyleSheet.create({
   },
   modeBadgeFree: {
     fontSize: 11.5,
-    fontWeight: '700',
+    fontWeight: '800',
     color: '#34D399',
   },
   modeBadgeDeep: {
     fontSize: 11.5,
-    fontWeight: '700',
+    fontWeight: '800',
     color: GOLD,
   },
   modeDescription: {
     fontSize: 12.5,
-    color: TEXT_PRIMARY,
+    color: '#E4E4E7',
     lineHeight: 18,
-    opacity: 0.9,
   },
   personCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: 'rgba(30, 30, 32, 0.85)',
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 201, 60, 0.25)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.4)',
     paddingVertical: 14,
     paddingHorizontal: 16,
   },
   personCardFilled: {
     borderColor: GOLD,
-    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    backgroundColor: '#201A10',
   },
   personIconCircle: {
     width: 38,

@@ -97,6 +97,15 @@ export type RootStackParamList = {
     picks: { id: string; orientation: 'upright' | 'reversed' }[];
     spreadType: 'single' | 'norn' | 'cross' | 'yggdrasil';
   };
+  KatinaResult: {
+    picks: { id: string; orientation: 'upright' | 'reversed' }[];
+    positions: string[];
+    isRelationship?: boolean;
+    p1Name?: string;
+    p2Name?: string;
+    relFocus?: string;
+    sealCard?: string;
+  };
 };
 
 export type MainTabParamList = {

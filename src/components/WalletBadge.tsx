@@ -1,36 +1,39 @@
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { Pressable, Text, View, StyleSheet } from 'react-native';
 import { getCoins, subscribeCoins } from '@/services/coins';
 import { getStoredSession } from '@/services/auth';
 import { getWallet, subscribeWallet } from '@/services/shop';
 import AnimatedNumberText from '@/components/AnimatedNumberText';
-import { FEATURE_ICONS } from '@/assets/icons';
-import { GOLD } from '@/theme/colors';
+import { GOLD, NIGHT_DEEP, TEXT_MUTED } from '@/theme/colors';
+
+let globalCachedCoins: number | null = null;
+let globalCachedCrystal: number | null = null;
 
 type Navigation = { navigate: (screen: 'CoinShop') => void };
 
-// Fal Coin (yerel, okuma açmak için harcanan) ile Kristal/Elmas (sunucudaki
-// sosyal cüzdan, mağaza/VIP için harcanan) iki ayrı bakiye — karıştırılmasın
-// diye aynı rozette ama net şekilde alt alta gösteriliyor. Bu rozet HER
-// ekranda görünen tek gerçek bakiye göstergesi olduğu için, satın alma
-// sonrası ~4 saniyede sayarak yükselen animasyon da (CoinShopScreen'deki
-// gibi) burada, doğrudan bu bileşende oynuyor.
 export default function WalletBadge({ navigation }: { navigation: Navigation }) {
-  const [coins, setCoins] = useState(0);
-  const [coinsLoaded, setCoinsLoaded] = useState(false);
-  const [crystal, setCrystal] = useState<number | null>(null);
+  const [coins, setCoins] = useState<number>(globalCachedCoins ?? 0);
+  const [coinsLoaded, setCoinsLoaded] = useState<boolean>(globalCachedCoins !== null);
+  const [crystal, setCrystal] = useState<number | null>(globalCachedCrystal);
 
   const refreshCrystal = useCallback(() => {
     getStoredSession().then((session) => {
       if (!session) {
-        setCrystal(null);
+        setCrystal(0);
+        globalCachedCrystal = 0;
         return;
       }
       getWallet()
-        .then((balances) => setCrystal(balances.crystal))
-        .catch(() => setCrystal(null));
+        .then((balances) => {
+          setCrystal(balances.crystal);
+          globalCachedCrystal = balances.crystal;
+        })
+        .catch(() => {
+          setCrystal(0);
+          globalCachedCrystal = 0;
+        });
     });
   }, []);
 
@@ -38,6 +41,7 @@ export default function WalletBadge({ navigation }: { navigation: Navigation }) 
     useCallback(() => {
       getCoins().then((c) => {
         setCoins(c);
+        globalCachedCoins = c;
         setCoinsLoaded(true);
       });
       refreshCrystal();
@@ -47,15 +51,24 @@ export default function WalletBadge({ navigation }: { navigation: Navigation }) 
   useEffect(() => {
     getCoins().then((c) => {
       setCoins(c);
+      globalCachedCoins = c;
       setCoinsLoaded(true);
     });
     return subscribeCoins((c) => {
       setCoins(c);
+      globalCachedCoins = c;
       setCoinsLoaded(true);
     });
   }, []);
 
-  useEffect(() => subscribeWallet((balances) => setCrystal(balances.crystal)), []);
+  useEffect(
+    () =>
+      subscribeWallet((balances) => {
+        setCrystal(balances.crystal);
+        globalCachedCrystal = balances.crystal;
+      }),
+    [],
+  );
 
   return (
     <Pressable
@@ -63,19 +76,30 @@ export default function WalletBadge({ navigation }: { navigation: Navigation }) 
       style={({ pressed }) => [styles.badge, pressed && styles.badgePressed]}
       hitSlop={8}
     >
-      <View style={styles.balancesCol}>
-        <View style={styles.row}>
-          <Image source={FEATURE_ICONS.coinIcon} style={styles.icon} resizeMode="contain" />
-          {coinsLoaded ? <AnimatedNumberText value={coins} style={styles.text} /> : <Text style={styles.text}>—</Text>}
+      {/* Coin Bölümü */}
+      <View style={styles.itemRow}>
+        <View style={styles.coinIconCircle}>
+          <FontAwesome5 name="coins" size={10} color="#000000" />
         </View>
-        {crystal !== null && (
-          <View style={styles.row}>
-            <Ionicons name="diamond" size={13} color="#8FD8F2" style={styles.crystalIcon} />
-            <AnimatedNumberText value={crystal} style={styles.crystalText} />
-          </View>
+        {coinsLoaded ? (
+          <AnimatedNumberText value={coins} style={styles.coinText} />
+        ) : (
+          <Text style={styles.coinText}>0</Text>
         )}
       </View>
-      <Ionicons name="add-circle" size={20} color={GOLD} />
+
+      <View style={styles.separator} />
+
+      {/* Kristal Bölümü */}
+      <View style={styles.itemRow}>
+        <Ionicons name="diamond" size={12} color="#38BDF8" style={styles.crystalIcon} />
+        <AnimatedNumberText value={crystal ?? 0} style={styles.crystalText} />
+      </View>
+
+      {/* Artı Ekle Butonu */}
+      <View style={styles.plusWrap}>
+        <Ionicons name="add" size={12} color="#000000" />
+      </View>
     </Pressable>
   );
 }
@@ -84,50 +108,66 @@ const styles = StyleSheet.create({
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(30, 30, 32, 0.88)',
-    borderWidth: 1.5,
-    borderColor: GOLD,
-    borderRadius: 18,
-    paddingVertical: 5,
-    paddingLeft: 8,
-    paddingRight: 10,
-    shadowColor: GOLD,
+    backgroundColor: '#0F0F12',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 20,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    gap: 7,
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 4,
   },
   badgePressed: {
     opacity: 0.85,
     transform: [{ scale: 0.96 }],
   },
-  balancesCol: {
-    gap: 2,
-  },
-  row: {
+  itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: 4,
   },
-  icon: {
-    width: 18,
-    height: 18,
+  coinIconCircle: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: GOLD,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coinText: {
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: 0.2,
+  },
+  separator: {
+    width: 1,
+    height: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
   },
   crystalIcon: {
-    marginLeft: 1,
-    marginRight: -1,
-  },
-  text: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: GOLD,
-    letterSpacing: 0.3,
+    shadowColor: '#38BDF8',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
   },
   crystalText: {
-    fontSize: 11.5,
-    fontWeight: '700',
-    color: '#8FD8F2',
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: '#38BDF8',
     letterSpacing: 0.2,
+  },
+  plusWrap: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: GOLD,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 2,
   },
 });

@@ -172,6 +172,81 @@ const RELATIONSHIP_SPREAD_OPTIONS: SpreadOption[] = [
   },
 ];
 
+// Katina Aşk & Kehanet Destesi — Mara Meimaridi'nin İzmir Büyücüleri geleneğindeki
+// otantik açılımları (İmparatorluk Haçı, Karar & Aşk Üçgeni, Niyet & Kalp Açılımı).
+const KATINA_SPREAD_OPTIONS: SpreadOption[] = [
+  {
+    id: 'katina_imperial_7',
+    name: 'İmparatorluk Haçı (7 Kart — Katina Artısı)',
+    cardCount: 7,
+    desc: 'Mara Meimaridi’nin en kadim 7 kartlık İmparatorluk Haçı; danışanın kalbi, aşkı kesen engel, karşı tarafın niyeti ve kadersel aşk kapısı.',
+    positions: [
+      '1. Danışanın Durumu & Kalbi (Merkez)',
+      '2. Aşkı Kesen / Engelleyen Güç (Haç)',
+      '3. Yakın Geçmiş & Kök Neden (Sol)',
+      '4. Karşı Tarafın Gizli Niyeti (Sağ)',
+      '5. Bilinçaltı & Gizli Zemin (Alt)',
+      '6. Yaklaşan Kadersel Adım (Üst)',
+      '7. Kadersel Nihai Sonuç & Aşk Kapısı',
+    ],
+  },
+  {
+    id: 'katina_decision_7',
+    name: 'Karar & Aşk Üçgeni (7 Kart)',
+    cardCount: 7,
+    desc: 'İki aşk, iki talip veya iki kritik yol arasında kalındığında her iki seçeneğin doğuracağı kadersel neticeyi kıyaslar.',
+    positions: [
+      '1. Mevcut Yol Ayrımı & Karar',
+      '2. 1. Seçenek / Kişi Enerjisi',
+      '3. 1. Yolun Kadersel Sonucu',
+      '4. 2. Seçenek / Kişi Enerjisi',
+      '5. 2. Yolun Kadersel Sonucu',
+      '6. Kalbinin En Derin Gizli İsteği',
+      '7. Kadersel En İsabetli Tavsiye',
+    ],
+  },
+  {
+    id: 'katina_intent_3',
+    name: 'Kalplerin Birliği & Niyet (3 Kart)',
+    cardCount: 3,
+    desc: 'Aklındaki kişinin hislerine ve ortak aşk niyetinize dair net, hızlı ve doğrudan 3 kartlık rehberlik.',
+    positions: [
+      '1. Senin Kalbindeki Niyet',
+      '2. Karşı Tarafın Kalbindeki Niyet',
+      '3. İki Kalbin Ortak Geleceği',
+    ],
+  },
+];
+
+// Katina Çift & Karşılıklı Aşk Açılımları
+const KATINA_RELATIONSHIP_SPREAD_OPTIONS: SpreadOption[] = [
+  {
+    id: 'katina_rel_bridge_7',
+    name: 'Karşılıklı Aşk Köprüsü (3+3+1 = 7 Kart)',
+    cardCount: 7,
+    desc: 'İki tarafın zihin, kalp ve beklentilerini karşılıklı masaya yatıran (3+3) ve iki kalbi bağlayan ortak kadersel enerji köprüsü (7. kart).',
+    positions: [
+      '1. Zihin & Düşünce',
+      '2. Kalp & Hisler',
+      '3. Beklenti & Arzu',
+      'Kadersel Enerji Köprüsü',
+    ],
+  },
+  {
+    id: 'katina_rel_mirror_10',
+    name: 'Ruh Eşi & 5 Boyutlu Aşk Aynası (5+5 = 10 Kart)',
+    cardCount: 10,
+    desc: '5 derin boyutta (Zihin, Kalp, Bilinçaltı, Tutku & Kimya, Kadersel Gelecek) çiftin karşılıklı enerji aynası.',
+    positions: [
+      '1. Zihin & Bakış Açısı',
+      '2. Kalp & Duygusal Bağ',
+      '3. Bilinçaltı & Gizli Korkular',
+      '4. Tutku, Çekim & Kimya',
+      '5. Kadersel Gelecek & Birlik',
+    ],
+  },
+];
+
 // Lenormand — Tarot'un Kelt Haçı gibi açılımlarını kopyalamak yerine, kendi
 // otantik tekniklerinden (kombinasyon/cümle okuma, haftalık açılım, 3x3 kutu)
 // türetilmiş kendine has açılım seçenekleri. LENORMAND_SPREADS ile birebir
@@ -342,7 +417,11 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
   // isimlerini/pozisyonlarını taşımaz) — bkz. LENORMAND_SPREAD_OPTIONS.
   const [selectedSpread, setSelectedSpread] = useState<SpreadOption>(() =>
     initialMode === 'relationship'
-      ? RELATIONSHIP_SPREAD_OPTIONS[0]
+      ? deck.id === 'katina'
+        ? KATINA_RELATIONSHIP_SPREAD_OPTIONS[0]
+        : RELATIONSHIP_SPREAD_OPTIONS[0]
+      : deck.id === 'katina'
+      ? KATINA_SPREAD_OPTIONS[0]
       : deck.id === 'lenormand'
       ? LENORMAND_SPREAD_OPTIONS[1]
       : deck.id === 'rune'
@@ -1482,7 +1561,13 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                     onPress={() => {
                       setReadingMode('self');
                       setSelectedSpread(
-                        deck.id === 'lenormand' ? LENORMAND_SPREAD_OPTIONS[1] : deck.id === 'rune' ? RUNE_SPREAD_OPTIONS[1] : SPREAD_OPTIONS[1],
+                        deck.id === 'katina'
+                          ? KATINA_SPREAD_OPTIONS[0]
+                          : deck.id === 'lenormand'
+                          ? LENORMAND_SPREAD_OPTIONS[1]
+                          : deck.id === 'rune'
+                          ? RUNE_SPREAD_OPTIONS[1]
+                          : SPREAD_OPTIONS[1],
                       );
                     }}
                     style={[
@@ -1513,7 +1598,11 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
                     <Pressable
                       onPress={() => {
                         setReadingMode('relationship');
-                        setSelectedSpread(RELATIONSHIP_SPREAD_OPTIONS[0]);
+                        setSelectedSpread(
+                          deck.id === 'katina'
+                            ? KATINA_RELATIONSHIP_SPREAD_OPTIONS[0]
+                            : RELATIONSHIP_SPREAD_OPTIONS[0]
+                        );
                       }}
                       style={[
                         styles.modeButton,
@@ -1653,7 +1742,9 @@ export default function CardDeckTableScreen({ route, navigation }: Props) {
               {deck.id === 'rune' ? 'AÇILIM VE TAŞ SAYISINI SEÇ' : 'AÇILIM VE KART SAYISINI SEÇ'}
             </Text>
             <View style={styles.spreadList}>
-              {(deck.id === 'lenormand'
+              {(deck.id === 'katina'
+                ? (readingMode === 'relationship' ? KATINA_RELATIONSHIP_SPREAD_OPTIONS : KATINA_SPREAD_OPTIONS)
+                : deck.id === 'lenormand'
                 ? LENORMAND_SPREAD_OPTIONS
                 : deck.id === 'rune'
                 ? RUNE_SPREAD_OPTIONS
@@ -4863,33 +4954,35 @@ const styles = StyleSheet.create({
   },
   modeButton: {
     flex: 1,
-    backgroundColor: 'rgba(22, 12, 44, 0.82)',
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 16,
     padding: 14,
     alignItems: 'center',
     gap: 6,
   },
   modeButtonActive: {
-    backgroundColor: 'rgba(40, 20, 75, 0.95)',
-    borderWidth: 1.8,
+    backgroundColor: '#201A10',
+    borderColor: GOLD,
+    borderWidth: 1.5,
   },
   modeButtonTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#FFFFFF',
     textAlign: 'center',
   },
   modeButtonDesc: {
     fontSize: 10.5,
-    color: TEXT_MUTED,
+    color: '#A1A1AA',
     textAlign: 'center',
     lineHeight: 14,
   },
   friendInputCard: {
-    backgroundColor: 'rgba(30, 30, 32, 0.9)',
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
     borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.4)',
     borderRadius: 16,
     padding: 14,
     gap: 10,
@@ -4900,19 +4993,20 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   friendInputTitle: {
-    fontSize: 12.5,
+    fontSize: 13,
     fontWeight: '800',
+    color: GOLD,
   },
   friendTextInput: {
-    backgroundColor: 'rgba(10, 5, 24, 0.75)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 201, 60, 0.25)',
-    borderRadius: 10,
+    backgroundColor: 'rgba(12, 12, 16, 0.90)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.35)',
+    borderRadius: 12,
     minHeight: 46,
     paddingVertical: 10,
     paddingHorizontal: 12,
     color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: 12.5,
     textAlignVertical: 'center',
   },
   swapInputsRow: {
@@ -4923,7 +5017,9 @@ const styles = StyleSheet.create({
   },
   partnerInputBox: {
     flex: 1,
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
     borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.35)',
     borderRadius: 14,
     padding: 10,
     gap: 6,
@@ -4965,16 +5061,17 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   spreadCard: {
-    backgroundColor: 'rgba(22, 12, 44, 0.82)',
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 16,
     padding: 14,
     gap: 6,
   },
   spreadCardSelected: {
-    backgroundColor: 'rgba(40, 20, 75, 0.95)',
-    borderWidth: 1.8,
+    backgroundColor: '#201A10',
+    borderColor: GOLD,
+    borderWidth: 1.5,
   },
   spreadTop: {
     flexDirection: 'row',
@@ -4999,11 +5096,11 @@ const styles = StyleSheet.create({
   spreadName: {
     fontSize: 14,
     fontWeight: '800',
-    color: TEXT_PRIMARY,
+    color: '#FFFFFF',
   },
   spreadDesc: {
     fontSize: 11.5,
-    color: TEXT_MUTED,
+    color: '#A1A1AA',
     lineHeight: 16,
   },
   layoutOptionsGrid: {
@@ -5013,27 +5110,28 @@ const styles = StyleSheet.create({
   },
   layoutOptionButton: {
     width: (SCREEN_WIDTH - 40) / 2,
-    backgroundColor: 'rgba(22, 12, 44, 0.82)',
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 14,
     padding: 10,
     alignItems: 'center',
     gap: 3,
   },
   layoutOptionActive: {
-    backgroundColor: 'rgba(40, 20, 75, 0.95)',
-    borderWidth: 1.8,
+    backgroundColor: '#201A10',
+    borderColor: GOLD,
+    borderWidth: 1.5,
   },
   layoutOptionTitle: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: '#FFFFFF',
     textAlign: 'center',
   },
   layoutOptionDesc: {
     fontSize: 9.5,
-    color: TEXT_MUTED,
+    color: '#A1A1AA',
     textAlign: 'center',
   },
   startBtn: {
@@ -5041,14 +5139,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    borderRadius: 18,
+    backgroundColor: GOLD,
+    borderRadius: 16,
     paddingVertical: 15,
     marginTop: 10,
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 6,
   },
   startBtnText: {
     fontSize: 14.5,
     fontWeight: '900',
-    color: NIGHT_CARD,
+    color: '#000000',
     letterSpacing: 0.3,
   },
   btnPressed: {
@@ -5081,15 +5185,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
     borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     borderRadius: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical: 11,
+    paddingHorizontal: 18,
   },
   autoPickBtnText: {
-    fontSize: 12.5,
+    fontSize: 13,
     fontWeight: '800',
+    color: '#FFFFFF',
   },
   shuffleWrap: {
     width: 140,
@@ -5956,7 +6062,7 @@ const styles = StyleSheet.create({
   // Inspect Modal
   inspectBackdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(4, 2, 10, 0.92)',
+    backgroundColor: 'rgba(4, 4, 8, 0.92)',
     zIndex: 9999,
     justifyContent: 'center',
     alignItems: 'center',
@@ -5965,11 +6071,16 @@ const styles = StyleSheet.create({
   inspectCardModal: {
     width: '100%',
     maxHeight: '88%',
-    backgroundColor: '#120A24',
+    backgroundColor: 'rgba(18, 18, 24, 0.96)',
     borderRadius: 24,
-    borderWidth: 1.5,
-    borderColor: GOLD_SOFT,
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     padding: 20,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.6,
+    shadowRadius: 16,
+    elevation: 12,
   },
   inspectCloseBtn: {
     position: 'absolute',
@@ -6008,7 +6119,8 @@ const styles = StyleSheet.create({
     width: 130,
     height: 200,
     borderRadius: 14,
-    borderWidth: 2,
+    borderWidth: 1.5,
+    borderColor: 'rgba(229, 169, 60, 0.35)',
     overflow: 'hidden',
     marginBottom: 10,
   },
@@ -6019,7 +6131,7 @@ const styles = StyleSheet.create({
   inspectPlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#1E1038',
+    backgroundColor: '#121218',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 12,
@@ -6050,9 +6162,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: 'rgba(255, 201, 60, 0.15)',
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
+    backgroundColor: 'rgba(229, 169, 60, 0.15)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.4)',
     borderRadius: 10,
     paddingVertical: 6,
     paddingHorizontal: 10,
@@ -6072,6 +6184,7 @@ const styles = StyleSheet.create({
   keywordPill: {
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderWidth: 1,
+    borderColor: 'rgba(229, 169, 60, 0.3)',
     borderRadius: 10,
     paddingVertical: 4,
     paddingHorizontal: 9,
@@ -6083,8 +6196,8 @@ const styles = StyleSheet.create({
   storyCardBox: {
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderRadius: 14,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.35)',
     overflow: 'hidden',
   },
   storyToggleHeader: {
@@ -6135,9 +6248,9 @@ const styles = StyleSheet.create({
   },
   lockedExplainedBox: {
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
+    backgroundColor: 'rgba(229, 169, 60, 0.1)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.4)',
     borderRadius: 16,
     padding: 16,
     gap: 8,
@@ -6164,13 +6277,13 @@ const styles = StyleSheet.create({
   upgradeInModalText: {
     fontSize: 13,
     fontWeight: '900',
-    color: NIGHT_CARD,
+    color: '#000000',
   },
 
   // 🪙 Detaylı Analiz & Yetersiz Bakiye Onay Modalı Stilleri
   confirmModalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(5, 2, 12, 0.82)',
+    backgroundColor: 'rgba(5, 5, 8, 0.88)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -6178,16 +6291,16 @@ const styles = StyleSheet.create({
   confirmModalCard: {
     width: '100%',
     maxWidth: 380,
-    backgroundColor: '#1E1035',
+    backgroundColor: 'rgba(18, 18, 24, 0.96)',
     borderRadius: 24,
-    borderWidth: 1.5,
-    borderColor: '#D97706',
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     padding: 22,
     alignItems: 'center',
     gap: 14,
-    shadowColor: '#000',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.6,
     shadowRadius: 16,
     elevation: 12,
   },
@@ -6216,7 +6329,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(217, 119, 6, 0.3)',
+    borderColor: 'rgba(229, 169, 60, 0.35)',
   },
   confirmBalanceLabel: {
     fontSize: 13,
@@ -6241,7 +6354,7 @@ const styles = StyleSheet.create({
   confirmPrimaryBtn: {
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: '#D97706',
+    shadowColor: GOLD,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 8,
@@ -6252,13 +6365,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+    backgroundColor: GOLD,
     paddingVertical: 14,
     paddingHorizontal: 16,
   },
   confirmPrimaryText: {
     fontSize: 14,
     fontWeight: '900',
-    color: NIGHT_CARD,
+    color: '#000000',
     letterSpacing: 0.3,
   },
   confirmSecondaryBtn: {
@@ -7121,11 +7235,17 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   scoreHeroCard: {
-    backgroundColor: '#120A24',
+    backgroundColor: 'rgba(18, 18, 24, 0.94)',
     borderRadius: 20,
     borderWidth: 1.5,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     padding: 16,
     overflow: 'hidden',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 6,
   },
   scoreHeroContent: {
     flexDirection: 'row',
@@ -7177,16 +7297,22 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontSize: 13,
     fontWeight: '900',
-    color: '#FFC93C',
+    color: GOLD,
     letterSpacing: 0.8,
     marginTop: 8,
   },
   pairBlockCard: {
-    backgroundColor: 'rgba(18, 10, 36, 0.92)',
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
     borderRadius: 18,
     borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.4)',
     padding: 14,
     gap: 12,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 5,
   },
   pairBlockHeader: {
     flexDirection: 'row',
@@ -7197,14 +7323,14 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 8,
-    backgroundColor: 'rgba(255, 201, 60, 0.2)',
+    backgroundColor: 'rgba(229, 169, 60, 0.18)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   pairLevelNumber: {
     fontSize: 12,
     fontWeight: '900',
-    color: '#FFC93C',
+    color: GOLD,
   },
   pairHeaderTextWrap: {
     flex: 1,
@@ -7242,7 +7368,7 @@ const styles = StyleSheet.create({
   pairCardCol: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'rgba(26, 14, 52, 0.75)',
+    backgroundColor: 'rgba(14, 14, 18, 0.90)',
     borderRadius: 14,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -7289,7 +7415,7 @@ const styles = StyleSheet.create({
   },
   pairCardPlaceholderSym: {
     fontSize: 24,
-    color: '#FFC93C',
+    color: GOLD,
   },
   pairCardReversedBadge: {
     position: 'absolute',
@@ -7374,7 +7500,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#F59E0B',
+    shadowColor: GOLD,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
@@ -7383,7 +7509,7 @@ const styles = StyleSheet.create({
   pairFlipCenterBtnText: {
     fontSize: 7.5,
     fontWeight: '900',
-    color: '#F59E0B',
+    color: GOLD,
     textAlign: 'center',
     letterSpacing: 0.2,
   },
@@ -7400,14 +7526,14 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: 6,
-    backgroundColor: 'rgba(245, 158, 11, 0.12)',
-    borderWidth: 0.8,
-    borderColor: 'rgba(245, 158, 11, 0.3)',
+    backgroundColor: 'rgba(229, 169, 60, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(229, 169, 60, 0.4)',
   },
   pairFlipBackTopText: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#F59E0B',
+    color: GOLD,
   },
   synthesisHeadingRow: {
     flexDirection: 'row',
@@ -7420,15 +7546,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    paddingVertical: 10,
-    borderRadius: 10,
-    backgroundColor: '#F59E0B',
+    paddingVertical: 11,
+    borderRadius: 12,
+    backgroundColor: GOLD,
     marginTop: 4,
   },
   pairFlipBackBottomText: {
-    fontSize: 12,
+    fontSize: 12.5,
     fontWeight: '900',
-    color: '#0B0612',
+    color: '#000000',
   },
 
   // --- GRID TABLE MATRIX (LEGACY/BACKFACE ARCHETYPE) ---
@@ -7466,7 +7592,7 @@ const styles = StyleSheet.create({
   tableVsText: {
     fontSize: 9,
     fontWeight: '900',
-    color: '#FFC93C',
+    color: GOLD,
     letterSpacing: 0.5,
   },
   tableHeaderColRight: {
@@ -7577,11 +7703,11 @@ const styles = StyleSheet.create({
 
   // --- ELEMENT SYNERGY BAR & SYNTHESIS & ADVICE ---
   elementSynergyBanner: {
-    backgroundColor: 'rgba(255, 201, 60, 0.08)',
+    backgroundColor: 'rgba(229, 169, 60, 0.08)',
     borderRadius: 10,
     padding: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255, 201, 60, 0.2)',
+    borderColor: 'rgba(229, 169, 60, 0.25)',
     gap: 6,
   },
   synergyTitleRow: {
@@ -7592,7 +7718,7 @@ const styles = StyleSheet.create({
   synergyBannerTitle: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#FFC93C',
+    color: GOLD,
   },
   synergyTrack: {
     height: 6,
@@ -7605,17 +7731,17 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   synthesisBox: {
-    backgroundColor: 'rgba(15, 8, 30, 0.75)',
+    backgroundColor: 'rgba(18, 18, 24, 0.94)',
     borderRadius: 12,
     padding: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(229, 169, 60, 0.35)',
     gap: 6,
   },
   synthesisHeading: {
     fontSize: 12,
     fontWeight: '900',
-    color: '#C084FC',
+    color: GOLD,
   },
   pairSynthesisText: {
     fontSize: 13,
@@ -7623,11 +7749,11 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   pairAdviceBox: {
-    backgroundColor: 'rgba(255, 201, 60, 0.1)',
+    backgroundColor: 'rgba(26, 20, 10, 0.92)',
     borderRadius: 12,
     padding: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 201, 60, 0.3)',
+    borderWidth: 1.2,
+    borderColor: GOLD,
     gap: 6,
   },
   adviceHeaderRow: {
@@ -7638,7 +7764,7 @@ const styles = StyleSheet.create({
   adviceHeadingText: {
     fontSize: 12,
     fontWeight: '900',
-    color: '#FFC93C',
+    color: GOLD,
   },
   pairAdviceText: {
     fontSize: 12.5,
@@ -7654,10 +7780,10 @@ const styles = StyleSheet.create({
   bridgeCardCol: {
     width: '100%',
     alignItems: 'center',
-    backgroundColor: 'rgba(30, 16, 56, 0.75)',
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.3)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.4)',
     padding: 12,
     gap: 6,
   },
@@ -7681,7 +7807,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginTop: 4,
-    shadowColor: '#F59E0B',
+    shadowColor: GOLD,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.4,
     shadowRadius: 5,
@@ -7697,7 +7823,7 @@ const styles = StyleSheet.create({
   bridgeFlipActionText: {
     fontSize: 12,
     fontWeight: '900',
-    color: '#0B0612',
+    color: '#000000',
     letterSpacing: 0.3,
   },
   katinaElementBox: {
@@ -7705,8 +7831,8 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 18,
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.4)',
-    backgroundColor: 'rgba(30, 30, 32, 0.9)',
+    borderColor: 'rgba(229, 169, 60, 0.4)',
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
   },
   katinaElementHeader: {
     flexDirection: 'row',
@@ -7735,8 +7861,8 @@ const styles = StyleSheet.create({
     minHeight: 70,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    backgroundColor: 'rgba(8, 7, 8, 0.6)',
+    borderColor: 'rgba(229, 169, 60, 0.35)',
+    backgroundColor: 'rgba(12, 12, 16, 0.75)',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
@@ -7750,7 +7876,7 @@ const styles = StyleSheet.create({
   katinaElementCardName: {
     fontSize: 10,
     fontWeight: '700',
-    color: TEXT_PRIMARY,
+    color: '#FFFFFF',
     textAlign: 'center',
     lineHeight: 13,
   },
@@ -7765,8 +7891,8 @@ const styles = StyleSheet.create({
   },
   katinaElementRevealBtnText: {
     fontSize: 13,
-    fontWeight: '800',
-    color: '#1A0D00',
+    fontWeight: '900',
+    color: '#000000',
   },
   katinaElementOutcomeBox: {
     borderWidth: 1.4,

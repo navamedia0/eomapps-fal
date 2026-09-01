@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import { Animated, Easing, PanResponder, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import OrbGlow from '@/components/tarot/OrbGlow';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP } from '@/theme/colors';
 
 const ORBIT_ICONS: (keyof typeof MaterialCommunityIcons.glyphMap)[] = [
@@ -22,9 +21,7 @@ const DRAG_SENSITIVITY = 0.6;
 const ANGLE_RANGE = 200000;
 
 // Anasayfanın statik banner görselinin yerini alan, sürüklenerek
-// döndürülebilen "ruh küresi" hero'su. OrbGlow'u (mevcut, değişmeden)
-// taban ışıma katmanı olarak kullanır; üstüne kendi çekirdek küresini ve
-// altı mistik ikonun döndüğü bir yörünge halkasını ekler.
+// döndürülebilen "ruh küresi" hero'su.
 export default function SoulOrbHero() {
   const autoAngle = useRef(new Animated.Value(0)).current;
   const dragAngle = useRef(new Animated.Value(0)).current;
@@ -69,11 +66,9 @@ export default function SoulOrbHero() {
 
   return (
     <View style={styles.wrap} {...panResponder.panHandlers}>
-      <OrbGlow />
-
       <View style={styles.sphereCore}>
         <LinearGradient
-          colors={['#2A2A2E', NIGHT_CARD, NIGHT_DEEP]}
+          colors={['#1E1E22', '#141417', '#000000']}
           start={{ x: 0.3, y: 0.2 }}
           end={{ x: 0.8, y: 1 }}
           style={StyleSheet.absoluteFillObject}

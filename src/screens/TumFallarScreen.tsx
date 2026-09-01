@@ -6,16 +6,17 @@ import {
   StyleSheet,
   TextInput,
   Pressable,
+  ImageBackground,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import SignatureFortuneCard from '@/components/fortune/SignatureFortuneCard';
 import TarotModeSelectionModal from '@/components/tarot/TarotModeSelectionModal';
 import RuneModeSelectionModal from '@/components/runes/RuneModeSelectionModal';
 import { ALL_SIGNATURE_FORTUNES, type FortuneSignatureItem } from '@/constants/allFortunesData';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_MID, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'TumFallar'>;
 
@@ -24,8 +25,8 @@ type FilterCategory = 'all' | 'cards' | 'visual' | 'ancient';
 const FILTERS: { key: FilterCategory; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
   { key: 'all', label: 'Tümü', icon: 'sparkles' },
   { key: 'cards', label: 'Kart Desteleri', icon: 'albums-outline' },
-  { key: 'visual', label: 'Fotoğraflı Fallar', icon: 'camera-outline' },
-  { key: 'ancient', label: 'Antik Kehanetler', icon: 'planet-outline' },
+  { key: 'visual', label: 'Fotoğraflı', icon: 'camera-outline' },
+  { key: 'ancient', label: 'Antik & Remil', icon: 'planet-outline' },
 ];
 
 export default function TumFallarScreen({ navigation }: Props) {
@@ -33,68 +34,6 @@ export default function TumFallarScreen({ navigation }: Props) {
   const [runeModalVisible, setRuneModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<FilterCategory>('all');
-
-  const popularItems = useMemo(
-    () => [
-      {
-        key: 'coffee',
-        title: 'Kahve Falı',
-        iconName: 'coffee' as const,
-        accent: '#F59E0B',
-        onPress: () => navigation.navigate('ImageReading', { kind: 'coffee' }),
-      },
-      {
-        key: 'tarot',
-        title: 'Tarot Falı',
-        iconName: 'cards-playing-outline' as const,
-        accent: '#EC4899',
-        onPress: () => setTarotModalVisible(true),
-      },
-      {
-        key: 'face',
-        title: 'Yüz Falı',
-        iconName: 'face-recognition' as const,
-        accent: '#A855F7',
-        onPress: () => navigation.navigate('ImageReading', { kind: 'face' }),
-      },
-      {
-        key: 'voice',
-        title: 'Sesli Falcı',
-        iconName: 'microphone-outline' as const,
-        accent: '#F43F5E',
-        onPress: () => navigation.navigate('VoiceReading'),
-      },
-      {
-        key: 'rune',
-        title: 'Nordik Rün',
-        iconName: 'triangle-outline' as const,
-        accent: '#38BDF8',
-        onPress: () => setRuneModalVisible(true),
-      },
-      {
-        key: 'palm',
-        title: 'El Falı',
-        iconName: 'hand-back-right-outline' as const,
-        accent: '#10B981',
-        onPress: () => navigation.navigate('ImageReading', { kind: 'palm' }),
-      },
-      {
-        key: 'katina',
-        title: 'Katina Aşk',
-        iconName: 'cards-heart-outline' as const,
-        accent: '#E11D48',
-        onPress: () => navigation.navigate('CardDeckTable', { deckId: 'katina' }),
-      },
-      {
-        key: 'sufal',
-        title: 'Su Falı',
-        iconName: 'water-outline' as const,
-        accent: '#06B6D4',
-        onPress: () => navigation.navigate('SuFal'),
-      },
-    ],
-    [navigation],
-  );
 
   const filteredFortunes = useMemo(() => {
     return ALL_SIGNATURE_FORTUNES.filter((item) => {
@@ -113,7 +52,7 @@ export default function TumFallarScreen({ navigation }: Props) {
         return ['tarot', 'katina', 'lenormand', 'thoth', 'osho_zen', 'angel', 'iskambil'].includes(item.key);
       }
       if (selectedFilter === 'visual') {
-        return ['coffee', 'palm', 'face', 'sufal', 'wax'].includes(item.key);
+        return ['coffee', 'palm', 'face', 'sufal', 'wax', 'voiceReading'].includes(item.key);
       }
       if (selectedFilter === 'ancient') {
         return ['rune', 'iching', 'bakla'].includes(item.key);
@@ -137,11 +76,11 @@ export default function TumFallarScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <MaterialCommunityIcons name="cards-playing-outline" size={26} color={GOLD} />
+          <MaterialCommunityIcons name="cards-playing-outline" size={24} color={GOLD} />
           <Text style={styles.headerTitle}>Tüm Fal Çeşitleri</Text>
         </View>
         <Text style={styles.headerCaption}>
-          Dünyanın dört bir yanından kadim kehanetler ve mistik kart atölyeleri
+          Dünyanın dört bir yanından 17 kadim kehanet ve mistik kart atölyesi
         </Text>
 
         {/* Arama Çubuğu */}
@@ -149,7 +88,7 @@ export default function TumFallarScreen({ navigation }: Props) {
           <Ionicons name="search-outline" size={18} color={TEXT_MUTED} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Fal veya deste ara... (Örn: Aşk, Tarot, Kahve)"
+            placeholder="Fal veya deste ara... (Örn: Tarot, Kahve, Aşk)"
             placeholderTextColor={TEXT_MUTED}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -171,7 +110,7 @@ export default function TumFallarScreen({ navigation }: Props) {
                 onPress={() => setSelectedFilter(f.key)}
                 style={[styles.filterPill, active && styles.filterPillActive]}
               >
-                <Ionicons name={f.icon} size={14} color={active ? '#0F0820' : GOLD} />
+                <Ionicons name={f.icon} size={13} color={active ? NIGHT_DEEP : GOLD} />
                 <Text style={[styles.filterText, active && styles.filterTextActive]}>
                   {f.label}
                 </Text>
@@ -180,50 +119,39 @@ export default function TumFallarScreen({ navigation }: Props) {
           })}
         </View>
 
-        {/* EN ÇOK SEVİLEN & POPÜLER FALLAR (2 SATIRLIK KOMPAKT SİMGE VİTRİNİ) */}
-        {!searchQuery.trim() && (
-          <View style={styles.popularSection}>
-            <View style={styles.popularHeaderRow}>
-              <MaterialCommunityIcons name="star-shooting" size={16} color={GOLD} />
-              <Text style={styles.popularSectionTitle}>En Çok Tercih Edilen Fallar</Text>
-            </View>
-            <View style={styles.popularGrid}>
-              {popularItems.map((item) => (
-                <Pressable
-                  key={item.key}
-                  onPress={item.onPress}
-                  style={({ pressed }) => [
-                    styles.popularIconBtn,
-                    pressed && styles.popularIconBtnPressed,
-                  ]}
-                >
-                  <View style={[styles.popularIconCircle, { borderColor: item.accent + '66', backgroundColor: item.accent + '18' }]}>
-                    <MaterialCommunityIcons name={item.iconName} size={22} color={item.accent} />
+        {/* Fal Izgarası (Grid) — Anasayfa Kart Boyutu & Estetiği */}
+        <View style={styles.grid}>
+          {filteredFortunes.map((item) => (
+            <Pressable
+              key={item.key}
+              onPress={() => handleCardPress(item)}
+              style={({ pressed }) => [styles.gridCard, pressed && styles.gridCardPressed]}
+            >
+              <ImageBackground
+                source={item.imageSource}
+                style={styles.cardImageWrap}
+                imageStyle={styles.cardImage}
+              >
+                <LinearGradient
+                  colors={['rgba(8, 7, 8, 0.1)', 'rgba(8, 7, 8, 0.55)', 'rgba(8, 7, 8, 0.95)']}
+                  style={StyleSheet.absoluteFillObject}
+                />
+
+                {item.badgeText && (
+                  <View style={[styles.cardTag, { borderColor: item.badgeColor ? item.badgeColor + '66' : GOLD_SOFT }]}>
+                    <Text style={styles.cardTagText} numberOfLines={1}>
+                      {item.badgeText.replace(/^[^\w\s\u00C0-\u017F]+/, '').trim()}
+                    </Text>
                   </View>
-                  <Text style={styles.popularIconText} numberOfLines={1}>
+                )}
+
+                <View style={styles.cardBottom}>
+                  <Text style={styles.cardTitle} numberOfLines={2}>
                     {item.title}
                   </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* Fal Listesi (Geniş İmza Kartları) */}
-        <View style={styles.cardsList}>
-          {filteredFortunes.map((item) => (
-            <SignatureFortuneCard
-              key={item.key}
-              title={item.title}
-              subtitle={item.subtitle}
-              tags={item.tags}
-              accent={item.accent}
-              badgeText={item.badgeText}
-              badgeColor={item.badgeColor}
-              ctaText={item.ctaText}
-              imageSource={item.imageSource}
-              onPress={() => handleCardPress(item)}
-            />
+                </View>
+              </ImageBackground>
+            </Pressable>
           ))}
 
           {filteredFortunes.length === 0 && (
@@ -263,53 +191,53 @@ export default function TumFallarScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingTop: 16,
+    paddingTop: 12,
     paddingBottom: 48,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    marginTop: 4,
+    marginTop: 2,
     marginBottom: 4,
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '900',
     color: GOLD,
     letterSpacing: 0.3,
   },
   headerCaption: {
-    fontSize: 12.5,
+    fontSize: 12,
     color: TEXT_MUTED,
     textAlign: 'center',
-    marginBottom: 16,
-    paddingHorizontal: 20,
-    lineHeight: 17,
+    marginBottom: 14,
+    paddingHorizontal: 16,
+    lineHeight: 16,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(15, 8, 30, 0.85)',
+    backgroundColor: NIGHT_CARD,
     borderWidth: 1.2,
     borderColor: GOLD_SOFT,
     borderRadius: 16,
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 9,
     gap: 10,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   searchInput: {
     flex: 1,
-    fontSize: 13,
-    color: '#FFFFFF',
+    fontSize: 12.5,
+    color: TEXT_PRIMARY,
     paddingVertical: 0,
   },
   filterRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
     marginBottom: 14,
   },
   filterPill: {
@@ -317,10 +245,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 5,
-    paddingVertical: 8,
+    gap: 4,
+    paddingVertical: 7,
     borderRadius: 12,
-    backgroundColor: 'rgba(15, 8, 30, 0.7)',
+    backgroundColor: NIGHT_CARD,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
   },
@@ -329,67 +257,64 @@ const styles = StyleSheet.create({
     borderColor: GOLD,
   },
   filterText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '800',
     color: GOLD,
   },
   filterTextActive: {
-    color: '#0F0820',
+    color: NIGHT_DEEP,
   },
-  popularSection: {
-    backgroundColor: 'rgba(20, 10, 40, 0.7)',
-    borderRadius: 18,
-    borderWidth: 1.2,
-    borderColor: GOLD_SOFT,
-    padding: 12,
-    marginBottom: 16,
-  },
-  popularHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 10,
-    paddingHorizontal: 4,
-  },
-  popularSectionTitle: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: GOLD,
-    letterSpacing: 0.3,
-  },
-  popularGrid: {
+  grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    rowGap: 10,
+    rowGap: 12,
   },
-  popularIconBtn: {
-    width: '23%',
-    alignItems: 'center',
-    gap: 4,
-  },
-  popularIconBtnPressed: {
-    opacity: 0.75,
-    transform: [{ scale: 0.94 }],
-  },
-  popularIconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  gridCard: {
+    width: '31.5%',
+    height: 152,
+    borderRadius: 16,
+    overflow: 'hidden',
     borderWidth: 1.2,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: GOLD_SOFT,
+    backgroundColor: NIGHT_CARD,
   },
-  popularIconText: {
-    fontSize: 10.5,
-    fontWeight: '700',
-    color: '#E2E8F0',
-    textAlign: 'center',
+  gridCardPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.96 }],
   },
-  cardsList: {
-    gap: 2,
+  cardImageWrap: {
+    flex: 1,
+    justifyContent: 'space-between',
+    padding: 7,
+  },
+  cardImage: {
+    resizeMode: 'cover',
+  },
+  cardTag: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(10, 8, 12, 0.82)',
+    borderWidth: 0.8,
+    borderRadius: 6,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+  },
+  cardTagText: {
+    fontSize: 8.5,
+    fontWeight: '800',
+    color: GOLD,
+  },
+  cardBottom: {
+    marginTop: 'auto',
+  },
+  cardTitle: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#FFFEFB',
+    lineHeight: 14,
   },
   emptyWrap: {
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 48,

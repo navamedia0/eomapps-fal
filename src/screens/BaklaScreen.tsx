@@ -15,6 +15,7 @@ import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import { cast41Beans, type BaklaOcak, type BaklaReading } from '@/services/baklaEngine';
 import { interpretBaklaReading } from '@/services/readings-ai';
 import { getCoins, spendCoins, addCoins } from '@/services/coins';
+import { saveReadingHistory } from '@/services/readingHistory';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -110,6 +111,11 @@ export default function BaklaScreen({ navigation }: Props) {
     try {
       const interp = await interpretBaklaReading(reading, targetMode);
       setResult(interp);
+      await saveReadingHistory({
+        type: 'bakla',
+        title: '41 Bakla Remil Falı',
+        result: interp,
+      });
     } catch {
       await addCoins(cost);
       setError(`Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin. (${cost} coin iade edildi.)`);
@@ -294,22 +300,27 @@ const styles = StyleSheet.create({
   },
   setupCard: {
     width: '100%',
-    backgroundColor: 'rgba(30, 30, 32, 0.85)',
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.35)',
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     borderRadius: 18,
     padding: 20,
     gap: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 6,
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: '700',
-    color: GOLD_SOFT,
+    fontWeight: '800',
+    color: GOLD,
     textAlign: 'center',
   },
   cardDesc: {
     fontSize: 13,
-    color: TEXT_PRIMARY,
+    color: '#E4E4E7',
     lineHeight: 20,
     textAlign: 'center',
   },
@@ -319,20 +330,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     backgroundColor: GOLD,
-    borderRadius: 14,
+    borderRadius: 16,
     paddingVertical: 14,
     marginTop: 6,
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 6,
   },
   btnDeep: {
     backgroundColor: '#F5C862',
   },
   btnPressed: {
     opacity: 0.85,
+    transform: [{ scale: 0.98 }],
   },
   primaryBtnText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: NIGHT_CARD,
+    fontSize: 14.5,
+    fontWeight: '900',
+    color: '#000000',
   },
   beansWrap: {
     width: '100%',
@@ -342,9 +359,9 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   ocakCard: {
-    backgroundColor: 'rgba(30, 30, 32, 0.8)',
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.25)',
+    borderColor: 'rgba(229, 169, 60, 0.35)',
     borderRadius: 16,
     padding: 14,
     alignItems: 'center',
@@ -356,9 +373,9 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   ocakName: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: GOLD_SOFT,
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: GOLD,
   },
   reelStage: {
     alignItems: 'center',
@@ -374,7 +391,7 @@ const styles = StyleSheet.create({
   beansCountText: {
     fontSize: 26,
     fontWeight: '800',
-    color: TEXT_PRIMARY,
+    color: '#FFFFFF',
   },
   beansLabel: {
     fontSize: 12,
@@ -389,15 +406,15 @@ const styles = StyleSheet.create({
     opacity: 0,
   },
   badgeEven: {
-    backgroundColor: 'rgba(76, 175, 80, 0.18)',
+    backgroundColor: 'rgba(76, 175, 80, 0.2)',
   },
   badgeOdd: {
-    backgroundColor: 'rgba(255, 152, 0, 0.18)',
+    backgroundColor: 'rgba(255, 152, 0, 0.2)',
   },
   ocakStatusText: {
     fontSize: 11,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
   resetBtnTop: {
     flexDirection: 'row',
@@ -408,17 +425,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 201, 60, 0.3)',
-    backgroundColor: 'rgba(255, 201, 60, 0.08)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
   },
   resetBtnText: {
     fontSize: 12.5,
-    color: GOLD_SOFT,
-    fontWeight: '600',
+    color: '#FFFFFF',
+    fontWeight: '800',
   },
   patternCard: {
-    backgroundColor: 'rgba(35, 20, 70, 0.85)',
+    backgroundColor: 'rgba(35, 20, 70, 0.90)',
     borderWidth: 1.2,
     borderColor: GOLD,
     borderRadius: 16,
@@ -432,7 +449,7 @@ const styles = StyleSheet.create({
   },
   patternMeaning: {
     fontSize: 12.5,
-    color: TEXT_PRIMARY,
+    color: '#E4E4E7',
     lineHeight: 18,
   },
   patternOutcome: {
@@ -446,8 +463,8 @@ const styles = StyleSheet.create({
   },
   modeTitle: {
     fontSize: 12.5,
-    fontWeight: '700',
-    color: GOLD_SOFT,
+    fontWeight: '800',
+    color: GOLD,
   },
   modeCardsRow: {
     flexDirection: 'row',
@@ -455,32 +472,33 @@ const styles = StyleSheet.create({
   },
   modeCard: {
     flex: 1,
-    backgroundColor: 'rgba(30, 30, 32, 0.75)',
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.25)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 14,
     padding: 12,
     gap: 4,
   },
   modeCardActive: {
     borderColor: GOLD,
-    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    backgroundColor: '#201A10',
   },
   modeCardDeep: {
-    backgroundColor: 'rgba(35, 20, 70, 0.85)',
+    backgroundColor: 'rgba(35, 20, 70, 0.90)',
+    borderColor: 'rgba(192, 132, 252, 0.35)',
   },
   modeCardDeepActive: {
-    borderColor: '#F5C862',
-    backgroundColor: 'rgba(245, 200, 98, 0.16)',
+    borderColor: '#C084FC',
+    backgroundColor: '#25173B',
   },
   modeCardTitle: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
   modeCardDesc: {
     fontSize: 10.5,
-    color: TEXT_MUTED,
+    color: '#A1A1AA',
     lineHeight: 14,
   },
   loadingBox: {
@@ -490,14 +508,14 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 13,
-    color: GOLD_SOFT,
+    color: GOLD,
     fontStyle: 'italic',
     textAlign: 'center',
   },
   resultCard: {
-    backgroundColor: NIGHT_CARD,
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
     borderWidth: 1.2,
-    borderColor: GOLD_SOFT,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     borderRadius: 18,
     padding: 18,
     gap: 14,

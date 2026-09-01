@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { GOLD, GOLD_SOFT, TEXT_PRIMARY } from '@/theme/colors';
+import { GOLD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = Math.min(width * 0.85, 320);
@@ -37,29 +37,36 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
         {/* Backdrop Tap to Close */}
         <Pressable style={styles.backdrop} onPress={onClose} />
 
-        {/* Slide-in Drawer Container */}
-        <View style={[styles.drawer, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 14 }]}>
+        {/* Slide-in Drawer Container (OLED Saf Siyah Zemin) */}
+        <View style={[styles.drawer, { paddingTop: insets.top + 14, paddingBottom: insets.bottom + 16 }]}>
           {/* Header */}
           <View style={styles.drawerHeader}>
             <View style={styles.drawerTitleRow}>
-              <MaterialCommunityIcons name="book-open-page-variant" size={22} color={GOLD} />
+              <MaterialCommunityIcons name="star-crescent" size={20} color={GOLD} />
               <Text style={styles.drawerTitle}>Mistik Menü</Text>
             </View>
             <Pressable onPress={onClose} style={styles.closeBtn} hitSlop={10}>
               <Ionicons name="close" size={22} color={GOLD} />
             </Pressable>
           </View>
+          <Text style={styles.drawerSubtitle}>Kadim Bilgiler & Mistik Rehberler</Text>
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.drawerContent}>
+            {/* BÖLÜM 1: MİSTİK KÖŞKLER */}
+            <Text style={styles.sectionHeading}>MİSTİK KÖŞKLER</Text>
+
             {/* 1. SÖZLER KÖŞKÜ */}
             <Pressable
               onPress={() => handleNavigate('SozlerKosku')}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(255, 201, 60, 0.18)' }]}>
+              <View style={styles.menuIconWrap}>
                 <MaterialCommunityIcons name="feather" size={20} color={GOLD} />
               </View>
-              <Text style={styles.menuItemTitle}>Sözler Köşkü</Text>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>Sözler Köşkü</Text>
+                <Text style={styles.menuItemSub}>Günün mistik sözleri & ilham</Text>
+              </View>
               <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
@@ -68,10 +75,13 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               onPress={() => handleNavigate('BilgiKosesi')}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.18)' }]}>
-                <Ionicons name="library-outline" size={20} color="#C084FC" />
+              <View style={styles.menuIconWrap}>
+                <Ionicons name="library-outline" size={20} color={GOLD} />
               </View>
-              <Text style={styles.menuItemTitle}>Bilgi Köşesi</Text>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>Bilgi Köşesi</Text>
+                <Text style={styles.menuItemSub}>Ezoterik makaleler ve sırlar</Text>
+              </View>
               <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
@@ -80,27 +90,33 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               onPress={() => handleNavigate('HaftaninSevilenleri')}
               style={({ pressed }) => [styles.menuItem, styles.highlightMenuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
-                <Ionicons name="flame" size={20} color="#EF4444" />
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(255, 201, 60, 0.18)' }]}>
+                <Ionicons name="flame" size={20} color={GOLD} />
               </View>
-              <Text style={[styles.menuItemTitle, { color: '#FCA5A5' }]}>Haftanın En Sevilenleri</Text>
+              <View style={styles.menuTextWrap}>
+                <Text style={[styles.menuItemTitle, { color: GOLD }]}>Haftanın En Sevilenleri</Text>
+                <Text style={styles.menuItemSub}>En popüler sözler & paylaşımlar</Text>
+              </View>
               <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
             <View style={styles.divider} />
 
-            {/* KADİM BİLGİ KARTLARI & REHBERLER */}
-            <Text style={styles.sectionHeading}>KADİM KART & REHBERLER</Text>
+            {/* BÖLÜM 2: KADİM BİLGİ KARTLARI & REHBERLER */}
+            <Text style={styles.sectionHeading}>KADİM KARTLAR & REHBERLER</Text>
 
             {/* Tarot Kartları */}
             <Pressable
               onPress={() => handleNavigate('KartAnlamlari', { deck: 'tarot' })}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(147, 51, 234, 0.18)' }]}>
-                <MaterialCommunityIcons name="cards-outline" size={20} color="#C084FC" />
+              <View style={styles.menuIconWrap}>
+                <MaterialCommunityIcons name="cards-outline" size={20} color={GOLD} />
               </View>
-              <Text style={styles.menuItemTitle}>Tarot Kartları</Text>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>Tarot Kartları</Text>
+                <Text style={styles.menuItemSub}>78 kartın detaylı rehberi</Text>
+              </View>
               <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
@@ -109,10 +125,13 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               onPress={() => handleNavigate('KartAnlamlari', { deck: 'iskambil' })}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(59, 130, 246, 0.18)' }]}>
-                <MaterialCommunityIcons name="cards-playing-outline" size={20} color="#60A5FA" />
+              <View style={styles.menuIconWrap}>
+                <MaterialCommunityIcons name="cards-playing-outline" size={20} color={GOLD} />
               </View>
-              <Text style={styles.menuItemTitle}>İskambil Kartları</Text>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>İskambil Kartları</Text>
+                <Text style={styles.menuItemSub}>52 kart ve hanedan anlamları</Text>
+              </View>
               <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
@@ -121,10 +140,13 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               onPress={() => handleNavigate('BilgiMakale', { topic: 'burc_kokeni' })}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(245, 158, 11, 0.18)' }]}>
-                <MaterialCommunityIcons name="zodiac-leo" size={20} color="#FBBF24" />
+              <View style={styles.menuIconWrap}>
+                <MaterialCommunityIcons name="zodiac-leo" size={20} color={GOLD} />
               </View>
-              <Text style={styles.menuItemTitle}>Burçlar & 4 Element</Text>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>Burçlar & 4 Element</Text>
+                <Text style={styles.menuItemSub}>Ateş, Toprak, Hava, Su</Text>
+              </View>
               <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
 
@@ -133,10 +155,13 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
               onPress={() => handleNavigate('BilgiMakale', { topic: 'kahve_tarihi' })}
               style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
             >
-              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(180, 83, 9, 0.18)' }]}>
-                <MaterialCommunityIcons name="coffee-outline" size={20} color="#F59E0B" />
+              <View style={styles.menuIconWrap}>
+                <MaterialCommunityIcons name="coffee-outline" size={20} color={GOLD} />
               </View>
-              <Text style={styles.menuItemTitle}>Kahve Falı Tarihi</Text>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuItemTitle}>Kahve Falı Tarihi</Text>
+                <Text style={styles.menuItemSub}>Osmanlı'dan günümüze telve</Text>
+              </View>
               <Ionicons name="chevron-forward" size={16} color={GOLD} />
             </Pressable>
           </ScrollView>
@@ -149,7 +174,7 @@ export default function SozlerKoskuDrawerModal({ visible, onClose, navigation }:
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
     flexDirection: 'row',
   },
   backdrop: {
@@ -158,24 +183,21 @@ const styles = StyleSheet.create({
   drawer: {
     width: DRAWER_WIDTH,
     height: '100%',
-    backgroundColor: 'rgba(22, 12, 42, 0.98)',
-    borderRightWidth: 1.5,
-    borderRightColor: 'rgba(255, 201, 60, 0.35)',
+    backgroundColor: '#000000',
+    borderRightWidth: 1,
+    borderRightColor: 'rgba(255, 255, 255, 0.08)',
     paddingHorizontal: 14,
-    shadowColor: '#000',
+    shadowColor: '#000000',
     shadowOffset: { width: 4, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 12,
+    shadowOpacity: 0.8,
+    shadowRadius: 16,
+    elevation: 20,
   },
   drawerHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 201, 60, 0.2)',
-    marginBottom: 6,
+    paddingBottom: 8,
   },
   drawerTitleRow: {
     flexDirection: 'row',
@@ -183,62 +205,88 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   drawerTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '900',
     color: GOLD,
     letterSpacing: 0.3,
   },
+  drawerSubtitle: {
+    fontSize: 11.5,
+    color: TEXT_MUTED,
+    marginBottom: 12,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+  },
   closeBtn: {
-    padding: 4,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   drawerContent: {
-    paddingVertical: 6,
+    paddingVertical: 4,
     gap: 9,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(38, 24, 70, 0.88)',
-    borderRadius: 13,
-    borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.22)',
+    backgroundColor: '#0E0E12',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     paddingVertical: 10,
     paddingHorizontal: 12,
     gap: 10,
   },
   highlightMenuItem: {
-    backgroundColor: 'rgba(48, 20, 58, 0.95)',
-    borderColor: 'rgba(239, 68, 68, 0.45)',
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
+    borderColor: 'rgba(255, 201, 60, 0.4)',
   },
   menuItemPressed: {
-    backgroundColor: 'rgba(58, 36, 106, 0.95)',
+    opacity: 0.85,
     transform: [{ scale: 0.98 }],
   },
   menuIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  menuItemTitle: {
+  menuTextWrap: {
     flex: 1,
-    fontSize: 14.5,
+  },
+  menuItemTitle: {
+    fontSize: 13.5,
     fontWeight: '800',
     color: TEXT_PRIMARY,
     letterSpacing: 0.2,
   },
+  menuItemSub: {
+    fontSize: 10.5,
+    color: TEXT_MUTED,
+    marginTop: 1,
+  },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255, 201, 60, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     marginVertical: 4,
   },
   sectionHeading: {
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: '900',
-    color: GOLD_SOFT,
+    color: GOLD,
     letterSpacing: 0.8,
-    marginTop: 2,
-    marginBottom: 1,
+    marginTop: 4,
+    marginBottom: 2,
+    paddingHorizontal: 2,
   },
 });

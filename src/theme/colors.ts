@@ -1,25 +1,26 @@
-// "Yumuşak Siyah" tema — neredeyse siyah zemin, canlı altın/amber vurgular.
-// "Cosmic Indigo" (galaksi moru) paletinin yerine deneme amaçlı geçti; bu
-// dosyayı eski değerlere döndürmek geri almak için yeterli.
-export const GOLD = '#FFC93C';
-export const GOLD_SOFT = 'rgba(255, 201, 60, 0.35)';
-export const GOLD_MUTED = '#C9A227';
-export const GOLD_DEEP = '#FF8A00';
-export const CANDLE_GLOW = '#FFD60A';
+// "Netflix Tarzı Lüks Koyu" tema — derin mat siyah, sofistike cam/grafit kenarlıklar, sıcak altın vurgular.
+export const GOLD = '#E5A93C';
+export const GOLD_SOFT = 'rgba(255, 255, 255, 0.09)'; // Artık sarı değil; sofistike, göze batmayan ince grafit/cam kenarlık
+export const GOLD_MUTED = '#A1A1AA';
+export const GOLD_DEEP = '#D97706';
+export const CANDLE_GLOW = '#FBBF24';
 
-export const NIGHT_DEEP = '#080708';
-export const NIGHT_MID = '#121214';
-export const NIGHT_CARD = '#1E1E20';
-export const INDIGO_DEEP = '#2A2A2E';
+export const BORDER_COLOR = 'rgba(255, 255, 255, 0.08)';
+export const BORDER_ACTIVE = 'rgba(229, 169, 60, 0.35)';
 
-export const VELVET_MID = '#36363C';
+export const NIGHT_DEEP = '#000000'; // Saf OLED Siyah
+export const NIGHT_MID = '#0A0A0C';  // Derin OLED zemin
+export const NIGHT_CARD = '#141417'; // Şık pürüzsüz koyu kart yüzeyi
+export const INDIGO_DEEP = '#1A1A1E';
 
-export const CRYSTAL_BLUE = '#8B5CF6';
-export const RED_ACCENT = '#E50914';
+export const VELVET_MID = '#27272A';
 
-export const TEXT_PRIMARY = '#FFFEFB';
-export const TEXT_MUTED = '#E8E2D0';
-export const TEXT_CAPTION = '#B8B5A8';
+export const CRYSTAL_BLUE = '#6366F1';
+export const RED_ACCENT = '#EF4444';
+
+export const TEXT_PRIMARY = '#FFFFFF';
+export const TEXT_MUTED = '#A1A1AA';
+export const TEXT_CAPTION = '#71717A';
 
 // Bilgi Köşesi — kendi alt-teması olarak kalıyor (glassmorphism ametist tonu),
 // diğer ekranların indigo kart zemininden ayrışması için.

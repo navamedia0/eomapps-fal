@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { GOLD, GOLD_SOFT, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_MID, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = {
   visible: boolean;
@@ -33,7 +33,7 @@ const PSYCHOLOGY_TESTS: TestItem[] = [
     title: 'Aşk & Bağlanma Stili Testi',
     subtitle: 'Güvenli mi, Kaygılı mı, Kaçıngan mısın? İlişki bilinçaltın',
     tags: ['İlişki Dinamiği', 'Bağlanma Kodu', 'Aşk Bilinçaltı'],
-    accent: '#EC4899',
+    accent: '#F43F5E',
     iconName: 'heart-pulse',
     badgeText: '🔥 En Çok Çözülen',
   },
@@ -42,7 +42,7 @@ const PSYCHOLOGY_TESTS: TestItem[] = [
     title: '16 Kişilik & Gölge Arketip Testi',
     subtitle: 'Carl Jung arketipleriyle maskenin ardındaki gerçek benliğin',
     tags: ['16 Kişilik', 'Gölge Benlik', 'Jung Arketipleri'],
-    accent: '#A855F7',
+    accent: '#FFC93C',
     iconName: 'account-group-outline',
     badgeText: '🧠 Derin Analiz',
   },
@@ -92,17 +92,17 @@ export default function PsychologyTestsModal({ visible, onClose, navigation }: P
 
         <View style={styles.container}>
           <LinearGradient
-            colors={['#1E1035', '#120824', '#080314']}
+            colors={[NIGHT_CARD, NIGHT_MID, NIGHT_DEEP]}
             style={StyleSheet.absoluteFillObject}
           />
 
           <Pressable onPress={onClose} style={styles.closeBtn} hitSlop={10}>
-            <Ionicons name="close" size={22} color={TEXT_MUTED} />
+            <Ionicons name="close" size={22} color={GOLD} />
           </Pressable>
 
           <View style={styles.header}>
             <View style={styles.iconCircle}>
-              <MaterialCommunityIcons name="brain" size={26} color="#A855F7" />
+              <MaterialCommunityIcons name="brain" size={26} color={GOLD} />
             </View>
             <Text style={styles.title}>Psikolojik & Kişilik Testleri</Text>
             <Text style={styles.subtitle}>
@@ -117,16 +117,15 @@ export default function PsychologyTestsModal({ visible, onClose, navigation }: P
                 onPress={() => handleTestPress(test)}
                 style={({ pressed }) => [
                   styles.testCard,
-                  { borderColor: test.accent + '44' },
                   pressed && styles.testCardPressed,
                 ]}
               >
                 <View style={styles.cardTop}>
-                  <View style={[styles.testIcon, { backgroundColor: test.accent + '22', borderColor: test.accent + '66' }]}>
-                    <MaterialCommunityIcons name={test.iconName} size={20} color={test.accent} />
+                  <View style={[styles.testIcon, { backgroundColor: 'rgba(255, 201, 60, 0.12)', borderColor: GOLD_SOFT }]}>
+                    <MaterialCommunityIcons name={test.iconName} size={20} color={test.accent || GOLD} />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={[styles.testTitle, { color: test.accent }]}>{test.title}</Text>
+                    <Text style={[styles.testTitle, { color: test.accent || GOLD }]}>{test.title}</Text>
                     <Text style={styles.testSub}>{test.subtitle}</Text>
                   </View>
                 </View>
@@ -134,14 +133,14 @@ export default function PsychologyTestsModal({ visible, onClose, navigation }: P
                 <View style={styles.cardBottom}>
                   <View style={styles.tagWrap}>
                     {test.tags.map((t, i) => (
-                      <View key={i} style={[styles.tag, { borderColor: test.accent + '33' }]}>
+                      <View key={i} style={styles.tag}>
                         <Text style={styles.tagText}>{t}</Text>
                       </View>
                     ))}
                   </View>
-                  <View style={[styles.startPill, { backgroundColor: test.accent + '25', borderColor: test.accent + '77' }]}>
-                    <Text style={[styles.startText, { color: test.accent }]}>Teste Başla</Text>
-                    <Ionicons name="arrow-forward" size={12} color={test.accent} />
+                  <View style={[styles.startPill, { backgroundColor: 'rgba(255, 201, 60, 0.12)', borderColor: GOLD_SOFT }]}>
+                    <Text style={[styles.startText, { color: GOLD }]}>Teste Başla</Text>
+                    <Ionicons name="arrow-forward" size={12} color={GOLD} />
                   </View>
                 </View>
               </Pressable>
@@ -156,7 +155,7 @@ export default function PsychologyTestsModal({ visible, onClose, navigation }: P
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(4, 2, 10, 0.88)',
+    backgroundColor: 'rgba(0, 0, 0, 0.82)',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 14,
@@ -166,8 +165,8 @@ const styles = StyleSheet.create({
     width: '100%',
     maxHeight: '90%',
     borderRadius: 24,
-    borderWidth: 1.2,
-    borderColor: 'rgba(255, 138, 0, 0.4)',
+    borderWidth: 1.5,
+    borderColor: GOLD_SOFT,
     overflow: 'hidden',
     paddingTop: 20,
     paddingBottom: 16,
@@ -181,7 +180,9 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255, 201, 60, 0.1)',
+    borderWidth: 1,
+    borderColor: GOLD_SOFT,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -194,17 +195,17 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: 'rgba(255, 138, 0, 0.15)',
+    backgroundColor: 'rgba(255, 201, 60, 0.14)',
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 138, 0, 0.4)',
+    borderColor: GOLD_SOFT,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
   },
   title: {
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: '900',
-    color: '#F1F5F9',
+    color: GOLD,
     textAlign: 'center',
   },
   subtitle: {
@@ -221,8 +222,9 @@ const styles = StyleSheet.create({
   testCard: {
     borderRadius: 16,
     borderWidth: 1.2,
+    borderColor: GOLD_SOFT,
     padding: 12,
-    backgroundColor: 'rgba(15, 8, 30, 0.8)',
+    backgroundColor: NIGHT_CARD,
     gap: 10,
   },
   testCardPressed: {
@@ -237,19 +239,19 @@ const styles = StyleSheet.create({
   testIcon: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: 12,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   testTitle: {
-    fontSize: 14.5,
-    fontWeight: '900',
+    fontSize: 14,
+    fontWeight: '800',
     letterSpacing: 0.2,
   },
   testSub: {
     fontSize: 11.5,
-    color: '#CBD5E1',
+    color: TEXT_MUTED,
     marginTop: 2,
     lineHeight: 15,
   },
@@ -269,11 +271,12 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 6,
     borderWidth: 0.8,
-    backgroundColor: 'rgba(10, 5, 20, 0.7)',
+    borderColor: GOLD_SOFT,
+    backgroundColor: 'rgba(255, 201, 60, 0.08)',
   },
   tagText: {
     fontSize: 9.5,
-    color: '#E2E8F0',
+    color: TEXT_PRIMARY,
     fontWeight: '700',
   },
   startPill: {
@@ -283,10 +286,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
-    borderWidth: 0.8,
+    borderWidth: 1,
   },
   startText: {
     fontSize: 11,
     fontWeight: '900',
   },
 });
+

@@ -15,6 +15,7 @@ import { parseNumberedSections } from '@/utils/parseNumberedSections';
 import waxData from '@/data/balmumu_fali_sembolleri.json';
 import { interpretWaxReading } from '@/services/readings-ai';
 import { getCoins, spendCoins, addCoins } from '@/services/coins';
+import { saveReadingHistory } from '@/services/readingHistory';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, NIGHT_DEEP, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
@@ -166,6 +167,11 @@ export default function WaxReadingScreen({ navigation }: Props) {
     try {
       const interp = await interpretWaxReading(flameSignal, waxShapes, targetMode);
       setResult(interp);
+      await saveReadingHistory({
+        type: 'wax',
+        title: 'Balmumu Falı & Aşk Raporu',
+        result: interp,
+      });
     } catch {
       await addCoins(cost);
       setError(`Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin. (${cost} coin iade edildi.)`);
@@ -343,22 +349,27 @@ const styles = StyleSheet.create({
   },
   setupCard: {
     width: '100%',
-    backgroundColor: 'rgba(30, 30, 32, 0.85)',
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.35)',
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     borderRadius: 18,
     padding: 20,
     gap: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 6,
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: '700',
-    color: GOLD_SOFT,
+    fontWeight: '800',
+    color: GOLD,
     textAlign: 'center',
   },
   cardDesc: {
     fontSize: 13,
-    color: TEXT_PRIMARY,
+    color: '#E4E4E7',
     lineHeight: 20,
     textAlign: 'center',
   },
@@ -368,20 +379,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     backgroundColor: GOLD,
-    borderRadius: 14,
+    borderRadius: 16,
     paddingVertical: 14,
     marginTop: 6,
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 6,
   },
   btnDeep: {
     backgroundColor: '#F5C862',
   },
   btnPressed: {
     opacity: 0.85,
+    transform: [{ scale: 0.98 }],
   },
   primaryBtnText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: NIGHT_CARD,
+    fontSize: 14.5,
+    fontWeight: '900',
+    color: '#000000',
   },
   waxWrap: {
     width: '100%',
@@ -394,18 +411,18 @@ const styles = StyleSheet.create({
   },
   revealLabel: {
     fontSize: 11,
-    fontWeight: '700',
-    color: GOLD_SOFT,
+    fontWeight: '800',
+    color: GOLD,
     letterSpacing: 0.5,
     marginBottom: 2,
   },
   flameCard: {
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(255, 152, 0, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 152, 0, 0.3)',
-    borderRadius: 14,
+    backgroundColor: 'rgba(255, 152, 0, 0.12)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(255, 152, 0, 0.45)',
+    borderRadius: 16,
     padding: 14,
   },
   flameVisual: {
@@ -413,14 +430,14 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   flameTypeText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: GOLD_SOFT,
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: GOLD,
     textAlign: 'center',
   },
   flameMeaningText: {
     fontSize: 12.5,
-    color: TEXT_PRIMARY,
+    color: '#E4E4E7',
     textAlign: 'center',
     lineHeight: 18,
   },
@@ -428,10 +445,10 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   shapeCard: {
-    backgroundColor: 'rgba(30, 30, 32, 0.8)',
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.25)',
-    borderRadius: 14,
+    borderColor: 'rgba(229, 169, 60, 0.35)',
+    borderRadius: 16,
     padding: 14,
     gap: 6,
     alignItems: 'center',
@@ -443,17 +460,17 @@ const styles = StyleSheet.create({
   },
   shapeName: {
     fontSize: 14,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
   shapeFocus: {
     fontSize: 11,
-    color: GOLD_SOFT,
-    fontWeight: '600',
+    color: GOLD,
+    fontWeight: '700',
   },
   shapeMeaning: {
     fontSize: 12.5,
-    color: TEXT_MUTED,
+    color: '#A1A1AA',
     lineHeight: 18,
     textAlign: 'center',
   },
@@ -463,8 +480,8 @@ const styles = StyleSheet.create({
   },
   modeTitle: {
     fontSize: 12.5,
-    fontWeight: '700',
-    color: GOLD_SOFT,
+    fontWeight: '800',
+    color: GOLD,
   },
   modeCardsRow: {
     flexDirection: 'row',
@@ -472,32 +489,33 @@ const styles = StyleSheet.create({
   },
   modeCard: {
     flex: 1,
-    backgroundColor: 'rgba(30, 30, 32, 0.75)',
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.25)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 14,
     padding: 12,
     gap: 4,
   },
   modeCardActive: {
     borderColor: GOLD,
-    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    backgroundColor: '#201A10',
   },
   modeCardDeep: {
-    backgroundColor: 'rgba(35, 20, 70, 0.85)',
+    backgroundColor: 'rgba(35, 20, 70, 0.90)',
+    borderColor: 'rgba(192, 132, 252, 0.35)',
   },
   modeCardDeepActive: {
-    borderColor: '#F5C862',
-    backgroundColor: 'rgba(245, 200, 98, 0.16)',
+    borderColor: '#C084FC',
+    backgroundColor: '#25173B',
   },
   modeCardTitle: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
   modeCardDesc: {
     fontSize: 10.5,
-    color: TEXT_MUTED,
+    color: '#A1A1AA',
     lineHeight: 14,
   },
   loadingBox: {
@@ -507,14 +525,14 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 13,
-    color: GOLD_SOFT,
+    color: GOLD,
     fontStyle: 'italic',
     textAlign: 'center',
   },
   resultCard: {
-    backgroundColor: NIGHT_CARD,
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
     borderWidth: 1.2,
-    borderColor: GOLD_SOFT,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     borderRadius: 18,
     padding: 18,
     gap: 14,

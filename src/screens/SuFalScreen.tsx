@@ -5,6 +5,7 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import ShareButton from '@/components/ShareButton';
 import Starfield from '@/components/Starfield';
 import messages from '@/data/su_fali_mesajlari.json';
+import { saveReadingHistory } from '@/services/readingHistory';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 const MESSAGES: string[] = messages;
@@ -39,7 +40,13 @@ export default function SuFalScreen() {
         Animated.timing(flash, { toValue: 0, duration: 700, easing: Easing.in(Easing.ease), useNativeDriver: true }),
       ]),
     ]).start(() => {
-      setMessage(MESSAGES[Math.floor(Math.random() * MESSAGES.length)]);
+      const selected = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+      setMessage(selected);
+      saveReadingHistory({
+        type: 'sufal',
+        title: 'Su Falı & Durugörü Mesajı',
+        result: selected,
+      }).catch(() => {});
       setRippling(false);
     });
   }, [rippling, ripple, flash]);
@@ -178,13 +185,18 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-25deg' }],
   },
   resultBox: {
-    backgroundColor: NIGHT_CARD,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
+    borderRadius: 18,
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     padding: 18,
     marginBottom: 16,
     maxWidth: 320,
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
   resultText: {
     fontSize: 15.5,

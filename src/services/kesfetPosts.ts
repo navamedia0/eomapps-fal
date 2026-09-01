@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { env } from '@/config/env';
 import { getStoredSession } from '@/services/auth';
 import { getJson, postForm, postJson, deleteRequest } from '@/services/http';
@@ -16,13 +17,35 @@ export type KesfetFeedPost = {
   commentCount: number;
 };
 
+const BOOST_STORAGE_KEY = '@kesfet_post_boosts_v2';
+
+export async function getStoredBoosts(): Promise<Record<string, number>> {
+  try {
+    const raw = await AsyncStorage.getItem(BOOST_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+export async function addPostBoost(postId: string, amount: number): Promise<number> {
+  try {
+    const boosts = await getStoredBoosts();
+    const current = boosts[postId] || 0;
+    const next = current + amount;
+    boosts[postId] = next;
+    await AsyncStorage.setItem(BOOST_STORAGE_KEY, JSON.stringify(boosts));
+    return next;
+  } catch {
+    return amount;
+  }
+}
+
 function appHeaders(): Record<string, string> {
   const appSecret = env.appSecret();
   return appSecret ? { 'X-App-Secret': appSecret } : {};
 }
 
-// Feed görüntüleme girişsiz de çalışır — token varsa "beğendim mi / kendi
-// gönderim mi" bilgisini de sunucudan almak için ekleniyor.
 async function optionalAuthHeaders(): Promise<Record<string, string>> {
   const session = await getStoredSession();
   return session ? { Authorization: `Bearer ${session.token}`, ...appHeaders() } : appHeaders();
@@ -39,8 +62,18 @@ async function requireAuthHeaders(): Promise<Record<string, string>> {
 export async function getFeed(authorId?: string): Promise<KesfetFeedPost[]> {
   const headers = await optionalAuthHeaders();
   const query = authorId ? `?authorId=${encodeURIComponent(authorId)}` : '';
-  const { posts } = await getJson<{ posts: KesfetFeedPost[] }>(`${env.socialApiUrl()}/posts${query}`, headers);
-  return posts;
+  const [{ posts }, boosts] = await Promise.all([
+    getJson<{ posts: KesfetFeedPost[] }>(`${env.socialApiUrl()}/posts${query}`, headers),
+    getStoredBoosts(),
+  ]);
+
+  return posts.map((p) => {
+    const boost = boosts[p.id] || 0;
+    return {
+      ...p,
+      likeCount: (p.likeCount || 0) + boost,
+    };
+  });
 }
 
 export async function addPost(text: string, imageUri?: string): Promise<void> {
@@ -53,8 +86,6 @@ export async function addPost(text: string, imageUri?: string): Promise<void> {
     const filename = imageUri.split('/').pop() || 'photo.jpg';
     const ext = filename.split('.').pop()?.toLowerCase();
     const type = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
-    // React Native'in FormData polyfill'i dosya eklerken bu { uri, name, type }
-    // biçimini bekliyor — DOM'daki Blob tipiyle örtüşmediği için cast gerekiyor.
     form.append('image', { uri: imageUri, name: filename, type } as unknown as Blob);
   }
   await postForm(`${env.socialApiUrl()}/posts`, form, headers);
@@ -65,14 +96,19 @@ export async function deletePost(id: string): Promise<void> {
   await deleteRequest(`${env.socialApiUrl()}/posts/${id}`, headers);
 }
 
-export async function toggleLike(id: string): Promise<boolean> {
+export async function toggleLike(id: string): Promise<{ liked: boolean; likeCount: number }> {
   const headers = await requireAuthHeaders();
-  const { liked } = await postJson<{ liked: boolean; likeCount: number }>(
+  const res = await postJson<{ liked: boolean; likeCount: number }>(
     `${env.socialApiUrl()}/posts/${id}/like`,
     {},
     headers,
   );
-  return liked;
+  const boosts = await getStoredBoosts();
+  const boost = boosts[id] || 0;
+  return {
+    liked: res.liked,
+    likeCount: (res.likeCount || 0) + boost,
+  };
 }
 
 export type KesfetComment = {

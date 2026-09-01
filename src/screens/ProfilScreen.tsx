@@ -1,27 +1,19 @@
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, Pressable, ScrollView, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { showAlert } from '@/services/themedAlert';
 import type { TabScreenProps } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import FeatureIcon from '@/components/FeatureIcon';
-import { FEATURE_ICONS, NAV_ICONS } from '@/assets/icons';
 import { getStoredSession, refreshSession, signInWithGoogle, signOut, type AuthUser } from '@/services/auth';
 import { getUserProfile } from '@/services/socialProfile';
 import AppleSignInButton from '@/components/AppleSignInButton';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import { GOLD, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = TabScreenProps;
 
-const SOCIAL_ACCOUNTS = [
-  { key: 'facebook', name: 'Facebook', icon: <FontAwesome name="facebook" size={18} color={GOLD} /> },
-  { key: 'instagram', name: 'Instagram', icon: <FontAwesome name="instagram" size={18} color={GOLD} /> },
-  { key: 'whatsapp', name: 'WhatsApp', icon: <FontAwesome name="whatsapp" size={18} color={GOLD} /> },
-];
-
 function AuthSection({ navigation }: { navigation: TabScreenProps['navigation'] }) {
-  const [user, setUser] = useState<AuthUser | null | undefined>(undefined); // undefined = henüz yüklenmedi
+  const [user, setUser] = useState<AuthUser | null | undefined>(undefined);
   const [signingIn, setSigningIn] = useState(false);
   const [stats, setStats] = useState<{ followerCount: number; followingCount: number } | null>(null);
 
@@ -92,35 +84,33 @@ function AuthSection({ navigation }: { navigation: TabScreenProps['navigation'] 
           <Image source={{ uri: user.avatarUrl }} style={styles.authAvatar} />
         ) : (
           <View style={[styles.authAvatar, styles.authAvatarFallback]}>
-            <Ionicons name="person" size={22} color={GOLD} />
+            <Ionicons name="person" size={24} color={GOLD} />
           </View>
         )}
         <View style={styles.authTextWrap}>
-          <Text style={styles.authName}>{user.displayName || 'Mistik Rehber Kullanıcısı'}</Text>
-          {stats ? (
-            <Text style={styles.authSubtitle}>
-              {stats.followerCount} takipçi · {stats.followingCount} takip
-            </Text>
-          ) : (
-            <Text style={styles.authSubtitle}>Profilini görmek için dokun</Text>
-          )}
+          <Text style={styles.authName} numberOfLines={1}>
+            {user.displayName || 'Mistik Kullanıcı'}
+          </Text>
+          <Text style={styles.authSubtitle}>
+            {stats ? `${stats.followerCount} Takipçi · ${stats.followingCount} Takip` : 'Profilini & Karakterini Gör →'}
+          </Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color={TEXT_MUTED} style={{ marginRight: 4 }} />
-        <Pressable onPress={handleSignOut} hitSlop={10}>
-          <Ionicons name="log-out-outline" size={22} color={TEXT_MUTED} />
+
+        <Pressable onPress={handleSignOut} style={styles.authLogoutBtn} hitSlop={10}>
+          <Ionicons name="log-out-outline" size={20} color={TEXT_MUTED} />
         </Pressable>
       </Pressable>
     );
   }
 
   return (
-    <View style={{ marginBottom: 20 }}>
+    <View style={styles.guestContainer}>
       <Pressable
         onPress={handleSignIn}
         disabled={signingIn}
-        style={({ pressed }) => [styles.authCard, styles.authSignInButton, { marginBottom: 0 }, pressed && styles.cardPressed]}
+        style={({ pressed }) => [styles.authCard, styles.authSignInButton, pressed && styles.cardPressed]}
       >
-        <FontAwesome name="google" size={20} color={GOLD} />
+        <FontAwesome name="google" size={18} color={GOLD} />
         <Text style={styles.authSignInText}>{signingIn ? 'Giriş yapılıyor...' : 'Google ile Giriş Yap'}</Text>
         {signingIn && <ActivityIndicator color={GOLD} style={{ marginLeft: 6 }} />}
       </Pressable>
@@ -133,171 +123,165 @@ function AuthSection({ navigation }: { navigation: TabScreenProps['navigation'] 
 }
 
 export default function ProfilScreen({ navigation }: Props) {
-  const [notice, setNotice] = useState<string | null>(null);
-
   return (
     <MysticTableBackground>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Header */}
         <View style={styles.header}>
-          <Ionicons name="person-circle-outline" size={30} color={GOLD} />
-          <Text style={styles.headerTitle}>Profil</Text>
+          <Ionicons name="person-circle-outline" size={26} color={GOLD} />
+          <Text style={styles.headerTitle}>Profilim</Text>
         </View>
 
+        {/* Giriş & Kullanıcı Kartı */}
         <AuthSection navigation={navigation} />
 
-        <View style={styles.list}>
+        {/* 1. GRUP: KARAKTER & SOSYAL VİTRİN (3'lü Grid) */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeading}>KARAKTER & SOSYAL</Text>
+        </View>
+        <View style={styles.tripleGrid}>
+          {/* Karakterim */}
           <Pressable
-            onPress={() => navigation.navigate('ProfileChat')}
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+            onPress={() => navigation.navigate('AvatarWardrobe')}
+            style={({ pressed }) => [styles.tripleCard, pressed && styles.cardPressed]}
           >
-            <FeatureIcon
-              source={FEATURE_ICONS.profileChat}
-              fallback={<Ionicons name="chatbubble-ellipses-outline" size={22} color={GOLD} />}
-              size={74}
-            />
-            <View style={styles.cardTextWrap}>
-              <Text style={styles.cardTitle}>Kendinden Bahset</Text>
-              <Text style={styles.cardSubtitle}>Seni tanıyalım, daha kişisel yorumlar sunalım</Text>
+            <View style={[styles.tripleIconWrap, { backgroundColor: 'rgba(236, 72, 153, 0.15)' }]}>
+              <Ionicons name="shirt" size={20} color="#EC4899" />
             </View>
-            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+            <Text style={styles.tripleTitle}>Karakterim</Text>
+            <Text style={styles.tripleSub}>Gardırop</Text>
           </Pressable>
 
+          {/* Başarımlar */}
           <Pressable
-            onPress={() => navigation.navigate('Tasks')}
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+            onPress={() => navigation.navigate('Achievements')}
+            style={({ pressed }) => [styles.tripleCard, pressed && styles.cardPressed]}
           >
-            <FeatureIcon source={FEATURE_ICONS.tasks} fallback={<Ionicons name="ribbon-outline" size={22} color={GOLD} />} size={74} />
-            <View style={styles.cardTextWrap}>
-              <Text style={styles.cardTitle}>Görevler</Text>
-              <Text style={styles.cardSubtitle}>Video izleyerek bonus kredi kazan</Text>
+            <View style={[styles.tripleIconWrap, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
+              <Ionicons name="trophy" size={20} color="#F59E0B" />
             </View>
-            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+            <Text style={styles.tripleTitle}>Başarımlar</Text>
+            <Text style={styles.tripleSub}>Rozetler</Text>
           </Pressable>
 
+          {/* Popülerlik */}
           <Pressable
-            onPress={() => navigation.navigate('Favorites')}
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+            onPress={() => navigation.navigate('Popularity')}
+            style={({ pressed }) => [styles.tripleCard, pressed && styles.cardPressed]}
           >
-            <FeatureIcon source={FEATURE_ICONS.favorites} fallback={<Ionicons name="star-outline" size={22} color={GOLD} />} size={74} />
-            <View style={styles.cardTextWrap}>
-              <Text style={styles.cardTitle}>Favorilerim</Text>
-              <Text style={styles.cardSubtitle}>Kaydettiğin sözler ve bilgi kartları</Text>
+            <View style={[styles.tripleIconWrap, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
+              <Ionicons name="flame" size={20} color="#EF4444" />
             </View>
-            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+            <Text style={styles.tripleTitle}>Popülerlik</Text>
+            <Text style={styles.tripleSub}>Sıralama</Text>
           </Pressable>
+        </View>
 
+        {/* 2. GRUP: MİSTİK DENEYİMLERİM (3'lü Grid) */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeading}>MİSTİK KAYITLARIM</Text>
+        </View>
+        <View style={styles.tripleGrid}>
+          {/* Fal Geçmişim */}
           <Pressable
             onPress={() => navigation.navigate('History')}
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+            style={({ pressed }) => [styles.tripleCard, pressed && styles.cardPressed]}
           >
-            <FeatureIcon source={FEATURE_ICONS.history} fallback={<Ionicons name="time-outline" size={22} color={GOLD} />} size={74} />
-            <View style={styles.cardTextWrap}>
-              <Text style={styles.cardTitle}>Geçmiş</Text>
-              <Text style={styles.cardSubtitle}>Baktırdığın falların geçmişi (cihazında saklanır)</Text>
+            <View style={[styles.tripleIconWrap, { backgroundColor: 'rgba(56, 189, 248, 0.15)' }]}>
+              <Ionicons name="time" size={20} color="#38BDF8" />
             </View>
-            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+            <Text style={styles.tripleTitle}>Fal Geçmişi</Text>
+            <Text style={styles.tripleSub}>Kayıtlarım</Text>
+          </Pressable>
+
+          {/* Favorilerim */}
+          <Pressable
+            onPress={() => navigation.navigate('Favorites')}
+            style={({ pressed }) => [styles.tripleCard, pressed && styles.cardPressed]}
+          >
+            <View style={[styles.tripleIconWrap, { backgroundColor: 'rgba(229, 169, 60, 0.15)' }]}>
+              <Ionicons name="star" size={20} color={GOLD} />
+            </View>
+            <Text style={styles.tripleTitle}>Favorilerim</Text>
+            <Text style={styles.tripleSub}>Kaydedilenler</Text>
+          </Pressable>
+
+          {/* Görevler */}
+          <Pressable
+            onPress={() => navigation.navigate('Tasks')}
+            style={({ pressed }) => [styles.tripleCard, pressed && styles.cardPressed]}
+          >
+            <View style={[styles.tripleIconWrap, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
+              <Ionicons name="ribbon" size={20} color="#10B981" />
+            </View>
+            <Text style={styles.tripleTitle}>Görevler</Text>
+            <Text style={styles.tripleSub}>Ödül Kazan</Text>
+          </Pressable>
+        </View>
+
+        {/* 3. GRUP: KİŞİSELLEŞTİRME & REHBERLER (2'li Geniş Kart) */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeading}>REHBER & KİŞİSELLEŞTİRME</Text>
+        </View>
+        <View style={styles.dualGrid}>
+          <Pressable
+            onPress={() => navigation.navigate('ProfileChat')}
+            style={({ pressed }) => [styles.dualCard, pressed && styles.cardPressed]}
+          >
+            <View style={[styles.dualIconWrap, { backgroundColor: 'rgba(139, 92, 246, 0.15)' }]}>
+              <Ionicons name="chatbubble-ellipses" size={20} color="#8B5CF6" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.dualTitle}>Kendinden Bahset</Text>
+              <Text style={styles.dualSub}>Kişisel fal yorumları için</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={GOLD} />
           </Pressable>
 
           <Pressable
             onPress={() => navigation.navigate('BilgiKosesi')}
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+            style={({ pressed }) => [styles.dualCard, pressed && styles.cardPressed]}
           >
-            <FeatureIcon
-              source={NAV_ICONS.BilgiKosesi}
-              fallback={<Ionicons name="library-outline" size={22} color={GOLD} />}
-              size={74}
-            />
-            <View style={styles.cardTextWrap}>
-              <Text style={styles.cardTitle}>Bilgi Köşesi</Text>
-              <Text style={styles.cardSubtitle}>Kart anlamları, mistik makaleler ve daha fazlası</Text>
+            <View style={[styles.dualIconWrap, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
+              <Ionicons name="library" size={20} color={GOLD} />
             </View>
-            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.dualTitle}>Bilgi Köşesi</Text>
+              <Text style={styles.dualSub}>Kart ve makale rehberi</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={GOLD} />
           </Pressable>
+        </View>
 
+        {/* 4. GRUP: HESAP AYARLARI */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeading}>HESAP & AYARLAR</Text>
+        </View>
+        <View style={styles.settingsGroup}>
           <Pressable
             onPress={() => navigation.navigate('NotificationSettings')}
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+            style={({ pressed }) => [styles.settingsRow, pressed && styles.cardPressed]}
           >
-            <FeatureIcon
-              source={FEATURE_ICONS.notificationSettings}
-              fallback={<Ionicons name="notifications-outline" size={22} color={GOLD} />}
-              size={74}
-            />
-            <View style={styles.cardTextWrap}>
-              <Text style={styles.cardTitle}>Bildirim Ayarları</Text>
-              <Text style={styles.cardSubtitle}>Günlük hatırlatmaları yönet</Text>
+            <View style={styles.settingsIconWrap}>
+              <Ionicons name="notifications-outline" size={18} color={GOLD} />
             </View>
-            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+            <Text style={styles.settingsRowTitle}>Bildirim Ayarları</Text>
+            <Ionicons name="chevron-forward" size={16} color={TEXT_MUTED} />
           </Pressable>
 
-          <Pressable
-            onPress={() => navigation.navigate('AvatarWardrobe')}
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-          >
-            <FeatureIcon fallback={<Ionicons name="shirt-outline" size={22} color={GOLD} />} size={74} />
-            <View style={styles.cardTextWrap}>
-              <Text style={styles.cardTitle}>Karakterim</Text>
-              <Text style={styles.cardSubtitle}>Avatarını giydir, seviyeni ve profilini gör</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color={GOLD} />
-          </Pressable>
-
-          <Pressable
-            onPress={() => navigation.navigate('Achievements')}
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-          >
-            <FeatureIcon fallback={<Ionicons name="trophy-outline" size={22} color={GOLD} />} size={74} />
-            <View style={styles.cardTextWrap}>
-              <Text style={styles.cardTitle}>Başarımlar</Text>
-              <Text style={styles.cardSubtitle}>Kademeli rozetler ve ilerlemeni gör</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color={GOLD} />
-          </Pressable>
-
-          <Pressable
-            onPress={() => navigation.navigate('Popularity')}
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-          >
-            <FeatureIcon fallback={<Ionicons name="flame-outline" size={22} color={GOLD} />} size={74} />
-            <View style={styles.cardTextWrap}>
-              <Text style={styles.cardTitle}>Haftalık Popülerlik</Text>
-              <Text style={styles.cardSubtitle}>Bu haftanın liderlik tablosu</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color={GOLD} />
-          </Pressable>
+          <View style={styles.settingsDivider} />
 
           <Pressable
             onPress={() => navigation.navigate('BlockedUsers')}
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+            style={({ pressed }) => [styles.settingsRow, pressed && styles.cardPressed]}
           >
-            <FeatureIcon fallback={<Ionicons name="ban-outline" size={22} color={GOLD} />} size={74} />
-            <View style={styles.cardTextWrap}>
-              <Text style={styles.cardTitle}>Engellenen Kullanıcılar</Text>
-              <Text style={styles.cardSubtitle}>Engellediklerini gör, istersen engeli kaldır</Text>
+            <View style={styles.settingsIconWrap}>
+              <Ionicons name="ban-outline" size={18} color={TEXT_MUTED} />
             </View>
-            <Ionicons name="chevron-forward" size={20} color={GOLD} />
+            <Text style={styles.settingsRowTitle}>Engellenen Kullanıcılar</Text>
+            <Ionicons name="chevron-forward" size={16} color={TEXT_MUTED} />
           </Pressable>
         </View>
-
-        <Text style={styles.sectionLabel}>Bağlı Hesaplar</Text>
-        <Text style={styles.sectionHint}>
-          Bu özellik yakında aktif olacak — hesap bağlama şu an sadece önizleme amaçlı gösteriliyor.
-        </Text>
-        <View style={styles.socialList}>
-          {SOCIAL_ACCOUNTS.map((account) => (
-            <View key={account.key} style={styles.socialRow}>
-              <View style={styles.socialIconWrap}>{account.icon}</View>
-              <Text style={styles.socialName}>{account.name}</Text>
-              <Pressable
-                onPress={() => setNotice(`${account.name} hesabı bağlama özelliği yakında aktif olacak.`)}
-                style={styles.socialConnectButton}
-              >
-                <Text style={styles.socialConnectButtonText}>Bağla</Text>
-              </Pressable>
-            </View>
-          ))}
-        </View>
-        {notice && <Text style={styles.notice}>{notice}</Text>}
       </ScrollView>
     </MysticTableBackground>
   );
@@ -306,42 +290,46 @@ export default function ProfilScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingTop: 24,
+    paddingHorizontal: 14,
+    paddingTop: 18,
     paddingBottom: 48,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginBottom: 20,
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 14,
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: '900',
     color: GOLD,
+    letterSpacing: 0.3,
   },
   authCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    backgroundColor: NIGHT_CARD,
+    gap: 12,
+    backgroundColor: '#121215',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    padding: 16,
-    marginBottom: 20,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    padding: 14,
+    marginBottom: 18,
   },
   authCardLoading: {
     justifyContent: 'center',
   },
   authAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1.5,
+    borderColor: GOLD,
   },
   authAvatarFallback: {
-    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -349,112 +337,147 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   authName: {
-    fontSize: 14.5,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#FFFFFF',
     marginBottom: 2,
   },
   authSubtitle: {
     fontSize: 11.5,
     color: TEXT_MUTED,
   },
+  authLogoutBtn: {
+    padding: 8,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  guestContainer: {
+    marginBottom: 18,
+    gap: 8,
+  },
   authSignInButton: {
     justifyContent: 'center',
-    borderColor: GOLD,
+    marginBottom: 0,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
   },
   authSignInText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: GOLD,
-  },
-  list: {
-    gap: 14,
-    marginBottom: 30,
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    backgroundColor: NIGHT_CARD,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    padding: 16,
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
   cardPressed: {
     opacity: 0.85,
+    transform: [{ scale: 0.97 }],
   },
-  cardTextWrap: {
-    flex: 1,
+  sectionHeaderRow: {
+    marginBottom: 8,
+    paddingHorizontal: 2,
   },
-  cardTitle: {
-    fontSize: 14.5,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
-    marginBottom: 2,
-  },
-  cardSubtitle: {
-    fontSize: 11.5,
-    color: TEXT_MUTED,
-  },
-  sectionLabel: {
-    fontSize: 12.5,
-    fontWeight: '700',
+  sectionHeading: {
+    fontSize: 10.5,
+    fontWeight: '900',
     color: GOLD,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-    marginBottom: 6,
+    letterSpacing: 0.8,
   },
-  sectionHint: {
-    fontSize: 11.5,
-    color: TEXT_MUTED,
-    lineHeight: 16,
-    marginBottom: 14,
-  },
-  socialList: {
-    gap: 10,
-  },
-  socialRow: {
+  tripleGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: NIGHT_CARD,
+    gap: 8,
+    marginBottom: 16,
+  },
+  tripleCard: {
+    flex: 1,
+    backgroundColor: '#121215',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-  },
-  socialIconWrap: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  socialName: {
-    flex: 1,
-    fontSize: 13.5,
-    fontWeight: '600',
-    color: TEXT_PRIMARY,
+  tripleIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
   },
-  socialConnectButton: {
+  tripleTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  tripleSub: {
+    fontSize: 10,
+    color: TEXT_MUTED,
+    marginTop: 1,
+    textAlign: 'center',
+  },
+  dualGrid: {
+    gap: 8,
+    marginBottom: 16,
+  },
+  dualCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#121215',
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    padding: 12,
+  },
+  dualIconWrap: {
+    width: 36,
+    height: 36,
     borderRadius: 10,
-    paddingVertical: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dualTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  dualSub: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+    marginTop: 1,
+  },
+  settingsGroup: {
+    backgroundColor: '#121215',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  settingsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 12,
     paddingHorizontal: 14,
   },
-  socialConnectButtonText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: GOLD,
+  settingsIconWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  notice: {
-    fontSize: 11.5,
-    color: GOLD,
-    textAlign: 'center',
-    marginTop: 12,
+  settingsRowTitle: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+  },
+  settingsDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    marginHorizontal: 14,
   },
 });

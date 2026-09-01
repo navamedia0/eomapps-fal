@@ -10,8 +10,9 @@ import SozlerKoskuDrawerModal from '@/components/SozlerKoskuDrawerModal';
 import FortuneShelf, { type ShelfItem } from '@/components/home/FortuneShelf';
 import SoulOrbHero from '@/components/home/SoulOrbHero';
 import PsychologyTestsModal from '@/components/psychology/PsychologyTestsModal';
+import TarotModeSelectionModal from '@/components/tarot/TarotModeSelectionModal';
+import RuneModeSelectionModal from '@/components/runes/RuneModeSelectionModal';
 import { ALL_SIGNATURE_FORTUNES } from '@/constants/allFortunesData';
-import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = TabScreenProps;
@@ -28,6 +29,8 @@ export default function HomeScreen({ navigation }: Props) {
   const [checkinInfo, setCheckinInfo] = useState<CheckinStatus | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [psychologyModalVisible, setPsychologyModalVisible] = useState(false);
+  const [tarotModalVisible, setTarotModalVisible] = useState(false);
+  const [runeModalVisible, setRuneModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -43,11 +46,11 @@ export default function HomeScreen({ navigation }: Props) {
     imageSource: item.imageSource,
     onPress: () => {
       if (item.key === 'tarot') {
-        navigation.navigate('TarotSpread');
+        setTarotModalVisible(true);
         return;
       }
       if (item.key === 'rune') {
-        navigation.navigate('RuneReading');
+        setRuneModalVisible(true);
         return;
       }
       if (item.route) {
@@ -127,7 +130,7 @@ export default function HomeScreen({ navigation }: Props) {
 
         <View style={styles.quickRow}>
           <Pressable onPress={goToTasks} style={({ pressed }) => [styles.quickCard, pressed && styles.pressedFade]}>
-            <FeatureIcon source={FEATURE_ICONS.freeCoins} fallback={<Ionicons name="gift-outline" size={22} color={GOLD} />} size={48} />
+            <FeatureIcon fallback={<Ionicons name="gift-outline" size={24} color={GOLD} />} size={44} />
             <Text style={styles.quickTitle} numberOfLines={2}>Ücretsiz Coin Kazan</Text>
             <View style={styles.quickPill}>
               <Text style={styles.quickPillText}>Başlat</Text>
@@ -137,7 +140,7 @@ export default function HomeScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('MiniGames')}
             style={({ pressed }) => [styles.quickCard, pressed && styles.pressedFade]}
           >
-            <FeatureIcon source={FEATURE_ICONS.miniGames} fallback={<Ionicons name="game-controller-outline" size={22} color={GOLD} />} size={48} />
+            <FeatureIcon fallback={<Ionicons name="game-controller-outline" size={24} color={GOLD} />} size={44} />
             <Text style={styles.quickTitle} numberOfLines={2}>Mini Oyunlar</Text>
             <View style={styles.quickPill}>
               <Text style={styles.quickPillText}>Keşfet</Text>
@@ -145,11 +148,17 @@ export default function HomeScreen({ navigation }: Props) {
           </Pressable>
         </View>
 
-        <FortuneShelf title="Tüm Fal Çeşitleri" badgeText="17 Mistik Ekol" items={fallarItems} />
+        <FortuneShelf
+          title="Tüm Fal Çeşitleri"
+          badgeText="Tümünü Gör"
+          onSeeAllPress={() => navigation.navigate('TumFallar')}
+          items={fallarItems}
+        />
 
         <FortuneShelf
           title="Psikolojik & Kişilik Testleri"
-          badgeText="Kendini Keşfet"
+          badgeText="Tümünü Gör"
+          onSeeAllPress={() => setPsychologyModalVisible(true)}
           items={[
             {
               key: 'psychology',
@@ -162,7 +171,8 @@ export default function HomeScreen({ navigation }: Props) {
 
         <FortuneShelf
           title="Rüya Yorumu & Tabir"
-          badgeText="Bilinçaltı Aynası"
+          badgeText="Tümünü Gör"
+          onSeeAllPress={() => navigation.navigate('RuyaKitapligi')}
           items={[
             {
               key: 'dreamChat',
@@ -173,7 +183,6 @@ export default function HomeScreen({ navigation }: Props) {
             {
               key: 'dreamLibrary',
               title: 'Rüya Kitaplığı',
-              iconSource: FEATURE_ICONS.dreamLibrary,
               iconName: 'book-outline',
               onPress: () => navigation.navigate('RuyaKitapligi'),
             },
@@ -182,7 +191,8 @@ export default function HomeScreen({ navigation }: Props) {
 
         <FortuneShelf
           title="Burç ve Astroloji"
-          badgeText="Kozmik Harita"
+          badgeText="Tümünü Gör"
+          onSeeAllPress={() => navigation.navigate('Zodiac')}
           items={[
             {
               key: 'zodiac',
@@ -193,28 +203,24 @@ export default function HomeScreen({ navigation }: Props) {
             {
               key: 'birthChart',
               title: 'Doğum Haritası',
-              iconSource: FEATURE_ICONS.birthChart,
               iconName: 'chart-donut',
               onPress: () => navigation.navigate('BirthChart'),
             },
             {
               key: 'risingSign',
               title: 'Yükselen Burcum',
-              iconSource: FEATURE_ICONS.risingSign,
               iconName: 'flash-outline',
               onPress: () => navigation.navigate('RisingSign'),
             },
             {
               key: 'compatibility',
               title: 'Burç Uyumu',
-              iconSource: FEATURE_ICONS.compatibility,
               iconName: 'heart-outline',
               onPress: () => navigation.navigate('Compatibility'),
             },
             {
               key: 'zodiacTraits',
               title: 'Burç Özellikleri',
-              iconSource: FEATURE_ICONS.zodiacTraits,
               iconName: 'star-circle-outline',
               onPress: () => navigation.navigate('ZodiacTraits'),
             },
@@ -223,7 +229,8 @@ export default function HomeScreen({ navigation }: Props) {
 
         <FortuneShelf
           title="Sayılar & Enerji Haritası"
-          badgeText="Kader Şifresi"
+          badgeText="Tümünü Gör"
+          onSeeAllPress={() => navigation.navigate('MatrixOfDestiny')}
           items={[
             {
               key: 'matrix',
@@ -234,35 +241,30 @@ export default function HomeScreen({ navigation }: Props) {
             {
               key: 'numerology',
               title: 'Numeroloji',
-              iconSource: FEATURE_ICONS.numerology,
               iconName: 'numeric',
               onPress: () => navigation.navigate('Numerology'),
             },
             {
               key: 'biorhythm',
               title: 'Biyoritim',
-              iconSource: FEATURE_ICONS.biorhythm,
               iconName: 'waveform',
               onPress: () => navigation.navigate('Biorhythm'),
             },
             {
               key: 'moonCalendar',
               title: 'Ay Takvimi',
-              iconSource: FEATURE_ICONS.moonCalendar,
               iconName: 'moon-waning-crescent',
               onPress: () => navigation.navigate('MoonCalendar'),
             },
             {
               key: 'celticTree',
               title: 'Kelt Ağacı',
-              iconSource: FEATURE_ICONS.celticTree,
               iconName: 'tree-outline',
               onPress: () => navigation.navigate('CelticTreeReading'),
             },
             {
               key: 'aura',
               title: 'Çakra & Aura',
-              iconSource: FEATURE_ICONS.aura,
               iconName: 'circle-multiple-outline',
               onPress: () => navigation.navigate('AuraEnergy'),
             },
@@ -271,7 +273,8 @@ export default function HomeScreen({ navigation }: Props) {
 
         <FortuneShelf
           title="Ruhsal Denge & İç Huzur"
-          badgeText="İç Huzur"
+          badgeText="Tümünü Gör"
+          onSeeAllPress={() => navigation.navigate('MoodJournal')}
           items={[
             {
               key: 'breathing',
@@ -282,28 +285,24 @@ export default function HomeScreen({ navigation }: Props) {
             {
               key: 'angelCard',
               title: 'Günün İlham Kartı',
-              iconSource: FEATURE_ICONS.angelCard,
               iconName: 'flower-outline',
               onPress: () => navigation.navigate('AngelCard'),
             },
             {
               key: 'affirmation',
               title: 'Günlük Olumlama',
-              iconSource: FEATURE_ICONS.affirmation,
               iconName: 'white-balance-sunny',
               onPress: () => navigation.navigate('Affirmation'),
             },
             {
               key: 'moodJournal',
               title: 'Duygu Günlüğü',
-              iconSource: FEATURE_ICONS.moodJournal,
               iconName: 'book-outline',
               onPress: () => navigation.navigate('MoodJournal'),
             },
             {
               key: 'magicBall',
               title: 'Sihirli Küre',
-              iconSource: FEATURE_ICONS.magicBall,
               iconName: 'crystal-ball',
               onPress: () => navigation.navigate('MagicBall'),
             },
@@ -329,6 +328,29 @@ export default function HomeScreen({ navigation }: Props) {
           ))}
         </View>
       </Animated.ScrollView>
+
+      {/* Tarot 3'lü Mod Birleştirme Modalı */}
+      <TarotModeSelectionModal
+        visible={tarotModalVisible}
+        onClose={() => setTarotModalVisible(false)}
+        onSelectRelationshipSpread={() =>
+          navigation.navigate('CardDeckTable', { deckId: 'tarot', initialMode: 'relationship' })
+        }
+        onSelectQuickSpread={() => navigation.navigate('TarotSpread')}
+        onSelectDeckTable={() =>
+          navigation.navigate('CardDeckTable', { deckId: 'tarot', initialMode: 'self' })
+        }
+      />
+
+      {/* Nordik Rün 2'li Mod Birleştirme Modalı */}
+      <RuneModeSelectionModal
+        visible={runeModalVisible}
+        onClose={() => setRuneModalVisible(false)}
+        onSelectClothReading={() => navigation.navigate('RuneReading')}
+        onSelectTableReading={() =>
+          navigation.navigate('CardDeckTable', { deckId: 'rune', initialMode: 'self' })
+        }
+      />
 
       {/* Psikolojik Testler Açılır Modalı */}
       <PsychologyTestsModal
@@ -357,9 +379,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(30, 30, 32, 0.92)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 201, 60, 0.5)',
+    backgroundColor: '#18181B',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -395,7 +417,7 @@ const styles = StyleSheet.create({
   headerDivider: {
     width: 48,
     height: 2,
-    backgroundColor: GOLD_SOFT,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     alignSelf: 'center',
     marginVertical: 4,
     borderRadius: 1,
@@ -413,9 +435,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 12,
     color: GOLD,
-    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
+    borderColor: 'rgba(255, 255, 255, 0.09)',
     borderRadius: 12,
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -430,10 +452,10 @@ const styles = StyleSheet.create({
   quickCard: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'rgba(30, 30, 32, 0.85)',
-    borderWidth: 1.2,
+    backgroundColor: NIGHT_CARD,
+    borderWidth: 1,
     borderColor: GOLD_SOFT,
-    borderRadius: 18,
+    borderRadius: 16,
     paddingVertical: 14,
     paddingHorizontal: 10,
     gap: 8,
@@ -446,15 +468,17 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   quickPill: {
-    backgroundColor: GOLD,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 10,
     paddingVertical: 4,
     paddingHorizontal: 14,
   },
   quickPillText: {
     fontSize: 11,
-    fontWeight: '800',
-    color: '#1A0D00',
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
   },
   pressedFade: {
     opacity: 0.85,

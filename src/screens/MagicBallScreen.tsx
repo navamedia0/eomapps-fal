@@ -16,7 +16,6 @@ import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import CornerTicks from '@/components/CornerTicks';
 import { getFunFortuneUsage, recordFunFortuneAttempt } from '@/services/funFortunesLimit';
 import magicBallAnswers from '@/data/magic_ball_answers.json';
-import { FEATURE_ICONS } from '@/assets/icons';
 import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 const ANSWERS: string[] = magicBallAnswers;
@@ -86,9 +85,10 @@ export default function MagicBallScreen() {
           ) : (
             <Pressable onPress={ask} disabled={spinning} style={styles.orbWrap}>
               <Animated.View style={{ transform: [{ rotate: spinRotation }, { scale }] }}>
-                {/* Mor sınır çizgisine kadar kırparak dıştaki siyah kare köşeleri yok eder */}
-                <View style={styles.orbClip}>
-                  <Image source={FEATURE_ICONS.magicBall} style={styles.orb} resizeMode="cover" />
+                <View style={styles.orbSphere}>
+                  <View style={styles.orbInnerGlow}>
+                    <MaterialCommunityIcons name="crystal-ball" size={72} color={GOLD} />
+                  </View>
                 </View>
               </Animated.View>
             </Pressable>
@@ -149,22 +149,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  orbClip: {
-    width: 196,
-    height: 196,
-    borderRadius: 44,
-    overflow: 'hidden',
+  orbSphere: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 201, 60, 0.5)',
+    backgroundColor: 'rgba(30, 30, 32, 0.95)',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#a855f7',
+    shadowColor: GOLD,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.7,
-    shadowRadius: 20,
-    elevation: 12,
+    shadowOpacity: 0.5,
+    shadowRadius: 18,
+    elevation: 10,
   },
-  orb: {
-    width: 244,
-    height: 244,
+  orbInnerGlow: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   answerCard: {
     flexDirection: 'row',
@@ -177,7 +183,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1.5,
     borderColor: 'rgba(255, 201, 60, 0.45)',
-    backgroundColor: 'rgba(24, 14, 48, 0.85)',
+    backgroundColor: NIGHT_CARD,
     shadowColor: GOLD,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.35,

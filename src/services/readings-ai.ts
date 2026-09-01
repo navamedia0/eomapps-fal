@@ -123,25 +123,38 @@ export async function interpretSolitaireSpread(cards: KatinaCard[], isPaid = fal
   ]);
 }
 
+export type KatinaPickItem = { id: string; name: string; orientation?: 'upright' | 'reversed' };
+
 export async function interpretKatinaSpread(
-  cards: KatinaCard[],
+  cards: (KatinaCard | KatinaPickItem)[],
   positions: string[],
   isPaid = false,
   toneHint?: string,
+  relContext?: { p1Name?: string; p2Name?: string; relFocus?: string; sealCard?: string },
 ): Promise<string> {
   const cardText = cards
     .map((card, index) => {
       const meaning = getKatinaMeaning(card.id);
+      const orient = (card as KatinaPickItem).orientation === 'reversed' ? ' (Ters Konum)' : '';
       const referenceLine = meaning ? `\n   Klasik anlamı (esin için, birebir kopyalama): ${meaning}` : '';
-      return `${positions[index]}: ${card.name}${referenceLine}`;
+      return `${positions[index] || `${index + 1}. Pozisyon`}: ${card.name}${orient}${referenceLine}`;
     })
     .join('\n');
-  const allPositions = [...positions, 'Genel Yorum'];
+
+  const relHeader = relContext?.p1Name && relContext?.p2Name
+    ? `\nÇift Bilgileri: ${relContext.p1Name} & ${relContext.p2Name} (Niyet / Odak: ${relContext.relFocus || 'Aşk & Evlilik Uyumu'})\n`
+    : '';
+
+  const sealHeader = relContext?.sealCard
+    ? `\nKapanış Mührü (4 Element Ruhu): ${relContext.sealCard}\n`
+    : '';
+
+  const allPositions = [...positions, 'Genel Kadersel Sentez & Aşk Mührü'];
   const headerList = allPositions.map((position) => `"${turkishUpperCase(position)}:"`).join(', ');
-  const formatInstruction = `Yanıtını ${allPositions.length} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" satırını doğrudan kopyalama; onu yalnızca ilham kaynağı olarak kullanıp kendi akıcı ve edebi üslubunla yeniden anlat. Son bölüm olan "GENEL YORUM:", Geçmiş, Şimdi ve Gelecek kartlarının birbiriyle uyumunu, oluşturdukları ortak hikayeyi ve kullanıcının hayatına/aşkına dair nihai çıkarımı derin, bilgece ve bütünsel bir sentezle özetlemeli.`;
+  const formatInstruction = `Yanıtını ${allPositions.length} bölüme ayır ve her bölümü sırasıyla şu başlıklarla başlat: ${headerList}. Başlıklar dışında yıldız, madde işareti veya numaralandırma kullanma. Her kart için verilen "klasik anlamı" satırını doğrudan kopyalama; onu yalnızca ilham kaynağı olarak kullanıp kendi akıcı, dobra, mistik ve tutkulu üslubunla yeniden anlat. Son bölüm olan "GENEL KADERSEL SENTEZ & AŞK MÜHRÜ:", açılan tüm kartların birbiriyle aşk kombinasyonunu, 3. şahıs etkilerini ve ilişkinin nihai kaderini derin, bilgece ve bütünsel bir sentezle mühürlemeli.`;
   const profileBlock = await buildProfileBlock();
   const mysticBlock = buildRichMysticContext('katina');
-  const prompt = `${prompts.katinaSpread(positions, toneHint)}\n${formatInstruction}\n\nKartlar:\n${cardText}${mysticBlock}${profileBlock}`;
+  const prompt = `${prompts.katinaSpread(positions, toneHint)}\n${relHeader}${sealHeader}${formatInstruction}\n\nKartlar:\n${cardText}${mysticBlock}${profileBlock}`;
   return withFallbackChain([
     () => askGemini(prompt, undefined, 'katina', isPaid),
     () => askCloudflare(prompt),

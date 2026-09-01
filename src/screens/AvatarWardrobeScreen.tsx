@@ -1,5 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { showAlert } from '@/services/themedAlert';
@@ -8,47 +15,84 @@ import type { RootStackParamList } from '@/navigation/types';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
 import AvatarRenderer from '@/components/avatar/AvatarRenderer';
 import AppleSignInButton from '@/components/AppleSignInButton';
-import { AVATAR_ASSETS } from '@/assets/avatar/registry';
 import { getStoredSession, signInWithGoogle } from '@/services/auth';
-import { getUserProfile, setAvatarGender, equipAvatarItem, type AvatarGender, type AvatarSlot, type AvatarState } from '@/services/socialProfile';
-import { getShopItems, purchaseItem, type ShopItem } from '@/services/shop';
-import { GOLD, GOLD_SOFT, NIGHT_DEEP, NIGHT_CARD, VELVET_MID, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import {
+  getUserProfile,
+  setAvatarGender,
+  equipAvatarItem,
+  type AvatarGender,
+  type AvatarState,
+} from '@/services/socialProfile';
+import { getWallet, purchaseItem, type WalletBalances } from '@/services/shop';
+import { GOLD, TEXT_MUTED } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AvatarWardrobe'>;
 
-const SLOTS: { key: AvatarSlot; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
-  { key: 'skin', label: 'Kostüm', icon: 'shield-checkmark-outline' },
-  { key: 'hat', label: 'Şapka', icon: 'sparkles-outline' },
-  { key: 'cape', label: 'Pelerin', icon: 'body-outline' },
-  { key: 'outfit', label: 'Kıyafet', icon: 'shirt-outline' },
-  { key: 'pants', label: 'Pantolon', icon: 'walk-outline' },
-];
-
-const SLOT_FIELD: Record<AvatarSlot, keyof AvatarState> = {
-  skin: 'skinItemId',
-  hat: 'hatItemId',
-  cape: 'capeItemId',
-  outfit: 'outfitItemId',
-  pants: 'pantsItemId',
+type CharacterSkin = {
+  id: string | null;
+  name: string;
+  subtitle: string;
+  rarity: 'Temel' | 'Efsanevi' | '3D Kozmik' | '3D Mistik';
+  rarityColor: string;
+  priceCrystal: number;
+  owned: boolean;
+  badge?: string;
 };
 
-const DEFAULT_SKIN_ITEMS: ShopItem[] = [
+const CHARACTER_SKINS: CharacterSkin[] = [
+  {
+    id: null,
+    name: 'Klasik Mistik',
+    subtitle: 'Temel Beden',
+    rarity: 'Temel',
+    rarityColor: '#9CA3AF',
+    priceCrystal: 0,
+    owned: true,
+  },
   {
     id: 'skin_leonidas',
-    category: 'avatar_skin' as any,
     name: 'Leonidas (Aslan)',
-    description: 'Efsanevi aslan savaşçı özel karakter kostümü.',
-    currency: 'crystal',
-    price: 0,
+    subtitle: 'Ateş Zırhı',
+    rarity: 'Efsanevi',
+    rarityColor: GOLD,
+    priceCrystal: 150,
     owned: true,
+    badge: '👑 Popüler',
+  },
+  {
+    id: 'skin_oracle',
+    name: 'Kozmik Kahin',
+    subtitle: '3D Galaktik Model',
+    rarity: '3D Kozmik',
+    rarityColor: '#C084FC',
+    priceCrystal: 300,
+    owned: false,
+    badge: '✨ 3D',
+  },
+  {
+    id: 'skin_moon_witch',
+    name: 'Ay Büyücüsü',
+    subtitle: '3D Gece Hakimi',
+    rarity: '3D Mistik',
+    rarityColor: '#38BDF8',
+    priceCrystal: 250,
+    owned: false,
+    badge: '🌙 3D',
+  },
+  {
+    id: 'skin_solar_knight',
+    name: 'Güneş Şövalyesi',
+    subtitle: '3D Altın Muhafız',
+    rarity: '3D Kozmik',
+    rarityColor: '#F59E0B',
+    priceCrystal: 350,
+    owned: false,
+    badge: '☀️ 3D',
   },
 ];
 
-const CURRENCY_LABEL: Record<'coin' | 'crystal', string> = { coin: 'Coin', crystal: 'Kristal' };
-
 export default function AvatarWardrobeScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const [meId, setMeId] = useState<string | null>(null);
   const [gender, setGender] = useState<AvatarGender | null>(null);
   const [equipped, setEquipped] = useState<AvatarState>({
     gender: null,
@@ -58,14 +102,7 @@ export default function AvatarWardrobeScreen({ navigation }: Props) {
     outfitItemId: null,
     pantsItemId: null,
   });
-  const [activeSlot, setActiveSlot] = useState<AvatarSlot>('skin');
-  const [itemsBySlot, setItemsBySlot] = useState<Record<AvatarSlot, ShopItem[]>>({
-    skin: DEFAULT_SKIN_ITEMS,
-    hat: [],
-    cape: [],
-    outfit: [],
-    pants: [],
-  });
+  const [wallet, setWallet] = useState<WalletBalances | null>(null);
   const [loading, setLoading] = useState(true);
   const [needsAuth, setNeedsAuth] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
@@ -81,20 +118,16 @@ export default function AvatarWardrobeScreen({ navigation }: Props) {
           return;
         }
         setNeedsAuth(false);
-        setMeId(session.user.id);
-        const [profile, hat, cape, outfit, pants] = await Promise.all([
+        const [profile, userWallet] = await Promise.all([
           getUserProfile(session.user.id),
-          getShopItems('avatar_hat'),
-          getShopItems('avatar_cape'),
-          getShopItems('avatar_outfit'),
-          getShopItems('avatar_pants'),
+          getWallet().catch(() => null),
         ]);
-        setGender(profile.avatar.gender);
+        setGender(profile.avatar.gender || 'female');
         setEquipped(profile.avatar);
-        setItemsBySlot({ skin: DEFAULT_SKIN_ITEMS, hat, cape, outfit, pants });
+        setWallet(userWallet);
       })
       .catch((err) => {
-        showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+        showAlert('Hata', err instanceof Error ? err.message : 'Yüklenemedi.');
       })
       .finally(() => setLoading(false));
   }, []);
@@ -109,117 +142,101 @@ export default function AvatarWardrobeScreen({ navigation }: Props) {
       await signInWithGoogle();
       load();
     } catch (err) {
-      showAlert('Giriş yapılamadı', err instanceof Error ? err.message : 'Bilinmeyen bir hata oluştu.');
+      showAlert('Giriş yapılamadı', err instanceof Error ? err.message : 'Hata oluştu.');
     } finally {
       setSigningIn(false);
     }
   }, [load]);
 
-  const handlePickGender = useCallback(
+  const handleSwitchGender = useCallback(
     async (g: AvatarGender) => {
+      if (gender === g || genderBusy) return;
       setGenderBusy(true);
       try {
         await setAvatarGender(g);
         setGender(g);
       } catch (err) {
-        showAlert('Olmadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+        showAlert('Hata', err instanceof Error ? err.message : 'Cinsiyet değiştirilemedi.');
       } finally {
         setGenderBusy(false);
+      }
+    },
+    [gender, genderBusy],
+  );
+
+  const handleEquipSkin = useCallback(
+    async (skin: CharacterSkin) => {
+      const skinId = skin.id;
+      setEquipped((prev) => ({ ...prev, skinItemId: skinId }));
+      setBusyId(skinId ?? 'default');
+
+      try {
+        if (skinId && !skin.owned) {
+          await purchaseItem(skinId);
+        }
+        await equipAvatarItem('skin', skinId);
+      } catch (err) {
+        console.warn('Skin equip error:', err);
+      } finally {
+        setBusyId(null);
       }
     },
     [],
   );
 
-  const currentItems = itemsBySlot[activeSlot];
-  const equippedIdForSlot = equipped[SLOT_FIELD[activeSlot]] as string | null;
-
-  const handleTapItem = useCallback(
-    async (item: ShopItem | null) => {
-      const itemId = item?.id ?? null;
-      const busyKey = itemId ?? `${activeSlot}-none`;
-      // Anında arayüzü güncelle (Optimistic update - 0ms gecikme)
-      setEquipped((prev) => ({ ...prev, [SLOT_FIELD[activeSlot]]: itemId }));
-      setBusyId(busyKey);
-      try {
-        if (item && !item.owned) {
-          await purchaseItem(item.id);
-          setItemsBySlot((prev) => ({
-            ...prev,
-            [activeSlot]: prev[activeSlot].map((i) => (i.id === item.id ? { ...i, owned: true } : i)),
-          }));
-        }
-        await equipAvatarItem(activeSlot, itemId);
-      } catch (err) {
-        console.warn('Avatar equip error:', err);
-      } finally {
-        setBusyId(null);
-      }
-    },
-    [activeSlot],
-  );
-
-  const cards = useMemo(() => [{ isNone: true, item: null as ShopItem | null }, ...currentItems.map((item) => ({ isNone: false, item }))], [
-    currentItems,
-  ]);
+  const currentSkinName =
+    CHARACTER_SKINS.find((s) => s.id === equipped.skinItemId)?.name ||
+    (gender === 'male' ? 'Klasik Mistik Erkek' : 'Klasik Mistik Kadın');
 
   return (
     <MysticTableBackground>
-      <View style={[styles.topBar, { paddingTop: insets.top + 10 }]}>
+      {/* Üst Bar */}
+      <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={() => navigation.goBack()} style={styles.backButton} hitSlop={10}>
-          <Ionicons name="chevron-back" size={22} color={GOLD} />
+          <Ionicons name="chevron-back" size={24} color={GOLD} />
         </Pressable>
-        <Text style={styles.topBarTitle}>Karakterim</Text>
-        <View style={styles.backButton} />
+        <Text style={styles.topBarTitle}>Karakter Podyumu</Text>
+        <Pressable
+          onPress={() => navigation.navigate('CoinShop')}
+          style={styles.crystalPill}
+          hitSlop={8}
+        >
+          <Ionicons name="diamond" size={13} color="#38BDF8" />
+          <Text style={styles.crystalText}>{wallet?.crystal ?? 0}</Text>
+        </Pressable>
       </View>
 
       {loading ? (
-        <ActivityIndicator color={GOLD} style={{ marginTop: 60 }} />
+        <View style={styles.centerLoading}>
+          <ActivityIndicator color={GOLD} size="large" />
+        </View>
       ) : needsAuth ? (
-        <View style={styles.genderPrompt}>
-          <Ionicons name="sparkles-outline" size={36} color={GOLD} style={{ marginBottom: 4 }} />
-          <Text style={styles.genderTitle}>Karakterini oluşturmak için giriş yap</Text>
-          <Text style={styles.genderHint}>
-            Karakter, seviye ve profil bilgilerin hesabına bağlı kaydediliyor — Google veya Apple ile giriş yapman yeterli.
+        <View style={styles.authBox}>
+          <Ionicons name="person-circle-outline" size={54} color={GOLD} />
+          <Text style={styles.authTitle}>Karakterini Yönetmek İçin Giriş Yap</Text>
+          <Text style={styles.authDesc}>
+            3D Karakter görünümleri ve gardırobun doğrudan hesabına kaydedilir.
           </Text>
           <Pressable
             onPress={handleGoogleSignIn}
             disabled={signingIn}
-            style={[styles.googleButton, signingIn && styles.cardDisabled]}
+            style={styles.googleBtn}
           >
             <FontAwesome name="google" size={18} color={GOLD} />
-            <Text style={styles.googleButtonText}>{signingIn ? 'Giriş yapılıyor...' : 'Google ile Giriş Yap'}</Text>
-            {signingIn && <ActivityIndicator color={GOLD} style={{ marginLeft: 6 }} />}
+            <Text style={styles.googleBtnText}>
+              {signingIn ? 'Giriş yapılıyor...' : 'Google ile Giriş Yap'}
+            </Text>
           </Pressable>
-          <View style={{ width: '100%', maxWidth: 280 }}>
-            <AppleSignInButton onSuccess={load} onError={(message) => showAlert('Giriş yapılamadı', message)} />
-          </View>
-        </View>
-      ) : !gender ? (
-        <View style={styles.genderPrompt}>
-          <Text style={styles.genderTitle}>Karakterini seç</Text>
-          <Text style={styles.genderHint}>Bu seçimi istediğin zaman ayarlardan değiştirebilirsin.</Text>
-          <View style={styles.genderRow}>
-            <Pressable
-              onPress={() => handlePickGender('female')}
-              disabled={genderBusy}
-              style={[styles.genderCard, genderBusy && styles.cardDisabled]}
-            >
-              <AvatarRenderer gender="female" size={110} />
-              <Text style={styles.genderCardText}>Kadın</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => handlePickGender('male')}
-              disabled={genderBusy}
-              style={[styles.genderCard, genderBusy && styles.cardDisabled]}
-            >
-              <AvatarRenderer gender="male" size={110} />
-              <Text style={styles.genderCardText}>Erkek</Text>
-            </Pressable>
-          </View>
+          <AppleSignInButton onSuccess={load} onError={(m) => showAlert('Giriş Yapılamadı', m)} />
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          <View style={styles.stage}>
+          {/* 1. BÜYÜK GÖRKEMLİ KARAKTER PODYUMU (Hero Showcase Stage) */}
+          <View style={styles.heroPodiumStage}>
+            {/* Arka Işık Halesi */}
+            <View style={styles.auraGlow} />
+
+            {/* Büyük 3D Karakter / Avatar */}
             <AvatarRenderer
               gender={gender}
               skinId={equipped.skinItemId}
@@ -227,62 +244,119 @@ export default function AvatarWardrobeScreen({ navigation }: Props) {
               capeItemId={equipped.capeItemId}
               outfitItemId={equipped.outfitItemId}
               pantsItemId={equipped.pantsItemId}
-              size={190}
+              size={270}
             />
+
+            {/* Podyum Platformu */}
+            <View style={styles.pedestalBase}>
+              <View style={styles.pedestalTop} />
+            </View>
+
+            {/* Karakter İsim & Rozet Şeridi */}
+            <View style={styles.characterBadgeCard}>
+              <Text style={styles.characterBadgeName}>{currentSkinName}</Text>
+              <Text style={styles.characterBadgeSub}>Mevcut Seçili Görünüm</Text>
+            </View>
           </View>
 
-          <View style={styles.slotTabRow}>
-            {SLOTS.map((slot) => {
-              const active = activeSlot === slot.key;
-              return (
-                <Pressable
-                  key={slot.key}
-                  onPress={() => setActiveSlot(slot.key)}
-                  style={[styles.slotTab, active && styles.slotTabActive]}
-                >
-                  <Ionicons name={slot.icon} size={19} color={active ? NIGHT_DEEP : GOLD} />
-                  <Text style={[styles.slotTabText, active && styles.slotTabTextActive]}>{slot.label}</Text>
-                </Pressable>
-              );
-            })}
+          {/* 2. CİNSİYET & TEMEL TÜR SEÇİCİ */}
+          <View style={styles.genderSwitchRow}>
+            <Pressable
+              onPress={() => handleSwitchGender('female')}
+              style={[styles.genderBtn, gender === 'female' && styles.genderBtnActive]}
+            >
+              <Text style={[styles.genderBtnText, gender === 'female' && styles.genderBtnTextActive]}>
+                🧙‍♀️ Kadın Karakter
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={() => handleSwitchGender('male')}
+              style={[styles.genderBtn, gender === 'male' && styles.genderBtnActive]}
+            >
+              <Text style={[styles.genderBtnText, gender === 'male' && styles.genderBtnTextActive]}>
+                🧙‍♂️ Erkek Karakter
+              </Text>
+            </Pressable>
           </View>
 
-          <View style={styles.grid}>
-            {cards.map(({ isNone, item }) => {
-              const key = item?.id ?? 'none';
-              const isEquipped = isNone ? equippedIdForSlot === null : equippedIdForSlot === item?.id;
-              const isBusy = busyId === (item?.id ?? `${activeSlot}-none`);
+          {/* 3. GÖRSELLİ 2'Lİ KARAKTER IZGARASI (Visual Character Grid) */}
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionHeading}>👑 KARAKTER & 3D GÖRÜNÜM IZGARASI</Text>
+            <Text style={styles.sectionSub}>Görünüm seç, kuşan veya koleksiyonuna ekle</Text>
+          </View>
+
+          <View style={styles.characterGrid}>
+            {CHARACTER_SKINS.map((skin) => {
+              const isEquipped = equipped.skinItemId === skin.id;
+              const isBusy = busyId === (skin.id ?? 'default');
+
               return (
                 <Pressable
-                  key={key}
-                  onPress={() => handleTapItem(item)}
-                  disabled={isBusy}
-                  style={[styles.card, isEquipped && styles.cardEquipped, isBusy && styles.cardDisabled]}
+                  key={skin.id ?? 'default'}
+                  onPress={() => handleEquipSkin(skin)}
+                  style={({ pressed }) => [
+                    styles.gridCard,
+                    isEquipped && styles.gridCardEquipped,
+                    pressed && styles.cardPressed,
+                  ]}
                 >
-                  <View style={styles.cardSwatch}>
-                    {isNone ? (
-                      <Ionicons name="close-outline" size={26} color={GOLD} />
-                    ) : item && AVATAR_ASSETS[item.id] ? (
-                      <Image source={AVATAR_ASSETS[item.id]} style={{ width: 38, height: 38 }} resizeMode="contain" />
+                  {/* Üst Rozet */}
+                  {isEquipped ? (
+                    <View style={styles.equippedBadge}>
+                      <Ionicons name="checkmark-circle" size={12} color="#000000" />
+                      <Text style={styles.equippedBadgeText}>SEÇİLİ</Text>
+                    </View>
+                  ) : skin.badge ? (
+                    <View style={[styles.gridBadge, { backgroundColor: skin.rarityColor }]}>
+                      <Text style={styles.gridBadgeText}>{skin.badge}</Text>
+                    </View>
+                  ) : null}
+
+                  {/* Görsel Sahnesi (Mini Avatar Önizlemesi) */}
+                  <View style={styles.gridAvatarStage}>
+                    <View style={styles.gridMiniAura} />
+                    <AvatarRenderer
+                      gender={gender}
+                      skinId={skin.id}
+                      hatItemId={skin.id ? null : equipped.hatItemId}
+                      capeItemId={skin.id ? null : equipped.capeItemId}
+                      outfitItemId={skin.id ? null : equipped.outfitItemId}
+                      pantsItemId={skin.id ? null : equipped.pantsItemId}
+                      size={105}
+                      animated={false}
+                    />
+                    <View style={styles.gridMiniPedestal} />
+                  </View>
+
+                  {/* Başlık & Bilgi */}
+                  <Text style={styles.gridCardName} numberOfLines={1}>
+                    {skin.name}
+                  </Text>
+                  <Text style={styles.gridCardSub} numberOfLines={1}>
+                    {skin.subtitle}
+                  </Text>
+
+                  {/* Alt Aksiyon / Durum Çubuğu */}
+                  <View
+                    style={[
+                      styles.gridActionPill,
+                      isEquipped && styles.gridActionPillEquipped,
+                      !isEquipped && !skin.owned && skin.priceCrystal > 0 && styles.gridActionPillBuy,
+                    ]}
+                  >
+                    {isBusy ? (
+                      <ActivityIndicator size="small" color="#000000" />
+                    ) : isEquipped ? (
+                      <Text style={styles.gridActionTextEquipped}>Kuşanıldı</Text>
+                    ) : skin.owned || skin.priceCrystal === 0 ? (
+                      <Text style={styles.gridActionText}>Kuşan</Text>
                     ) : (
-                      <Ionicons name="sparkles" size={26} color={GOLD} />
+                      <View style={styles.priceRow}>
+                        <Ionicons name="diamond" size={12} color="#38BDF8" />
+                        <Text style={styles.priceText}>{skin.priceCrystal} Kristal</Text>
+                      </View>
                     )}
                   </View>
-                  <Text style={styles.cardName} numberOfLines={1}>
-                    {isNone ? 'Yok' : item?.name}
-                  </Text>
-                  {!isNone && item && !item.owned && (
-                    <Text style={styles.cardPrice}>
-                      {item.price} {CURRENCY_LABEL[item.currency]}
-                    </Text>
-                  )}
-                  {isBusy ? (
-                    <ActivityIndicator size="small" color={GOLD} style={styles.cardStateIcon} />
-                  ) : isEquipped ? (
-                    <Ionicons name="checkmark-circle" size={18} color={GOLD} style={styles.cardStateIcon} />
-                  ) : !isNone && item && !item.owned ? (
-                    <Ionicons name="lock-closed-outline" size={16} color={TEXT_MUTED} style={styles.cardStateIcon} />
-                  ) : null}
                 </Pressable>
               );
             })}
@@ -294,121 +368,320 @@ export default function AvatarWardrobeScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 10 },
-  backButton: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  topBarTitle: { fontSize: 16, fontWeight: '800', color: TEXT_PRIMARY },
-  scrollContent: { flexGrow: 1, paddingHorizontal: 20, paddingBottom: 48 },
-  stage: {
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  backButton: {
+    padding: 6,
+  },
+  topBarTitle: {
+    fontSize: 17,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 0.3,
+  },
+  crystalPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: '#121215',
+    borderWidth: 1,
+    borderColor: 'rgba(56, 189, 248, 0.3)',
+    borderRadius: 14,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+  },
+  crystalText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#38BDF8',
+  },
+  centerLoading: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(30, 30, 32, 0.85)',
+  },
+  scrollContent: {
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 48,
+  },
+  heroPodiumStage: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0F0F12',
     borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(229, 169, 60, 0.25)',
+    paddingTop: 18,
+    paddingBottom: 14,
+    marginBottom: 16,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  auraGlow: {
+    position: 'absolute',
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: 'rgba(229, 169, 60, 0.08)',
+    top: 30,
+  },
+  pedestalBase: {
+    width: 170,
+    height: 22,
+    backgroundColor: '#18181D',
+    borderRadius: 85,
     borderWidth: 1.5,
-    borderColor: GOLD_SOFT,
-    paddingTop: 16,
-    paddingBottom: 24,
-    marginBottom: 18,
-    shadowColor: '#000',
+    borderColor: 'rgba(229, 169, 60, 0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: -8,
+    shadowColor: GOLD,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
     elevation: 6,
   },
-  styleToggleRow: {
-    flexDirection: 'row',
-    alignSelf: 'center',
-    backgroundColor: 'rgba(15, 9, 36, 0.7)',
-    borderRadius: 20,
-    padding: 3,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    gap: 4,
+  pedestalTop: {
+    width: 140,
+    height: 10,
+    backgroundColor: 'rgba(229, 169, 60, 0.2)',
+    borderRadius: 70,
   },
-  styleToggleBtn: {
-    paddingVertical: 5,
-    paddingHorizontal: 14,
-    borderRadius: 16,
+  characterBadgeCard: {
+    marginTop: 12,
+    alignItems: 'center',
   },
-  styleToggleBtnActive: {
-    backgroundColor: GOLD,
+  characterBadgeName: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    marginBottom: 2,
   },
-  styleToggleText: {
+  characterBadgeSub: {
     fontSize: 11,
+    color: GOLD,
+    fontWeight: '700',
+  },
+  genderSwitchRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  genderBtn: {
+    flex: 1,
+    backgroundColor: '#121215',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  genderBtnActive: {
+    borderColor: GOLD,
+    backgroundColor: 'rgba(229, 169, 60, 0.12)',
+  },
+  genderBtnText: {
+    fontSize: 12.5,
     fontWeight: '700',
     color: TEXT_MUTED,
   },
-  styleToggleTextActive: {
-    color: NIGHT_DEEP,
+  genderBtnTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '800',
   },
-  slotTabRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
-  slotTab: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 5,
-    paddingVertical: 11,
-    borderRadius: 14,
-    borderWidth: 1.2,
-    borderColor: GOLD_SOFT,
-    backgroundColor: NIGHT_CARD,
+  sectionHeaderRow: {
+    marginBottom: 12,
+    paddingHorizontal: 2,
   },
-  slotTabActive: { backgroundColor: GOLD, borderColor: GOLD },
-  slotTabText: { fontSize: 10.5, fontWeight: '700', color: TEXT_MUTED },
-  slotTabTextActive: { color: NIGHT_DEEP },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  card: {
-    width: '31%',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: NIGHT_CARD,
-    borderRadius: 14,
+  sectionHeading: {
+    fontSize: 11.5,
+    fontWeight: '900',
+    color: GOLD,
+    letterSpacing: 0.6,
+    marginBottom: 2,
+  },
+  sectionSub: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+  },
+  characterGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  gridCard: {
+    width: '48.3%',
+    backgroundColor: '#121215',
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    paddingVertical: 14,
-    paddingHorizontal: 6,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    padding: 12,
+    alignItems: 'center',
+    position: 'relative',
+    overflow: 'hidden',
   },
-  cardEquipped: { borderColor: GOLD, borderWidth: 2 },
-  cardDisabled: { opacity: 0.6 },
-  cardSwatch: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+  gridCardEquipped: {
+    borderColor: GOLD,
+    backgroundColor: '#16161C',
+  },
+  equippedBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#22C55E',
+    borderBottomLeftRadius: 10,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    zIndex: 10,
+  },
+  equippedBadgeText: {
+    fontSize: 8.5,
+    fontWeight: '900',
+    color: '#000000',
+  },
+  gridBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    borderBottomLeftRadius: 10,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    zIndex: 10,
+  },
+  gridBadgeText: {
+    fontSize: 8.5,
+    fontWeight: '900',
+    color: '#000000',
+  },
+  gridAvatarStage: {
+    width: '100%',
+    height: 125,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    marginTop: 4,
+    marginBottom: 6,
+  },
+  gridMiniAura: {
+    position: 'absolute',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(229, 169, 60, 0.08)',
+    top: 15,
+  },
+  gridMiniPedestal: {
+    width: 75,
+    height: 10,
+    backgroundColor: '#18181D',
+    borderRadius: 37,
+    borderWidth: 1,
+    borderColor: 'rgba(229, 169, 60, 0.3)',
+    marginTop: -8,
+  },
+  gridCardName: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  gridCardSub: {
+    fontSize: 10,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  gridActionPill: {
+    width: '100%',
+    backgroundColor: GOLD,
+    borderRadius: 10,
+    paddingVertical: 7,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardName: { fontSize: 11, fontWeight: '700', color: TEXT_PRIMARY, textAlign: 'center' },
-  cardPrice: { fontSize: 10, color: GOLD, fontWeight: '700' },
-  cardStateIcon: { marginTop: 2 },
-  genderPrompt: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, gap: 8 },
-  genderTitle: { fontSize: 18, fontWeight: '800', color: TEXT_PRIMARY },
-  genderHint: { fontSize: 12, color: TEXT_MUTED, textAlign: 'center', marginBottom: 10 },
-  genderRow: { flexDirection: 'row', gap: 16, marginTop: 8 },
-  genderCard: {
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: NIGHT_CARD,
-    borderRadius: 20,
+  gridActionPillEquipped: {
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    paddingVertical: 20,
-    paddingHorizontal: 24,
+    borderColor: '#22C55E',
   },
-  genderCardText: { fontSize: 13, fontWeight: '700', color: TEXT_PRIMARY },
-  googleButton: {
+  gridActionPillBuy: {
+    backgroundColor: '#1E1E24',
+    borderWidth: 1,
+    borderColor: 'rgba(56, 189, 248, 0.4)',
+  },
+  gridActionText: {
+    fontSize: 11.5,
+    fontWeight: '900',
+    color: '#000000',
+  },
+  gridActionTextEquipped: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#22C55E',
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  priceText: {
+    fontSize: 11.5,
+    fontWeight: '900',
+    color: '#38BDF8',
+  },
+  cardPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.97 }],
+  },
+  authBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    marginTop: 40,
+  },
+  authTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginTop: 12,
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  authDesc: {
+    fontSize: 12,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 18,
+  },
+  googleBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    backgroundColor: '#18181D',
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    backgroundColor: NIGHT_CARD,
-    borderRadius: 12,
-    paddingVertical: 13,
-    paddingHorizontal: 22,
-    marginTop: 6,
-    width: '100%',
-    maxWidth: 280,
-    justifyContent: 'center',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginBottom: 12,
   },
-  googleButtonText: { fontSize: 13, fontWeight: '700', color: TEXT_PRIMARY },
+  googleBtnText: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
 });

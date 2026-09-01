@@ -96,6 +96,7 @@ import CardDeckHubScreen from '@/screens/CardDeckHubScreen';
 import CardDeckTableScreen from '@/screens/CardDeckTableScreen';
 import LenormandResultScreen from '@/screens/LenormandResultScreen';
 import RuneResultScreen from '@/screens/RuneResultScreen';
+import KatinaResultScreen from '@/screens/KatinaResultScreen';
 import bilgiMakaleleri from '@/data/bilgi_makaleleri.json';
 import { GOLD, NIGHT_DEEP, NIGHT_MID, TEXT_PRIMARY } from '@/theme/colors';
 
@@ -163,7 +164,7 @@ export default function App() {
             <Stack.Screen name="TarotSpread" component={TarotSpreadScreen} options={{ title: 'Tarot Falı' }} />
             <Stack.Screen name="TarotLayout" component={TarotLayoutScreen} options={{ title: 'Tarot Falı' }} />
             <Stack.Screen name="Tarot" component={TarotScreen} options={{ title: 'Tarot Falı' }} />
-            <Stack.Screen name="TarotResult" component={TarotResultScreen} options={{ title: 'Fal Yorumu' }} />
+            <Stack.Screen name="TarotResult" component={TarotResultScreen} options={{ title: 'Fal Yorumu', headerRight: () => null }} />
             <Stack.Screen name="DreamChat" component={DreamChatScreen} options={{ title: 'Rüya Yorumlama' }} />
             <Stack.Screen name="ProfileChat" component={ProfileChatScreen} options={{ title: 'Kendinden Bahset' }} />
             <Stack.Screen
@@ -253,6 +254,7 @@ export default function App() {
             <Stack.Screen name="CardDeckTable" component={CardDeckTableScreen} options={{ headerShown: false }} />
             <Stack.Screen name="LenormandResult" component={LenormandResultScreen} options={{ headerShown: false }} />
             <Stack.Screen name="RuneResult" component={RuneResultScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="KatinaResult" component={KatinaResultScreen} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
         <VoiceSessionBubble navigationRef={navigationRef} />

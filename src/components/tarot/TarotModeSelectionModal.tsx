@@ -41,7 +41,7 @@ const TAROT_MODES: ModeItem[] = [
     subtitle: 'İki Kişilik Derin Sentez · 10 Ayrı Kademede Aşk & Kadersel Bağ',
     ctaText: 'Karşılıklı Uyuma Bak',
     iconName: 'heart-multiple',
-    accent: '#EC4899',
+    accent: GOLD,
     bullets: [
       '✦ Senin ve partnerinin enerjisini karşılıklı masaya yatırır',
       '✦ 10 ayrı kadersel seviyeyi (bilinçaltı, hisler, engeller, gelecek) sentezler',
@@ -71,7 +71,7 @@ const TAROT_MODES: ModeItem[] = [
     subtitle: 'Sembolizm, Ezoterik Anlamlar & Masa Dizilimi',
     ctaText: 'Deste Masasına Geç',
     iconName: 'table-furniture',
-    accent: '#A855F7',
+    accent: '#A1A1AA',
     bullets: [
       '✦ Gerçek bir fal masasında kartları tek tek çevir ve dizilimi incele',
       '✦ Her bir kartın ezoterik sembollerini ve düz/ters anlamlarını öğren',
@@ -101,7 +101,7 @@ export default function TarotModeSelectionModal({
 
         <View style={styles.sheetContainer}>
           <LinearGradient
-            colors={['#1F1338', '#140A28', '#0A0416']}
+            colors={['#181820', '#101014', '#08080A']}
             style={StyleSheet.absoluteFillObject}
           />
 
@@ -130,14 +130,14 @@ export default function TarotModeSelectionModal({
                 key={mode.id}
                 style={[
                   styles.modeCard,
-                  { borderColor: mode.accent + (mode.isPopular ? '88' : '44') },
+                  { borderColor: mode.id === 'relationship' ? GOLD : mode.id === 'quick' ? 'rgba(245, 158, 11, 0.5)' : 'rgba(255, 255, 255, 0.15)' },
                   mode.isPopular && styles.modeCardPopular,
                 ]}
               >
                 <LinearGradient
                   colors={
                     mode.isPopular
-                      ? ['rgba(236, 72, 153, 0.14)', 'rgba(236, 72, 153, 0.02)']
+                      ? ['rgba(229, 169, 60, 0.12)', 'rgba(229, 169, 60, 0.02)']
                       : ['rgba(255,255,255,0.04)', 'rgba(255,255,255,0.01)']
                   }
                   style={StyleSheet.absoluteFillObject}
@@ -149,14 +149,14 @@ export default function TarotModeSelectionModal({
                     style={[
                       styles.badge,
                       {
-                        backgroundColor: mode.accent + '25',
-                        borderColor: mode.accent + '77',
+                        backgroundColor: mode.id === 'relationship' ? 'rgba(229, 169, 60, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                        borderColor: mode.id === 'relationship' ? GOLD : 'rgba(255, 255, 255, 0.2)',
                       },
                     ]}
                   >
-                    <Text style={[styles.badgeText, { color: mode.accent }]}>{mode.badge}</Text>
+                    <Text style={[styles.badgeText, { color: mode.id === 'relationship' ? GOLD : '#E4E4E7' }]}>{mode.badge}</Text>
                   </View>
-                  <MaterialCommunityIcons name={mode.iconName} size={22} color={mode.accent} />
+                  <MaterialCommunityIcons name={mode.iconName} size={22} color={mode.id === 'relationship' ? GOLD : mode.accent} />
                 </View>
 
                 <Text style={styles.cardTitle}>{mode.title}</Text>
@@ -176,17 +176,21 @@ export default function TarotModeSelectionModal({
                   onPress={() => handleAction(mode.id)}
                   style={({ pressed }) => [
                     styles.actionBtn,
-                    { backgroundColor: mode.accent },
+                    mode.id === 'relationship'
+                      ? styles.actionBtnGold
+                      : mode.id === 'quick'
+                      ? styles.actionBtnAmber
+                      : styles.actionBtnDark,
                     pressed && styles.actionBtnPressed,
                   ]}
                 >
-                  <Text style={[styles.actionBtnText, mode.id === 'table' && { color: '#FFFFFF' }]}>
+                  <Text style={[styles.actionBtnText, mode.id === 'table' ? { color: '#FFFFFF' } : { color: '#000000' }]}>
                     {mode.ctaText}
                   </Text>
                   <Ionicons
                     name="arrow-forward"
                     size={16}
-                    color={mode.id === 'table' ? '#FFFFFF' : '#0F0820'}
+                    color={mode.id === 'table' ? '#FFFFFF' : '#000000'}
                   />
                 </Pressable>
               </View>
@@ -201,7 +205,7 @@ export default function TarotModeSelectionModal({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(5, 2, 12, 0.85)',
+    backgroundColor: 'rgba(5, 5, 8, 0.88)',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 14,
@@ -212,11 +216,16 @@ const styles = StyleSheet.create({
     maxHeight: '94%',
     borderRadius: 24,
     borderWidth: 1.2,
-    borderColor: GOLD_SOFT,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     overflow: 'hidden',
     paddingTop: 20,
     paddingBottom: 16,
     paddingHorizontal: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.6,
+    shadowRadius: 16,
+    elevation: 12,
   },
   closeBtn: {
     position: 'absolute',
@@ -226,7 +235,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -239,9 +248,9 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    backgroundColor: 'rgba(229, 169, 60, 0.15)',
     borderWidth: 1.2,
-    borderColor: GOLD_SOFT,
+    borderColor: GOLD,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
@@ -255,7 +264,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 12,
-    color: TEXT_MUTED,
+    color: '#A1A1AA',
     textAlign: 'center',
     marginTop: 4,
   },
@@ -268,10 +277,11 @@ const styles = StyleSheet.create({
     borderWidth: 1.2,
     padding: 14,
     overflow: 'hidden',
-    backgroundColor: 'rgba(15, 8, 30, 0.85)',
+    backgroundColor: 'rgba(18, 18, 24, 0.94)',
   },
   modeCardPopular: {
     borderWidth: 1.5,
+    borderColor: GOLD,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -298,7 +308,7 @@ const styles = StyleSheet.create({
   },
   cardSubtitle: {
     fontSize: 11.5,
-    color: TEXT_MUTED,
+    color: '#A1A1AA',
     marginBottom: 8,
   },
   bulletList: {
@@ -307,7 +317,7 @@ const styles = StyleSheet.create({
   },
   bulletItem: {
     fontSize: 11.5,
-    color: '#CBD5E1',
+    color: '#E4E4E7',
     lineHeight: 16,
   },
   actionBtn: {
@@ -315,17 +325,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 14,
-    borderRadius: 12,
+    borderRadius: 14,
+  },
+  actionBtnGold: {
+    backgroundColor: GOLD,
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  actionBtnAmber: {
+    backgroundColor: '#F59E0B',
+  },
+  actionBtnDark: {
+    backgroundColor: 'rgba(30, 30, 38, 0.95)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.4)',
   },
   actionBtnPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
   },
   actionBtnText: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '900',
-    color: '#0F0820',
   },
 });

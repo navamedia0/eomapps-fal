@@ -1,15 +1,34 @@
-import { useCallback, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import { getVipTiers, subscribeVip, getMyVipSubscription, type VipTier, type VipSubscription } from '@/services/shop';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
+import {
+  getVipTiers,
+  subscribeVip,
+  getMyVipSubscription,
+  type VipTier,
+  type VipSubscription,
+} from '@/services/shop';
+import { GOLD, TEXT_MUTED } from '@/theme/colors';
 
 function daysUntil(iso: string): number {
   return Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / (24 * 3600 * 1000)));
 }
+
+const TIER_THEMES: Record<string, { color: string; badgeBg: string; icon: string }> = {
+  ametist: { color: '#C084FC', badgeBg: 'rgba(192, 132, 252, 0.15)', icon: 'gem' },
+  zumrut: { color: '#34D399', badgeBg: 'rgba(52, 211, 153, 0.15)', icon: 'shield-alt' },
+  kozmik: { color: GOLD, badgeBg: 'rgba(229, 169, 60, 0.15)', icon: 'crown' },
+};
 
 export default function VipTiersScreen() {
   const [tiers, setTiers] = useState<VipTier[]>([]);
@@ -38,10 +57,10 @@ export default function VipTiersScreen() {
       setSubscribingId(tier.id);
       try {
         await subscribeVip(tier.id);
-        showAlert('Aboneliğin başladı', `${tier.name} kademesine hoş geldin!`);
+        showAlert('Aboneliğin Başladı 🎉', `${tier.name} kademesine hoş geldin! Tüm ayrıcalıkların aktif edildi.`);
         load();
       } catch (err) {
-        showAlert('Abone olunamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+        showAlert('Abonelik Başarısız', err instanceof Error ? err.message : 'Yetersiz Kristal bakiyesi veya bağlantı sorunu.');
       } finally {
         setSubscribingId(null);
       }
@@ -52,7 +71,9 @@ export default function VipTiersScreen() {
   if (loading) {
     return (
       <MysticTableBackground>
-        <ActivityIndicator color={GOLD} style={{ marginTop: 60 }} />
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator color={GOLD} size="large" />
+        </View>
       </MysticTableBackground>
     );
   }
@@ -60,87 +81,250 @@ export default function VipTiersScreen() {
   return (
     <MysticTableBackground>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* VIP Kulübü Hero Başlığı */}
+        <View style={styles.heroCard}>
+          <View style={styles.heroCrownCircle}>
+            <MaterialCommunityIcons name="crown" size={32} color={GOLD} />
+          </View>
+          <Text style={styles.heroTitle}>MİSTİK REHBER VIP KULÜBÜ</Text>
+          <Text style={styles.heroSub}>
+            Ayrıcalıklı üyeliklerle her gün ücretsiz derin açılımlar, özel altın çerçeveler ve VIP yorumcu önceliği kazan.
+          </Text>
+        </View>
+
+        {/* Aktif Abonelik Varsa */}
         {subscription && (
-          <View style={styles.currentCard}>
-            <Ionicons name="star" size={18} color={GOLD} />
-            <Text style={styles.currentText}>
-              {subscription.tierName} — {daysUntil(subscription.expiresAt)} gün sonra yenilenir
+          <View style={styles.activeSubCard}>
+            <View style={styles.activeSubHeader}>
+              <MaterialCommunityIcons name="crown" size={20} color={GOLD} />
+              <Text style={styles.activeSubTitle}>Aktif VIP Üyeliğin: {subscription.tierName}</Text>
+            </View>
+            <Text style={styles.activeSubDays}>
+              Kalan Süre: {daysUntil(subscription.expiresAt)} Gün (Yenilenme: {new Date(subscription.expiresAt).toLocaleDateString('tr-TR')})
             </Text>
           </View>
         )}
 
-        {tiers.length === 0 ? (
-          <Text style={styles.emptyText}>Henüz VIP kademesi tanımlanmadı.</Text>
-        ) : (
-          <View style={styles.list}>
-            {tiers.map((tier) => {
-              const isCurrent = subscription?.tierId === tier.id;
-              return (
-                <View key={tier.id} style={[styles.tierCard, isCurrent && styles.tierCardActive]}>
-                  <Text style={styles.tierName}>{tier.name}</Text>
-                  <Text style={styles.tierPrice}>{tier.monthlyPriceCrystal} Kristal / ay</Text>
-                  <View style={styles.perkList}>
-                    {tier.perks.map((perk, i) => (
-                      <View key={i} style={styles.perkRow}>
-                        <Ionicons name="checkmark" size={14} color={GOLD} />
-                        <Text style={styles.perkText}>{perk}</Text>
-                      </View>
-                    ))}
+        {/* Kademeler */}
+        <View style={styles.tierList}>
+          {tiers.map((tier, idx) => {
+            const isCurrent = subscription?.tierId === tier.id;
+            const theme = TIER_THEMES[tier.id] || {
+              color: GOLD,
+              badgeBg: 'rgba(229, 169, 60, 0.15)',
+              icon: 'crown',
+            };
+
+            return (
+              <View
+                key={tier.id}
+                style={[
+                  styles.tierCard,
+                  isCurrent && styles.tierCardActive,
+                  idx === 2 && styles.tierCardCosmic,
+                ]}
+              >
+                <View style={styles.tierTopRow}>
+                  <View style={[styles.tierBadge, { backgroundColor: theme.badgeBg, borderColor: theme.color + '66' }]}>
+                    <FontAwesome5 name={theme.icon as any} size={13} color={theme.color} />
+                    <Text style={[styles.tierBadgeText, { color: theme.color }]}>{tier.name}</Text>
                   </View>
-                  <Pressable
-                    onPress={() => handleSubscribe(tier)}
-                    disabled={isCurrent || subscribingId === tier.id}
-                    style={[styles.subscribeButton, isCurrent && styles.subscribeButtonActive]}
-                  >
-                    {subscribingId === tier.id ? (
-                      <ActivityIndicator size="small" color="#1a0d33" />
-                    ) : (
-                      <Text style={[styles.subscribeButtonText, isCurrent && styles.subscribeButtonTextActive]}>
-                        {isCurrent ? 'Aktif Kademen' : 'Abone Ol'}
-                      </Text>
-                    )}
-                  </Pressable>
+                  <View style={styles.priceWrap}>
+                    <Ionicons name="diamond" size={14} color="#38BDF8" />
+                    <Text style={styles.priceText}>{tier.monthlyPriceCrystal} Kristal</Text>
+                    <Text style={styles.priceSub}>/ay</Text>
+                  </View>
                 </View>
-              );
-            })}
-          </View>
-        )}
+
+                {/* Ayrıcalık Maddeleri */}
+                <View style={styles.perkList}>
+                  {tier.perks.map((perk, i) => (
+                    <View key={i} style={styles.perkRow}>
+                      <Ionicons name="checkmark-circle" size={16} color={theme.color} />
+                      <Text style={styles.perkText}>{perk}</Text>
+                    </View>
+                  ))}
+                </View>
+
+                {/* Abone Ol Butonu */}
+                <Pressable
+                  onPress={() => handleSubscribe(tier)}
+                  disabled={isCurrent || subscribingId === tier.id}
+                  style={({ pressed }) => [
+                    styles.subButton,
+                    { backgroundColor: isCurrent ? '#27272A' : theme.color },
+                    pressed && styles.btnPressed,
+                  ]}
+                >
+                  {subscribingId === tier.id ? (
+                    <ActivityIndicator size="small" color="#000000" />
+                  ) : (
+                    <Text
+                      style={[
+                        styles.subButtonText,
+                        { color: isCurrent ? TEXT_MUTED : '#000000' },
+                      ]}
+                    >
+                      {isCurrent ? 'Mevcut Aktif Üyeliğin' : `${tier.name} Üyesi Ol`}
+                    </Text>
+                  )}
+                </Pressable>
+              </View>
+            );
+          })}
+        </View>
       </ScrollView>
     </MysticTableBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContent: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 20, paddingBottom: 48 },
-  emptyText: { fontSize: 12.5, color: TEXT_MUTED, textAlign: 'center', paddingVertical: 30 },
-  currentCard: {
-    flexDirection: 'row',
+  scrollContent: {
+    paddingHorizontal: 14,
+    paddingTop: 16,
+    paddingBottom: 48,
+  },
+  loadingWrap: {
+    flex: 1,
     alignItems: 'center',
-    gap: 10,
-    backgroundColor: NIGHT_CARD,
+    justifyContent: 'center',
+    paddingTop: 80,
+  },
+  heroCard: {
+    backgroundColor: '#121215',
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(229, 169, 60, 0.25)',
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  heroCrownCircle: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: 'rgba(229, 169, 60, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(229, 169, 60, 0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  heroTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: GOLD,
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  heroSub: {
+    fontSize: 11.5,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+    lineHeight: 17,
+  },
+  activeSubCard: {
+    backgroundColor: '#18181D',
     borderRadius: 14,
     borderWidth: 1,
     borderColor: GOLD,
     padding: 14,
-    marginBottom: 18,
+    marginBottom: 16,
   },
-  currentText: { flex: 1, fontSize: 12.5, fontWeight: '600', color: TEXT_PRIMARY },
-  list: { gap: 14 },
+  activeSubHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  activeSubTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  activeSubDays: {
+    fontSize: 11.5,
+    color: GOLD,
+    fontWeight: '600',
+  },
+  tierList: {
+    gap: 12,
+  },
   tierCard: {
-    backgroundColor: NIGHT_CARD,
+    backgroundColor: '#121215',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     padding: 16,
   },
-  tierCardActive: { borderColor: GOLD },
-  tierName: { fontSize: 15, fontWeight: '800', color: GOLD, marginBottom: 4 },
-  tierPrice: { fontSize: 12.5, color: TEXT_MUTED, marginBottom: 10 },
-  perkList: { gap: 6, marginBottom: 14 },
-  perkRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  perkText: { fontSize: 12.5, color: TEXT_PRIMARY },
-  subscribeButton: { backgroundColor: GOLD, borderRadius: 12, paddingVertical: 11, alignItems: 'center' },
-  subscribeButtonActive: { backgroundColor: 'transparent', borderWidth: 1, borderColor: GOLD_SOFT },
-  subscribeButtonText: { fontSize: 13, fontWeight: '800', color: '#1a0d33' },
-  subscribeButtonTextActive: { color: TEXT_MUTED },
+  tierCardActive: {
+    borderColor: GOLD,
+  },
+  tierCardCosmic: {
+    borderColor: 'rgba(229, 169, 60, 0.4)',
+    backgroundColor: '#15151B',
+  },
+  tierTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  tierBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 0.8,
+    borderRadius: 8,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+  },
+  tierBadgeText: {
+    fontSize: 12.5,
+    fontWeight: '900',
+    letterSpacing: 0.3,
+  },
+  priceWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  priceText: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: '#38BDF8',
+  },
+  priceSub: {
+    fontSize: 11,
+    color: TEXT_MUTED,
+  },
+  perkList: {
+    gap: 8,
+    marginBottom: 16,
+  },
+  perkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  perkText: {
+    fontSize: 12.5,
+    color: '#E4E4E7',
+    fontWeight: '500',
+    flex: 1,
+  },
+  subButton: {
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  subButtonText: {
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  btnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
 });

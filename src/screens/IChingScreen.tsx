@@ -11,6 +11,7 @@ import SparkleBurst from '@/components/effects/SparkleBurst';
 import { tossCoins, getHexagramFromLines, getTransformedHexagram, type IChingLine, type Hexagram } from '@/services/ichingEngine';
 import { interpretIChingReading } from '@/services/readings-ai';
 import { getCoins, spendCoins, addCoins } from '@/services/coins';
+import { saveReadingHistory } from '@/services/readingHistory';
 import { READING_COIN_COST, DEEP_IMAGE_READING_COIN_COST } from '@/constants/economy';
 import CoinFallbackBox from '@/components/CoinFallbackBox';
 import ReadingCardStack from '@/components/ReadingCardStack';
@@ -151,6 +152,11 @@ export default function IChingScreen({ navigation }: Props) {
     try {
       const reading = await interpretIChingReading(hexagram, targetMode, transformedHexagram);
       setResult(reading);
+      await saveReadingHistory({
+        type: 'iching',
+        title: `I Ching #${hexagram.number} ${hexagram.name}`,
+        result: reading,
+      });
     } catch {
       await addCoins(cost);
       setError(`Bağlantı yoğunluğu oluştu. Lütfen tekrar deneyin. (${cost} coin iade edildi.)`);
@@ -553,42 +559,53 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     backgroundColor: GOLD,
-    borderRadius: 14,
+    borderRadius: 16,
     paddingVertical: 14,
     marginTop: 6,
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 6,
   },
   btnDeep: {
     backgroundColor: '#F5C862',
   },
   btnPressed: {
     opacity: 0.85,
+    transform: [{ scale: 0.98 }],
   },
   primaryBtnText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: NIGHT_CARD,
+    fontSize: 14.5,
+    fontWeight: '900',
+    color: '#000000',
   },
   hexagramWrap: {
     width: '100%',
     gap: 16,
   },
   hexCard: {
-    backgroundColor: 'rgba(30, 30, 32, 0.85)',
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
     borderWidth: 1.2,
-    borderColor: GOLD,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     borderRadius: 18,
     padding: 18,
     gap: 8,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 6,
   },
   hexNumber: {
     fontSize: 12,
-    fontWeight: '700',
-    color: GOLD_SOFT,
+    fontWeight: '800',
+    color: GOLD,
   },
   hexName: {
     fontSize: 16,
     fontWeight: '800',
-    color: TEXT_PRIMARY,
+    color: '#FFFFFF',
   },
   hexTrigrams: {
     fontSize: 12,
@@ -596,18 +613,19 @@ const styles = StyleSheet.create({
   },
   hexDivider: {
     height: 1,
-    backgroundColor: 'rgba(255, 201, 60, 0.2)',
+    backgroundColor: 'rgba(229, 169, 60, 0.25)',
     marginVertical: 4,
   },
   hexJudgment: {
     fontSize: 13,
-    color: TEXT_PRIMARY,
+    color: '#E4E4E7',
     lineHeight: 19,
   },
   hexWisdom: {
     fontSize: 12.5,
-    color: GOLD_SOFT,
+    color: GOLD,
     lineHeight: 18,
+    fontWeight: '600',
   },
   modeSection: {
     gap: 10,
@@ -615,8 +633,8 @@ const styles = StyleSheet.create({
   },
   modeTitle: {
     fontSize: 12.5,
-    fontWeight: '700',
-    color: GOLD_SOFT,
+    fontWeight: '800',
+    color: GOLD,
   },
   modeCardsRow: {
     flexDirection: 'row',
@@ -624,32 +642,33 @@ const styles = StyleSheet.create({
   },
   modeCard: {
     flex: 1,
-    backgroundColor: 'rgba(30, 30, 32, 0.75)',
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.25)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 14,
     padding: 12,
     gap: 4,
   },
   modeCardActive: {
     borderColor: GOLD,
-    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    backgroundColor: '#201A10',
   },
   modeCardDeep: {
-    backgroundColor: 'rgba(35, 20, 70, 0.85)',
+    backgroundColor: 'rgba(35, 20, 70, 0.90)',
+    borderColor: 'rgba(192, 132, 252, 0.35)',
   },
   modeCardDeepActive: {
-    borderColor: '#F5C862',
-    backgroundColor: 'rgba(245, 200, 98, 0.16)',
+    borderColor: '#C084FC',
+    backgroundColor: '#25173B',
   },
   modeCardTitle: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
   modeCardDesc: {
     fontSize: 10.5,
-    color: TEXT_MUTED,
+    color: '#A1A1AA',
     lineHeight: 14,
   },
   loadingBox: {
@@ -659,14 +678,14 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 13,
-    color: GOLD_SOFT,
+    color: GOLD,
     fontStyle: 'italic',
     textAlign: 'center',
   },
   resultCard: {
-    backgroundColor: NIGHT_CARD,
+    backgroundColor: 'rgba(18, 18, 24, 0.92)',
     borderWidth: 1.2,
-    borderColor: GOLD_SOFT,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
     borderRadius: 18,
     padding: 18,
     gap: 14,
@@ -678,13 +697,13 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 12.5,
-    fontWeight: '700',
+    fontWeight: '800',
     color: GOLD,
   },
   resultText: {
     fontSize: 14,
     lineHeight: 23,
-    color: TEXT_PRIMARY,
+    color: '#FFFFFF',
   },
   resetBtn: {
     flexDirection: 'row',
@@ -692,9 +711,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
     paddingVertical: 12,
+    backgroundColor: 'rgba(18, 18, 24, 0.90)',
+    borderRadius: 14,
+    borderWidth: 1.2,
+    borderColor: 'rgba(229, 169, 60, 0.45)',
+    marginTop: 8,
   },
   resetBtnText: {
-    fontSize: 12.5,
-    color: GOLD_SOFT,
+    fontSize: 13,
+    color: '#FFFFFF',
+    fontWeight: '800',
   },
 });

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   View,
@@ -12,34 +12,29 @@ import {
   ActivityIndicator,
   Modal,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { showAlert } from '@/services/themedAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import type { TabScreenProps } from '@/navigation/types';
-import MysticTableBackground from '@/components/tarot/MysticTableBackground';
-import { getFeed, addPost, deletePost, toggleLike, reportContent, type KesfetFeedPost } from '@/services/kesfetPosts';
+import { getFeed, addPost, deletePost, toggleLike, addPostBoost, reportContent, type KesfetFeedPost } from '@/services/kesfetPosts';
 import CommentsModal from '@/components/CommentsModal';
-import { getWallet } from '@/services/shop';
-import { getCoins, spendCoins } from '@/services/coins';
+import { spendCoins } from '@/services/coins';
 import { shareText } from '@/utils/share';
 import { relativeTime } from '@/utils/relativeTime';
 import { avatarColor } from '@/utils/avatarColor';
 import { promptReport } from '@/utils/reportPrompt';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
-
-const ROYAL_FRAME_IMG = require('@/assets/icons/royal_post_frame.jpg');
+import { GOLD, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 type Props = TabScreenProps;
 type KesfetTab = 'gonderi' | 'populerGonderi' | 'durum' | 'populerDurum';
 
-const MAX_POST_LENGTH = 280;
-const ONE_DAY_MS = 24 * 3600 * 1000; // 24 Saatlik Otomatik Temizlik
+const MAX_POST_LENGTH = 300;
+const ONE_DAY_MS = 24 * 3600 * 1000;
+const SUPER_LIKE_DIAMONDS = 15;
+const LUXURY_LIKE_DIAMONDS = 35;
 
-const SUPER_LIKE_DIAMONDS = 15; // Süper Beğeni (x3) için Elmas
-const LUXURY_LIKE_DIAMONDS = 35; // Lüks Beğeni (x5) için Elmas
-
-// Spam-safe etkileşim puanı hesaplama:
-// Beğeni ağırlığı + spam olmayan tekil yorumlar
 function calculateScore(p: KesfetFeedPost): number {
   return p.likeCount * 2 + Math.min(p.commentCount, 50);
 }
@@ -47,8 +42,6 @@ function calculateScore(p: KesfetFeedPost): number {
 // 24 saatlik döngüde en yüksek etkileşim alan gönderileri kalıcı (hall-of-fame) yapar
 function processFeedPosts(feed: KesfetFeedPost[]) {
   const now = Date.now();
-  
-  // 24 saatlik dönem bloklarına göre grupla
   const photoCycleMap: Record<number, KesfetFeedPost> = {};
   const statusCycleMap: Record<number, KesfetFeedPost> = {};
 
@@ -70,7 +63,7 @@ function processFeedPosts(feed: KesfetFeedPost[]) {
 
   const popularPhotoIds = new Set(
     Object.values(photoCycleMap)
-      .filter((p) => calculateScore(p) >= 1) // En az 1 etkileşim almış olmalı
+      .filter((p) => calculateScore(p) >= 1)
       .map((p) => p.id),
   );
 
@@ -84,7 +77,7 @@ function processFeedPosts(feed: KesfetFeedPost[]) {
   const activePhotos = feed.filter((p) => !!p.imageUri && now - new Date(p.createdAt).getTime() < ONE_DAY_MS);
   const activeStatuses = feed.filter((p) => !p.imageUri && now - new Date(p.createdAt).getTime() < ONE_DAY_MS);
 
-  // Popüler gönderiler: Her 24 saatlik döngünün en çok sevilen kalıcıları (Kırmızı Çerçeveli)
+  // Popüler kalıcı gönderiler
   const rawPopularPhotos = feed.filter((p) => !!p.imageUri && popularPhotoIds.has(p.id));
   const rawPopularStatuses = feed.filter((p) => !p.imageUri && popularStatusIds.has(p.id));
 
@@ -98,7 +91,6 @@ function processFeedPosts(feed: KesfetFeedPost[]) {
   };
 }
 
-// Dizi karıştırma (Fair Shuffle)
 function shuffleArray<T>(array: T[]): T[] {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -106,494 +98,6 @@ function shuffleArray<T>(array: T[]): T[] {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
-}
-
-// GÖNDERİ COMPOSER (Instagram Tarzı - Fotoğraf Zorunlu + Açıklama)
-function PhotoPostComposer({ onPosted }: { onPosted: () => void }) {
-  const [open, setOpen] = useState(false);
-  const [text, setText] = useState('');
-  const [imageUri, setImageUri] = useState<string | null>(null);
-  const [posting, setPosting] = useState(false);
-
-  const reset = () => {
-    setOpen(false);
-    setText('');
-    setImageUri(null);
-  };
-
-  const pickImage = useCallback(async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      showAlert('İzin gerekli', 'Fotoğraf eklemek için galeri erişimine izin vermelisin.');
-      return;
-    }
-    const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.7 });
-    if (!res.canceled && res.assets[0]) {
-      setImageUri(res.assets[0].uri);
-      setOpen(true);
-    }
-  }, []);
-
-  const submit = useCallback(async () => {
-    if (!imageUri) {
-      showAlert('Fotoğraf Gerekli', 'Gönderi paylaşmak için lütfen bir fotoğraf seçin.');
-      return;
-    }
-    setPosting(true);
-    try {
-      await addPost(text, imageUri);
-      reset();
-      onPosted();
-    } catch (err) {
-      showAlert('Paylaşılamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
-    } finally {
-      setPosting(false);
-    }
-  }, [text, imageUri, onPosted]);
-
-  if (!open) {
-    return (
-      <Pressable onPress={pickImage} style={styles.composerCollapsed}>
-        <View style={[styles.avatar, { backgroundColor: avatarColor('@sen') }]}>
-          <Text style={styles.avatarText}>S</Text>
-        </View>
-        <Text style={styles.composerPlaceholder}>Fotoğraflı bir gönderi paylaş...</Text>
-        <View style={styles.cameraPill}>
-          <Ionicons name="camera" size={17} color={GOLD} />
-          <Text style={styles.cameraPillText}>Fotoğraf Seç</Text>
-        </View>
-      </Pressable>
-    );
-  }
-
-  return (
-    <View style={styles.composerOpen}>
-      {imageUri && (
-        <View style={styles.composerImageWrap}>
-          <Image source={{ uri: imageUri }} style={styles.composerImage} resizeMode="cover" />
-          <Pressable onPress={() => setImageUri(null)} style={styles.composerImageRemove} hitSlop={8}>
-            <Ionicons name="close" size={16} color="#fff" />
-          </Pressable>
-        </View>
-      )}
-      <TextInput
-        value={text}
-        onChangeText={(t) => setText(t.slice(0, MAX_POST_LENGTH))}
-        placeholder="Fotoğrafın altına bir açıklama yaz..."
-        placeholderTextColor={TEXT_MUTED}
-        multiline
-        style={styles.composerInput}
-      />
-      <View style={styles.composerFooter}>
-        <Pressable onPress={pickImage} style={styles.composerIconButton} hitSlop={8}>
-          <Ionicons name="image-outline" size={20} color={GOLD} />
-        </Pressable>
-        <Text style={styles.composerCounter}>{text.length}/{MAX_POST_LENGTH}</Text>
-        <View style={{ flex: 1 }} />
-        <Pressable onPress={reset} style={styles.composerCancelButton}>
-          <Text style={styles.composerCancelText}>Vazgeç</Text>
-        </Pressable>
-        <Pressable
-          onPress={submit}
-          disabled={posting || !imageUri}
-          style={[styles.composerSubmitButton, (posting || !imageUri) && styles.composerSubmitDisabled]}
-        >
-          {posting ? <ActivityIndicator size="small" color="#1a0d33" /> : <Text style={styles.composerSubmitText}>Paylaş</Text>}
-        </Pressable>
-      </View>
-    </View>
-  );
-}
-
-// DURUM COMPOSER (Tweet / X Tarzı - Sadece Metin, Asla Fotoğraf Yok)
-function TextStatusComposer({ onPosted }: { onPosted: () => void }) {
-  const [open, setOpen] = useState(false);
-  const [text, setText] = useState('');
-  const [posting, setPosting] = useState(false);
-
-  const reset = () => {
-    setOpen(false);
-    setText('');
-  };
-
-  const submit = useCallback(async () => {
-    if (!text.trim()) return;
-    setPosting(true);
-    try {
-      await addPost(text);
-      reset();
-      onPosted();
-    } catch (err) {
-      showAlert('Paylaşılamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
-    } finally {
-      setPosting(false);
-    }
-  }, [text, onPosted]);
-
-  if (!open) {
-    return (
-      <Pressable onPress={() => setOpen(true)} style={styles.composerCollapsed}>
-        <View style={[styles.avatar, { backgroundColor: avatarColor('@sen') }]}>
-          <Text style={styles.avatarText}>S</Text>
-        </View>
-        <Text style={styles.composerPlaceholder}>Aklından geçeni yaz, durum paylaş...</Text>
-        <Ionicons name="chatbox-ellipses-outline" size={20} color={GOLD} />
-      </Pressable>
-    );
-  }
-
-  return (
-    <View style={styles.composerOpen}>
-      <TextInput
-        value={text}
-        onChangeText={(t) => setText(t.slice(0, MAX_POST_LENGTH))}
-        placeholder="Aklından geçeni veya bir düşünceni tweet gibi paylaş..."
-        placeholderTextColor={TEXT_MUTED}
-        multiline
-        autoFocus
-        style={styles.composerInput}
-      />
-      <View style={styles.composerFooter}>
-        <Text style={styles.composerCounter}>{text.length}/{MAX_POST_LENGTH}</Text>
-        <View style={{ flex: 1 }} />
-        <Pressable onPress={reset} style={styles.composerCancelButton}>
-          <Text style={styles.composerCancelText}>Vazgeç</Text>
-        </Pressable>
-        <Pressable
-          onPress={submit}
-          disabled={posting || !text.trim()}
-          style={[styles.composerSubmitButton, (posting || !text.trim()) && styles.composerSubmitDisabled]}
-        >
-          {posting ? <ActivityIndicator size="small" color="#1a0d33" /> : <Text style={styles.composerSubmitText}>Durum Paylaş</Text>}
-        </Pressable>
-      </View>
-    </View>
-  );
-}
-
-// BEĞENİ SEÇENEKLERİ MODALI
-function LikeOptionsModal({
-  visible,
-  post,
-  onClose,
-  onNormalLike,
-  onSuperLike,
-  onLuxuryLike,
-}: {
-  visible: boolean;
-  post: KesfetFeedPost | null;
-  onClose: () => void;
-  onNormalLike: (p: KesfetFeedPost) => void;
-  onSuperLike: (p: KesfetFeedPost) => void;
-  onLuxuryLike: (p: KesfetFeedPost) => void;
-}) {
-  if (!visible || !post) return null;
-
-  return (
-    <Modal visible={visible} transparent animationType="fade">
-      <Pressable onPress={onClose} style={styles.modalOverlay}>
-        <View style={styles.likeOptionsCard}>
-          <View style={styles.likeOptionsHeader}>
-            <Ionicons name="heart-circle" size={24} color="#EF4444" />
-            <Text style={styles.likeOptionsTitle}>Beğeni Türü Seç</Text>
-          </View>
-
-          {/* Normal Beğeni */}
-          <Pressable
-            onPress={() => {
-              onClose();
-              onNormalLike(post);
-            }}
-            style={styles.likeOptionRow}
-          >
-            <View style={[styles.likeOptionIconCircle, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
-              <Ionicons name="heart" size={20} color="#EF4444" />
-            </View>
-            <View style={styles.likeOptionTextWrap}>
-              <Text style={styles.likeOptionName}>Standart Beğeni</Text>
-              <Text style={styles.likeOptionDesc}>+1 Beğeni ekler</Text>
-            </View>
-            <View style={styles.likeOptionPriceBadge}>
-              <Text style={styles.likeOptionFreeText}>Ücretsiz</Text>
-            </View>
-          </Pressable>
-
-          {/* Süper Beğeni (x3) */}
-          <Pressable
-            onPress={() => {
-              onClose();
-              onSuperLike(post);
-            }}
-            style={[styles.likeOptionRow, styles.superLikeRow]}
-          >
-            <View style={[styles.likeOptionIconCircle, { backgroundColor: 'rgba(59, 130, 246, 0.18)' }]}>
-              <Ionicons name="sparkles" size={20} color="#3B82F6" />
-            </View>
-            <View style={styles.likeOptionTextWrap}>
-              <Text style={[styles.likeOptionName, { color: '#60A5FA' }]}>Süper Beğeni (x3)</Text>
-              <Text style={styles.likeOptionDesc}>+3 Beğeni ekler ve öne çıkarır</Text>
-            </View>
-            <View style={[styles.likeOptionPriceBadge, { backgroundColor: 'rgba(59, 130, 246, 0.2)' }]}>
-              <Ionicons name="diamond" size={13} color="#60A5FA" />
-              <Text style={[styles.likeOptionDiamondText, { color: '#60A5FA' }]}>{SUPER_LIKE_DIAMONDS} 💎</Text>
-            </View>
-          </Pressable>
-
-          {/* Lüks Beğeni (x5) */}
-          <Pressable
-            onPress={() => {
-              onClose();
-              onLuxuryLike(post);
-            }}
-            style={[styles.likeOptionRow, styles.luxuryLikeRow]}
-          >
-            <View style={[styles.likeOptionIconCircle, { backgroundColor: 'rgba(255, 201, 60, 0.2)' }]}>
-              <MaterialCommunityIcons name="crown" size={22} color={GOLD} />
-            </View>
-            <View style={styles.likeOptionTextWrap}>
-              <Text style={[styles.likeOptionName, { color: GOLD }]}>Lüks Beğeni (x5)</Text>
-              <Text style={styles.likeOptionDesc}>+5 Beğeni ekler, popülerliğe taşır</Text>
-            </View>
-            <View style={[styles.likeOptionPriceBadge, { backgroundColor: 'rgba(255, 201, 60, 0.22)' }]}>
-              <Ionicons name="diamond" size={13} color={GOLD} />
-              <Text style={[styles.likeOptionDiamondText, { color: GOLD }]}>{LUXURY_LIKE_DIAMONDS} 💎</Text>
-            </View>
-          </Pressable>
-
-          <Pressable onPress={onClose} style={styles.likeOptionsCloseBtn}>
-            <Text style={styles.likeOptionsCloseText}>Vazgeç</Text>
-          </Pressable>
-        </View>
-      </Pressable>
-    </Modal>
-  );
-}
-
-// KÖŞE SÜSLEMELERİ (Ornate Filigree Corner Accents)
-function OrnateCorners() {
-  return (
-    <>
-      <View style={[styles.ornateCorner, styles.ornateCornerTL]}>
-        <MaterialCommunityIcons name="cards-diamond" size={14} color={GOLD} />
-      </View>
-      <View style={[styles.ornateCorner, styles.ornateCornerTR]}>
-        <MaterialCommunityIcons name="cards-diamond" size={14} color={GOLD} />
-      </View>
-      <View style={[styles.ornateCorner, styles.ornateCornerBL]}>
-        <MaterialCommunityIcons name="cards-diamond" size={14} color={GOLD} />
-      </View>
-      <View style={[styles.ornateCorner, styles.ornateCornerBR]}>
-        <MaterialCommunityIcons name="cards-diamond" size={14} color={GOLD} />
-      </View>
-    </>
-  );
-}
-
-// FOTOĞRAFLI GÖNDERİ KARTI (Instagram Tarzı + Popüler Lüks Kraliyet Çerçevesi)
-function PhotoPostCard({
-  post,
-  isPopular,
-  onOpenLikeOptions,
-  onDelete,
-  onOpenComments,
-  onReport,
-  onPressAuthor,
-}: {
-  post: KesfetFeedPost;
-  isPopular?: boolean;
-  onOpenLikeOptions: (p: KesfetFeedPost) => void;
-  onDelete: (id: string) => void;
-  onOpenComments: (id: string) => void;
-  onReport: (id: string) => void;
-  onPressAuthor: (userId: string) => void;
-}) {
-  return (
-    <View style={[styles.photoCard, isPopular && styles.popularRoyalOuterBox]}>
-      {isPopular && <OrnateCorners />}
-
-      {/* Popüler Lüks Kozmik Rozet */}
-      {isPopular && (
-        <View style={styles.popularRoyalBanner}>
-          <Image source={ROYAL_FRAME_IMG} style={styles.royalCrownImage} resizeMode="cover" />
-          <View style={styles.royalCrownPill}>
-            <MaterialCommunityIcons name="crown" size={14} color="#1a0d33" />
-            <Text style={styles.royalCrownPillText}>EFSANE</Text>
-          </View>
-          <Text style={styles.popularRoyalTitle}>24 SAATİN ZİRVE GÖNDERİSİ</Text>
-          <View style={{ flex: 1 }} />
-          <Ionicons name="sparkles" size={16} color={GOLD} />
-        </View>
-      )}
-
-      {/* Header */}
-      <View style={[styles.postHeader, isPopular && styles.royalHeader]}>
-        <Pressable onPress={() => onPressAuthor(post.authorId)} style={styles.postAuthorPressable} hitSlop={4}>
-          <View style={[styles.avatar, { backgroundColor: avatarColor(post.authorTag) }]}>
-            <Text style={styles.avatarText}>{post.authorName.charAt(0).toUpperCase()}</Text>
-          </View>
-          <View style={styles.postAuthorWrap}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Text style={[styles.postAuthorName, isPopular && { color: GOLD }]}>{post.authorName}</Text>
-              {isPopular && <MaterialCommunityIcons name="check-decagram" size={14} color={GOLD} />}
-            </View>
-            <Text style={styles.postMeta}>
-              {post.authorTag} · {relativeTime(post.createdAt)}
-            </Text>
-          </View>
-        </Pressable>
-        {post.isMe ? (
-          <Pressable onPress={() => onDelete(post.id)} style={styles.postDeleteButton} hitSlop={8}>
-            <Ionicons name="trash-outline" size={17} color={TEXT_MUTED} />
-          </Pressable>
-        ) : (
-          <Pressable onPress={() => onReport(post.id)} style={styles.postDeleteButton} hitSlop={8}>
-            <Ionicons name="ellipsis-horizontal" size={17} color={TEXT_MUTED} />
-          </Pressable>
-        )}
-      </View>
-
-      {/* Large Photo */}
-      {post.imageUri && (
-        <View style={[styles.photoWrap, isPopular && styles.royalPhotoWrap]}>
-          <Image source={{ uri: post.imageUri }} style={styles.photoImage} resizeMode="cover" />
-        </View>
-      )}
-
-      {/* Actions */}
-      <View style={styles.postActions}>
-        <Pressable onPress={() => onOpenLikeOptions(post)} style={styles.actionButton} hitSlop={6}>
-          <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={20} color={post.liked ? '#EF4444' : TEXT_PRIMARY} />
-          <Text style={[styles.actionCount, post.liked && styles.actionCountLiked]}>{post.likeCount}</Text>
-          <Ionicons name="chevron-up" size={12} color={GOLD_SOFT} style={{ marginLeft: -2 }} />
-        </Pressable>
-        <Pressable onPress={() => onOpenComments(post.id)} style={styles.actionButton} hitSlop={6}>
-          <Ionicons name="chatbubble-outline" size={19} color={TEXT_PRIMARY} />
-          <Text style={styles.actionCount}>{post.commentCount}</Text>
-        </Pressable>
-        <View style={{ flex: 1 }} />
-        <Pressable
-          onPress={() => shareText(`${post.authorName}: ${post.text || 'Görsel paylaştı'}\n\n— Mistik Rehber Keşfet —`)}
-          style={styles.actionButton}
-          hitSlop={6}
-        >
-          <Ionicons name="share-social-outline" size={19} color={TEXT_MUTED} />
-        </Pressable>
-      </View>
-
-      {/* Caption Text */}
-      {post.text ? (
-        <View style={styles.photoCaptionWrap}>
-          <Text style={[styles.captionAuthor, isPopular && { color: GOLD }]}>{post.authorName}{' '}</Text>
-          <Text style={styles.captionText}>{post.text}</Text>
-        </View>
-      ) : null}
-
-      {/* Popüler Altın Şerit Alt Bilgi */}
-      {isPopular && (
-        <View style={styles.royalFooterPill}>
-          <Ionicons name="diamond" size={11} color={GOLD} />
-          <Text style={styles.royalFooterPillText}>Kalıcı Efsane Statüsü Kazanıldı</Text>
-          <Ionicons name="diamond" size={11} color={GOLD} />
-        </View>
-      )}
-    </View>
-  );
-}
-
-// METİN DURUM KARTI (Tweet / X Tarzı + Popüler Lüks Kraliyet Çerçevesi)
-function TextStatusCard({
-  post,
-  isPopular,
-  onOpenLikeOptions,
-  onDelete,
-  onOpenComments,
-  onReport,
-  onPressAuthor,
-}: {
-  post: KesfetFeedPost;
-  isPopular?: boolean;
-  onOpenLikeOptions: (p: KesfetFeedPost) => void;
-  onDelete: (id: string) => void;
-  onOpenComments: (id: string) => void;
-  onReport: (id: string) => void;
-  onPressAuthor: (userId: string) => void;
-}) {
-  return (
-    <View style={[styles.statusCard, isPopular && styles.popularRoyalOuterBox]}>
-      {isPopular && <OrnateCorners />}
-
-      {/* Popüler Lüks Kozmik Rozet */}
-      {isPopular && (
-        <View style={styles.popularRoyalBanner}>
-          <Image source={ROYAL_FRAME_IMG} style={styles.royalCrownImage} resizeMode="cover" />
-          <View style={styles.royalCrownPill}>
-            <MaterialCommunityIcons name="crown" size={14} color="#1a0d33" />
-            <Text style={styles.royalCrownPillText}>EFSANE</Text>
-          </View>
-          <Text style={styles.popularRoyalTitle}>24 SAATİN ZİRVE DURUMU</Text>
-          <View style={{ flex: 1 }} />
-          <Ionicons name="sparkles" size={16} color={GOLD} />
-        </View>
-      )}
-
-      <View style={[styles.postHeader, isPopular && styles.royalHeader]}>
-        <Pressable onPress={() => onPressAuthor(post.authorId)} style={styles.postAuthorPressable} hitSlop={4}>
-          <View style={[styles.avatar, { backgroundColor: avatarColor(post.authorTag) }]}>
-            <Text style={styles.avatarText}>{post.authorName.charAt(0).toUpperCase()}</Text>
-          </View>
-          <View style={styles.postAuthorWrap}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Text style={[styles.postAuthorName, isPopular && { color: GOLD }]}>{post.authorName}</Text>
-              {isPopular && <MaterialCommunityIcons name="check-decagram" size={14} color={GOLD} />}
-            </View>
-            <Text style={styles.postMeta}>
-              {post.authorTag} · {relativeTime(post.createdAt)}
-            </Text>
-          </View>
-        </Pressable>
-        {post.isMe ? (
-          <Pressable onPress={() => onDelete(post.id)} style={styles.postDeleteButton} hitSlop={8}>
-            <Ionicons name="trash-outline" size={17} color={TEXT_MUTED} />
-          </Pressable>
-        ) : (
-          <Pressable onPress={() => onReport(post.id)} style={styles.postDeleteButton} hitSlop={8}>
-            <Ionicons name="ellipsis-horizontal" size={17} color={TEXT_MUTED} />
-          </Pressable>
-        )}
-      </View>
-
-      <Text style={[styles.statusTextBody, isPopular && styles.royalStatusTextBody]}>{post.text}</Text>
-
-      <View style={styles.postActions}>
-        <Pressable onPress={() => onOpenLikeOptions(post)} style={styles.actionButton} hitSlop={6}>
-          <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={18} color={post.liked ? '#EF4444' : TEXT_MUTED} />
-          <Text style={[styles.actionCount, post.liked && styles.actionCountLiked]}>{post.likeCount}</Text>
-          <Ionicons name="chevron-up" size={12} color={GOLD_SOFT} style={{ marginLeft: -2 }} />
-        </Pressable>
-        <Pressable onPress={() => onOpenComments(post.id)} style={styles.actionButton} hitSlop={6}>
-          <Ionicons name="chatbubble-outline" size={17} color={TEXT_MUTED} />
-          <Text style={styles.actionCount}>{post.commentCount}</Text>
-        </Pressable>
-        <View style={{ flex: 1 }} />
-        <Pressable
-          onPress={() => shareText(`${post.authorName}: ${post.text}\n\n— Mistik Rehber Durum —`)}
-          style={styles.actionButton}
-          hitSlop={6}
-        >
-          <Ionicons name="share-social-outline" size={17} color={TEXT_MUTED} />
-        </Pressable>
-      </View>
-
-      {/* Popüler Altın Şerit Alt Bilgi */}
-      {isPopular && (
-        <View style={styles.royalFooterPill}>
-          <Ionicons name="diamond" size={11} color={GOLD} />
-          <Text style={styles.royalFooterPillText}>Kalıcı Efsane Statüsü Kazanıldı</Text>
-          <Ionicons name="diamond" size={11} color={GOLD} />
-        </View>
-      )}
-    </View>
-  );
 }
 
 export default function KesfetScreen({ navigation }: Props) {
@@ -604,6 +108,10 @@ export default function KesfetScreen({ navigation }: Props) {
   const [feedError, setFeedError] = useState(false);
   const [commentsPostId, setCommentsPostId] = useState<string | null>(null);
   const [selectedPostForLikes, setSelectedPostForLikes] = useState<KesfetFeedPost | null>(null);
+  const [composeModalVisible, setComposeModalVisible] = useState(false);
+  const [savedPosts, setSavedPosts] = useState<Set<string>>(new Set());
+
+  const insets = useSafeAreaInsets();
 
   const refreshFeed = useCallback(() => {
     getFeed()
@@ -635,47 +143,60 @@ export default function KesfetScreen({ navigation }: Props) {
       .finally(() => setRefreshing(false));
   }, []);
 
-  // Standart Beğeni
-  const handleNormalLike = useCallback((p: KesfetFeedPost) => {
+  const handleNormalLike = useCallback(async (p: KesfetFeedPost) => {
+    const optimisticLiked = !p.liked;
+    const optimisticCount = optimisticLiked ? p.likeCount + 1 : Math.max(0, p.likeCount - 1);
     setFeed((prev) =>
-      prev.map((item) =>
-        item.id === p.id ? { ...item, liked: !item.liked, likeCount: item.liked ? item.likeCount - 1 : item.likeCount + 1 } : item,
-      ),
+      prev.map((item) => (item.id === p.id ? { ...item, liked: optimisticLiked, likeCount: optimisticCount } : item)),
     );
-    toggleLike(p.id).catch((err) => {
+
+    try {
+      const res = await toggleLike(p.id);
+      setFeed((prev) =>
+        prev.map((item) => (item.id === p.id ? { ...item, liked: res.liked, likeCount: res.likeCount } : item)),
+      );
+    } catch (err) {
       showAlert('İşlem Başarısız', err instanceof Error ? err.message : 'Beğeni kaydedilemedi.');
       refreshFeed();
-    });
+    }
   }, [refreshFeed]);
 
-  // Süper Beğeni (x3 Beğeni - 15 Elmas)
   const handleSuperLike = useCallback(async (p: KesfetFeedPost) => {
     const success = await spendCoins(SUPER_LIKE_DIAMONDS);
     if (!success) {
-      showAlert('Yetersiz Elmas', `Süper Beğeni (x3) göndermek için ${SUPER_LIKE_DIAMONDS} Elmas gereklidir.`);
+      showAlert('Yetersiz Kristal', `Süper Beğeni (x3) göndermek için ${SUPER_LIKE_DIAMONDS} Kristal gereklidir.`);
       return;
     }
 
+    await addPostBoost(p.id, 3);
+
+    if (!p.liked) {
+      toggleLike(p.id).catch(() => {});
+    }
+
     setFeed((prev) =>
-      prev.map((item) => (item.id === p.id ? { ...item, liked: true, likeCount: item.likeCount + 3 } : item)),
+      prev.map((item) => (item.id === p.id ? { ...item, liked: true, likeCount: item.likeCount + (item.liked ? 3 : 4) } : item)),
     );
-    showAlert('✨ Süper Beğeni Gönderildi!', `Gönderiye +3 Beğeni eklendi ve öne çıkarıldı! (${SUPER_LIKE_DIAMONDS} Elmas 💎)`);
-    toggleLike(p.id).catch(() => {});
+    showAlert('✨ Süper Beğeni Gönderildi!', `Gönderiye +3 Beğeni eklendi ve öne çıkarıldı! (${SUPER_LIKE_DIAMONDS} Kristal 💎)`);
   }, []);
 
-  // Lüks Beğeni (x5 Beğeni - 35 Elmas)
   const handleLuxuryLike = useCallback(async (p: KesfetFeedPost) => {
     const success = await spendCoins(LUXURY_LIKE_DIAMONDS);
     if (!success) {
-      showAlert('Yetersiz Elmas', `Lüks Beğeni (x5) göndermek için ${LUXURY_LIKE_DIAMONDS} Elmas gereklidir.`);
+      showAlert('Yetersiz Kristal', `Lüks Beğeni (x5) göndermek için ${LUXURY_LIKE_DIAMONDS} Kristal gereklidir.`);
       return;
     }
 
+    await addPostBoost(p.id, 5);
+
+    if (!p.liked) {
+      toggleLike(p.id).catch(() => {});
+    }
+
     setFeed((prev) =>
-      prev.map((item) => (item.id === p.id ? { ...item, liked: true, likeCount: item.likeCount + 5 } : item)),
+      prev.map((item) => (item.id === p.id ? { ...item, liked: true, likeCount: item.likeCount + (item.liked ? 5 : 6) } : item)),
     );
-    showAlert('👑 Lüks Beğeni Gönderildi!', `Gönderiye +5 Beğeni eklendi ve zirveye taşındı! (${LUXURY_LIKE_DIAMONDS} Elmas 💎)`);
-    toggleLike(p.id).catch(() => {});
+    showAlert('👑 Lüks Beğeni Gönderildi!', `Gönderiye +5 Beğeni eklendi ve zirveye taşındı! (${LUXURY_LIKE_DIAMONDS} Kristal 💎)`);
   }, []);
 
   const handleDelete = useCallback(
@@ -713,7 +234,19 @@ export default function KesfetScreen({ navigation }: Props) {
     });
   }, []);
 
-  // Popüler & Normal akış listeleri (24 Saatlik Döngü)
+  const toggleSavePost = (id: string) => {
+    setSavedPosts((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+        showAlert('Kaydedildi', 'Gönderi koleksiyonuna kaydedildi.');
+      }
+      return next;
+    });
+  };
+
   const {
     activePhotos,
     activeStatuses,
@@ -723,773 +256,1028 @@ export default function KesfetScreen({ navigation }: Props) {
     popularStatusIds,
   } = useMemo(() => processFeedPosts(feed), [feed]);
 
-  // Popüler gönderiler ve popüler durumlar RASTGELE sıralanır (Her girişte/sekmede adil rastgelelik)
   const popularPhotos = useMemo(() => shuffleArray(rawPopularPhotos), [rawPopularPhotos, tab]);
   const popularStatuses = useMemo(() => shuffleArray(rawPopularStatuses), [rawPopularStatuses, tab]);
 
-  // Aktif sekmenin listesi + o listenin "popüler" rozetini nasıl belirleyeceği
-  // — dört ayrı ScrollView+map yerine TEK bir FlatList (gerçek virtualization:
-  // ekran dışındaki gönderiler mount edilmiyor/geri dönüştürülüyor). key={tab}
-  // sekme değişince temiz bir remount zorluyor, farklı veri şekillerinin
-  // birbirine karışmasını engelliyor.
   const isPhotoTab = tab === 'gonderi' || tab === 'populerGonderi';
   const currentList =
     tab === 'gonderi' ? activePhotos : tab === 'populerGonderi' ? popularPhotos : tab === 'durum' ? activeStatuses : popularStatuses;
   const isPopularBadge = (post: KesfetFeedPost) =>
     tab === 'populerGonderi' || tab === 'populerDurum' || (isPhotoTab ? popularPhotoIds.has(post.id) : popularStatusIds.has(post.id));
 
-  const listHeader = (
-    <>
-      {/* Header */}
-      <View style={styles.header}>
-        <Ionicons name="compass-outline" size={26} color={GOLD} />
-        <Text style={styles.headerTitle}>Keşfet</Text>
+  // HEADER: Top Navbar + 24H Info Card + Share Bar + 4 Sekmeli Filtre Çubuğu
+  const renderHeader = () => (
+    <View style={styles.feedHeaderContainer}>
+      {/* App Header Bar (Sağ üstteki hatalı buton kaldırıldı, sadece Sohbet ikonu var) */}
+      <View style={[styles.appHeader, { paddingTop: insets.top + 6 }]}>
+        <View style={styles.appHeaderLeft}>
+          <Text style={styles.logoText}>Mistik Keşfet</Text>
+          <MaterialCommunityIcons name="star-four-points" size={14} color={GOLD} style={{ marginLeft: 4 }} />
+        </View>
+
+        <View style={styles.appHeaderRight}>
+          <Pressable
+            onPress={() => setComposeModalVisible(true)}
+            style={({ pressed }) => [styles.headerIconButton, pressed && styles.iconPressed]}
+            hitSlop={6}
+          >
+            <Ionicons name="add-circle-outline" size={26} color="#FFFFFF" />
+          </Pressable>
+        </View>
       </View>
 
-      {/* 4 Sekmeli Buton Alanı: Gönderi, Popüler Gönderiler, Durum, Popüler Durumlar */}
+      {/* 24-Hour Cycle Info Banner */}
+      <View style={styles.infoBanner}>
+        <Ionicons name="time-outline" size={14} color={GOLD} style={{ marginTop: 1 }} />
+        <Text style={styles.infoBannerText}>
+          Gönderiler <Text style={{ fontWeight: '800', color: '#FFFFFF' }}>24 saat sonra silinir</Text>. En çok etkileşim alan gönderi <Text style={{ fontWeight: '800', color: GOLD }}>Popüler'e girip kalıcı olur!</Text> ✨
+        </Text>
+      </View>
+
+      {/* 4 Sekmeli Filtre Çubuğu */}
       <View style={styles.tabSwitchGrid}>
-        <View style={styles.tabSwitchRow}>
-          <Pressable
-            onPress={() => setTab('gonderi')}
-            style={[styles.tabSwitchButton, tab === 'gonderi' && styles.tabSwitchButtonActive]}
-          >
-            <Ionicons name="images-outline" size={15} color={tab === 'gonderi' ? '#1a0d33' : GOLD} />
-            <Text style={[styles.tabSwitchText, tab === 'gonderi' && styles.tabSwitchTextActive]}>
-              Gönderi ({activePhotos.length})
-            </Text>
-          </Pressable>
+        <Pressable
+          onPress={() => setTab('gonderi')}
+          style={[styles.tabButton, tab === 'gonderi' && styles.tabButtonActive]}
+        >
+          <Ionicons name="image-outline" size={13} color={tab === 'gonderi' ? '#FFF' : TEXT_MUTED} />
+          <Text style={[styles.tabButtonText, tab === 'gonderi' && styles.tabButtonTextActive]}>
+            Fotoğraflar
+          </Text>
+        </Pressable>
 
-          <Pressable
-            onPress={() => setTab('populerGonderi')}
-            style={[
-              styles.tabSwitchButton,
-              styles.populerTabBtn,
-              tab === 'populerGonderi' && styles.populerTabBtnActive,
-            ]}
-          >
-            <Ionicons name="flame" size={15} color={tab === 'populerGonderi' ? '#FFF' : '#EF4444'} />
-            <Text
-              style={[
-                styles.tabSwitchText,
-                { color: '#EF4444' },
-                tab === 'populerGonderi' && styles.populerTabBtnTextActive,
-              ]}
-            >
-              Popüler Gönderiler ({popularPhotos.length})
-            </Text>
-          </Pressable>
-        </View>
+        <Pressable
+          onPress={() => setTab('populerGonderi')}
+          style={[styles.tabButton, tab === 'populerGonderi' && styles.tabButtonActivePopular]}
+        >
+          <Ionicons name="flame" size={13} color={tab === 'populerGonderi' ? '#FFF' : '#EF4444'} />
+          <Text style={[styles.tabButtonText, tab === 'populerGonderi' && styles.tabButtonTextActive]}>
+            Popüler Gönderiler
+          </Text>
+        </Pressable>
 
-        <View style={styles.tabSwitchRow}>
-          <Pressable
-            onPress={() => setTab('durum')}
-            style={[styles.tabSwitchButton, tab === 'durum' && styles.tabSwitchButtonActive]}
-          >
-            <MaterialCommunityIcons
-              name="chat-processing-outline"
-              size={16}
-              color={tab === 'durum' ? '#1a0d33' : GOLD}
-            />
-            <Text style={[styles.tabSwitchText, tab === 'durum' && styles.tabSwitchTextActive]}>
-              Durum ({activeStatuses.length})
-            </Text>
-          </Pressable>
+        <Pressable
+          onPress={() => setTab('durum')}
+          style={[styles.tabButton, tab === 'durum' && styles.tabButtonActive]}
+        >
+          <MaterialCommunityIcons name="text-box-outline" size={13} color={tab === 'durum' ? '#FFF' : TEXT_MUTED} />
+          <Text style={[styles.tabButtonText, tab === 'durum' && styles.tabButtonTextActive]}>
+            Düşünceler
+          </Text>
+        </Pressable>
 
-          <Pressable
-            onPress={() => setTab('populerDurum')}
-            style={[
-              styles.tabSwitchButton,
-              styles.populerTabBtn,
-              tab === 'populerDurum' && styles.populerTabBtnActive,
-            ]}
-          >
-            <MaterialCommunityIcons
-              name="crown"
-              size={16}
-              color={tab === 'populerDurum' ? '#FFF' : '#EF4444'}
-            />
-            <Text
-              style={[
-                styles.tabSwitchText,
-                { color: '#EF4444' },
-                tab === 'populerDurum' && styles.populerTabBtnTextActive,
-              ]}
-            >
-              Popüler Durumlar ({popularStatuses.length})
-            </Text>
-          </Pressable>
-        </View>
+        <Pressable
+          onPress={() => setTab('populerDurum')}
+          style={[styles.tabButton, tab === 'populerDurum' && styles.tabButtonActivePopular]}
+        >
+          <MaterialCommunityIcons name="crown" size={13} color={tab === 'populerDurum' ? '#FFF' : GOLD} />
+          <Text style={[styles.tabButtonText, tab === 'populerDurum' && styles.tabButtonTextActive]}>
+            Popüler Düşünceler
+          </Text>
+        </Pressable>
       </View>
-
-      {tab === 'gonderi' && (
-        <>
-          <PhotoPostComposer onPosted={refreshFeed} />
-          <Text style={styles.retentionHint}>
-            Gönderiler 24 saat sonra silinir. En çok etkileşim alan gönderi Popüler'e girip kalıcı olur!
-          </Text>
-        </>
-      )}
-      {tab === 'populerGonderi' && (
-        <View style={styles.popularInfoBanner}>
-          <Ionicons name="flame" size={16} color="#EF4444" />
-          <Text style={styles.popularInfoBannerText}>
-            24 saatlik döngülerde en çok etkileşim alan efsane gönderiler kalıcı olur ve rastgele sıralanır.
-          </Text>
-        </View>
-      )}
-      {tab === 'durum' && (
-        <>
-          <TextStatusComposer onPosted={refreshFeed} />
-          <Text style={styles.retentionHint}>
-            Durumlar 24 saat sonra silinir. En çok sevilen durum Popüler'e girip kalıcı olur!
-          </Text>
-        </>
-      )}
-      {tab === 'populerDurum' && (
-        <View style={styles.popularInfoBanner}>
-          <MaterialCommunityIcons name="crown" size={16} color="#EF4444" />
-          <Text style={styles.popularInfoBannerText}>
-            24 saatlik döngülerde en çok etkileşim alan durumlar kalıcı olur ve rastgele sıralanır.
-          </Text>
-        </View>
-      )}
-
-      {loading && <ActivityIndicator color={tab.startsWith('populer') ? '#EF4444' : GOLD} style={{ marginTop: 30 }} />}
-      {!loading && feedError && (isPhotoTab || tab === 'durum') && (
-        <View style={styles.feedErrorWrap}>
-          <Text style={styles.feedErrorText}>Akış yüklenemedi. İnternet bağlantını kontrol et.</Text>
-          <Pressable onPress={refreshFeed} style={styles.feedRetryButton}>
-            <Text style={styles.feedRetryText}>Tekrar dene</Text>
-          </Pressable>
-        </View>
-      )}
-    </>
-  );
-
-  const listEmpty = loading || feedError ? null : (
-    <View style={styles.emptyFeedWrap}>
-      {tab === 'gonderi' && <Ionicons name="images-outline" size={44} color={GOLD_SOFT} />}
-      {tab === 'populerGonderi' && <Ionicons name="flame-outline" size={44} color="#EF4444" />}
-      {tab === 'durum' && <MaterialCommunityIcons name="chat-outline" size={44} color={GOLD_SOFT} />}
-      {tab === 'populerDurum' && <MaterialCommunityIcons name="crown-outline" size={44} color="#EF4444" />}
-      <Text style={[styles.emptyFeedTitle, tab.startsWith('populer') && { color: '#EF4444' }]}>
-        {tab === 'gonderi' && 'Henüz fotoğraflı gönderi yok'}
-        {tab === 'populerGonderi' && 'Henüz popüler gönderi seçilmedi'}
-        {tab === 'durum' && 'Henüz durum paylaşılmadı'}
-        {tab === 'populerDurum' && 'Henüz popüler durum seçilmedi'}
-      </Text>
-      <Text style={styles.emptyFeedSubtitle}>
-        {tab === 'gonderi' && 'İlk görseli yukarıdan sen paylaş!'}
-        {tab === 'populerGonderi' && 'En yüksek etkileşimi toplayan gönderi burada kalıcı olur!'}
-        {tab === 'durum' && 'Aklından geçenleri ilk sen paylaş!'}
-        {tab === 'populerDurum' && 'En çok beğenilen durumlar burada ölümsüzleşir!'}
-      </Text>
     </View>
   );
 
-  return (
-    <MysticTableBackground>
-      <FlatList
-        key={tab}
-        data={currentList}
-        keyExtractor={(post) => post.id}
-        renderItem={({ item: post }) =>
-          isPhotoTab ? (
-            <PhotoPostCard
-              post={post}
-              isPopular={isPopularBadge(post)}
-              onOpenLikeOptions={setSelectedPostForLikes}
-              onDelete={handleDelete}
-              onOpenComments={setCommentsPostId}
-              onReport={handleReport}
-              onPressAuthor={handlePressAuthor}
-            />
+  // RENDER POST ITEM (Normal ve Valir Cehennem Sefiri Tarzı Seçkin Kalıcı Çerçeve)
+  const renderPostItem = ({ item }: { item: KesfetFeedPost }) => {
+    const isPopular = isPopularBadge(item);
+    const isSaved = savedPosts.has(item.id);
+
+    return (
+      <View style={[styles.instagramPostContainer, isPopular && styles.legendCardWrap]}>
+        {/* VALIR CEHENNEM SEFİRİ TARZI SEÇKİN ÜST TAÇ ÇERÇEVESİ (Popüler Kalıcı Gönderiler İçin) */}
+        {isPopular && (
+          <LinearGradient
+            colors={['#450A0A', '#7F1D1D', '#991B1B', '#7F1D1D', '#450A0A']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.legendTopCrest}
+          >
+            <View style={styles.legendGemBadge}>
+              <MaterialCommunityIcons name="crown" size={13} color="#FEF08A" />
+              <Text style={styles.legendGemText}>KALICI GÖNDERİ</Text>
+              <MaterialCommunityIcons name="star-four-points" size={11} color="#FEF08A" />
+            </View>
+          </LinearGradient>
+        )}
+
+        {/* Post Top Header (Avatar, Kullanıcı Adı, Süre ve Sil/Menü Butonu) */}
+        <View style={[styles.postHeader, isPopular && styles.legendPostHeader]}>
+          <Pressable
+            onPress={() => handlePressAuthor(item.authorId)}
+            style={styles.postHeaderUser}
+            hitSlop={4}
+          >
+            <View style={[
+              styles.avatarCircle,
+              { backgroundColor: avatarColor(item.authorTag) },
+              isPopular && styles.legendAvatarBorder,
+            ]}>
+              <Text style={styles.avatarLetter}>{item.authorName.charAt(0).toUpperCase()}</Text>
+            </View>
+            <View style={styles.postHeaderTextWrap}>
+              <View style={styles.usernameRow}>
+                <Text style={styles.usernameText}>{item.authorName}</Text>
+                {isPopular && (
+                  <MaterialCommunityIcons name="check-decagram" size={14} color="#EF4444" style={{ marginLeft: 4 }} />
+                )}
+              </View>
+              <Text style={styles.postTimeText}>{relativeTime(item.createdAt)}</Text>
+            </View>
+          </Pressable>
+
+          {item.isMe ? (
+            <Pressable onPress={() => handleDelete(item.id)} style={styles.postMoreBtn} hitSlop={8}>
+              <Ionicons name="trash-outline" size={18} color={isPopular ? '#FCA5A5' : TEXT_MUTED} />
+            </Pressable>
           ) : (
-            <TextStatusCard
-              post={post}
-              isPopular={isPopularBadge(post)}
-              onOpenLikeOptions={setSelectedPostForLikes}
-              onDelete={handleDelete}
-              onOpenComments={setCommentsPostId}
-              onReport={handleReport}
-              onPressAuthor={handlePressAuthor}
+            <Pressable onPress={() => handleReport(item.id)} style={styles.postMoreBtn} hitSlop={8}>
+              <Ionicons name="ellipsis-horizontal" size={18} color={isPopular ? '#FCA5A5' : TEXT_MUTED} />
+            </Pressable>
+          )}
+        </View>
+
+        {/* Post Media: Photo or Text Status (Kenarlardan hafif içeride ve çerçeveye tam oturan tasarım) */}
+        {item.imageUri ? (
+          <View style={[styles.photoContainer, isPopular && styles.legendPhotoFrame]}>
+            <Image source={{ uri: item.imageUri }} style={styles.postImage} resizeMode="cover" />
+          </View>
+        ) : (
+          <View style={[styles.statusTextContainer, isPopular && styles.legendStatusContainer]}>
+            <Text style={styles.statusTextBody}>{item.text}</Text>
+          </View>
+        )}
+
+        {/* Action Buttons Row */}
+        <View style={styles.actionBar}>
+          <View style={styles.actionBarLeft}>
+            <Pressable
+              onPress={() => setSelectedPostForLikes(item)}
+              style={({ pressed }) => [styles.actionIconButton, pressed && styles.iconPressed]}
+              hitSlop={6}
+            >
+              <Ionicons
+                name={item.liked ? 'heart' : 'heart-outline'}
+                size={25}
+                color={item.liked ? '#EF4444' : '#FFFFFF'}
+              />
+            </Pressable>
+
+            <Pressable
+              onPress={() => setCommentsPostId(item.id)}
+              style={({ pressed }) => [styles.actionIconButton, pressed && styles.iconPressed]}
+              hitSlop={6}
+            >
+              <Ionicons name="chatbubble-outline" size={23} color="#FFFFFF" />
+            </Pressable>
+
+            <Pressable
+              onPress={() =>
+                shareText(`${item.authorName}: ${item.text || 'Görsel paylaştı'}\n\n— Mistik Rehber Keşfet —`)
+              }
+              style={({ pressed }) => [styles.actionIconButton, pressed && styles.iconPressed]}
+              hitSlop={6}
+            >
+              <Ionicons name="paper-plane-outline" size={22} color="#FFFFFF" />
+            </Pressable>
+          </View>
+
+          <Pressable
+            onPress={() => toggleSavePost(item.id)}
+            style={({ pressed }) => [styles.actionIconButton, pressed && styles.iconPressed]}
+            hitSlop={6}
+          >
+            <Ionicons
+              name={isSaved ? 'bookmark' : 'bookmark-outline'}
+              size={23}
+              color={isSaved ? GOLD : '#FFFFFF'}
             />
-          )
-        }
-        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handlePullRefresh} tintColor={GOLD} colors={[GOLD]} />
-        }
-        ListHeaderComponent={listHeader}
-        ListEmptyComponent={listEmpty}
-        removeClippedSubviews
-        windowSize={7}
-        maxToRenderPerBatch={6}
-        initialNumToRender={5}
+          </Pressable>
+        </View>
+
+        {/* Likes Count */}
+        <View style={styles.postMetaSection}>
+          {item.likeCount > 0 && (
+            <Text style={styles.likesCountText}>
+              {item.likeCount.toLocaleString('tr-TR')} beğenme
+            </Text>
+          )}
+
+          {/* Caption */}
+          {item.imageUri && item.text ? (
+            <View style={styles.captionRow}>
+              <Text style={styles.captionUsername}>{item.authorName} </Text>
+              <Text style={styles.captionBody}>{item.text}</Text>
+            </View>
+          ) : null}
+
+          {/* Comments Link */}
+          {item.commentCount > 0 ? (
+            <Pressable onPress={() => setCommentsPostId(item.id)} hitSlop={4}>
+              <Text style={styles.viewCommentsLink}>
+                {item.commentCount} yorumun tümünü gör
+              </Text>
+            </Pressable>
+          ) : (
+            <Pressable onPress={() => setCommentsPostId(item.id)} hitSlop={4}>
+              <Text style={styles.viewCommentsLink}>Yorum ekle...</Text>
+            </Pressable>
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.screen}>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator color={GOLD} size="large" />
+        </View>
+      ) : (
+        <FlatList
+          data={currentList}
+          keyExtractor={(item) => item.id}
+          renderItem={renderPostItem}
+          ListHeaderComponent={renderHeader}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.flatListContent}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handlePullRefresh}
+              tintColor={GOLD}
+              colors={[GOLD]}
+            />
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons name="sparkles-outline" size={40} color={TEXT_MUTED} />
+              <Text style={styles.emptyTitle}>
+                {tab === 'populerGonderi' || tab === 'populerDurum'
+                  ? 'Henüz Popüler paylaşım yok'
+                  : 'Henüz paylaşım yok'}
+              </Text>
+              <Text style={styles.emptySubtitle}>
+                {tab === 'populerGonderi' || tab === 'populerDurum'
+                  ? 'En çok beğeni alan gönderiler 24 saat sonunda burada kalıcı olur.'
+                  : 'İlk gönderiyi sen paylaş, 24 saatlik akışı canlandır.'}
+              </Text>
+            </View>
+          }
+        />
+      )}
+
+      {/* CREATE POST MODAL */}
+      <CreatePostModal
+        visible={composeModalVisible}
+        onClose={() => setComposeModalVisible(false)}
+        onPosted={() => {
+          setComposeModalVisible(false);
+          refreshFeed();
+        }}
       />
 
-      {/* Beğeni Seçenekleri Modalı (Normal, Süper x3, Lüks x5) */}
+      {/* LIKE OPTIONS MODAL (Standart, Süper x3, Lüks x5) */}
       <LikeOptionsModal
         visible={!!selectedPostForLikes}
         post={selectedPostForLikes}
         onClose={() => setSelectedPostForLikes(null)}
-        onNormalLike={handleNormalLike}
-        onSuperLike={handleSuperLike}
-        onLuxuryLike={handleLuxuryLike}
+        onNormalLike={(p) => {
+          setSelectedPostForLikes(null);
+          handleNormalLike(p);
+        }}
+        onSuperLike={(p) => {
+          setSelectedPostForLikes(null);
+          handleSuperLike(p);
+        }}
+        onLuxuryLike={(p) => {
+          setSelectedPostForLikes(null);
+          handleLuxuryLike(p);
+        }}
       />
 
-      <CommentsModal
-        postId={commentsPostId}
-        onClose={() => {
-          setCommentsPostId(null);
-          refreshFeed();
-        }}
-        onPressAuthor={(userId) => {
-          setCommentsPostId(null);
-          navigation.navigate('UserProfile', { userId });
-        }}
-      />
-    </MysticTableBackground>
+      {/* COMMENTS MODAL */}
+      {commentsPostId && (
+        <CommentsModal
+          postId={commentsPostId}
+          onClose={() => setCommentsPostId(null)}
+          onPressAuthor={handlePressAuthor}
+        />
+      )}
+    </View>
+  );
+}
+
+// CREATE POST MODAL
+function CreatePostModal({
+  visible,
+  onClose,
+  onPosted,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  onPosted: () => void;
+}) {
+  const [text, setText] = useState('');
+  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [posting, setPosting] = useState(false);
+
+  const reset = () => {
+    setText('');
+    setImageUri(null);
+    onClose();
+  };
+
+  const pickImage = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      showAlert('İzin gerekli', 'Fotoğraf seçmek için galeri erişimine izin vermelisin.');
+      return;
+    }
+    const res = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.8,
+      allowsEditing: true,
+      aspect: [1, 1],
+    });
+    if (!res.canceled && res.assets[0]) {
+      setImageUri(res.assets[0].uri);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!text.trim() && !imageUri) {
+      showAlert('İçerik gerekli', 'Lütfen bir fotoğraf seçin veya bir düşünce yazın.');
+      return;
+    }
+    setPosting(true);
+    try {
+      await addPost(text, imageUri || undefined);
+      reset();
+      onPosted();
+    } catch (err) {
+      showAlert('Paylaşılamadı', err instanceof Error ? err.message : 'Bir sorun oluştu.');
+    } finally {
+      setPosting(false);
+    }
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={styles.modalOverlay}>
+        <View style={styles.createModalCard}>
+          <View style={styles.createModalHeader}>
+            <Pressable onPress={reset} hitSlop={8}>
+              <Text style={styles.createCancelText}>Vazgeç</Text>
+            </Pressable>
+            <Text style={styles.createModalTitle}>Yeni Paylaşım</Text>
+            <Pressable
+              onPress={handleSubmit}
+              disabled={posting || (!text.trim() && !imageUri)}
+              hitSlop={8}
+            >
+              {posting ? (
+                <ActivityIndicator size="small" color={GOLD} />
+              ) : (
+                <Text
+                  style={[
+                    styles.createSubmitText,
+                    (!text.trim() && !imageUri) && styles.createSubmitDisabled,
+                  ]}
+                >
+                  Paylaş
+                </Text>
+              )}
+            </Pressable>
+          </View>
+
+          {imageUri ? (
+            <View style={styles.createImageWrap}>
+              <Image source={{ uri: imageUri }} style={styles.createImagePreview} />
+              <Pressable onPress={() => setImageUri(null)} style={styles.removeImageBtn}>
+                <Ionicons name="close" size={16} color="#FFF" />
+              </Pressable>
+            </View>
+          ) : (
+            <Pressable onPress={pickImage} style={styles.addPhotoSlot}>
+              <Ionicons name="camera-outline" size={32} color={GOLD} />
+              <Text style={styles.addPhotoSlotText}>Fotoğraf Seç (İsteğe bağlı)</Text>
+            </Pressable>
+          )}
+
+          <TextInput
+            value={text}
+            onChangeText={(t) => setText(t.slice(0, MAX_POST_LENGTH))}
+            placeholder="Bir açıklama yaz veya düşünceni paylaş..."
+            placeholderTextColor={TEXT_MUTED}
+            multiline
+            style={styles.createTextInput}
+          />
+
+          <View style={styles.createModalFooter}>
+            <Pressable onPress={pickImage} style={styles.footerPickIcon}>
+              <Ionicons name="image-outline" size={22} color={GOLD} />
+            </Pressable>
+            <Text style={styles.charCounter}>
+              {text.length}/{MAX_POST_LENGTH}
+            </Text>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+// LIKE OPTIONS MODAL
+function LikeOptionsModal({
+  visible,
+  post,
+  onClose,
+  onNormalLike,
+  onSuperLike,
+  onLuxuryLike,
+}: {
+  visible: boolean;
+  post: KesfetFeedPost | null;
+  onClose: () => void;
+  onNormalLike: (p: KesfetFeedPost) => void;
+  onSuperLike: (p: KesfetFeedPost) => void;
+  onLuxuryLike: (p: KesfetFeedPost) => void;
+}) {
+  if (!visible || !post) return null;
+
+  return (
+    <Modal visible={visible} transparent animationType="fade">
+      <Pressable onPress={onClose} style={styles.modalOverlay}>
+        <View style={styles.likeOptionsCard}>
+          <View style={styles.likeOptionsHeader}>
+            <Ionicons name="heart-circle" size={24} color="#EF4444" />
+            <Text style={styles.likeOptionsTitle}>Beğeni Türü</Text>
+          </View>
+
+          <Pressable
+            onPress={() => onNormalLike(post)}
+            style={styles.likeOptionRow}
+          >
+            <View style={[styles.likeIconCircle, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
+              <Ionicons name="heart" size={20} color="#EF4444" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.likeOptionName}>Standart Beğeni</Text>
+              <Text style={styles.likeOptionDesc}>+1 Beğeni ekler</Text>
+            </View>
+            <Text style={styles.freeBadgeText}>Ücretsiz</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => onSuperLike(post)}
+            style={[styles.likeOptionRow, styles.superLikeRow]}
+          >
+            <View style={[styles.likeIconCircle, { backgroundColor: 'rgba(59, 130, 246, 0.18)' }]}>
+              <Ionicons name="sparkles" size={20} color="#3B82F6" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.likeOptionName, { color: '#60A5FA' }]}>Süper Beğeni (x3)</Text>
+              <Text style={styles.likeOptionDesc}>+3 Beğeni ekler ve öne çıkarır</Text>
+            </View>
+            <Text style={[styles.diamondBadgeText, { color: '#60A5FA' }]}>{SUPER_LIKE_DIAMONDS} 💎</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => onLuxuryLike(post)}
+            style={[styles.likeOptionRow, styles.luxuryLikeRow]}
+          >
+            <View style={[styles.likeIconCircle, { backgroundColor: 'rgba(229, 169, 60, 0.2)' }]}>
+              <MaterialCommunityIcons name="crown" size={22} color={GOLD} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.likeOptionName, { color: GOLD }]}>Lüks Beğeni (x5)</Text>
+              <Text style={styles.likeOptionDesc}>+5 Beğeni ekler, zirveye taşır</Text>
+            </View>
+            <Text style={[styles.diamondBadgeText, { color: GOLD }]}>{LUXURY_LIKE_DIAMONDS} 💎</Text>
+          </Pressable>
+
+          <Pressable onPress={onClose} style={styles.likeCancelBtn}>
+            <Text style={styles.likeCancelText}>Kapat</Text>
+          </Pressable>
+        </View>
+      </Pressable>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 16,
-    paddingTop: 24,
-    paddingBottom: 48,
+  screen: {
+    flex: 1,
+    backgroundColor: '#09090B',
   },
-  header: {
-    flexDirection: 'row',
+  loadingContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    marginBottom: 16,
   },
-  headerTitle: {
+  flatListContent: {
+    paddingBottom: 60,
+  },
+  feedHeaderContainer: {
+    backgroundColor: '#09090B',
+    borderBottomWidth: 1,
+    borderBottomColor: '#18181B',
+    paddingBottom: 8,
+  },
+  appHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+  },
+  appHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoText: {
     fontSize: 22,
     fontWeight: '900',
-    color: GOLD,
-    letterSpacing: 0.5,
+    color: '#FFFFFF',
+    letterSpacing: -0.5,
   },
-  tabSwitchGrid: {
-    backgroundColor: 'rgba(30, 30, 32, 0.9)',
-    borderRadius: 16,
-    padding: 6,
-    marginBottom: 14,
-    borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.3)',
-    gap: 6,
-  },
-  tabSwitchRow: {
-    flexDirection: 'row',
-    gap: 6,
-  },
-  tabSwitchButton: {
-    flex: 1,
+  appHeaderRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 5,
-    paddingVertical: 9,
-    borderRadius: 10,
-  },
-  tabSwitchButtonActive: {
-    backgroundColor: GOLD,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  populerTabBtn: {
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.4)',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-  },
-  populerTabBtnActive: {
-    backgroundColor: '#EF4444',
-    borderColor: '#EF4444',
-    shadowColor: '#EF4444',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 5,
-    elevation: 4,
-  },
-  tabSwitchText: {
-    fontSize: 11.5,
-    fontWeight: '700',
-    color: GOLD_SOFT,
-  },
-  tabSwitchTextActive: {
-    color: '#1a0d33',
-    fontWeight: '800',
-  },
-  populerTabBtnTextActive: {
-    color: '#FFF',
-    fontWeight: '800',
-  },
-  tabContent: {
-    width: '100%',
-  },
-  popularInfoBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(239, 68, 68, 0.12)',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.35)',
-    paddingVertical: 9,
-    paddingHorizontal: 12,
-    marginBottom: 14,
-  },
-  popularInfoBannerText: {
-    fontSize: 11.5,
-    color: '#FCA5A5',
-    flex: 1,
-    lineHeight: 16,
-  },
-  retentionHint: {
-    fontSize: 11,
-    color: TEXT_MUTED,
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  composerCollapsed: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(30, 20, 58, 0.9)',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 201, 60, 0.3)',
-    padding: 12,
-    gap: 10,
-    marginBottom: 8,
-  },
-  composerPlaceholder: {
-    flex: 1,
-    fontSize: 13,
-    color: TEXT_MUTED,
-  },
-  cameraPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(255, 201, 60, 0.15)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  cameraPillText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: GOLD,
-  },
-  composerOpen: {
-    backgroundColor: 'rgba(30, 20, 58, 0.95)',
-    borderRadius: 16,
-    borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.4)',
-    padding: 14,
-    marginBottom: 8,
-    gap: 10,
-  },
-  composerInput: {
-    fontSize: 14,
-    color: TEXT_PRIMARY,
-    minHeight: 60,
-    textAlignVertical: 'top',
-  },
-  composerImageWrap: {
-    position: 'relative',
-    borderRadius: 12,
-    overflow: 'hidden',
-    maxHeight: 220,
-  },
-  composerImage: {
-    width: '100%',
-    height: 220,
-  },
-  composerImageRemove: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    borderRadius: 14,
-    padding: 4,
-  },
-  composerFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingTop: 6,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 201, 60, 0.15)',
-  },
-  composerIconButton: {
-    padding: 4,
-  },
-  composerCounter: {
-    fontSize: 11,
-    color: TEXT_MUTED,
-  },
-  composerCancelButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  composerCancelText: {
-    fontSize: 12,
-    color: TEXT_MUTED,
-  },
-  composerSubmitButton: {
-    backgroundColor: GOLD,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 10,
-  },
-  composerSubmitDisabled: {
-    opacity: 0.4,
-  },
-  composerSubmitText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#1a0d33',
-  },
-  feed: {
     gap: 16,
   },
-  photoCard: {
-    backgroundColor: 'rgba(30, 20, 58, 0.92)',
-    borderRadius: 18,
-    borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.3)',
-    overflow: 'hidden',
+  headerIconButton: {
+    padding: 2,
   },
-  statusCard: {
-    backgroundColor: 'rgba(30, 20, 58, 0.92)',
-    borderRadius: 16,
-    borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.3)',
-    padding: 16,
+  iconPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.94 }],
   },
-  popularRoyalOuterBox: {
-    borderColor: '#F59E0B',
-    borderWidth: 2.5,
-    borderRadius: 20,
-    backgroundColor: 'rgba(24, 10, 46, 0.98)',
-    position: 'relative',
-    overflow: 'hidden',
-    shadowColor: '#F59E0B',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.65,
-    shadowRadius: 14,
-    elevation: 12,
+  infoBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 12,
+    marginHorizontal: 14,
+    marginBottom: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
-  ornateCorner: {
-    position: 'absolute',
-    zIndex: 10,
-    width: 18,
-    height: 18,
+  infoBannerText: {
+    flex: 1,
+    fontSize: 11.5,
+    lineHeight: 16,
+    color: TEXT_MUTED,
+  },
+  quickCreateBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: '#18181B',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.09)',
+    borderRadius: 14,
+    marginHorizontal: 14,
+    marginBottom: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  quickCreateAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#27272A',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ornateCornerTL: { top: 3, left: 3 },
-  ornateCornerTR: { top: 3, right: 3 },
-  ornateCornerBL: { bottom: 3, left: 3 },
-  ornateCornerBR: { bottom: 3, right: 3 },
-  popularRoyalBanner: {
+  quickCreatePlaceholder: {
+    flex: 1,
+    fontSize: 12.5,
+    color: TEXT_MUTED,
+  },
+  quickCreateCameraBtn: {
+    padding: 2,
+  },
+  tabSwitchGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    paddingHorizontal: 14,
+  },
+  tabButton: {
+    flex: 1,
+    minWidth: '48%',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(245, 158, 11, 0.18)',
-    paddingVertical: 7,
-    paddingHorizontal: 14,
-    borderBottomWidth: 1.5,
-    borderBottomColor: '#F59E0B',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: '#18181B',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
   },
-  royalCrownImage: {
-    width: 26,
-    height: 26,
-    borderRadius: 6,
+  tabButtonActive: {
+    backgroundColor: '#27272A',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  tabButtonActivePopular: {
+    backgroundColor: 'rgba(220, 38, 38, 0.2)',
+    borderColor: '#EF4444',
+  },
+  tabButtonText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: TEXT_MUTED,
+  },
+  tabButtonTextActive: {
+    color: '#FFFFFF',
+  },
+
+  // POST CARD STYLES
+  instagramPostContainer: {
+    backgroundColor: '#09090B',
+    borderBottomWidth: 1,
+    borderBottomColor: '#18181B',
+    paddingBottom: 12,
+  },
+
+  // VALIR CEHENNEM SEFİRİ TARZI SEÇKİN ÇERÇEVE
+  legendCardWrap: {
+    marginHorizontal: 8,
+    marginVertical: 10,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderColor: '#DC2626',
+    backgroundColor: '#130808',
+    overflow: 'hidden',
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  legendTopCrest: {
+    paddingVertical: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(239, 68, 68, 0.4)',
+  },
+  legendGemBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#991B1B',
     borderWidth: 1,
     borderColor: '#F59E0B',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 3,
   },
-  royalCrownPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    backgroundColor: '#F59E0B',
-    borderRadius: 6,
-    paddingHorizontal: 7,
-    paddingVertical: 2.5,
-  },
-  royalCrownPillText: {
-    color: '#1a0d33',
+  legendGemText: {
+    fontSize: 10.5,
     fontWeight: '900',
-    fontSize: 10,
-    letterSpacing: 0.5,
+    color: '#FEF08A',
+    letterSpacing: 0.8,
   },
-  popularRoyalTitle: {
-    fontSize: 12,
-    fontWeight: '900',
-    color: '#F59E0B',
-    letterSpacing: 0.5,
+  legendPostHeader: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(69, 10, 10, 0.4)',
   },
-  royalHeader: {
-    backgroundColor: 'rgba(245, 158, 11, 0.06)',
-    paddingHorizontal: 14,
+  legendAvatarBorder: {
+    borderWidth: 1.5,
+    borderColor: '#EF4444',
   },
-  royalPhotoWrap: {
-    borderTopWidth: 1.5,
-    borderBottomWidth: 1.5,
-    borderColor: 'rgba(245, 158, 11, 0.35)',
+  legendPhotoFrame: {
+    marginHorizontal: 6,
+    borderRadius: 14,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.5)',
   },
-  royalStatusTextBody: {
-    color: '#FFF',
-    fontSize: 15.5,
-    fontWeight: '600',
-    lineHeight: 23,
-    paddingHorizontal: 4,
+  legendStatusContainer: {
+    marginHorizontal: 6,
+    backgroundColor: '#200D0D',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.4)',
   },
-  royalFooterPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 7,
-    backgroundColor: 'rgba(245, 158, 11, 0.14)',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(245, 158, 11, 0.35)',
-  },
-  royalFooterPillText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#F59E0B',
-    letterSpacing: 0.3,
-  },
+
   postHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
-  postAuthorPressable: {
+  postHeaderUser: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     flex: 1,
   },
-  avatar: {
+  avatarCircle: {
     width: 36,
     height: 36,
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: {
-    color: '#fff',
+  avatarLetter: {
+    color: '#FFFFFF',
     fontWeight: '800',
     fontSize: 14,
   },
-  postAuthorWrap: {
+  postHeaderTextWrap: {
     flex: 1,
   },
-  postAuthorName: {
+  usernameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  usernameText: {
     fontSize: 13.5,
     fontWeight: '700',
-    color: TEXT_PRIMARY,
+    color: '#FFFFFF',
   },
-  postMeta: {
+  postTimeText: {
     fontSize: 11,
     color: TEXT_MUTED,
+    marginTop: 1,
   },
-  postDeleteButton: {
+  postMoreBtn: {
     padding: 4,
   },
-  photoWrap: {
-    width: '100%',
-    height: 340,
-    backgroundColor: '#0a0614',
+  photoContainer: {
+    alignSelf: 'stretch',
+    height: 380,
+    backgroundColor: '#121215',
   },
-  photoImage: {
+  postImage: {
     width: '100%',
     height: '100%',
   },
-  photoCaptionWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 14,
-    paddingBottom: 14,
-  },
-  captionAuthor: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: GOLD_SOFT,
-  },
-  captionText: {
-    fontSize: 13,
-    color: TEXT_PRIMARY,
-    lineHeight: 18,
+  statusTextContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: '#121215',
+    marginHorizontal: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   statusTextBody: {
     fontSize: 15,
     lineHeight: 22,
-    color: TEXT_PRIMARY,
+    color: '#FFFFFF',
     fontWeight: '500',
-    marginVertical: 8,
   },
-  postActions: {
+  actionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingTop: 10,
+    paddingBottom: 6,
+  },
+  actionBarLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
+  },
+  actionIconButton: {
+    padding: 3,
+  },
+  postMetaSection: {
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    gap: 4,
   },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  actionCount: {
-    fontSize: 12,
-    color: TEXT_MUTED,
-    fontWeight: '600',
-  },
-  actionCountLiked: {
-    color: '#EF4444',
+  likesCountText: {
+    fontSize: 13,
     fontWeight: '700',
+    color: '#FFFFFF',
   },
-  feedErrorWrap: {
+  captionRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  captionUsername: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  captionBody: {
+    fontSize: 13,
+    color: '#E4E4E7',
+    lineHeight: 18,
+  },
+  viewCommentsLink: {
+    fontSize: 12.5,
+    color: TEXT_MUTED,
+    marginTop: 2,
+  },
+  emptyContainer: {
     alignItems: 'center',
-    paddingVertical: 30,
-    gap: 12,
+    justifyContent: 'center',
+    paddingVertical: 60,
+    gap: 10,
+    paddingHorizontal: 30,
   },
-  feedErrorText: {
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  emptySubtitle: {
     fontSize: 13,
     color: TEXT_MUTED,
     textAlign: 'center',
   },
-  feedRetryButton: {
-    backgroundColor: 'rgba(255, 201, 60, 0.15)',
+
+  // CREATE MODAL STYLES
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    justifyContent: 'flex-end',
+  },
+  createModalCard: {
+    backgroundColor: '#18181B',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     borderWidth: 1,
-    borderColor: GOLD,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    padding: 16,
+    paddingBottom: 36,
+    maxHeight: '88%',
   },
-  feedRetryText: {
-    color: GOLD,
-    fontWeight: '700',
-    fontSize: 12,
-  },
-  emptyFeedWrap: {
+  createModalHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 40,
-    gap: 8,
+    justifyContent: 'space-between',
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
-  emptyFeedTitle: {
-    fontSize: 15,
+  createCancelText: {
+    fontSize: 14,
+    color: TEXT_MUTED,
+  },
+  createModalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  createSubmitText: {
+    fontSize: 14,
     fontWeight: '800',
     color: GOLD,
   },
-  emptyFeedSubtitle: {
-    fontSize: 12,
+  createSubmitDisabled: {
+    opacity: 0.35,
+  },
+  addPhotoSlot: {
+    height: 140,
+    backgroundColor: '#27272A',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderColor: 'rgba(255, 255, 255, 0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginVertical: 14,
+  },
+  addPhotoSlotText: {
+    fontSize: 13,
+    fontWeight: '600',
     color: TEXT_MUTED,
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.65)',
-    justifyContent: 'flex-end',
-    padding: 16,
-    paddingBottom: 36,
+  createImageWrap: {
+    position: 'relative',
+    height: 200,
+    borderRadius: 14,
+    overflow: 'hidden',
+    marginVertical: 14,
   },
+  createImagePreview: {
+    width: '100%',
+    height: '100%',
+  },
+  removeImageBtn: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  createTextInput: {
+    fontSize: 14.5,
+    color: '#FFFFFF',
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  createModalFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  footerPickIcon: {
+    padding: 4,
+  },
+  charCounter: {
+    fontSize: 11.5,
+    color: TEXT_MUTED,
+  },
+
+  // LIKE OPTIONS
   likeOptionsCard: {
-    backgroundColor: 'rgba(30, 30, 32, 0.98)',
+    backgroundColor: '#18181B',
     borderRadius: 22,
-    borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.35)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     padding: 18,
+    margin: 16,
+    marginBottom: 36,
     gap: 10,
   },
   likeOptionsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 6,
+    marginBottom: 4,
   },
   likeOptionsTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: GOLD,
+    color: '#FFFFFF',
   },
   likeOptionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(38, 24, 70, 0.85)',
+    backgroundColor: '#27272A',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(255, 201, 60, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     padding: 12,
     gap: 12,
   },
   superLikeRow: {
-    borderColor: 'rgba(59, 130, 246, 0.4)',
-    backgroundColor: 'rgba(30, 38, 80, 0.9)',
+    borderColor: 'rgba(59, 130, 246, 0.35)',
+    backgroundColor: 'rgba(30, 38, 80, 0.5)',
   },
   luxuryLikeRow: {
-    borderColor: 'rgba(255, 201, 60, 0.5)',
-    backgroundColor: 'rgba(48, 32, 85, 0.92)',
+    borderColor: 'rgba(229, 169, 60, 0.35)',
+    backgroundColor: 'rgba(48, 38, 20, 0.5)',
   },
-  likeOptionIconCircle: {
+  likeIconCircle: {
     width: 40,
     height: 40,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  likeOptionTextWrap: {
-    flex: 1,
-  },
   likeOptionName: {
     fontSize: 14,
     fontWeight: '700',
-    color: TEXT_PRIMARY,
+    color: '#FFFFFF',
   },
   likeOptionDesc: {
     fontSize: 11,
     color: TEXT_MUTED,
   },
-  likeOptionPriceBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  likeOptionFreeText: {
-    fontSize: 11,
+  freeBadgeText: {
+    fontSize: 12,
     fontWeight: '700',
     color: TEXT_MUTED,
   },
-  likeOptionDiamondText: {
+  diamondBadgeText: {
     fontSize: 12,
     fontWeight: '800',
   },
-  likeOptionsCloseBtn: {
+  likeCancelBtn: {
     alignItems: 'center',
     paddingVertical: 10,
     marginTop: 4,
   },
-  likeOptionsCloseText: {
-    fontSize: 13,
-    color: TEXT_MUTED,
+  likeCancelText: {
+    fontSize: 13.5,
     fontWeight: '600',
+    color: TEXT_MUTED,
   },
 });

@@ -11,7 +11,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import FeatureIcon from '@/components/FeatureIcon';
-import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY } from '@/theme/colors';
+import { GOLD, GOLD_SOFT, NIGHT_CARD, TEXT_PRIMARY, TEXT_MUTED } from '@/theme/colors';
 
 export type ShelfItem = {
   key: string;
@@ -24,17 +24,35 @@ export type ShelfItem = {
   onPress: () => void;
 };
 
-type Props = { title: string; badgeText?: string; items: ShelfItem[] };
+type Props = {
+  title: string;
+  badgeText?: string;
+  onSeeAllPress?: () => void;
+  items: ShelfItem[];
+};
 
-export default function FortuneShelf({ title, badgeText, items }: Props) {
+export default function FortuneShelf({ title, badgeText = 'Tümünü Gör', onSeeAllPress, items }: Props) {
+  const displayBadge = onSeeAllPress ? (badgeText || 'Tümünü Gör') : badgeText;
+
   return (
     <View style={styles.wrap}>
       <View style={styles.titleRow}>
         <Text style={styles.title}>{title}</Text>
-        {badgeText && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeLabel}>{badgeText}</Text>
-          </View>
+        {displayBadge && (
+          onSeeAllPress ? (
+            <Pressable
+              onPress={onSeeAllPress}
+              style={({ pressed }) => [styles.badge, styles.badgeInteractive, pressed && styles.badgePressed]}
+              hitSlop={6}
+            >
+              <Text style={styles.badgeLabel}>{displayBadge}</Text>
+              <MaterialCommunityIcons name="chevron-right" size={13} color={GOLD} />
+            </Pressable>
+          ) : (
+            <View style={styles.badge}>
+              <Text style={styles.badgeLabel}>{displayBadge}</Text>
+            </View>
+          )
         )}
       </View>
       <ScrollView
@@ -70,11 +88,11 @@ export default function FortuneShelf({ title, badgeText, items }: Props) {
                 fallback={
                   <MaterialCommunityIcons
                     name={item.iconName ?? 'star-four-points-outline'}
-                    size={22}
+                    size={28}
                     color={GOLD}
                   />
                 }
-                size={46}
+                size={54}
               />
               <Text style={styles.badgeTitle} numberOfLines={2}>
                 {item.title}
@@ -106,17 +124,30 @@ const styles = StyleSheet.create({
   },
   badge: {
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
-    backgroundColor: 'rgba(255, 201, 60, 0.12)',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 10,
     paddingHorizontal: 8,
     paddingVertical: 3,
     marginLeft: 8,
   },
+  badgeInteractive: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+  },
+  badgePressed: {
+    opacity: 0.75,
+    transform: [{ scale: 0.95 }],
+  },
   badgeLabel: {
-    fontSize: 9.5,
-    fontWeight: '800',
-    color: GOLD,
+    fontSize: 10,
+    fontWeight: '700',
+    color: TEXT_MUTED,
   },
   row: {
     gap: 10,
@@ -151,23 +182,23 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
   badgeCard: {
-    width: 84,
-    minHeight: 96,
-    borderRadius: 14,
+    width: 108,
+    height: 148,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: GOLD_SOFT,
     backgroundColor: NIGHT_CARD,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 10,
-    paddingHorizontal: 6,
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
   },
   badgeTitle: {
-    fontSize: 10.5,
-    fontWeight: '700',
-    color: TEXT_PRIMARY,
+    fontSize: 11.5,
+    fontWeight: '800',
+    color: '#FFFEFB',
     textAlign: 'center',
-    lineHeight: 13,
+    lineHeight: 15,
   },
 });

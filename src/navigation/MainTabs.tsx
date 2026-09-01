@@ -54,7 +54,7 @@ export default function MainTabs({ navigation }: Props) {
 
   return (
     <View style={styles.flex}>
-      {/* Floating wallet badge (Coin + Kristal) */}
+      {/* Floating wallet badge (Coin + Kristal) — Tüm Sekmelerde */}
       <View style={[styles.floatingCoinWrap, { top: insets.top + 8 }]} pointerEvents="box-none">
         <WalletBadge navigation={navigation} />
       </View>
@@ -138,9 +138,9 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: NIGHT_MID,
+    backgroundColor: '#000000',
     borderTopWidth: 1,
-    borderTopColor: GOLD_SOFT,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
     minHeight: 88,
     paddingTop: 8,
     paddingHorizontal: 4,

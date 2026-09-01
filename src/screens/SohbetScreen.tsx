@@ -269,35 +269,34 @@ export default function SohbetScreen({ navigation }: Props) {
           </View>
         )}
 
-        {/* Tab Switcher: Üstte 2 Buton, Altta Tam Satır Yorumcular Butonu */}
+        {/* Modern 3-Way Segmented Switcher */}
         <View style={styles.tabSwitchContainer}>
-          <View style={styles.tabSwitchTopRow}>
-            <Pressable
-              onPress={() => setTab('mesajlar')}
-              style={[styles.tabSwitchButton, tab === 'mesajlar' && styles.tabSwitchButtonActive]}
-            >
-              <Ionicons name="chatbubbles-outline" size={16} color={tab === 'mesajlar' ? '#1a0d33' : GOLD} />
-              <Text style={[styles.tabSwitchText, tab === 'mesajlar' && styles.tabSwitchTextActive]}>
-                Mesaj Kutum {conversations.some(c => c.unreadCount > 0) ? '•' : ''}
-              </Text>
-            </Pressable>
+          <Pressable
+            onPress={() => setTab('sesli')}
+            style={[styles.tabSwitchButton, tab === 'sesli' && styles.tabSwitchButtonActive]}
+          >
+            <Ionicons name="mic" size={15} color={tab === 'sesli' ? '#FFFFFF' : TEXT_MUTED} />
+            <Text style={[styles.tabSwitchText, tab === 'sesli' && styles.tabSwitchTextActive]}>
+              Sesli Odalar
+            </Text>
+          </Pressable>
 
-            <Pressable
-              onPress={() => setTab('sesli')}
-              style={[styles.tabSwitchButton, tab === 'sesli' && styles.tabSwitchButtonActive]}
-            >
-              <Ionicons name="mic-outline" size={16} color={tab === 'sesli' ? '#1a0d33' : GOLD} />
-              <Text style={[styles.tabSwitchText, tab === 'sesli' && styles.tabSwitchTextActive]}>
-                Sesli Sohbet
-              </Text>
-            </Pressable>
-          </View>
+          <Pressable
+            onPress={() => setTab('mesajlar')}
+            style={[styles.tabSwitchButton, tab === 'mesajlar' && styles.tabSwitchButtonActive]}
+          >
+            <Ionicons name="chatbubbles" size={15} color={tab === 'mesajlar' ? '#FFFFFF' : TEXT_MUTED} />
+            <Text style={[styles.tabSwitchText, tab === 'mesajlar' && styles.tabSwitchTextActive]}>
+              Mesajlarım
+            </Text>
+            {conversations.some((c) => c.unreadCount > 0) && <View style={styles.tabUnreadDot} />}
+          </Pressable>
 
           <Pressable
             onPress={() => setTab('yorumcular')}
-            style={[styles.tabSwitchFullRow, tab === 'yorumcular' && styles.tabSwitchButtonActive]}
+            style={[styles.tabSwitchButton, tab === 'yorumcular' && styles.tabSwitchButtonActive]}
           >
-            <MaterialCommunityIcons name="crystal-ball" size={18} color={tab === 'yorumcular' ? '#1a0d33' : GOLD} />
+            <MaterialCommunityIcons name="crystal-ball" size={16} color={tab === 'yorumcular' ? '#FFFFFF' : TEXT_MUTED} />
             <Text style={[styles.tabSwitchText, tab === 'yorumcular' && styles.tabSwitchTextActive]}>
               Yorumcular
             </Text>
@@ -498,62 +497,55 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   tabSwitchContainer: {
-    backgroundColor: 'rgba(30, 30, 32, 0.9)',
-    borderRadius: 18,
-    padding: 6,
-    marginBottom: 20,
-    borderWidth: 1.2,
-    borderColor: 'rgba(255, 201, 60, 0.3)',
-    gap: 6,
-  },
-  tabSwitchTopRow: {
     flexDirection: 'row',
-    gap: 6,
+    backgroundColor: '#121215',
+    borderRadius: 14,
+    padding: 4,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    gap: 4,
   },
   tabSwitchButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    borderRadius: 12,
+    gap: 5,
+    borderRadius: 10,
     paddingVertical: 10,
-  },
-  tabSwitchFullRow: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 7,
-    borderRadius: 12,
-    paddingVertical: 11,
+    backgroundColor: 'transparent',
   },
   tabSwitchButtonActive: {
-    backgroundColor: GOLD,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: '#27272A',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.14)',
   },
-  tabSwitchText: { fontSize: 13, fontWeight: '700', color: GOLD_SOFT },
-  tabSwitchTextActive: { color: '#1a0d33', fontWeight: '800' },
+  tabSwitchText: { fontSize: 11.5, fontWeight: '700', color: TEXT_MUTED },
+  tabSwitchTextActive: { color: '#FFFFFF', fontWeight: '800' },
+  tabUnreadDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#EF4444',
+    marginLeft: 2,
+  },
   securityHintBox: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: 'rgba(255, 201, 60, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 201, 60, 0.25)',
+    borderColor: GOLD_SOFT,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginBottom: 16,
   },
   securityHintText: {
     fontSize: 11,
-    color: GOLD_SOFT,
+    color: TEXT_MUTED,
     textAlign: 'center',
   },
   roomsHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
@@ -562,12 +554,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
     borderWidth: 1,
-    borderColor: GOLD_SOFT,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderRadius: 999,
     paddingVertical: 5,
     paddingHorizontal: 12,
   },
-  newRoomButtonText: { fontSize: 11.5, fontWeight: '700', color: GOLD },
+  newRoomButtonText: { fontSize: 11.5, fontWeight: '700', color: TEXT_PRIMARY },
   roomsHint: { fontSize: 11, color: TEXT_MUTED, lineHeight: 16, marginBottom: 14 },
   statusCard: {
     backgroundColor: NIGHT_CARD,
@@ -593,5 +586,5 @@ const styles = StyleSheet.create({
   },
   applyButton: { backgroundColor: GOLD, borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
   applyButtonDisabled: { opacity: 0.45 },
-  applyButtonText: { fontSize: 13.5, fontWeight: '800', color: '#1a0d33' },
+  applyButtonText: { fontSize: 13.5, fontWeight: '800', color: '#09090B' },
 });

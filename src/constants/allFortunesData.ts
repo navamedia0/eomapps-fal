@@ -16,64 +16,32 @@ export type FortuneSignatureItem = {
   category: 'fallar' | 'astroloji' | 'psikoloji' | 'ruya' | 'sayilar' | 'huzur';
 };
 
+// Türkiye'deki gerçek popülerlik ve bilinirlik sırasına göre dizilmiş kadim fallar:
+// 1. Kahve Falı (Açık ara Türkiye'nin 1 numaralı geleneksel falı)
+// 2. Tarot Falı (En popüler evrensel kart falı)
+// 3. Katina Aşk Falı (Türkiye'de en çok tercih edilen aşk destesi)
+// 4. El Falı (Kiromansi / Avuç içi çizgileri)
+// 5. İskambil Falı (52 kart klasik saray falı)
+// 6. Su Falı (Durugörü / Kozmik su aynası)
+// 7. Yüz Falı (Fizyonomi & karakter haritası)
+// 8. Melek Kartları (Günün mesajı & rehberlik)
+// 9. Balmumu Falı (Ateş ve eriyen mum kehaneti)
+// 10. 41 Bakla Falı (Anadolu geleneksel remil falı)
+// 11. Petit Lenormand (36 kart net kehanet)
+// 12. Nordik Rün Falı (24 Elder Futhark taşı)
+// 13. Çin I Ching (3 kutsal sikke & 64 heksagram)
+// 14. Osho Zen (Farkındalık & iç huzur kartları)
+// 15. Mısır Thoth (Hermetik simya kartları)
+// 16. Sesli Falcı (Canlı sesli danışman)
 export const ALL_SIGNATURE_FORTUNES: FortuneSignatureItem[] = [
-  // 1. Tarot (Özel 3 Modlu Modal Açılır)
-  {
-    key: 'tarot',
-    title: 'Klasik Rider-Waite Tarot',
-    subtitle: '78 Kadim Arkana · 3 Farklı Açılım ve Kehanet Modu',
-    tags: ['Evrensel', '78 Kart', 'Kader & Aşk', '3 Farklı Mod'],
-    accent: '#F59E0B',
-    badgeText: '🔥 En Çok Tercih Edilen',
-    badgeColor: '#F59E0B',
-    ctaText: 'Açılım Modunu Seç →',
-    imageSource: require('@/assets/backgrounds/decks/tarot_bg.jpg'),
-    actionType: 'tarot_modal',
-    category: 'fallar',
-  },
-
-  // 2. Katina Aşk Destesi
-  {
-    key: 'katina',
-    title: 'Katina Aşk & İlişki Destesi',
-    subtitle: '65 Mistik Kart · Helenik Tutku, Ruh Eşi & Gizli Hisler',
-    tags: ['Aşk Falı', '65 Kart', 'Ruh Eşi', 'Helenik Tutku'],
-    accent: '#E11D48',
-    badgeText: '🌹 Aşk & Uyum',
-    badgeColor: '#E11D48',
-    ctaText: 'Masaya Geç & Fal Bak →',
-    imageSource: require('@/assets/backgrounds/decks/katina_bg.jpg'),
-    actionType: 'navigation',
-    route: 'CardDeckTable',
-    params: { deckId: 'katina' },
-    category: 'fallar',
-  },
-
-  // 3. Petit Lenormand
-  {
-    key: 'lenormand',
-    title: 'Petit Lenormand Kehanet Destesi',
-    subtitle: '36 Somut Kart · Günlük Olaylar, Haberler & Net Cevaplar',
-    tags: ['Net Kehanet', '36 Kart', 'Günlük Hayat', 'Tavsiye'],
-    accent: '#06B6D4',
-    badgeText: '✨ 36 Kart',
-    badgeColor: '#06B6D4',
-    ctaText: 'Masaya Geç & Fal Bak →',
-    imageSource: require('@/assets/backgrounds/decks/lenormand_bg.jpg'),
-    actionType: 'navigation',
-    route: 'CardDeckTable',
-    params: { deckId: 'lenormand' },
-    category: 'fallar',
-  },
-
-  // 4. Kahve Falı
+  // 1. Kahve Falı
   {
     key: 'coffee',
-    title: 'Geleneksel Türk Kahvesi Falı',
+    title: 'Kahve Falı',
     subtitle: 'Fincandaki telve sembollerinin kadim yorumu & sır kapıları',
-    tags: ['Fotoğraflı Analiz', 'Telve Sembolleri', 'Aşk & Kısmet', 'Derin Yorum'],
+    tags: ['Kahve', 'Fotoğraflı', 'Telve', 'Kısmet', 'Geleneksel'],
     accent: '#D97706',
-    badgeText: '☕ Fotoğraflı Analiz',
+    badgeText: '🔥 En Popüler',
     badgeColor: '#D97706',
     ctaText: 'Fincanını Çek & Falına Bak →',
     imageSource: require('@/assets/ekoller/ekol_bg_2_osmanli.jpg'),
@@ -83,14 +51,46 @@ export const ALL_SIGNATURE_FORTUNES: FortuneSignatureItem[] = [
     category: 'fallar',
   },
 
-  // 5. El Falı
+  // 2. Tarot Falı (Özel 3 Modlu Modal Açılır)
+  {
+    key: 'tarot',
+    title: 'Tarot Falı',
+    subtitle: '78 Kadim Arkana · 3 Farklı Açılım ve Kehanet Modu',
+    tags: ['Tarot', '78 Kart', 'Kader & Aşk', 'Klasik'],
+    accent: '#F59E0B',
+    badgeText: '⭐ Çok Sevilen',
+    badgeColor: '#F59E0B',
+    ctaText: 'Açılım Modunu Seç →',
+    imageSource: require('@/assets/backgrounds/decks/tarot_bg.jpg'),
+    actionType: 'tarot_modal',
+    category: 'fallar',
+  },
+
+  // 3. Katina Aşk Falı
+  {
+    key: 'katina',
+    title: 'Katina Aşk Falı',
+    subtitle: '65 Mistik Kart · Helenik Tutku, Ruh Eşi & Gizli Hisler',
+    tags: ['Katina', 'Aşk Falı', '65 Kart', 'Ruh Eşi'],
+    accent: '#E11D48',
+    badgeText: '🌹 Aşk & İlişki',
+    badgeColor: '#E11D48',
+    ctaText: 'Masaya Geç & Fal Bak →',
+    imageSource: require('@/assets/backgrounds/decks/katina_bg.jpg'),
+    actionType: 'navigation',
+    route: 'CardDeckTable',
+    params: { deckId: 'katina' },
+    category: 'fallar',
+  },
+
+  // 4. El Falı
   {
     key: 'palm',
-    title: 'Kadim El Çizgisi Falı (Kiromansi)',
+    title: 'El Falı',
     subtitle: 'Avuç içindeki yaşam, kalp ve akıl çizgilerinin kadersel haritası',
-    tags: ['Yaşam Çizgisi', 'Kalp & Akıl', 'Kader Yolu', 'Fotoğraflı'],
+    tags: ['El Falı', 'Kiromansi', 'Yaşam Çizgisi', 'Fotoğraflı'],
     accent: '#EC4899',
-    badgeText: '✋ Avuç İçi Analizi',
+    badgeText: '✋ Çizgi Analizi',
     badgeColor: '#EC4899',
     ctaText: 'Elini Tara & Falına Bak →',
     imageSource: require('@/assets/ekoller/ekol_bg_4_bati_ezoterik.jpg'),
@@ -100,12 +100,45 @@ export const ALL_SIGNATURE_FORTUNES: FortuneSignatureItem[] = [
     category: 'fallar',
   },
 
-  // 6. Yüz Falı
+  // 5. İskambil Saray Falı
+  {
+    key: 'iskambil',
+    title: 'İskambil Falı',
+    subtitle: '52 Klasik Kart · Kupa, Karo, Sinek & Maça Hanedanı',
+    tags: ['İskambil', '52 Kart', 'Saray Falı', 'Kısmet'],
+    accent: '#E11D48',
+    badgeText: '👑 52 Kart',
+    badgeColor: '#E11D48',
+    ctaText: 'İskambil Masasına Geç →',
+    imageSource: require('@/assets/backgrounds/decks/iskambil_bg.jpg'),
+    actionType: 'navigation',
+    route: 'CardDeckTable',
+    params: { deckId: 'iskambil' },
+    category: 'fallar',
+  },
+
+  // 6. Su Falı
+  {
+    key: 'sufal',
+    title: 'Su Falı',
+    subtitle: 'Kozmik su aynasında beliren durugörü vizyonları ve sırlar',
+    tags: ['Su Falı', 'Durugörü', 'Mistik', 'Vizyon'],
+    accent: '#38BDF8',
+    badgeText: '💧 Durugörü',
+    badgeColor: '#38BDF8',
+    ctaText: 'Suya Bak & Kehaneti Gör →',
+    imageSource: require('@/assets/ekoller/ekol_bg_6_klasik.jpg'),
+    actionType: 'navigation',
+    route: 'SuFal',
+    category: 'fallar',
+  },
+
+  // 7. Yüz Falı
   {
     key: 'face',
-    title: 'Sima İlmi & Yüz Falı (Fizyonomi)',
+    title: 'Yüz Falı',
     subtitle: 'Yüz hatlarındaki mikro geometriler ve karakter şifresi',
-    tags: ['Karakter Şifresi', 'Bilinçaltı', 'Yüz Geometrisi', 'Fotoğraflı'],
+    tags: ['Yüz Falı', 'Fizyonomi', 'Karakter', 'Fotoğraflı'],
     accent: '#8B5CF6',
     badgeText: '👤 Yüz Analizi',
     badgeColor: '#8B5CF6',
@@ -117,28 +150,29 @@ export const ALL_SIGNATURE_FORTUNES: FortuneSignatureItem[] = [
     category: 'fallar',
   },
 
-  // 7. Su Falı
+  // 8. Melek Kartları
   {
-    key: 'sufal',
-    title: 'Kozmik Su & Durugörü Falı',
-    subtitle: 'Kozmik su aynasında beliren durugörü vizyonları ve sırlar',
-    tags: ['Durugörü', 'Bilinmeyen Sırlar', 'Kozmik Su', 'Mistik'],
-    accent: '#38BDF8',
-    badgeText: '💧 Durugörü Aynası',
-    badgeColor: '#38BDF8',
-    ctaText: 'Suya Bak & Kehaneti Gör →',
-    imageSource: require('@/assets/ekoller/ekol_bg_6_klasik.jpg'),
+    key: 'angel',
+    title: 'Melek Kartları',
+    subtitle: '44 Işık Kartı · İlahi Koruma, Şifa, Huzur & Günün Mesajı',
+    tags: ['Melek', 'Melek Kartları', 'Şifa', 'Işık'],
+    accent: '#C084FC',
+    badgeText: '🪽 44 Işık Kartı',
+    badgeColor: '#C084FC',
+    ctaText: 'Melek Kartını Çek →',
+    imageSource: require('@/assets/backgrounds/decks/angel_bg.jpg'),
     actionType: 'navigation',
-    route: 'SuFal',
+    route: 'CardDeckTable',
+    params: { deckId: 'angel' },
     category: 'fallar',
   },
 
-  // 8. Balmumu Falı
+  // 9. Balmumu Falı
   {
     key: 'wax',
-    title: 'Balmumu & Ateş Kehaneti',
+    title: 'Balmumu Falı',
     subtitle: 'Eriyen mum damlalarının suya bıraktığı gizemli şekiller',
-    tags: ['Ateş Enerjisi', 'Eriyen Mum', 'Kısmet & Nazar', 'Özel Semboller'],
+    tags: ['Balmumu', 'Ateş Falı', 'Eriyen Mum', 'Kısmet'],
     accent: '#F97316',
     badgeText: '🕯️ Mum Şekilleri',
     badgeColor: '#F97316',
@@ -149,43 +183,12 @@ export const ALL_SIGNATURE_FORTUNES: FortuneSignatureItem[] = [
     category: 'fallar',
   },
 
-  // 9. Nordik Runik Taşlar & Kehanet
-  {
-    key: 'rune',
-    title: 'Nordik Runik Taşlar & Kehanet',
-    subtitle: '24 Kadim Elder Futhark Taşı · Keseden Dökülsün & Rün Masası',
-    tags: ['24 Kutsal Taş', 'Keseden Dök', 'Rün Masası', 'Viking Bilgeliği'],
-    accent: '#38BDF8',
-    badgeText: 'ᚱ 2 Farklı Mod',
-    badgeColor: '#38BDF8',
-    ctaText: 'Rün Modunu Seç & Fal Bak →',
-    imageSource: require('@/assets/backgrounds/decks/rune_bg.jpg'),
-    actionType: 'rune_modal',
-    category: 'fallar',
-  },
-
-  // 11. Çin I Ching
-  {
-    key: 'iching',
-    title: 'Çin I Ching (Değişimler Kitabı)',
-    subtitle: '3 kutsal sikke atımı ile 64 heksagram kozmik dengesi',
-    tags: ['3 Kadim Sikke', '64 Heksagram', 'Taocu Bilgelik', 'Kader Döngüsü'],
-    accent: '#EF4444',
-    badgeText: '☯️ 64 Heksagram',
-    badgeColor: '#EF4444',
-    ctaText: 'Sikkeleri At & Aç →',
-    imageSource: require('@/assets/ekoller/iching_screen_bg.jpg'),
-    actionType: 'navigation',
-    route: 'IChingReading',
-    category: 'fallar',
-  },
-
-  // 12. 41 Bakla Falı
+  // 10. 41 Bakla Falı
   {
     key: 'bakla',
-    title: 'Geleneksel 41 Bakla Falı',
+    title: '41 Bakla Falı',
     subtitle: '3 ocak remil açılımı ve 41 ak baklanın kadersel kümelenmesi',
-    tags: ['41 Ak Bakla', 'Niyet & Kısmet', 'Geleneksel', 'Otomatik Dağıtım'],
+    tags: ['Bakla Falı', '41 Bakla', 'Remil', 'Geleneksel'],
     accent: '#10B981',
     badgeText: '🌾 3 Ocak Remil',
     badgeColor: '#10B981',
@@ -196,31 +199,62 @@ export const ALL_SIGNATURE_FORTUNES: FortuneSignatureItem[] = [
     category: 'fallar',
   },
 
-  // 13. Hermetik Mısır Thoth
+  // 11. Petit Lenormand
   {
-    key: 'thoth',
-    title: 'Hermetik Mısır & Thoth Kartları',
-    subtitle: 'Mısır panteonu, kutsal geometri ve ezoterik simya rehberi',
-    tags: ['Mısır Tanrıları', 'Hermetik Simya', 'Kozmik Yasa', 'Özel Deste'],
-    accent: '#EAB308',
-    badgeText: '📜 Hermetik Simya',
-    badgeColor: '#EAB308',
-    ctaText: 'Masaya Geç & İncele →',
-    imageSource: require('@/assets/backgrounds/decks/thoth_bg.jpg'),
+    key: 'lenormand',
+    title: 'Lenormand Falı',
+    subtitle: '36 Somut Kart · Günlük Olaylar, Haberler & Net Cevaplar',
+    tags: ['Lenormand', 'Net Kehanet', '36 Kart', 'Gelecek'],
+    accent: '#06B6D4',
+    badgeText: '✨ 36 Kart',
+    badgeColor: '#06B6D4',
+    ctaText: 'Masaya Geç & Fal Bak →',
+    imageSource: require('@/assets/backgrounds/decks/lenormand_bg.jpg'),
     actionType: 'navigation',
     route: 'CardDeckTable',
-    params: { deckId: 'thoth' },
+    params: { deckId: 'lenormand' },
+    category: 'fallar',
+  },
+
+  // 12. Nordik Runik Taşlar & Kehanet
+  {
+    key: 'rune',
+    title: 'Rün Falı',
+    subtitle: '24 Kadim Elder Futhark Taşı · Keseden Dökülsün & Rün Masası',
+    tags: ['Rün', 'Nordik', '24 Taş', 'Viking'],
+    accent: '#38BDF8',
+    badgeText: 'ᚱ 24 Taş',
+    badgeColor: '#38BDF8',
+    ctaText: 'Rün Modunu Seç & Fal Bak →',
+    imageSource: require('@/assets/backgrounds/decks/rune_bg.jpg'),
+    actionType: 'rune_modal',
+    category: 'fallar',
+  },
+
+  // 13. Çin I Ching
+  {
+    key: 'iching',
+    title: 'I Ching Falı',
+    subtitle: '3 kutsal sikke atımı ile 64 heksagram kozmik dengesi',
+    tags: ['I Ching', 'Çin Falı', '64 Heksagram', 'Sikke Atımı'],
+    accent: '#EF4444',
+    badgeText: '☯️ 64 Heksagram',
+    badgeColor: '#EF4444',
+    ctaText: 'Sikkeleri At & Aç →',
+    imageSource: require('@/assets/ekoller/iching_screen_bg.jpg'),
+    actionType: 'navigation',
+    route: 'IChingReading',
     category: 'fallar',
   },
 
   // 14. Osho Zen Bilgelik
   {
     key: 'osho_zen',
-    title: 'Osho Zen Bilgelik Kartları',
+    title: 'Osho Zen Falı',
     subtitle: 'Gelecek kaygısını bırakıp şimdi ve burada olmanın dinginliği',
-    tags: ['İç Huzur', 'Şimdiki An', 'Ruhsal Dönüşüm', 'Farkındalık'],
+    tags: ['Osho Zen', 'Zen Kartları', 'İç Huzur', 'Farkındalık'],
     accent: '#14B8A6',
-    badgeText: '🌸 Zen Farkındalık',
+    badgeText: '🌸 Zen Bilgeliği',
     badgeColor: '#14B8A6',
     ctaText: 'Masaya Geç & İncele →',
     imageSource: require('@/assets/backgrounds/decks/osho_zen_bg.jpg'),
@@ -230,46 +264,29 @@ export const ALL_SIGNATURE_FORTUNES: FortuneSignatureItem[] = [
     category: 'fallar',
   },
 
-  // 15. Melek Kartları
+  // 15. Hermetik Mısır Thoth
   {
-    key: 'angel',
-    title: 'Melek Rehberlik & Şifa Kartları',
-    subtitle: '44 Işık Kartı · İlahi Koruma, Şifa, Huzur & Günün Mesajı',
-    tags: ['Huzur', '44 Kart', 'Pozitif Enerji', 'Şifa'],
-    accent: '#C084FC',
-    badgeText: '🪽 Işık Enerjisi',
-    badgeColor: '#C084FC',
-    ctaText: 'Melek Kartını Çek →',
-    imageSource: require('@/assets/backgrounds/decks/angel_bg.jpg'),
+    key: 'thoth',
+    title: 'Mısır Thoth Falı',
+    subtitle: 'Mısır panteonu, kutsal geometri ve ezoterik simya rehberi',
+    tags: ['Thoth', 'Mısır Falı', 'Hermetik', 'Simya'],
+    accent: '#EAB308',
+    badgeText: '📜 Mısır Simyası',
+    badgeColor: '#EAB308',
+    ctaText: 'Masaya Geç & İncele →',
+    imageSource: require('@/assets/backgrounds/decks/thoth_bg.jpg'),
     actionType: 'navigation',
     route: 'CardDeckTable',
-    params: { deckId: 'angel' },
+    params: { deckId: 'thoth' },
     category: 'fallar',
   },
 
-  // 16. İskambil Saray Falı
-  {
-    key: 'iskambil',
-    title: 'İskambil Saray Falı Destesi',
-    subtitle: '52 Klasik Kart · Kupa, Karo, Sinek & Maça Hanedanı',
-    tags: ['52 Kart', 'Kalp & Para', 'Saray Falı', 'Resmî İşler'],
-    accent: '#E11D48',
-    badgeText: '👑 Saray Falı',
-    badgeColor: '#E11D48',
-    ctaText: 'İskambil Masasına Geç →',
-    imageSource: require('@/assets/backgrounds/decks/iskambil_bg.jpg'),
-    actionType: 'navigation',
-    route: 'CardDeckTable',
-    params: { deckId: 'iskambil' },
-    category: 'fallar',
-  },
-
-  // 17. Sesli Mistik Falcı
+  // 16. Sesli Mistik Falcı
   {
     key: 'voiceReading',
-    title: 'Sesli Mistik Falcı & Danışman',
+    title: 'Sesli Falcı',
     subtitle: 'Mikrofona hislerini ve sorunu anlat, sesli canlı rehberlik al',
-    tags: ['Canlı Ses', 'Birebir Danışmanlık', 'Mistik Ses', 'Anında Yanıt'],
+    tags: ['Sesli Fal', 'Canlı Falcı', 'Sesli Sohbet', 'Danışman'],
     accent: '#F43F5E',
     badgeText: '🎙️ Canlı Sesli',
     badgeColor: '#F43F5E',
